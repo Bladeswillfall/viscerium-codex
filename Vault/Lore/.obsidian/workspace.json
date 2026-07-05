@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Okse Dominion.md",
+                "file": "Factions/Okse Dominion.md",
                 "mode": "source",
                 "source": false
               },
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Okse Dominion.md",
+                "file": "Factions/Okse Dominion.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -113,7 +113,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Okse Dominion.md",
+                "file": "Factions/Okse Dominion.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -156,7 +156,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Okse Dominion.md",
+                "file": "Factions/Okse Dominion.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -194,11 +194,16 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "c413e9cfbf20fcb8",
+  "active": "f4e4bb32b597bc86",
   "lastOpenFiles": [
-    "Valenheim.md",
-    "Okse Dominion.md",
+    "Untitled",
+    "Locations",
+    "Characters",
+    "Factions",
+    "Eras",
+    "Locations/Valenheim.md",
+    "Factions/Okse Dominion.md",
     "Start Here.md",
-    "Example Faction.md"
+    "Factions/Example Faction.md"
   ]
 }
