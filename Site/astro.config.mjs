@@ -1,5 +1,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import lucode from 'lucode-starlight';
+
 
 export default defineConfig({
   integrations: [
@@ -7,7 +9,12 @@ export default defineConfig({
       title: 'VISCERIUM Codex',
       description: 'The public worldbuilding codex for VISCERIUM.',
       customCss: ['./src/styles/custom.css'],
-
+      plugins: [
+        lucode({
+          navLinks: [
+            { label: 'Docs', link: '/guides/getting-started/' },
+            { label: 'API', link: '/reference/plugin-api/' },
+          ],
       sidebar: [
         {
           label: 'Start Here',
