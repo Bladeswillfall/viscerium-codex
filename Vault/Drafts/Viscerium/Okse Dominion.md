@@ -1,8 +1,8 @@
 ---
 title: Okse Dominion
-description: "A fortified northern dominion known for metallurgy, caravan armies, and severe martial culture."
-publish: true
-status: canon
+description: "A preserved VISCERIUM-specific draft moved out of publishable template lore."
+publish: false
+status: draft
 slug: factions/okse-dominion
 type: faction
 era: CITADEL

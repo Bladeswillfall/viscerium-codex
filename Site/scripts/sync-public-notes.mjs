@@ -4,9 +4,15 @@ import fs from 'fs-extra';
 import fg from 'fast-glob';
 import matter from 'gray-matter';
 
+import siteConfig from '../site.config.mjs';
+
 const siteRoot = process.cwd();
-const sourceDir = path.resolve(siteRoot, process.env.LORE_SOURCE_DIR ?? '../Lore');
+const sourceDir = path.resolve(siteRoot, siteConfig.loreSourceDir);
 const outDir = path.resolve(siteRoot, 'src/content/docs');
+
+if (!(await fs.pathExists(sourceDir))) {
+  throw new Error(`Lore source directory not found: ${sourceDir}`);
+}
 
 function slugify(input) {
   return input
@@ -50,6 +56,10 @@ for (const file of files) {
   const rel = path.relative(sourceDir, file).replace(/\\/g, '/');
   const noExt = rel.replace(/\.md$/, '');
   const slug = cleanSlug(parsed.data.slug ? parsed.data.slug : slugify(noExt));
+
+  if (publicFiles.some((entry) => entry.slug === slug)) {
+    throw new Error(`Duplicate published slug "${slug}" in ${file}`);
+  }
 
   publicFiles.push({ file, parsed, slug });
 

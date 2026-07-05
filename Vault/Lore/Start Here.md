@@ -1,6 +1,6 @@
 ---
 title: Start Here
-description: "The public entry point for this worldbuilding codex."
+description: "The public entry point for this example worldbuilding codex."
 publish: true
 status: canon
 slug: index
@@ -13,4 +13,4 @@ Welcome to the public codex.
 
 This page is written in Obsidian, filtered by frontmatter, then published through Astro Starlight.
 
-Try reading about the [[Example Faction]].
+Try reading about [[Example Character]], [[Example Faction]], [[Example Location]], or [[Example Event]].

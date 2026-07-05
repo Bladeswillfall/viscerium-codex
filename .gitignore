@@ -4,8 +4,11 @@ Site/dist/
 Site/.astro/
 
 # Obsidian local state
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
+Vault/.obsidian/workspace.json
+Vault/.obsidian/workspace-mobile.json
+Vault/.obsidian/cache/
+Vault/.obsidian/plugins/
+Vault/.obsidian/themes/
 
 # OS junk
 .DS_Store

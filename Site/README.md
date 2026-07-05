@@ -1,49 +1,43 @@
-# Starlight Starter Kit: Basics
+# Worldbuilding Codex Site
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+This Astro/Starlight app publishes selected Markdown notes from the sibling Obsidian vault.
 
-```
-npm create astro@latest -- --template starlight
-```
+## Commands
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Run commands from this `Site/` directory.
 
-## 🚀 Project Structure
-
-Inside of your Astro + Starlight project, you'll see the following folders and files:
-
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
+```sh
+npm install
+npm run sync
+npm run dev
+npm run build
+npm test
+npm run preview
 ```
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+- `npm run sync` copies publishable notes from `../Vault/Lore` into `src/content/docs`.
+- `npm run dev` syncs notes, then starts the Astro dev server.
+- `npm run build` syncs notes, then builds the production site.
+- `npm test` runs the same build validation used before commits.
+- `npm run preview` previews the latest production build.
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
+## Publishing Rules
 
-Static assets, like favicons, can be placed in the `public/` directory.
+Only notes with both fields below are published:
 
-## 🧞 Commands
+```yaml
+publish: true
+status: canon
+```
 
-All commands are run from the root of the project, from a terminal:
+Published notes must also include `title` and `description`. Optional fields currently supported by the content schema include `slug`, `type`, `era`, and `faction`.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## Configuration
 
-## 👀 Want to learn more?
+Template defaults live in `site.config.mjs`. Override them with environment variables when creating a project-specific site:
 
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+```sh
+SITE_TITLE="My Codex" SITE_DESCRIPTION="Public lore archive" SITE_URL="https://codex.example.com" npm run build
+```
+
+Set `SITE_URL` to the production origin used for sitemap generation. Use `LORE_SOURCE_DIR` only if your vault layout differs from the template.
