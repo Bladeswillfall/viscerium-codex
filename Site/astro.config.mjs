@@ -4,8 +4,8 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
   integrations: [
     starlight({
-      title: 'Loreforge Codex',
-      description: 'A public worldbuilding codex generated from an Obsidian vault.',
+      title: 'VISCERIUM Codex',
+      description: 'The public worldbuilding codex for VISCERIUM.',
       customCss: ['./src/styles/custom.css'],
       sidebar: [
         {
