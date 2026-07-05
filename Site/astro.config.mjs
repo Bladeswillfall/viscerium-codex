@@ -10,15 +10,28 @@ export default defineConfig({
 
       sidebar: [
         {
-          label: 'Codex',
-          items: [
-            { slug: 'index' },
-            { autogenerate: { directory: 'characters' } },
-            { autogenerate: { directory: 'eras' } },
-            { autogenerate: { directory: 'events' } },
-            { autogenerate: { directory: 'factions' } },
-            { autogenerate: { directory: 'locations' } },
-          ],
+          label: 'Start Here',
+          items: ['index'],
+        },
+        {
+          label: 'Characters',
+          items: [{ autogenerate: { directory: 'characters' } }],
+        },
+        {
+          label: 'Eras',
+          items: [{ autogenerate: { directory: 'eras' } }],
+        },
+        {
+          label: 'Events',
+          items: [{ autogenerate: { directory: 'events' } }],
+        },
+        {
+          label: 'Factions',
+          items: [{ autogenerate: { directory: 'factions' } }],
+        },
+        {
+          label: 'Locations',
+          items: [{ autogenerate: { directory: 'locations' } }],
         },
       ],
     }),

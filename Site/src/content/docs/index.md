@@ -14,3 +14,4 @@ Welcome to the public codex.
 This page is written in Obsidian, filtered by frontmatter, then published through Astro Starlight.
 
 Try reading about [Example Character](/characters/example-character/), [Example Faction](/factions/example-faction/), [Example Location](/locations/example-location/), or [Example Event](/events/example-event/).
+x
