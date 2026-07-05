@@ -1,19 +1,24 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
-import siteConfig from './site.config.mjs';
-
 export default defineConfig({
-  site: siteConfig.site,
   integrations: [
     starlight({
-      title: siteConfig.title,
-      description: siteConfig.description,
+      title: 'VISCERIUM Codex',
+      description: 'The public worldbuilding codex for VISCERIUM.',
       customCss: ['./src/styles/custom.css'],
+
       sidebar: [
         {
           label: 'Codex',
-          items: [{ autogenerate: { directory: '.' } }],
+          items: [
+            { slug: 'index' },
+            { autogenerate: { directory: 'characters' } },
+            { autogenerate: { directory: 'eras' } },
+            { autogenerate: { directory: 'events' } },
+            { autogenerate: { directory: 'factions' } },
+            { autogenerate: { directory: 'locations' } },
+          ],
         },
       ],
     }),
