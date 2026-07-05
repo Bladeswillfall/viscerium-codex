@@ -1,0 +1,7 @@
+:root {
+  --sl-font: system-ui, sans-serif;
+}
+
+.site-title {
+  letter-spacing: 0.04em;
+}

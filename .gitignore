@@ -1,0 +1,12 @@
+# Astro / Node
+Site/node_modules/
+Site/dist/
+Site/.astro/
+
+# Obsidian local state
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# OS junk
+.DS_Store
+Thumbs.db
