@@ -13,9 +13,9 @@ import starlightSiteGraph from 'starlight-site-graph';
 import starlightTags from 'starlight-tags';
 import starlightTelescope from 'starlight-telescope';
 import starlightUiTweaks from 'starlight-ui-tweaks';
-
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
+import { ion } from "starlight-ion-theme";
 
 const giscusPlugin = siteConfig.giscus.repo && siteConfig.giscus.repoId && siteConfig.giscus.category && siteConfig.giscus.categoryId
   ? starlightGiscus({
@@ -34,7 +34,11 @@ const giscusPlugin = siteConfig.giscus.repo && siteConfig.giscus.repoId && siteC
 export default defineConfig({
   site: siteConfig.site,
   integrations: [
-    starlight({
+    UnoCSS(),
+    Icons({
+      sidebar: true,
+      extractSafelist: true,
+      starlight: {
       title: siteConfig.title,
       description: siteConfig.description,
       customCss: ['./src/styles/custom.css'],
@@ -71,6 +75,7 @@ export default defineConfig({
       social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
     }),
     sitemap(),
+    UnoCSS(),
   ],
   vite: {
     plugins: [UnoCSS()],
