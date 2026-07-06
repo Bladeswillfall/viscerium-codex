@@ -1,6 +1,5 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import matter from 'gray-matter';
 
 const docsDir = new URL('./src/content/docs/', import.meta.url);
 
@@ -21,6 +20,33 @@ function labelFromSegment(segment) {
   return segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function titleFromFrontmatter(raw) {
+  const match = raw.match(/^---\n[\s\S]*?^title:\s*(.+?)\s*$/m);
+  return match?.[1]?.replace(/^['\"]|['\"]$/g, '');
+}
+
+function sortSidebarEntries(entries) {
+  return entries.sort((a, b) => a.label.localeCompare(b.label));
+}
+
+function ensureGroup(groups, segment) {
+  if (!groups.has(segment)) {
+    groups.set(segment, { links: [], groups: new Map() });
+  }
+  return groups.get(segment);
+}
+
+function buildEntries(groups) {
+  return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([segment, group]) => ({
+    label: iconLabel(groupIcons[segment], labelFromSegment(segment)),
+    items: [
+      ...sortSidebarEntries(group.links),
+      ...buildEntries(group.groups),
+    ],
+    collapsed: true,
+  }));
+}
+
 export async function buildSidebar() {
   try {
     const files = await walk(docsDir.pathname);
@@ -32,28 +58,29 @@ export async function buildSidebar() {
       if (!rel.endsWith('.md') && !rel.endsWith('.mdx')) continue;
       const id = rel.replace(/\.(md|mdx)$/, '');
       const raw = await fs.readFile(file, 'utf8');
-      const title = matter(raw).data.title ?? labelFromSegment(path.basename(id));
+      const title = titleFromFrontmatter(raw) ?? labelFromSegment(path.basename(id));
       if (id === 'index') {
         rootItems.unshift({ label: iconLabel('home', title), link: '/', badge: { text: 'Canon', variant: 'note' } });
         continue;
       }
-      const [group, ...rest] = id.split('/');
+
+      const segments = id.split('/');
       const link = `/${id}/`;
-      if (rest.length === 0) {
+      if (segments.length === 1) {
         rootItems.push({ label: title, link });
         continue;
       }
-      if (!groups.has(group)) groups.set(group, []);
-      groups.get(group).push({ label: title, link });
+
+      let group = ensureGroup(groups, segments[0]);
+      for (const segment of segments.slice(1, -1)) {
+        group = ensureGroup(group.groups, segment);
+      }
+      group.links.push({ label: title, link });
     }
 
     return [
-      ...rootItems.sort((a, b) => a.label.localeCompare(b.label)),
-      ...[...groups.entries()].sort().map(([group, items]) => ({
-        label: iconLabel(groupIcons[group], labelFromSegment(group)),
-        items: items.sort((a, b) => a.label.localeCompare(b.label)),
-        collapsed: true,
-      })),
+      ...sortSidebarEntries(rootItems),
+      ...buildEntries(groups),
     ];
   } catch {
     return [{ label: 'Start Here', link: '/' }];

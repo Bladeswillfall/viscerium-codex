@@ -1,9 +1,9 @@
 ---
 title: Example Faction
-description: A sample public faction used to demonstrate the codex template.
+description: "A sample public faction used to demonstrate the codex template."
 publish: true
 status: canon
-slug: factions/example-faction
+slug: eras/citadel/factions/example-faction
 type: faction
 era: Example Era
 capital: Example City
@@ -14,9 +14,10 @@ relationships:
   allies:
     - Example Character
 ---
+
 The Example Faction is a placeholder society for testing navigation, wikilinks, and metadata.
 
-It is based in [Example City](/locations/example-city/) and is associated with [a notable member](/characters/example-character/).
+It is based in [Example City](/eras/citadel/locations/example-city/) and is associated with [a notable member](/eras/citadel/characters/example-character/).
 
 | tes |     | afa |
 |:---:| --- | --- |
@@ -27,4 +28,4 @@ It is based in [Example City](/locations/example-city/) and is associated with [
 
 ## Related
 
-- [Example Battle](/events/example-battle/)
+- [Example Battle](/eras/citadel/events/example-battle/)
