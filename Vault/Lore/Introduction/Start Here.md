@@ -5,7 +5,7 @@ publish: true
 status: canon
 slug: index
 type: article
-headerImage: assets/images/viscerium-banner
+headerImage: /assets/images/viscerium-banner.webp
 ---
 
 # Start Here
