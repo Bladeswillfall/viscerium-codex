@@ -17,6 +17,9 @@ tags:
 relationships:
   allies:
   rivals:
+image:
+alt:
+tags:
 ---
 
 # {{title}}
@@ -49,5 +52,15 @@ relationships:
 ## Notes and Secrets
 
 Keep private information in `Vault/Private/` or leave `publish: false`.
+
+## Summary
+
+## Appearance
+
+## Personality
+
+## History
+
+## Relationships
 
 ## Related

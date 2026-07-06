@@ -17,6 +17,7 @@ tags:
 relationships:
   allies:
   enemies:
+tags:
 ---
 
 # {{title}}
@@ -45,5 +46,15 @@ relationships:
 ## Important Members
 
 ## Related Locations
+
+## Summary
+
+## Culture
+
+## Government
+
+## Military
+
+## History
 
 ## Related

@@ -1,17 +1,9 @@
 ---
-const giscusConfig = {
-  repo: import.meta.env.PUBLIC_GISCUS_REPO || 'Bladeswillfall/viscerium-codex',
-  repoId: import.meta.env.PUBLIC_GISCUS_REPO_ID || 'R_kgDOTOi09Q',
-  category: import.meta.env.PUBLIC_GISCUS_CATEGORY || 'Announcements',
-  categoryId: import.meta.env.PUBLIC_GISCUS_CATEGORY_ID || 'DIC_kwDOTOi09c4DAmpQ',
-  mapping: import.meta.env.PUBLIC_GISCUS_MAPPING || 'pathname',
-  strict: import.meta.env.PUBLIC_GISCUS_STRICT || '0',
-  reactionsEnabled: import.meta.env.PUBLIC_GISCUS_REACTIONS_ENABLED || '1',
-  emitMetadata: import.meta.env.PUBLIC_GISCUS_EMIT_METADATA || '0',
-  inputPosition: import.meta.env.PUBLIC_GISCUS_INPUT_POSITION || 'top',
-  theme: import.meta.env.PUBLIC_GISCUS_THEME || 'noborder_dark',
-  lang: import.meta.env.PUBLIC_GISCUS_LANG || 'en',
-};
+const repo = import.meta.env.PUBLIC_GISCUS_REPO;
+const repoId = import.meta.env.PUBLIC_GISCUS_REPO_ID;
+const category = import.meta.env.PUBLIC_GISCUS_CATEGORY;
+const categoryId = import.meta.env.PUBLIC_GISCUS_CATEGORY_ID;
+const enabled = Boolean(repo && repoId && category && categoryId);
 ---
 <section class="codex-comments" aria-labelledby="codex-comments-title">
   <details>
@@ -20,23 +12,29 @@ const giscusConfig = {
       <span class="codex-comments-hint">GitHub Discussions via giscus</span>
     </summary>
     <div class="codex-comments-panel">
-      <script
-        src="https://giscus.app/client.js"
-        data-repo={giscusConfig.repo}
-        data-repo-id={giscusConfig.repoId}
-        data-category={giscusConfig.category}
-        data-category-id={giscusConfig.categoryId}
-        data-mapping={giscusConfig.mapping}
-        data-strict={giscusConfig.strict}
-        data-reactions-enabled={giscusConfig.reactionsEnabled}
-        data-emit-metadata={giscusConfig.emitMetadata}
-        data-input-position={giscusConfig.inputPosition}
-        data-theme={giscusConfig.theme}
-        data-lang={giscusConfig.lang}
-        data-loading="lazy"
-        crossorigin="anonymous"
-        async>
-      </script>
+      {enabled ? (
+        <script
+          src="https://giscus.app/client.js"
+          data-repo={repo}
+          data-repo-id={repoId}
+          data-category={category}
+          data-category-id={categoryId}
+          data-mapping="pathname"
+          data-strict="0"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="bottom"
+          data-theme="preferred_color_scheme"
+          data-lang="en"
+          crossorigin="anonymous"
+          async>
+        </script>
+      ) : (
+        <div class="codex-warning">
+          <p><strong>Comments are ready but not enabled yet.</strong></p>
+          <p>Set the public giscus environment variables documented in the README to show GitHub Discussions comments here.</p>
+        </div>
+      )}
     </div>
   </details>
 </section>

@@ -21,3 +21,4 @@ timelineId:
 ## Event Guidelines
 
 ## Major Events
+## Timeline Notes

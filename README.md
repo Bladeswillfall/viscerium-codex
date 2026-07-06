@@ -60,27 +60,25 @@ Create a new repository from this template, replace the example lore with your p
 - Buttondown/newsletter: add your public form endpoint as an environment variable or documented placeholder.
 - GA4/GTM and Cloudflare Web Analytics: add only public IDs through environment variables or Cloudflare settings.
 
-## Collapsible GitHub comments
+## Enable collapsible GitHub comments
 
-This template includes a collapsed **Page comments** section at the bottom of Starlight pages. It uses [giscus](https://giscus.app/) and is already configured for `Bladeswillfall/viscerium-codex` with the `Announcements` discussion category.
-
-Current defaults:
-
-```bash
-PUBLIC_GISCUS_REPO=Bladeswillfall/viscerium-codex
-PUBLIC_GISCUS_REPO_ID=R_kgDOTOi09Q
-PUBLIC_GISCUS_CATEGORY=Announcements
-PUBLIC_GISCUS_CATEGORY_ID=DIC_kwDOTOi09c4DAmpQ
-PUBLIC_GISCUS_INPUT_POSITION=top
-PUBLIC_GISCUS_THEME=noborder_dark
-```
+This template includes a collapsed **Page comments** section at the bottom of Starlight pages. It uses [giscus](https://giscus.app/) and stays in placeholder mode until configured.
 
 Actions for you:
 
-1. Confirm **GitHub Discussions** is enabled for the repository.
-2. Confirm the giscus GitHub app is installed for the repository.
-3. If you fork this template, override the public giscus values in Cloudflare Pages environment variables or in a local `.env` file.
-4. Do not commit private secrets. These giscus values are public identifiers, but environment overrides keep forks reusable.
+1. Enable **GitHub Discussions** in your repository.
+2. Install the giscus GitHub app for the repository.
+3. Go to `https://giscus.app/` and choose your repository and discussion category.
+4. Add these public environment variables in Cloudflare Pages and in a local `.env` file if needed:
+
+```bash
+PUBLIC_GISCUS_REPO=owner/repo
+PUBLIC_GISCUS_REPO_ID=your_repo_id
+PUBLIC_GISCUS_CATEGORY=General
+PUBLIC_GISCUS_CATEGORY_ID=your_category_id
+```
+
+Do not commit secrets. These giscus values are public identifiers, but keeping them in environment variables makes the template reusable.
 
 ## WorldAnvil/Wikipedia-style page layout actions
 

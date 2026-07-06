@@ -18,6 +18,7 @@ map:
   marker: location
   layer:
     - locations
+  marker:
 tags:
 ---
 
@@ -43,5 +44,11 @@ tags:
 ## History
 
 ## Adventure Hooks
+
+## Summary
+
+## Geography
+
+## People
 
 ## Related

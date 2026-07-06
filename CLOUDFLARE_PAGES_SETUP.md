@@ -18,15 +18,13 @@ No secrets are required for the default template.
 
 ## Optional giscus comments environment variables
 
-The comments accordion is preconfigured for `Bladeswillfall/viscerium-codex` and the `Announcements` discussion category. If you fork this template or move discussions to another category, override these values in Cloudflare Pages:
+If you want the collapsible comments section to load GitHub Discussions comments, add these Cloudflare Pages environment variables after configuring giscus:
 
 ```text
 PUBLIC_GISCUS_REPO
 PUBLIC_GISCUS_REPO_ID
 PUBLIC_GISCUS_CATEGORY
 PUBLIC_GISCUS_CATEGORY_ID
-PUBLIC_GISCUS_INPUT_POSITION
-PUBLIC_GISCUS_THEME
 ```
 
-The default input position is `top` and the default theme is `noborder_dark`.
+Leave them unset to keep the comments accordion as a setup placeholder.

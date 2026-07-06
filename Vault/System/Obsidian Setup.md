@@ -20,3 +20,4 @@ The templates use a simple wiki-style shape:
 - Topic sections such as history, culture, relationships, geography, and related links.
 
 This is intentionally plain Markdown so the vault remains portable. If you later want a more advanced published infobox, add an Astro/MDX component while keeping these Markdown templates usable in Obsidian.
+Open only the `Vault/` folder in Obsidian. Use templates from `Vault/Templates/`. Put images in `Vault/Assets/Images/` and maps in `Vault/Assets/Maps/`.

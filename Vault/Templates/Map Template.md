@@ -27,3 +27,4 @@ height:
 ## Marker Guidelines
 
 ## Related Locations
+## Map Notes
