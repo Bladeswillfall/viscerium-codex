@@ -1,0 +1,23 @@
+---
+const repo = import.meta.env.PUBLIC_GISCUS_REPO;
+const repoId = import.meta.env.PUBLIC_GISCUS_REPO_ID;
+const category = import.meta.env.PUBLIC_GISCUS_CATEGORY;
+const categoryId = import.meta.env.PUBLIC_GISCUS_CATEGORY_ID;
+const pluginConfigured = Boolean(repo && repoId && category && categoryId);
+---
+{!pluginConfigured && (
+  <section class="codex-comments" aria-labelledby="codex-comments-title">
+    <details>
+      <summary id="codex-comments-title">
+        <span>Page comments</span>
+        <span class="codex-comments-hint">GitHub Discussions via giscus</span>
+      </summary>
+      <div class="codex-comments-panel">
+        <div class="codex-warning">
+          <p><strong>Comments are ready but not enabled yet.</strong></p>
+          <p>Set the public giscus environment variables documented in the README to enable the Starlight giscus plugin.</p>
+        </div>
+      </div>
+    </details>
+  </section>
+)}

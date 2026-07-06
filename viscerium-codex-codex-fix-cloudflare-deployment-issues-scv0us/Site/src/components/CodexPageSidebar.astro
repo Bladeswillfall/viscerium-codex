@@ -1,0 +1,101 @@
+---
+import MobileTableOfContents from 'virtual:starlight/components/MobileTableOfContents';
+import TableOfContents from 'virtual:starlight/components/TableOfContents';
+import { PageBacklinks, PageGraph } from 'starlight-site-graph/components';
+
+const { starlightRoute } = Astro.locals;
+const entry = starlightRoute.entry.data;
+const sidebarFields = [
+  ['Type', entry.type],
+  ['Status', entry.status],
+  ['Era', entry.era],
+  ['Faction', entry.faction],
+  ['Location', entry.location],
+  ['Character', entry.character],
+  ['Tags', entry.tags],
+].filter(([, value]) => value !== undefined && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0));
+const imageSource = entry.image ?? (entry.type === 'image' ? entry.asset : undefined);
+const sidebarImage = typeof imageSource === 'string' && imageSource.startsWith('/') ? imageSource : undefined;
+const imageAlt = entry.alt ?? `${entry.title} image`;
+
+function formatValue(value) {
+  return Array.isArray(value) ? value.join(', ') : String(value).replace(/-/g, ' ');
+}
+---
+
+{
+  starlightRoute.toc && (
+    <>
+      <div class="lg:sl-hidden">
+        <MobileTableOfContents />
+      </div>
+      <aside class="right-sidebar-panel codex-page-sidebar sl-hidden lg:sl-block" aria-label="Page sidebar">
+        <div class="sl-container">
+          <section class="codex-sidebar-card" aria-labelledby="codex-sidebar-title">
+            {sidebarImage && <img class="codex-sidebar-image" src={sidebarImage} alt={imageAlt} loading="lazy" decoding="async" />}
+            <div class="codex-sidebar-body">
+              <p class="codex-sidebar-kicker">{entry.type ?? 'Entry'}</p>
+              <h2 id="codex-sidebar-title">{entry.title}</h2>
+              {entry.description && <p class="codex-sidebar-description">{entry.description}</p>}
+              {sidebarFields.length > 0 && (
+                <dl class="codex-sidebar-meta">
+                  {sidebarFields.map(([label, value]) => (
+                    <div>
+                      <dt>{label}</dt>
+                      <dd>{formatValue(value)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </div>
+          </section>
+          <TableOfContents />
+          <section class="codex-sidebar-section" aria-labelledby="codex-sidebar-graph-title">
+            <h2 id="codex-sidebar-graph-title">Graph View</h2>
+            <PageGraph />
+          </section>
+          <section class="codex-sidebar-section" aria-labelledby="codex-sidebar-backlinks-title">
+            <h2 id="codex-sidebar-backlinks-title">Backlinks</h2>
+            <PageBacklinks />
+          </section>
+        </div>
+      </aside>
+    </>
+  )
+}
+
+<style>
+  @layer starlight.core {
+    .right-sidebar-panel {
+      padding: 1rem var(--sl-sidebar-pad-x);
+    }
+    .sl-container {
+      width: calc(var(--sl-sidebar-width) - 2 * var(--sl-sidebar-pad-x));
+    }
+    .codex-sidebar-section {
+      margin-top: 1.5rem;
+    }
+    .right-sidebar-panel :global(h2) {
+      color: var(--sl-color-white);
+      font-size: var(--sl-text-h5);
+      font-weight: 600;
+      line-height: var(--sl-line-height-headings);
+      margin-bottom: 0.5rem;
+    }
+    .right-sidebar-panel :global(:where(a)) {
+      display: block;
+      font-size: var(--sl-text-xs);
+      text-decoration: none;
+      color: var(--sl-color-gray-3);
+      overflow-wrap: anywhere;
+    }
+    .right-sidebar-panel :global(:where(a):hover) {
+      color: var(--sl-color-white);
+    }
+    @media (min-width: 72rem) {
+      .sl-container {
+        max-width: calc(((100vw - var(--sl-sidebar-width) - 2 * var(--sl-content-pad-x) - 2 * var(--sl-sidebar-pad-x)) * 0.333));
+      }
+    }
+  }
+</style>

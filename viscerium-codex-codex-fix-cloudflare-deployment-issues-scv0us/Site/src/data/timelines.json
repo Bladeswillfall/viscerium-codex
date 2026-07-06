@@ -1,0 +1,16 @@
+{
+  "example-history": {
+    "id": "example-history",
+    "title": "example history",
+    "events": [
+      {
+        "title": "Example Battle",
+        "description": "A sample event used to demonstrate generated timeline data.",
+        "year": 1200,
+        "precision": "exact",
+        "order": 1,
+        "page": "/events/example-battle/"
+      }
+    ]
+  }
+}

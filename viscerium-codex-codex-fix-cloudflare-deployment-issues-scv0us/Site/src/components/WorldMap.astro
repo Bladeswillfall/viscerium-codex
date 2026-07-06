@@ -1,0 +1,7 @@
+---
+const { map } = Astro.props;
+---
+{map ? <section><h1>{map.title}</h1><p>{map.description}</p><div class="world-map">
+  {map.image ? <img src={map.image} alt={map.title} /> : <p class="codex-warning">No map image configured yet. Markers are listed below.</p>}
+  {map.image && map.markers?.map((marker) => <a class="map-marker" style={`left:${marker.x}%;top:${marker.y}%;`} href={marker.page} title={`${marker.title}: ${marker.description}`}></a>)}
+</div><h2>Markers</h2><ul>{map.markers?.map((marker) => <li><a href={marker.page}>{marker.title}</a> — {marker.description}</li>)}</ul></section> : <p class="codex-warning">Map not found.</p>}

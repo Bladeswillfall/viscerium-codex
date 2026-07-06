@@ -1,0 +1,4 @@
+---
+const { items = {} } = Astro.props;
+---
+<table><tbody>{Object.entries(items).filter(([,v]) => v).map(([k,v]) => <tr><th>{k}</th><td>{Array.isArray(v) ? v.join(', ') : String(v)}</td></tr>)}</tbody></table>
