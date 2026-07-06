@@ -1,17 +1,18 @@
 ---
 title: Start Here
-description: "The public entry point for this example worldbuilding codex."
+description: "Welcome page for this reusable worldbuilding codex template."
 publish: true
 status: canon
 slug: index
-type: home
+type: article
 ---
 
 # Start Here
 
-Welcome to the public codex.
+Welcome to your public worldbuilding codex. This example vault publishes only notes in `Vault/Lore/` with `publish: true` and `status: canon`.
 
-This page is written in Obsidian, filtered by frontmatter, then published through Astro Starlight.
+Explore the [[Example Faction]], meet the [[Example Character]], visit [[Example City]], and read about the [[Example Battle]].
 
-Try reading about [[Example Character]], [[Example Faction]], [[Example Location]], or [[Example Event]].
-x
+- [World graph](/graph/)
+- [Example map](/maps/example-world/)
+- [Example timeline](/timelines/example-history/)

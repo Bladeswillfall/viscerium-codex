@@ -1,0 +1,42 @@
+---
+const giscusConfig = {
+  repo: import.meta.env.PUBLIC_GISCUS_REPO || 'Bladeswillfall/viscerium-codex',
+  repoId: import.meta.env.PUBLIC_GISCUS_REPO_ID || 'R_kgDOTOi09Q',
+  category: import.meta.env.PUBLIC_GISCUS_CATEGORY || 'Announcements',
+  categoryId: import.meta.env.PUBLIC_GISCUS_CATEGORY_ID || 'DIC_kwDOTOi09c4DAmpQ',
+  mapping: import.meta.env.PUBLIC_GISCUS_MAPPING || 'pathname',
+  strict: import.meta.env.PUBLIC_GISCUS_STRICT || '0',
+  reactionsEnabled: import.meta.env.PUBLIC_GISCUS_REACTIONS_ENABLED || '1',
+  emitMetadata: import.meta.env.PUBLIC_GISCUS_EMIT_METADATA || '0',
+  inputPosition: import.meta.env.PUBLIC_GISCUS_INPUT_POSITION || 'top',
+  theme: import.meta.env.PUBLIC_GISCUS_THEME || 'noborder_dark',
+  lang: import.meta.env.PUBLIC_GISCUS_LANG || 'en',
+};
+---
+<section class="codex-comments" aria-labelledby="codex-comments-title">
+  <details>
+    <summary id="codex-comments-title">
+      <span>Page comments</span>
+      <span class="codex-comments-hint">GitHub Discussions via giscus</span>
+    </summary>
+    <div class="codex-comments-panel">
+      <script
+        src="https://giscus.app/client.js"
+        data-repo={giscusConfig.repo}
+        data-repo-id={giscusConfig.repoId}
+        data-category={giscusConfig.category}
+        data-category-id={giscusConfig.categoryId}
+        data-mapping={giscusConfig.mapping}
+        data-strict={giscusConfig.strict}
+        data-reactions-enabled={giscusConfig.reactionsEnabled}
+        data-emit-metadata={giscusConfig.emitMetadata}
+        data-input-position={giscusConfig.inputPosition}
+        data-theme={giscusConfig.theme}
+        data-lang={giscusConfig.lang}
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </div>
+  </details>
+</section>

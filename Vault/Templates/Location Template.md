@@ -1,21 +1,47 @@
 ---
-title: Location Name
-description: "Short public summary."
+title:
+description:
 publish: false
 status: draft
-slug: locations/location-name
+slug: locations/
 type: location
-era:
+faction:
+region:
+population:
+climate:
+image:
+alt:
+map:
+  id:
+  x:
+  y:
+  marker: location
+  layer:
+    - locations
+tags:
 ---
 
-# Location Name
+# {{title}}
 
-## Overview
+> [!info] Infobox
+> **Type:** Location
+> **Region:**
+> **Controlling faction:**
+> **Population:**
+> **Climate:**
+> **Map:**
+> **Status:** Draft
 
-Briefly describe the location and why it matters.
+## Summary
 
-## Details
+## Geography
 
-- Region:
-- Controlled by:
-- Related events:
+## Districts and Landmarks
+
+## People and Culture
+
+## History
+
+## Adventure Hooks
+
+## Related
