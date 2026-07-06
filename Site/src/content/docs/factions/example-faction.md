@@ -14,12 +14,14 @@ relationships:
   allies:
     - Example Character
 ---
-
-# Example Faction
-
 The Example Faction is a placeholder society for testing navigation, wikilinks, and metadata.
 
 It is based in [Example City](/locations/example-city/) and is associated with [a notable member](/characters/example-character/).
+
+| tes |     | afa |
+|:---:| --- | --- |
+|     |     |     |
+|     |     |     |
 
 ![example-banner.webp](/assets/images/example-banner.webp)
 

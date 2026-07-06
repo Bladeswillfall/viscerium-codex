@@ -10,7 +10,4 @@ image: /assets/maps/example-world.webp
 width: 2000
 height: 1200
 ---
-
-# Example World Map
-
 This metadata note configures the generated map page.

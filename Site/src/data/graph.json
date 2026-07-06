@@ -6,29 +6,24 @@
       "type": "article"
     },
     {
-      "id": "characters/example-character",
-      "title": "Example Character",
-      "type": "character"
-    },
-    {
-      "id": "events/example-battle",
-      "title": "Example Battle",
-      "type": "event"
-    },
-    {
-      "id": "characters/example-character",
-      "title": "Example Character",
-      "type": "character"
-    },
-    {
       "id": "factions/example-faction",
       "title": "Example Faction",
       "type": "faction"
     },
     {
+      "id": "characters/example-character",
+      "title": "Example Character",
+      "type": "character"
+    },
+    {
       "id": "images/example-banner",
       "title": "Example Banner",
       "type": "image"
+    },
+    {
+      "id": "events/example-battle",
+      "title": "Example Battle",
+      "type": "event"
     },
     {
       "id": "locations/example-city",
@@ -68,43 +63,6 @@
       "type": "link"
     },
     {
-      "source": "characters/example-character",
-      "target": "locations/example-city",
-      "type": "link"
-    },
-    {
-      "source": "characters/example-character",
-      "target": "events/example-battle",
-      "type": "link"
-    },
-    {
-      "source": "events/example-battle",
-      "target": "factions/example-faction",
-      "type": "link"
-    },
-    {
-      "source": "events/example-battle",
-      "target": "locations/example-city",
-      "source": "events/example-battle",
-      "target": "factions/example-faction",
-      "type": "link"
-    },
-    {
-      "source": "events/example-battle",
-      "target": "locations/example-city",
-      "type": "link"
-    },
-    {
-      "source": "characters/example-character",
-      "target": "locations/example-city",
-      "type": "link"
-    },
-    {
-      "source": "characters/example-character",
-      "target": "events/example-battle",
-      "type": "link"
-    },
-    {
       "source": "factions/example-faction",
       "target": "locations/example-city",
       "type": "link"
@@ -123,6 +81,26 @@
       "source": "factions/example-faction",
       "target": "characters/example-character",
       "type": "relationship"
+    },
+    {
+      "source": "characters/example-character",
+      "target": "locations/example-city",
+      "type": "link"
+    },
+    {
+      "source": "characters/example-character",
+      "target": "events/example-battle",
+      "type": "link"
+    },
+    {
+      "source": "events/example-battle",
+      "target": "factions/example-faction",
+      "type": "link"
+    },
+    {
+      "source": "events/example-battle",
+      "target": "locations/example-city",
+      "type": "link"
     },
     {
       "source": "locations/example-city",

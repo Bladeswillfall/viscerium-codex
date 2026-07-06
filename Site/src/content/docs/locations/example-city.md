@@ -14,9 +14,6 @@ map:
   layer:
     - cities
 ---
-
-# Example City
-
 Example City is a public location note with generated map marker data.
 
 It is governed by [Example Faction](/factions/example-faction/) and appears in [Example Battle](/events/example-battle/).

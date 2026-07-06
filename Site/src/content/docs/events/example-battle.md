@@ -12,9 +12,6 @@ timeline:
   precision: exact
   order: 1
 ---
-
-# Example Battle
-
 Example Battle is a public event note that appears on the example timeline.
 
 It involved [Example Faction](/factions/example-faction/) near [Example City](/locations/example-city/).

@@ -12,7 +12,4 @@ license: Placeholder
 related:
   - Example Faction
 ---
-
-# Example Banner
-
 This metadata note documents a public image stored in `Vault/Assets/Images/`.
