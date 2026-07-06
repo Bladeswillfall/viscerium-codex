@@ -1,51 +1,92 @@
-# Obsidian Starlight Codex Template
+# Obsidian → Astro Starlight Worldbuilding Codex Template
 
-This repository is a starter template for publishing selected Obsidian lore notes as an Astro/Starlight documentation site.
+This repository is a beginner-friendly template for publishing a public worldbuilding codex from an Obsidian vault. Write lore in `Vault/`, mark finished public notes with frontmatter, and let the Astro/Starlight site in `Site/` build a static website for Cloudflare Pages.
 
-## Layout
+## Folder structure
 
-- `Vault/` is the Obsidian vault.
-- `Vault/Lore/` contains source notes eligible for publishing.
-- `Vault/Drafts/`, `Vault/Private/`, and `Vault/Templates/` are not published.
-- `Site/` contains the Astro/Starlight app.
-- `Site/src/content/docs/` is generated from canon public notes.
+- `Vault/` — open this folder in Obsidian. Your lore source lives here.
+- `Vault/Lore/` — only public/canon notes from this folder are published.
+- `Vault/Drafts/`, `Vault/Private/`, `Vault/System/`, `Vault/Templates/` — never published by the sync script.
+- `Vault/Assets/Images/` and `Vault/Assets/Maps/` — source assets copied to `Site/public/assets/` when referenced.
+- `Site/` — Astro + Starlight website. Do not manually edit `Site/src/content/docs/` because it is regenerated.
 
-## Workflow
+## Write a public note
 
-1. Write notes in `Vault/Lore/`.
-2. Add required frontmatter to notes that should publish:
+Add this frontmatter to a Markdown note inside `Vault/Lore/`:
 
-   ```yaml
-   title: Example Page
-   description: "A short page summary."
-   publish: true
-   status: canon
-   ```
+```yaml
+---
+title: Example Title
+description: "A short SEO-safe page description."
+publish: true
+status: canon
+slug: example/example-title
+type: article
+---
+```
 
-3. From `Site/`, run `npm run sync` to regenerate Starlight docs.
-4. Run `npm run build` before committing changes.
+The build fails if a public note is missing `title`, `description`, `slug`, or `type`.
 
-## Note Templates
+## Local setup
 
-Starter templates live in `Vault/Templates/`:
+```bash
+cd Site
+npm install
+npm run sync
+npm run dev
+npm run build
+```
 
-- `Character.md`
-- `Faction.md`
-- `Location.md`
-- `Event.md`
+Use `npm run dev:sync` when you want to sync notes and start the local site in one command.
 
-Templates default to `publish: false` and `status: draft`. Change both fields only when a copied note is ready for the public site.
+## Cloudflare Pages settings
 
-## Site Commands
+```text
+Root directory: Site
+Build command: npm run build
+Build output directory: dist
+Node version: 22.12.0
+```
 
-Run these from `Site/`:
+Set your real canonical URL in `Site/site.config.mjs` and `Site/astro.config.mjs` via the `site` value before production launch.
 
-- `npm install` installs dependencies.
-- `npm run sync` copies public canon notes into Starlight.
-- `npm run dev` syncs notes and starts local development.
-- `npm run build` syncs notes and builds production output.
-- `npm test` runs the build validation.
+## GitHub template use
 
-## Reusing The Template
+Create a new repository from this template, replace the example lore with your project, update `Site/site.config.mjs`, push to GitHub, then connect the repo to Cloudflare Pages.
 
-Update `Site/site.config.mjs` or set environment variables for the site title, description, production URL, and lore source path. Keep project-specific lore in a generated repository and keep this template focused on the publishing pipeline.
+## Optional community integrations
+
+- giscus comments: create a giscus app setup, then add the generated script to a custom Starlight component. Do not commit secrets.
+- Buttondown/newsletter: add your public form endpoint as an environment variable or documented placeholder.
+- GA4/GTM and Cloudflare Web Analytics: add only public IDs through environment variables or Cloudflare settings.
+
+## Enable collapsible GitHub comments
+
+This template includes a collapsed **Page comments** section at the bottom of Starlight pages. It uses [giscus](https://giscus.app/) and stays in placeholder mode until configured.
+
+Actions for you:
+
+1. Enable **GitHub Discussions** in your repository.
+2. Install the giscus GitHub app for the repository.
+3. Go to `https://giscus.app/` and choose your repository and discussion category.
+4. Add these public environment variables in Cloudflare Pages and in a local `.env` file if needed:
+
+```bash
+PUBLIC_GISCUS_REPO=owner/repo
+PUBLIC_GISCUS_REPO_ID=your_repo_id
+PUBLIC_GISCUS_CATEGORY=General
+PUBLIC_GISCUS_CATEGORY_ID=your_category_id
+```
+
+Do not commit secrets. These giscus values are public identifiers, but keeping them in environment variables makes the template reusable.
+
+## WorldAnvil/Wikipedia-style page layout actions
+
+The Obsidian templates now include wiki-style infobox callouts and section headings. Recommended setup:
+
+1. In Obsidian, enable the built-in **Templates** plugin and set the template folder to `Templates`.
+2. Optional: install **Templater** if you want automatic dates, prompts, or generated slugs.
+3. Optional: install **Dataview** for private dashboard/index notes inside `Vault/System/`; do not rely on Dataview output for published pages unless you also write the final content in Markdown.
+4. Optional: install **Editing Toolbar** or **Advanced Tables** if you prefer visual table editing for wiki-style infoboxes.
+5. Use the callout infobox in each template for Obsidian readability. Later, you can replace it with Astro MDX components for richer published layouts.
+6. Keep canonical public fields in frontmatter so Astro can generate maps, timelines, graph data, and SEO safely.

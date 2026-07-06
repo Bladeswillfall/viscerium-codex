@@ -1,0 +1,8 @@
+---
+import graph from '../data/graph.json';
+const nodeById = new Map(graph.nodes.map((node) => [node.id, node]));
+---
+<div class="world-graph">
+  <p class="codex-meta">{graph.nodes.length} public entries and {graph.edges.length} public connections.</p>
+  {graph.edges.map((edge) => <div class="graph-edge"><a href={`/${edge.source}/`}>{nodeById.get(edge.source)?.title ?? edge.source}</a> → <a href={`/${edge.target}/`}>{nodeById.get(edge.target)?.title ?? edge.target}</a> <span class="codex-meta">({edge.type})</span></div>)}
+</div>

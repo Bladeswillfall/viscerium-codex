@@ -1,21 +1,53 @@
 ---
-title: Character Name
-description: "Short public summary."
+title:
+description:
 publish: false
 status: draft
-slug: characters/character-name
+slug: characters/
 type: character
+era:
 faction:
+location:
+species:
+occupation:
+alignment:
+image:
+alt:
+tags:
+relationships:
+  allies:
+  rivals:
 ---
 
-# Character Name
+# {{title}}
 
-## Overview
+> [!info] Infobox
+> **Type:** Character
+> **Faction:**
+> **Location:**
+> **Era:**
+> **Occupation:**
+> **First appearance:**
+> **Status:** Draft
 
-Briefly describe the character's public role, reputation, or importance.
+## Summary
 
-## Connections
+## Appearance
 
-- Faction:
-- Related locations:
-- Related events:
+## Personality
+
+## Biography
+
+### Early Life
+
+### Major Events
+
+## Abilities and Resources
+
+## Relationships
+
+## Notes and Secrets
+
+Keep private information in `Vault/Private/` or leave `publish: false`.
+
+## Related
