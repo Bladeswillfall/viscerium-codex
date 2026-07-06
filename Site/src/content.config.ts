@@ -20,6 +20,7 @@ export const collections = {
         location: stringOrStrings.optional(),
         tags: z.array(z.string()).optional(),
         image: z.string().optional(),
+        headerImage: z.string().optional(),
         asset: z.string().optional(),
         alt: z.string().optional(),
         credit: z.string().optional(),
