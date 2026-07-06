@@ -6,6 +6,8 @@ status: draft
 slug: events/
 type: event
 location:
+participants:
+outcome:
 timeline:
   id:
   year:
@@ -15,6 +17,25 @@ tags:
 ---
 
 # {{title}}
+
+> [!info] Infobox
+> **Type:** Event
+> **Date/Year:**
+> **Location:**
+> **Participants:**
+> **Outcome:**
+> **Timeline:**
+> **Status:** Draft
+
+## Summary
+
+## Background
+
+## The Event
+
+## Aftermath
+
+## Timeline Placement
 
 ## Summary
 

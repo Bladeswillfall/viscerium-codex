@@ -10,4 +10,15 @@ timelineId:
 
 # {{title}}
 
+> [!info] Infobox
+> **Type:** Timeline
+> **Timeline ID:**
+> **Scope:**
+> **Status:** Draft
+
+## Overview
+
+## Event Guidelines
+
+## Major Events
 ## Timeline Notes

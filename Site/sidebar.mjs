@@ -39,6 +39,7 @@ export async function buildSidebar() {
       ...[...groups.entries()].sort().map(([group, items]) => ({
         label: labelFromSegment(group),
         items: items.sort((a, b) => a.label.localeCompare(b.label)),
+        collapsed: true,
       })),
     ];
   } catch {

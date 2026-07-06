@@ -14,4 +14,16 @@ related:
 
 # {{title}}
 
+> [!info] Infobox
+> **Type:** Image metadata
+> **Asset:**
+> **Credit:**
+> **License:**
+> **Status:** Draft
+
+## Description
+
+## Usage Notes
+
+## Related
 ## Usage Notes

@@ -59,3 +59,34 @@ Create a new repository from this template, replace the example lore with your p
 - giscus comments: create a giscus app setup, then add the generated script to a custom Starlight component. Do not commit secrets.
 - Buttondown/newsletter: add your public form endpoint as an environment variable or documented placeholder.
 - GA4/GTM and Cloudflare Web Analytics: add only public IDs through environment variables or Cloudflare settings.
+
+## Enable collapsible GitHub comments
+
+This template includes a collapsed **Page comments** section at the bottom of Starlight pages. It uses [giscus](https://giscus.app/) and stays in placeholder mode until configured.
+
+Actions for you:
+
+1. Enable **GitHub Discussions** in your repository.
+2. Install the giscus GitHub app for the repository.
+3. Go to `https://giscus.app/` and choose your repository and discussion category.
+4. Add these public environment variables in Cloudflare Pages and in a local `.env` file if needed:
+
+```bash
+PUBLIC_GISCUS_REPO=owner/repo
+PUBLIC_GISCUS_REPO_ID=your_repo_id
+PUBLIC_GISCUS_CATEGORY=General
+PUBLIC_GISCUS_CATEGORY_ID=your_category_id
+```
+
+Do not commit secrets. These giscus values are public identifiers, but keeping them in environment variables makes the template reusable.
+
+## WorldAnvil/Wikipedia-style page layout actions
+
+The Obsidian templates now include wiki-style infobox callouts and section headings. Recommended setup:
+
+1. In Obsidian, enable the built-in **Templates** plugin and set the template folder to `Templates`.
+2. Optional: install **Templater** if you want automatic dates, prompts, or generated slugs.
+3. Optional: install **Dataview** for private dashboard/index notes inside `Vault/System/`; do not rely on Dataview output for published pages unless you also write the final content in Markdown.
+4. Optional: install **Editing Toolbar** or **Advanced Tables** if you prefer visual table editing for wiki-style infoboxes.
+5. Use the callout infobox in each template for Obsidian readability. Later, you can replace it with Astro MDX components for richer published layouts.
+6. Keep canonical public fields in frontmatter so Astro can generate maps, timelines, graph data, and SEO safely.

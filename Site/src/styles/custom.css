@@ -14,3 +14,9 @@
 .image-figure { margin: 1.5rem 0; }
 .image-figure img { border-radius: .75rem; border: 1px solid var(--codex-accent-soft); }
 .image-figure figcaption { color: var(--sl-color-gray-3); font-size: .9rem; }
+.codex-comments { margin-top: 3rem; border-top: 1px solid var(--codex-accent-soft); padding-top: 1rem; }
+.codex-comments details { border: 1px solid var(--codex-accent-soft); border-radius: .75rem; background: rgba(255,255,255,.025); }
+.codex-comments summary { display: flex; justify-content: space-between; gap: 1rem; cursor: pointer; padding: 1rem; color: var(--sl-color-white); font-weight: 700; }
+.codex-comments summary::marker { color: var(--codex-accent); }
+.codex-comments-hint { color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); font-weight: 400; }
+.codex-comments-panel { padding: 0 1rem 1rem; }

@@ -13,6 +13,9 @@ export default defineConfig({
       description: siteConfig.description,
       customCss: ['./src/styles/custom.css'],
       sidebar: await buildSidebar(),
+      components: {
+        Footer: './src/components/StarlightFooter.astro',
+      },
       editLink: {
         baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
       },
