@@ -3,7 +3,7 @@ title:
 description:
 publish: false
 status: draft
-slug: characters/
+slug: eras/CITADEL/characters
 type: character
 era:
 faction:
