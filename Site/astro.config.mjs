@@ -31,53 +31,58 @@ const giscusPlugin = siteConfig.giscus.repo && siteConfig.giscus.repoId && siteC
     })
   : undefined;
 
-export default defineConfig({
-  site: siteConfig.site,
-  integrations: [
-    UnoCSS(),
-    Icons({
-      sidebar: true,
-      extractSafelist: true,
-      starlight: {
-      title: siteConfig.title,
-      description: siteConfig.description,
-      customCss: ['./src/styles/custom.css'],
-      plugins: [
-        starlightBasePath(),
-        starlightTags({
-          sidebar: {
-            position: 'bottom',
-            collapsed: true,
+export default defineConfig(async () => {
+  const sidebar = await buildSidebar();
+
+  return {
+    site: siteConfig.site,
+    integrations: [
+      UnoCSS(),
+      Icons({
+        sidebar: true,
+        extractSafelist: true,
+        starlight: {
+          title: siteConfig.title,
+          description: siteConfig.description,
+          customCss: ['./src/styles/custom.css'],
+          plugins: [
+            starlightBasePath(),
+            starlightTags({
+              sidebar: {
+                position: 'bottom',
+                collapsed: true,
+              },
+            }),
+            starlightTelescope(),
+            starlightSidebarSwipe(),
+            starlightIconsPlugin({
+              codeblock: true,
+              sidebar: true,
+              extractSafelist: true,
+            }),
+            starlightHeadingBadges(),
+            starlightUiTweaks(),
+            starlightScrollToTop(),
+            starlightAutoSidebar(),
+            ...(giscusPlugin ? [giscusPlugin] : []),
+            starlightSiteGraph(),
+          ],
+          sidebar,
+          components: {
+            Footer: './src/components/StarlightFooter.astro',
+            PageSidebar: './src/components/CodexPageSidebar.astro',
           },
-        }),
-        starlightTelescope(),
-        starlightSidebarSwipe(),
-        starlightIconsPlugin({
-          codeblock: true,
-          sidebar: true,
-          extractSafelist: true,
-        }),
-        starlightHeadingBadges(),
-        starlightUiTweaks(),
-        starlightScrollToTop(),
-        starlightAutoSidebar(),
-        ...(giscusPlugin ? [giscusPlugin] : []),
-        starlightSiteGraph(),
-      ],
-      sidebar: await buildSidebar(),
-      components: {
-        Footer: './src/components/StarlightFooter.astro',
-        PageSidebar: './src/components/CodexPageSidebar.astro',
-      },
-      editLink: {
-        baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
-      },
-      social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
-    }),
-    sitemap(),
-    UnoCSS(),
-  ],
-  vite: {
-    plugins: [UnoCSS()],
-  },
+          editLink: {
+            baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
+          },
+          social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
+        },
+      }),
+      sitemap(),
+      // removed duplicate UnoCSS() here
+    ],
+    vite: {
+      plugins: [UnoCSS()],
+    },
+  };
 });
