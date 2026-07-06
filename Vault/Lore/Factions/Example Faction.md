@@ -1,19 +1,28 @@
 ---
 title: Example Faction
-description: "A sample faction page used to test the publishing pipeline."
+description: "A sample public faction used to demonstrate the codex template."
 publish: true
 status: canon
 slug: factions/example-faction
 type: faction
-era: Founding Age
+era: Example Era
+capital: Example City
+territory: Example Valley
+tags:
+  - example
+relationships:
+  allies:
+    - Example Character
 ---
 
 # Example Faction
 
-This is a test faction page.
+The Example Faction is a placeholder society for testing navigation, wikilinks, and metadata.
 
-If this appears on the public site, the pipeline works.
+It is based in [[Example City]] and is associated with [[Example Character|a notable member]].
 
-Its first settlement is [[Example Location]].
+![[example-banner.webp]]
 
-One of its known members is [[Example Character]].
+## Related
+
+- [[Example Battle]]

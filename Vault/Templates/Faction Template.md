@@ -1,21 +1,26 @@
 ---
-title: Faction Name
-description: "Short public summary."
+title:
+description:
 publish: false
 status: draft
-slug: factions/faction-name
+slug: factions/
 type: faction
 era:
+capital:
+territory:
+tags:
 ---
 
-# Faction Name
+# {{title}}
 
-## Overview
+## Summary
 
-Briefly describe the faction's purpose, culture, or influence.
+## Culture
 
-## Details
+## Government
 
-- Home region:
-- Allies:
-- Rivals:
+## Military
+
+## History
+
+## Related

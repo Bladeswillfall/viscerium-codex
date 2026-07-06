@@ -1,79 +1,56 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
-import fs from 'fs-extra';
-import fg from 'fast-glob';
 import matter from 'gray-matter';
 
-import siteConfig from './site.config.mjs';
+const docsDir = new URL('./src/content/docs/', import.meta.url);
 
-const siteRoot = process.cwd();
-const sourceDir = path.resolve(siteRoot, siteConfig.loreSourceDir);
-
-function slugify(input) {
-  return input
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9/]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .replace(/\/+/g, '/');
-}
-
-function labelFromFolder(folder) {
-  return folder
-    .replace(/[-_]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+function labelFromSegment(segment) {
+  return segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 export async function buildSidebar() {
-  if (!(await fs.pathExists(sourceDir))) {
-    return [];
-  }
+  try {
+    const files = await walk(docsDir.pathname);
+    const groups = new Map();
+    const rootItems = [];
 
-  const files = await fg('**/*.md', {
-    cwd: sourceDir,
-    absolute: true,
-  });
-
-  const rootPages = [];
-  const folders = new Map();
-
-  for (const file of files) {
-    const raw = await fs.readFile(file, 'utf8');
-    const parsed = matter(raw);
-
-    if (parsed.data.publish !== true || parsed.data.status !== 'canon') {
-      continue;
+    for (const file of files) {
+      const rel = path.relative(docsDir.pathname, file).replace(/\\/g, '/');
+      if (!rel.endsWith('.md') && !rel.endsWith('.mdx')) continue;
+      const id = rel.replace(/\.(md|mdx)$/, '');
+      const raw = await fs.readFile(file, 'utf8');
+      const title = matter(raw).data.title ?? labelFromSegment(path.basename(id));
+      if (id === 'index') {
+        rootItems.unshift({ label: title, link: '/' });
+        continue;
+      }
+      const [group, ...rest] = id.split('/');
+      const link = `/${id}/`;
+      if (rest.length === 0) {
+        rootItems.push({ label: title, link });
+        continue;
+      }
+      if (!groups.has(group)) groups.set(group, []);
+      groups.get(group).push({ label: title, link });
     }
 
-    const rel = path.relative(sourceDir, file).replace(/\\/g, '/');
-    const parts = rel.split('/');
-
-    if (parts.length === 1) {
-      const slug = parsed.data.slug ? String(parsed.data.slug).replace(/^\/|\/$/g, '') : slugify(rel.replace(/\.md$/, ''));
-      rootPages.push(slug === 'start-here' ? 'index' : slug);
-      continue;
-    }
-
-    const folder = parts[0];
-    const directory = slugify(folder);
-    folders.set(folder, {
-      label: labelFromFolder(folder),
-      items: [{ autogenerate: { directory } }],
-    });
+    return [
+      ...rootItems.sort((a, b) => a.label.localeCompare(b.label)),
+      ...[...groups.entries()].sort().map(([group, items]) => ({
+        label: labelFromSegment(group),
+        items: items.sort((a, b) => a.label.localeCompare(b.label)),
+      })),
+    ];
+  } catch {
+    return [{ label: 'Start Here', link: '/' }];
   }
+}
 
-  const sidebar = [];
-
-  if (rootPages.includes('index')) {
-    sidebar.push({ label: 'Start Here', items: ['index'] });
-  }
-
-  for (const [, group] of [...folders].sort(([a], [b]) => a.localeCompare(b))) {
-    sidebar.push(group);
-  }
-
-  return sidebar;
+async function walk(dir) {
+  const entries = await fs.readdir(dir, { withFileTypes: true }).catch(() => []);
+  const files = await Promise.all(entries.map((entry) => {
+    const full = path.join(dir, entry.name);
+    return entry.isDirectory() ? walk(full) : full;
+  }));
+  return files.flat();
 }

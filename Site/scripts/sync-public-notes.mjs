@@ -3,99 +3,96 @@ import process from 'node:process';
 import fs from 'fs-extra';
 import fg from 'fast-glob';
 import matter from 'gray-matter';
-
 import siteConfig from '../site.config.mjs';
 
 const siteRoot = process.cwd();
 const sourceDir = path.resolve(siteRoot, siteConfig.loreSourceDir);
+const assetRoot = path.resolve(siteRoot, siteConfig.vaultAssetDir);
 const outDir = path.resolve(siteRoot, 'src/content/docs');
-
-if (!(await fs.pathExists(sourceDir))) {
-  throw new Error(`Lore source directory not found: ${sourceDir}`);
-}
-
-function slugify(input) {
-  return input
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9/]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .replace(/\/+/g, '/');
-}
+const publicAssetDir = path.resolve(siteRoot, 'public/assets');
+const requiredFields = ['title', 'description', 'slug', 'type'];
 
 function cleanSlug(slug) {
-  return slug.replace(/^\/|\/$/g, '');
+  return String(slug).trim().replace(/^\/+|\/+$/g, '').toLowerCase();
 }
 
-const files = await fg('**/*.md', {
-  cwd: sourceDir,
-  absolute: true,
-});
+function route(slug) {
+  return slug === 'index' ? '/' : `/${slug}/`;
+}
 
-const publicFiles = [];
+function noteKey(input) {
+  return String(input).trim().toLowerCase();
+}
+
+const files = await fg('**/*.{md,mdx}', { cwd: sourceDir, absolute: true });
+const publicNotes = [];
 const slugByName = new Map();
+const warnings = [];
 
 for (const file of files) {
   const raw = await fs.readFile(file, 'utf8');
   const parsed = matter(raw);
-
-  if (parsed.data.publish !== true || parsed.data.status !== 'canon') {
-    continue;
+  if (parsed.data.publish !== true || parsed.data.status !== 'canon') continue;
+  for (const field of requiredFields) {
+    if (!parsed.data[field]) throw new Error(`Public note is missing required frontmatter "${field}": ${path.relative(siteRoot, file)}`);
   }
-
-  if (!parsed.data.title) {
-    throw new Error(`Missing required frontmatter "title" in ${file}`);
-  }
-
-  if (!parsed.data.description) {
-    throw new Error(`Missing required frontmatter "description" in ${file}`);
-  }
-
-  const rel = path.relative(sourceDir, file).replace(/\\/g, '/');
-  const noExt = rel.replace(/\.md$/, '');
-  const slug = cleanSlug(parsed.data.slug ? parsed.data.slug : slugify(noExt));
-
-  if (publicFiles.some((entry) => entry.slug === slug)) {
-    throw new Error(`Duplicate published slug "${slug}" in ${file}`);
-  }
-
-  publicFiles.push({ file, parsed, slug });
-
-  const basename = path.basename(noExt).toLowerCase();
-  slugByName.set(basename, slug);
-  slugByName.set(String(parsed.data.title).toLowerCase(), slug);
+  const slug = cleanSlug(parsed.data.slug);
+  if (publicNotes.some((note) => note.slug === slug)) throw new Error(`Duplicate published slug "${slug}" in ${path.relative(siteRoot, file)}`);
+  const note = { file, parsed, slug };
+  publicNotes.push(note);
+  const basename = path.basename(file, path.extname(file));
+  slugByName.set(noteKey(basename), slug);
+  slugByName.set(noteKey(parsed.data.title), slug);
 }
 
 await fs.emptyDir(outDir);
+await fs.ensureDir(publicAssetDir);
 
-function convertWikilinks(content) {
-  return content.replace(/!?\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, (match, target, alias) => {
-    if (match.startsWith('!')) {
-      return match; // Leave embedded images/files alone in V1.
+async function copyAsset(category, filename) {
+  const source = path.join(assetRoot, category, filename);
+  if (!(await fs.pathExists(source))) return null;
+  const target = path.join(publicAssetDir, category.toLowerCase(), filename);
+  await fs.ensureDir(path.dirname(target));
+  await fs.copy(source, target);
+  return `/assets/${category.toLowerCase()}/${filename}`;
+}
+
+async function convertContent(content, currentFile) {
+  let converted = content;
+  const embeds = [...converted.matchAll(/!\[\[([^\]]+)\]\]/g)];
+  for (const match of embeds) {
+    const rawTarget = match[1].split('|')[0].trim();
+    const filename = path.basename(rawTarget);
+    let url = await copyAsset('Images', filename) ?? await copyAsset('Maps', filename) ?? await copyAsset('Documents', filename);
+    if (!url) {
+      warnings.push(`Missing embedded asset "${filename}" in ${path.relative(sourceDir, currentFile)}`);
+      converted = converted.replace(match[0], `**Missing asset:** ${filename}`);
+    } else {
+      converted = converted.replace(match[0], `![${filename}](${url})`);
     }
+  }
 
-    const key = target.trim().toLowerCase();
-    const slug = slugByName.get(key);
+  return converted.replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, (match, target, alias) => {
     const label = alias?.trim() || target.trim();
-
+    const slug = slugByName.get(noteKey(target));
     if (!slug) {
+      warnings.push(`Unpublished or missing wikilink "${target.trim()}" in ${path.relative(sourceDir, currentFile)}`);
       return label;
     }
-
-    return `[${label}](/${slug}/)`;
+    return `[${label}](${route(slug)})`;
   });
 }
 
-for (const { file, parsed, slug } of publicFiles) {
-  const outFile = path.join(outDir, `${slug}.md`);
+for (const { file, parsed, slug } of publicNotes) {
+  const extension = path.extname(file).toLowerCase() === '.mdx' ? '.mdx' : '.md';
+  const outFile = path.join(outDir, `${slug}${extension}`);
   await fs.ensureDir(path.dirname(outFile));
-
-  const content = convertWikilinks(parsed.content);
+  const content = await convertContent(parsed.content, file);
   await fs.writeFile(outFile, matter.stringify(content, parsed.data));
-
+  if (parsed.data.asset && parsed.data.type === 'image') await copyAsset('Images', parsed.data.asset);
+  if (parsed.data.image?.startsWith('/assets/maps/')) await copyAsset('Maps', path.basename(parsed.data.image));
   console.log(`Published ${path.relative(sourceDir, file)} -> ${path.relative(outDir, outFile)}`);
 }
 
-console.log(`Synced ${publicFiles.length} public notes.`);
+for (const warning of [...new Set(warnings)]) console.warn(`Warning: ${warning}`);
+console.log(`Synced ${publicNotes.length} public notes from Vault/Lore.`);
