@@ -2,6 +2,6 @@
   "theme": "obsidian",
   "cssTheme": "Vanilla AMOLED Color",
   "enabledCssSnippets": [
-    "viscerium-infobox"
+    "viscerium-sidebar"
   ]
 }

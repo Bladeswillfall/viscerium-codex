@@ -31,4 +31,4 @@ await dv.view('Views/viscerium-sidebar', {
 
 Dataview view paths start at the vault root, so the templates call `Views/viscerium-sidebar` rather than a hidden folder. Keep the view outside dot-prefixed directories because Dataview cannot load custom views from them.
 
-For best results, enable the `viscerium-infobox.css` CSS snippet in Obsidian Settings → Appearance → CSS snippets. Dataview also loads `view.css` automatically for the custom view in Reading View.
+For best results, enable the `viscerium-sidebar.css` CSS snippet in Obsidian Settings → Appearance → CSS snippets. The view also injects `Views/viscerium-sidebar/view.css` at runtime, so Reading View still gets the sidebar styles even if snippet refresh is flaky.
