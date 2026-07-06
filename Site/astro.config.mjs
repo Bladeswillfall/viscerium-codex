@@ -12,6 +12,7 @@ import starlightSiteGraph from 'starlight-site-graph';
 import starlightTags from 'starlight-tags';
 import starlightTelescope from 'starlight-telescope';
 import starlightUiTweaks from 'starlight-ui-tweaks';
+import { ion } from 'starlight-ion-theme';
 
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
@@ -38,6 +39,21 @@ export default defineConfig({
       description: siteConfig.description,
       customCss: ['./src/styles/custom.css'],
       plugins: [
+        ion({
+          icons: {
+            iconDir: './src/icons',
+          },
+          footer: {
+            text: '© VISCERIUM Codex',
+            links: [
+              { text: 'Start Here', href: '/' },
+              { text: 'World Graph', href: '/graph/' },
+            ],
+            icons: [
+              { name: 'github', href: siteConfig.githubRepoUrl, newTab: true },
+            ],
+          },
+        }),
         starlightBasePath(),
         starlightTags({
           sidebar: {
@@ -60,6 +76,7 @@ export default defineConfig({
       ],
       sidebar: await buildSidebar(),
       components: {
+        Sidebar: './src/components/IonSidebar.astro',
         Footer: './src/components/StarlightFooter.astro',
         PageSidebar: './src/components/CodexPageSidebar.astro',
       },

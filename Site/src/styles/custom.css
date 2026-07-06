@@ -112,6 +112,3 @@
 .codex-sidebar-meta dt { color: var(--sl-color-gray-3); font-size: var(--sl-text-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .codex-sidebar-meta dd { margin: 0; color: var(--sl-color-white); font-size: var(--sl-text-sm); text-transform: capitalize; }
 
-body {
-  outline: 5px solid red;
-}
