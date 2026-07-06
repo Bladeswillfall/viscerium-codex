@@ -1,6 +1,6 @@
 ---
 title: Crucibus
-description: "Errack's asteroid belt."
+description: Errack's orbital fortresses nestled in the planetary ring.
 publish: true
 status: canon
 slug: index
