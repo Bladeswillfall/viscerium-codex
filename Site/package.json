@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.3",
-    "@astrojs/starlight": "0.41.3",
-    "astro": "7.0.6",
+    "@astrojs/starlight": "^0.41.3",
+    "astro": "^7.0.6",
     "fast-glob": "^3.3.3",
     "fs-extra": "^11.3.6",
     "gray-matter": "^4.0.3",
@@ -29,6 +29,7 @@
     "starlight-base-path": "^0.1.1",
     "starlight-giscus": "^1.1.0",
     "starlight-heading-badges": "^0.8.0",
+    "starlight-ion-theme": "^2.4.0",
     "starlight-plugin-icons": "^1.1.6",
     "starlight-scroll-to-top": "^1.0.1",
     "starlight-sidebar-swipe": "^0.2.0",
@@ -40,5 +41,9 @@
   },
   "engines": {
     "node": ">=22.12.0"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "esbuild@0.28.1": true
   }
 }
