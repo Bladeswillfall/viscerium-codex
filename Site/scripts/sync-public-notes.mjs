@@ -24,7 +24,7 @@ function noteKey(input) {
   return String(input).trim().toLowerCase();
 }
 
-const files = await fg('**/*.{md,mdx}', { cwd: sourceDir, absolute: true });
+const files = (await fg('**/*.{md,mdx}', { cwd: sourceDir, absolute: true })).sort();
 const publicNotes = [];
 const slugByName = new Map();
 const warnings = [];

@@ -6,7 +6,7 @@ import matter from 'gray-matter';
 
 const docsDir = path.resolve(process.cwd(), 'src/content/docs');
 const outFile = path.resolve(process.cwd(), 'src/data/graph.json');
-const files = await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true });
+const files = (await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true })).sort();
 const nodes = [];
 const edges = [];
 const titleToId = new Map();
