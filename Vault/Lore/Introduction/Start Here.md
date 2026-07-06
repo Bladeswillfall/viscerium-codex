@@ -1,10 +1,11 @@
 ---
 title: Start Here
-description: "Welcome page for this reusable worldbuilding codex template."
+description: Welcome page for this reusable worldbuilding codex template.
 publish: true
 status: canon
 slug: index
 type: article
+headerImage: viscerium-banner
 ---
 
 # Start Here
