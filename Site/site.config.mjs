@@ -1,10 +1,10 @@
 export default {
-  title: 'Worldbuilding Codex',
-  description: 'A reusable Obsidian-powered worldbuilding codex.',
+  title: 'VISCERIUM',
+  description: 'The public worldbuilding codex for VISCERIUM.',
   site: 'https://example.com',
   loreSourceDir: '../Vault/Lore',
   vaultAssetDir: '../Vault/Assets',
-  githubRepoUrl: 'https://github.com/your-name/your-codex',
+  githubRepoUrl: 'https://github.com/Bladeswillfall/viscerium-codex',
   giscus: {
     repo: process.env.PUBLIC_GISCUS_REPO,
     repoId: process.env.PUBLIC_GISCUS_REPO_ID,

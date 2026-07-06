@@ -29,6 +29,7 @@
     "starlight-base-path": "^0.1.1",
     "starlight-giscus": "^1.1.0",
     "starlight-heading-badges": "^0.8.0",
+    "starlight-ion-theme": "latest",
     "starlight-plugin-icons": "^1.1.6",
     "starlight-scroll-to-top": "^1.0.1",
     "starlight-sidebar-swipe": "^0.2.0",
