@@ -1,8 +1,8 @@
 ---
 title: Errack
-description: "The core-planet of tales in VISCERIUM."
+description: The core-planet of tales in VISCERIUM.
 publish: true
 status: canon
-slug: index
+slug: degel system/
 type: article
 ---
