@@ -68,6 +68,7 @@ export default defineConfig({
         Sidebar: './src/components/IonSidebar.astro',
         Footer: './src/components/StarlightFooter.astro',
         PageSidebar: './src/components/CodexPageSidebar.astro',
+        PageTitle: './src/components/CodexPageTitle.astro',
       },
       editLink: {
         baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
