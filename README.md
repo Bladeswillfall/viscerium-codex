@@ -57,13 +57,13 @@ Create a new repository from this template, replace the example lore with your p
 
 ## Optional community integrations
 
-- giscus comments: create a giscus app setup, then add the generated script to a custom Starlight component. Do not commit secrets.
+- giscus comments: this template already renders giscus from `Site/src/components/GiscusComments.astro`; set the public environment variables below to enable it.
 - Buttondown/newsletter: add your public form endpoint as an environment variable or documented placeholder.
 - GA4/GTM and Cloudflare Web Analytics: add only public IDs through environment variables or Cloudflare settings.
 
 ## Enable collapsible GitHub comments
 
-This template includes a collapsed **Page comments** section at the bottom of Starlight pages. It uses [giscus](https://giscus.app/) and stays in placeholder mode until configured.
+This template includes a **Page comments** section at the bottom of every Starlight page. It uses [giscus](https://giscus.app/) and stays in visible setup-warning mode until configured.
 
 Actions for you:
 
