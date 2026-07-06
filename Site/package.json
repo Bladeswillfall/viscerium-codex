@@ -36,8 +36,7 @@
     "starlight-tags": "^1.0.1",
     "starlight-telescope": "^1.0.0",
     "starlight-ui-tweaks": "^0.2.2",
-    "unocss": "66.7.4",
-    "starlight-ion-theme": "file:vendor/starlight-ion-theme"
+    "unocss": "66.7.4"
   },
   "engines": {
     "node": ">=22.12.0"

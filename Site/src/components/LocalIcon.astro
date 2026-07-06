@@ -1,0 +1,17 @@
+---
+const { name } = Astro.props;
+const iconPath = `/icons/${name}.svg`;
+---
+
+<span class="local-icon" aria-hidden="true" style={`--icon: url('${iconPath}')`}></span>
+
+<style>
+  .local-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    flex: 0 0 auto;
+    background-color: currentColor;
+    mask: var(--icon) center / contain no-repeat;
+  }
+</style>

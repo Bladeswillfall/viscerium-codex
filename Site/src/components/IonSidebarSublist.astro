@@ -1,7 +1,6 @@
 ---
-import { Icon } from "astro-icon/components";
-import Badge from "starlight-ion-theme/components/Badge.astro";
-import { icons } from "ion:globals";
+import Icon from "./LocalIcon.astro";
+import Badge from "../../vendor/starlight-ion-theme/components/Badge.astro";
 
 interface Props {
   sublist: any[];
@@ -59,7 +58,7 @@ const { sublist, nested, nestedCount } = Astro.props;
               ]}
               {...entry.attrs}
             >
-              {icons && entry.label.includes("[") && (
+              {entry.label.includes("[") && (
                 <Icon
                   name={entry.label.split("[").pop()?.split("]")[0] || ""}
                 />
@@ -81,7 +80,7 @@ const { sublist, nested, nestedCount } = Astro.props;
                 class={nested ? "hidden" : ""}
               >
                 <div class="group-label">
-                  {icons && entry.label.includes("[") && (
+                  {entry.label.includes("[") && (
                     <Icon
                       name={entry.label.split("[").pop()?.split("]")[0] || ""}
                     />
