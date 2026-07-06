@@ -4,5 +4,6 @@
   "templater-obsidian",
   "dataview",
   "editing-toolbar",
-  "table-editor-obsidian"
+  "table-editor-obsidian",
+  "breadcrumbs"
 ]
