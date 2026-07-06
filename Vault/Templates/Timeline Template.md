@@ -10,15 +10,20 @@ timelineId:
 
 # {{title}}
 
-> [!info] Infobox
-> **Type:** Timeline
-> **Timeline ID:**
-> **Scope:**
-> **Status:** Draft
+```dataviewjs
+await dv.view('Views/viscerium-sidebar', {
+  accent: 'gold',
+  sections: [
+    { label: 'Timeline ID', field: 'timelineId' },
+    { label: 'Status', field: 'status' }
+  ]
+});
+```
 
 ## Overview
 
 ## Event Guidelines
 
 ## Major Events
+
 ## Timeline Notes

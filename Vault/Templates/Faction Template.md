@@ -17,19 +17,24 @@ tags:
 relationships:
   allies:
   enemies:
-tags:
 ---
 
 # {{title}}
 
-> [!info] Infobox
-> **Type:** Faction
-> **Capital:**
-> **Territory:**
-> **Leader:**
-> **Government:**
-> **Founded:**
-> **Status:** Draft
+```dataviewjs
+await dv.view('Views/viscerium-sidebar', {
+  accent: 'gold',
+  sections: [
+    { label: 'Capital', field: 'capital' },
+    { label: 'Territory', field: 'territory' },
+    { label: 'Leader', field: 'leader' },
+    { label: 'Government', field: 'government' },
+    { label: 'Founded', field: 'founding' },
+    { label: 'Allies', field: 'relationships.allies' },
+    { label: 'Enemies', field: 'relationships.enemies' }
+  ]
+});
+```
 
 ## Summary
 
@@ -46,15 +51,5 @@ tags:
 ## Important Members
 
 ## Related Locations
-
-## Summary
-
-## Culture
-
-## Government
-
-## Military
-
-## History
 
 ## Related
