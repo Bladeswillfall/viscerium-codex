@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import starlight from '@astrojs/starlight';
+import Icons from 'starlight-plugin-icons'
 import UnoCSS from '@unocss/vite';
 import starlightAutoSidebar from 'starlight-auto-sidebar';
 import { starlightBasePath } from 'starlight-base-path';
