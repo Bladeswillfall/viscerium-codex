@@ -1,0 +1,4 @@
+---
+const { status = 'draft', publish = false } = Astro.props;
+---
+<p class="codex-meta">Status: {publish && status === 'canon' ? 'Public canon' : status}</p>
