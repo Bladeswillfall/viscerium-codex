@@ -57,8 +57,12 @@ async function copyAsset(category, filename) {
   return `/assets/${category.toLowerCase()}/${filename}`;
 }
 
-async function convertContent(content, currentFile) {
-  let converted = content;
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+async function convertContent(content, currentFile, title) {
+  let converted = content.replace(/^%%[\s\S]*?%%\s*/gm, '');
   const embeds = [...converted.matchAll(/!\[\[([^\]]+)\]\]/g)];
   for (const match of embeds) {
     const rawTarget = match[1].split('|')[0].trim();
@@ -71,6 +75,8 @@ async function convertContent(content, currentFile) {
       converted = converted.replace(match[0], `![${filename}](${url})`);
     }
   }
+
+  converted = converted.replace(new RegExp(`^#\\s+${escapeRegExp(title)}\\s*$`, 'im'), '').trimStart();
 
   return converted.replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, (match, target, alias) => {
     const label = alias?.trim() || target.trim();
@@ -99,7 +105,7 @@ for (const { file, parsed, slug } of publicNotes) {
     }
   }
   if (parsed.data.asset && parsed.data.type === 'image') await copyAsset('Images', parsed.data.asset);
-  const content = await convertContent(parsed.content, file);
+  const content = await convertContent(parsed.content, file, parsed.data.title);
   await fs.writeFile(outFile, matter.stringify(content, parsed.data));
   console.log(`Published ${path.relative(sourceDir, file)} -> ${path.relative(outDir, outFile)}`);
 }
