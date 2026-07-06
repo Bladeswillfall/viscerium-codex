@@ -3,6 +3,8 @@
 :root {
   --codex-accent: #b88746;
   --codex-accent-soft: rgba(184, 135, 70, .18);
+  --codex-header-height: clamp(10rem, 16vw, 14rem);
+  --codex-header-gap: 1.25rem;
   --codex-sidebar-toggle-bg: rgba(16, 16, 15, .9);
   --sl-color-accent-low: #342516;
   --sl-color-accent: #b88746;
@@ -35,7 +37,7 @@
 .codex-comments summary::marker { color: var(--codex-accent); }
 .codex-comments-hint { color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); font-weight: 400; }
 .codex-comments-panel { padding: 0 1rem 1rem; }
-.codex-header-image { display: block; width: 100%; max-height: 22rem; object-fit: cover; border: 1px solid var(--codex-accent-soft); border-radius: .85rem; margin: 0 0 1.25rem; box-shadow: 0 1rem 2.5rem rgba(0,0,0,.22); }
+.codex-header-image { display: block; width: 100%; height: var(--codex-header-height); object-fit: cover; border: 1px solid var(--codex-accent-soft); border-radius: .85rem; margin: 0 0 var(--codex-header-gap); box-shadow: 0 1rem 2.5rem rgba(0,0,0,.22); }
 .codex-breadcrumbs { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--codex-accent-soft); color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); }
 .codex-breadcrumbs a { color: var(--codex-accent-high); text-decoration: none; }
 .codex-breadcrumbs a:hover { color: var(--sl-color-white); text-decoration: underline; }
@@ -96,6 +98,7 @@
   [data-has-toc] .main-pane main .content-panel { margin-inline-end: 0; }
   [data-has-sidebar][data-has-toc] .main-pane { width: min(66.666%, calc(var(--sl-content-width) * .666)); }
   [data-has-sidebar][data-has-toc] .right-sidebar-container { width: min(33.333%, calc(var(--sl-content-width) * .333)); }
+  html:has(.codex-header-image) [data-has-sidebar][data-has-toc] .right-sidebar-container { padding-top: calc(var(--codex-header-height) + var(--codex-header-gap)); }
 }
 @media (min-width: 900px) {
   .viscerium-infobox { width: min(24rem, 33vw); }
@@ -111,4 +114,3 @@
 .codex-sidebar-meta div { display: grid; gap: .15rem; padding-top: .65rem; border-top: 1px solid rgba(184,135,70,.14); }
 .codex-sidebar-meta dt { color: var(--sl-color-gray-3); font-size: var(--sl-text-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .codex-sidebar-meta dd { margin: 0; color: var(--sl-color-white); font-size: var(--sl-text-sm); text-transform: capitalize; }
-
