@@ -15,6 +15,7 @@ export default defineConfig({
       sidebar: await buildSidebar(),
       components: {
         Footer: './src/components/StarlightFooter.astro',
+        PageTitle: './src/components/CodexPageTitle.astro',
       },
       editLink: {
         baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,

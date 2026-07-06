@@ -20,3 +20,16 @@
 .codex-comments summary::marker { color: var(--codex-accent); }
 .codex-comments-hint { color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); font-weight: 400; }
 .codex-comments-panel { padding: 0 1rem 1rem; }
+.codex-header-image { display: block; width: 100%; max-height: 22rem; object-fit: cover; border: 1px solid var(--codex-accent-soft); border-radius: .85rem; margin: 0 0 1.25rem; box-shadow: 0 1rem 2.5rem rgba(0,0,0,.22); }
+.codex-breadcrumbs { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--codex-accent-soft); color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); }
+.codex-breadcrumbs a { color: var(--codex-accent-high); text-decoration: none; }
+.codex-breadcrumbs a:hover { color: var(--sl-color-white); text-decoration: underline; }
+@media (min-width: 72rem) {
+  :root { --sl-content-width: 72rem; }
+  [data-has-toc] .main-pane main .content-panel { margin-inline-end: 0; }
+  [data-has-sidebar][data-has-toc] .main-pane { width: min(66.666%, calc(var(--sl-content-width) * .666)); }
+  [data-has-sidebar][data-has-toc] .right-sidebar-container { width: min(33.333%, calc(var(--sl-content-width) * .333)); }
+}
+@media (min-width: 900px) {
+  .viscerium-infobox { width: min(24rem, 33vw); }
+}
