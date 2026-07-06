@@ -56,9 +56,7 @@ export default defineConfig({
         starlightScrollToTop(),
         starlightAutoSidebar(),
         ...(giscusPlugin ? [giscusPlugin] : []),
-        starlightSiteGraph({
-          overridePageSidebar: false,
-        }),
+        starlightSiteGraph(),
       ],
       sidebar: await buildSidebar(),
       components: {
