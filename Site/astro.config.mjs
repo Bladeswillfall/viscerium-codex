@@ -5,6 +5,7 @@ import starlightAutoSidebar from 'starlight-auto-sidebar';
 import { starlightBasePath } from 'starlight-base-path';
 import starlightGiscus from 'starlight-giscus';
 import starlightHeadingBadges from 'starlight-heading-badges';
+import { ion } from 'starlight-ion-theme';
 import { starlightIconsPlugin } from 'starlight-plugin-icons';
 import starlightScrollToTop from 'starlight-scroll-to-top';
 import starlightSidebarSwipe from 'starlight-sidebar-swipe';
@@ -39,6 +40,7 @@ export default defineConfig({
       customCss: ['./src/styles/custom.css'],
       plugins: [
         starlightBasePath(),
+        ion(),
         starlightTags({
           sidebar: {
             position: 'bottom',
@@ -61,7 +63,6 @@ export default defineConfig({
       sidebar: await buildSidebar(),
       components: {
         Footer: './src/components/StarlightFooter.astro',
-        PageTitle: './src/components/CodexPageTitle.astro',
         PageSidebar: './src/components/CodexPageSidebar.astro',
       },
       editLink: {
