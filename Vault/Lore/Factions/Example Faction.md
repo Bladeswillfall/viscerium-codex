@@ -21,6 +21,11 @@ The Example Faction is a placeholder society for testing navigation, wikilinks, 
 
 It is based in [[Example City]] and is associated with [[Example Character|a notable member]].
 
+| tes |     | afa |
+|:---:| --- | --- |
+|     |     |     |
+|     |     |     |
+
 ![[example-banner.webp]]
 
 ## Related

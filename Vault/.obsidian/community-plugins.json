@@ -1,4 +1,8 @@
 [
   "obsidian-git",
-  "image-converter"
+  "image-converter",
+  "templater-obsidian",
+  "dataview",
+  "editing-toolbar",
+  "table-editor-obsidian"
 ]
