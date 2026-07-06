@@ -53,6 +53,7 @@ export default defineConfig({
         Footer: './src/components/StarlightFooter.astro',
         PageSidebar: './src/components/CodexPageSidebar.astro',
         PageTitle: './src/components/CodexPageTitle.astro',
+        TwoColumnContent: './src/components/CodexTwoColumnContent.astro',
       },
       social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
     }),
