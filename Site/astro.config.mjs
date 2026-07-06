@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import starlight from '@astrojs/starlight';
+import Icons from 'starlight-plugin-icons';
 import starlightAutoSidebar from 'starlight-auto-sidebar';
 import { starlightBasePath } from 'starlight-base-path';
 import starlightGiscus from 'starlight-giscus';
@@ -33,7 +33,11 @@ const giscusPlugin = siteConfig.giscus.repo && siteConfig.giscus.repoId && siteC
 export default defineConfig({
   site: siteConfig.site,
   integrations: [
-    starlight({
+    UnoCSS(),
+    Icons({
+      sidebar: true,
+      extractSafelist: true,
+      starlight: {
       title: siteConfig.title,
       description: siteConfig.description,
       customCss: ['./src/styles/custom.css'],
