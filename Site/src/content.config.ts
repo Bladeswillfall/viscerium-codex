@@ -2,6 +2,8 @@ import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { docsLoader } from '@astrojs/starlight/loaders';
 import { docsSchema } from '@astrojs/starlight/schema';
+import { pageSiteGraphSchema } from 'starlight-site-graph/schema';
+import { starlightTagsExtension } from 'starlight-tags/schema';
 
 const stringOrStrings = z.union([z.string(), z.array(z.string())]);
 
@@ -9,7 +11,7 @@ export const collections = {
   docs: defineCollection({
     loader: docsLoader(),
     schema: docsSchema({
-      extend: z.object({
+      extend: pageSiteGraphSchema.merge(starlightTagsExtension).extend({
         publish: z.boolean().optional(),
         status: z.string().optional(),
         slug: z.string().optional(),

@@ -1,3 +1,5 @@
+@import "starlight-ui-tweaks/styles";
+
 :root { --codex-accent: #b88746; --codex-accent-soft: rgba(184, 135, 70, .18); --sl-color-accent-low: #342516; --sl-color-accent: #b88746; --sl-color-accent-high: #f1d29b; }
 :root[data-theme='dark'] { --sl-color-bg: #10100f; --sl-color-bg-sidebar: #151310; --sl-color-bg-nav: #151310; }
 .hero { border-bottom: 1px solid var(--codex-accent-soft); }

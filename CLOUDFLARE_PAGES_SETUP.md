@@ -9,7 +9,7 @@
 Root directory: Site
 Build command: npm run build
 Build output directory: dist
-Node version: 22.12.0
+Node version: 22.12.0 (also committed in `.node-version`, `.nvmrc`, `Site/.node-version`, and `Site/.nvmrc`)
 ```
 
 5. Deploy. Cloudflare runs the sync script during `npm run build`, so `Site/src/content/docs/` is regenerated from `Vault/Lore/`.
