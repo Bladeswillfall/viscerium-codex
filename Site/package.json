@@ -1,31 +1,29 @@
 {
-  "name": "site",
+  "name": "obsidian-starlight-codex-template",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "dev": "npm run sync && astro dev",
-    "dev:raw": "astro dev",
-    "dev:sync": "npm run dev",
+    "dev": "astro dev",
+    "dev:sync": "npm run sync && astro dev",
     "sync": "node scripts/sync-public-notes.mjs",
-    "prebuild": "node scripts/sync-public-notes.mjs",
-    "start": "astro dev",
+    "validate": "node scripts/validate-content.mjs",
+    "generate:graph": "node scripts/generate-graph.mjs",
+    "generate:maps": "node scripts/generate-map-data.mjs",
+    "generate:timelines": "node scripts/generate-timeline-data.mjs",
+    "prebuild": "npm run sync && npm run validate && npm run generate:graph && npm run generate:maps && npm run generate:timelines",
     "build": "astro build",
-    "check": "npm run build",
-    "test": "npm run build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "npm run build"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.41.3",
-    "astro": "^7.0.2",
+    "@astrojs/sitemap": "latest",
+    "@astrojs/starlight": "latest",
+    "astro": "latest",
     "fast-glob": "^3.3.3",
     "fs-extra": "^11.3.6",
     "gray-matter": "^4.0.3",
-    "lucode-starlight": "^0.1.6",
-    "sharp": "^0.34.5"
-  },
-  "allowScripts": {
-    "esbuild@0.28.1": true,
-    "sharp@0.34.5": true
+    "sharp": "latest"
   }
 }

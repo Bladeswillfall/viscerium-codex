@@ -1,21 +1,28 @@
 ---
-title: Character Name
-description: "Short public summary."
+title:
+description:
 publish: false
 status: draft
-slug: characters/character-name
+slug: characters/
 type: character
+era:
 faction:
+location:
+image:
+alt:
+tags:
 ---
 
-# Character Name
+# {{title}}
 
-## Overview
+## Summary
 
-Briefly describe the character's public role, reputation, or importance.
+## Appearance
 
-## Connections
+## Personality
 
-- Faction:
-- Related locations:
-- Related events:
+## History
+
+## Relationships
+
+## Related

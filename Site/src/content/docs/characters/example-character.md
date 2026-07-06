@@ -1,15 +1,18 @@
 ---
 title: Example Character
-description: A sample character page used to test the publishing pipeline.
+description: 'A sample public character linked to the faction, city, and battle examples.'
 publish: true
 status: canon
 slug: characters/example-character
 type: character
 faction: Example Faction
+location: Example City
+tags:
+  - example
 ---
 
 # Example Character
 
-This is a test character page.
+Example Character is a template-friendly protagonist, antagonist, witness, or scholar.
 
-This character belongs to [Example Faction](/factions/example-faction/) and appears in [Example Event](/events/example-event/).
+They live in [Example City](/locations/example-city/) and study the history of [Example Battle](/events/example-battle/).

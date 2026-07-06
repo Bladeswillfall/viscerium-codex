@@ -1,0 +1,8 @@
+---
+const { src, alt = '', credit = '', caption = '', id } = Astro.props;
+const finalSrc = src ?? (id ? `/assets/images/${id}.webp` : '');
+---
+<figure class="image-figure">
+  {finalSrc ? <img src={finalSrc} alt={alt} loading="lazy" /> : <p class="codex-warning">Image source missing.</p>}
+  {(caption || credit) && <figcaption>{caption}{credit && <span> Credit: {credit}</span>}</figcaption>}
+</figure>

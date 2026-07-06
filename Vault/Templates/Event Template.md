@@ -1,21 +1,25 @@
 ---
-title: Event Name
-description: "Short public summary."
+title:
+description:
 publish: false
 status: draft
-slug: events/event-name
+slug: events/
 type: event
-era:
+location:
+timeline:
+  id:
+  year:
+  precision: exact
+  order:
+tags:
 ---
 
-# Event Name
+# {{title}}
 
-## Overview
+## Summary
 
-Briefly describe what happened and why it matters.
+## Causes
 
-## Details
+## Outcome
 
-- Participants:
-- Location:
-- Consequences:
+## Related
