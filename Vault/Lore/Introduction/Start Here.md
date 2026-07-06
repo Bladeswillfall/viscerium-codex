@@ -5,7 +5,7 @@ publish: true
 status: canon
 slug: index
 type: article
-headerImage: viscerium-banner
+headerImage: assets/images/viscerium-banner
 ---
 
 # Start Here
