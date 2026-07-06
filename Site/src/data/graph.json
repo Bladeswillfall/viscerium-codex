@@ -16,6 +16,11 @@
       "type": "event"
     },
     {
+      "id": "characters/example-character",
+      "title": "Example Character",
+      "type": "character"
+    },
+    {
       "id": "factions/example-faction",
       "title": "Example Faction",
       "type": "faction"
@@ -80,6 +85,23 @@
     {
       "source": "events/example-battle",
       "target": "locations/example-city",
+      "source": "events/example-battle",
+      "target": "factions/example-faction",
+      "type": "link"
+    },
+    {
+      "source": "events/example-battle",
+      "target": "locations/example-city",
+      "type": "link"
+    },
+    {
+      "source": "characters/example-character",
+      "target": "locations/example-city",
+      "type": "link"
+    },
+    {
+      "source": "characters/example-character",
+      "target": "events/example-battle",
       "type": "link"
     },
     {

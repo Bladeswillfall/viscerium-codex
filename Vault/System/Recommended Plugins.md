@@ -14,3 +14,4 @@ The publishing workflow does not require paid plugins. Start simple, then add op
 ## Publishing caution
 
 Dataview queries, plugin-only syntax, and theme-specific styling may not render the same way on the Astro site. For public pages, write important content as normal Markdown and keep required publishing metadata in frontmatter.
+Optional plugins: Templates, Templater, Dataview, Style Settings, and Linter. The publishing workflow does not require paid plugins.

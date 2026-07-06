@@ -31,3 +31,6 @@ tags:
 ## Important People and Factions
 
 ## Legacy
+## Summary
+
+## Major Events

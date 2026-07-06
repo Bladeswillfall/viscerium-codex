@@ -37,4 +37,10 @@ tags:
 
 ## Timeline Placement
 
+## Summary
+
+## Causes
+
+## Outcome
+
 ## Related
