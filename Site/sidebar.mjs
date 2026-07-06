@@ -1,54 +1,36 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import matter from 'gray-matter';
-
 const docsDir = new URL('./src/content/docs/', import.meta.url);
 
-function labelFromSegment(segment) {
-  return segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+function compareEntries(a, b) {
+  if (a.id === 'index') return -1;
+  if (b.id === 'index') return 1;
+  return a.title.localeCompare(b.title) || a.id.localeCompare(b.id);
 }
 
 export async function buildSidebar() {
   try {
     const files = await walk(docsDir.pathname);
-    const groups = new Map();
-    const rootItems = [];
+    const entries = [];
 
     for (const file of files) {
       const rel = path.relative(docsDir.pathname, file).replace(/\\/g, '/');
       if (!rel.endsWith('.md') && !rel.endsWith('.mdx')) continue;
       const id = rel.replace(/\.(md|mdx)$/, '');
-      const raw = await fs.readFile(file, 'utf8');
-      const title = matter(raw).data.title ?? labelFromSegment(path.basename(id));
-      if (id === 'index') {
-        rootItems.unshift({ label: title, link: '/' });
-        continue;
-      }
-      const [group, ...rest] = id.split('/');
-      const link = `/${id}/`;
-      if (rest.length === 0) {
-        rootItems.push({ label: title, link });
-        continue;
-      }
-      if (!groups.has(group)) groups.set(group, []);
-      groups.get(group).push({ label: title, link });
+      const title = id;
+      const link = id === 'index' ? '/' : `/${id}/`;
+      entries.push({ id, title, link });
     }
 
-    return [
-      ...rootItems.sort((a, b) => a.label.localeCompare(b.label)),
-      ...[...groups.entries()].sort().map(([group, items]) => ({
-        label: labelFromSegment(group),
-        items: items.sort((a, b) => a.label.localeCompare(b.label)),
-        collapsed: true,
-      })),
-    ];
+    return entries.sort(compareEntries).map(({ link }) => ({ link }));
   } catch {
-    return [{ label: 'Start Here', link: '/' }];
+    return [{ link: '/' }];
   }
 }
 
 async function walk(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true }).catch(() => []);
+  entries.sort((a, b) => a.name.localeCompare(b.name));
   const files = await Promise.all(entries.map((entry) => {
     const full = path.join(dir, entry.name);
     return entry.isDirectory() ? walk(full) : full;
