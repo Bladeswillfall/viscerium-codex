@@ -1,11 +1,6 @@
 {
   "nodes": [
     {
-      "id": "index",
-      "title": "Start Here",
-      "type": "article"
-    },
-    {
       "id": "characters/example-character",
       "title": "Example Character",
       "type": "character"
@@ -26,6 +21,11 @@
       "type": "image"
     },
     {
+      "id": "index",
+      "title": "Start Here",
+      "type": "article"
+    },
+    {
       "id": "locations/example-city",
       "title": "Example City",
       "type": "location"
@@ -37,31 +37,6 @@
     }
   ],
   "edges": [
-    {
-      "source": "index",
-      "target": "factions/example-faction",
-      "type": "link"
-    },
-    {
-      "source": "index",
-      "target": "characters/example-character",
-      "type": "link"
-    },
-    {
-      "source": "index",
-      "target": "locations/example-city",
-      "type": "link"
-    },
-    {
-      "source": "index",
-      "target": "events/example-battle",
-      "type": "link"
-    },
-    {
-      "source": "index",
-      "target": "maps/example-world",
-      "type": "link"
-    },
     {
       "source": "characters/example-character",
       "target": "locations/example-city",
@@ -101,6 +76,31 @@
       "source": "factions/example-faction",
       "target": "characters/example-character",
       "type": "relationship"
+    },
+    {
+      "source": "index",
+      "target": "factions/example-faction",
+      "type": "link"
+    },
+    {
+      "source": "index",
+      "target": "characters/example-character",
+      "type": "link"
+    },
+    {
+      "source": "index",
+      "target": "locations/example-city",
+      "type": "link"
+    },
+    {
+      "source": "index",
+      "target": "events/example-battle",
+      "type": "link"
+    },
+    {
+      "source": "index",
+      "target": "maps/example-world",
+      "type": "link"
     },
     {
       "source": "locations/example-city",
