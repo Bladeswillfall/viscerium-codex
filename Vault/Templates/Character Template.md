@@ -17,21 +17,25 @@ tags:
 relationships:
   allies:
   rivals:
-image:
-alt:
-tags:
 ---
 
 # {{title}}
 
-> [!info] Infobox
-> **Type:** Character
-> **Faction:**
-> **Location:**
-> **Era:**
-> **Occupation:**
-> **First appearance:**
-> **Status:** Draft
+```dataviewjs
+await dv.view('Views/viscerium-sidebar', {
+  accent: 'crimson',
+  sections: [
+    { label: 'Faction', field: 'faction' },
+    { label: 'Location', field: 'location' },
+    { label: 'Era', field: 'era' },
+    { label: 'Species', field: 'species' },
+    { label: 'Occupation', field: 'occupation' },
+    { label: 'Alignment', field: 'alignment' },
+    { label: 'Allies', field: 'relationships.allies' },
+    { label: 'Rivals', field: 'relationships.rivals' }
+  ]
+});
+```
 
 ## Summary
 
@@ -52,15 +56,5 @@ tags:
 ## Notes and Secrets
 
 Keep private information in `Vault/Private/` or leave `publish: false`.
-
-## Summary
-
-## Appearance
-
-## Personality
-
-## History
-
-## Relationships
 
 ## Related

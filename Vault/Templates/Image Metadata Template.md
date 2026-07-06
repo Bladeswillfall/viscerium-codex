@@ -14,16 +14,22 @@ related:
 
 # {{title}}
 
-> [!info] Infobox
-> **Type:** Image metadata
-> **Asset:**
-> **Credit:**
-> **License:**
-> **Status:** Draft
+
+```dataviewjs
+await dv.view('Views/viscerium-sidebar', {
+  accent: 'violet',
+  sections: [
+    { label: 'Asset', field: 'asset' },
+    { label: 'Credit', field: 'credit' },
+    { label: 'License', field: 'license' },
+    { label: 'Related', field: 'related' }
+  ]
+});
+```
+
 
 ## Description
 
 ## Usage Notes
 
 ## Related
-## Usage Notes
