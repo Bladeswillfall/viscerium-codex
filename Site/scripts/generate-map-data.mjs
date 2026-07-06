@@ -6,12 +6,14 @@ import matter from 'gray-matter';
 const docsDir = path.resolve(process.cwd(), 'src/content/docs');
 const outFile = path.resolve(process.cwd(), 'src/data/maps.json');
 const maps = {};
-for (const file of await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true })) {
+const files = (await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true })).sort();
+
+for (const file of files) {
   const id = path.relative(docsDir, file).replace(/\\/g, '/').replace(/\.(md|mdx)$/, '');
   const { data } = matter(await fs.readFile(file, 'utf8'));
   if (data.type === 'map' && data.mapId) maps[data.mapId] = { id: data.mapId, title: data.title, description: data.description, image: data.image, width: data.width, height: data.height, page: `/${id}/`, markers: [] };
 }
-for (const file of await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true })) {
+for (const file of files) {
   const id = path.relative(docsDir, file).replace(/\\/g, '/').replace(/\.(md|mdx)$/, '');
   const { data } = matter(await fs.readFile(file, 'utf8'));
   if (data.map?.id) {
@@ -19,6 +21,11 @@ for (const file of await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true })) 
     maps[data.map.id].markers.push({ title: data.title, description: data.description, x: data.map.x, y: data.map.y, marker: data.map.marker, layer: data.map.layer, page: `/${id}/` });
   }
 }
+for (const map of Object.values(maps)) {
+  map.markers.sort((a, b) => a.page.localeCompare(b.page) || a.title.localeCompare(b.title));
+}
+const sortedMaps = Object.fromEntries(Object.entries(maps).sort(([a], [b]) => a.localeCompare(b)));
+
 await fs.ensureDir(path.dirname(outFile));
-await fs.writeJson(outFile, maps, { spaces: 2 });
+await fs.writeJson(outFile, sortedMaps, { spaces: 2 });
 console.log(`Generated ${Object.keys(maps).length} map data set(s).`);

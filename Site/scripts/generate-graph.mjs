@@ -6,7 +6,7 @@ import matter from 'gray-matter';
 
 const docsDir = path.resolve(process.cwd(), 'src/content/docs');
 const outFile = path.resolve(process.cwd(), 'src/data/graph.json');
-const files = await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true });
+const files = (await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true })).sort();
 const nodes = [];
 const edges = [];
 const titleToId = new Map();
@@ -31,6 +31,9 @@ for (const file of files) {
     }
   }
 }
+nodes.sort((a, b) => a.id.localeCompare(b.id));
+edges.sort((a, b) => a.source.localeCompare(b.source) || a.target.localeCompare(b.target) || a.type.localeCompare(b.type));
+
 await fs.ensureDir(path.dirname(outFile));
 await fs.writeJson(outFile, { nodes, edges }, { spaces: 2 });
 console.log(`Generated graph with ${nodes.length} nodes and ${edges.length} edges.`);
