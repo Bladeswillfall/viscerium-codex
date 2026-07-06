@@ -6,6 +6,7 @@ import { pageSiteGraphSchema } from 'starlight-site-graph/schema';
 import { starlightTagsExtension } from 'starlight-tags/schema';
 
 const stringOrStrings = z.union([z.string(), z.array(z.string())]);
+const looseRecord = z.record(z.unknown());
 
 export const collections = {
   docs: defineCollection({
@@ -15,6 +16,7 @@ export const collections = {
         publish: z.boolean().optional(),
         status: z.string().optional(),
         slug: z.string().optional(),
+        sourcePath: z.string().optional(),
         type: z.string().optional(),
         era: stringOrStrings.optional(),
         faction: stringOrStrings.optional(),
@@ -30,9 +32,9 @@ export const collections = {
         mapId: z.string().optional(),
         width: z.number().optional(),
         height: z.number().optional(),
-        map: z.record(z.any()).optional(),
-        timeline: z.record(z.any()).optional(),
-        relationships: z.record(z.any()).optional(),
+        map: looseRecord.optional(),
+        timeline: looseRecord.optional(),
+        relationships: looseRecord.optional(),
         related: z.array(z.string()).optional(),
       }),
     }),
