@@ -4,13 +4,13 @@ const { starlightRoute } = Astro.locals;
 
 <div class="codex-two-column-content lg:sl-flex">
   <div class="main-pane codex-main-pane">
-    <slot />
     {starlightRoute.toc && (
-      <aside class="right-sidebar-container print:hidden">
+      <aside class="right-sidebar-container">
         <div class="right-sidebar">
           <slot name="right-sidebar" />
         </div>
       </aside>
     )}
+    <slot />
   </div>
 </div>
