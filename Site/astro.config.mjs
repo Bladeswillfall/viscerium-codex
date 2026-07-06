@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import starlight from '@astrojs/starlight';
+import UnoCSS from '@unocss/vite';
 import starlightAutoSidebar from 'starlight-auto-sidebar';
 import { starlightBasePath } from 'starlight-base-path';
 import starlightGiscus from 'starlight-giscus';
@@ -12,9 +12,9 @@ import starlightSiteGraph from 'starlight-site-graph';
 import starlightTags from 'starlight-tags';
 import starlightTelescope from 'starlight-telescope';
 import starlightUiTweaks from 'starlight-ui-tweaks';
-
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
+import { ion } from "starlight-ion-theme";
 
 const giscusPlugin = siteConfig.giscus.repo && siteConfig.giscus.repoId && siteConfig.giscus.category && siteConfig.giscus.categoryId
   ? starlightGiscus({
@@ -66,8 +66,11 @@ export default defineConfig({
       editLink: {
         baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
       },
-      social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
     }),
     sitemap(),
+    UnoCSS(),
   ],
+  vite: {
+    plugins: [UnoCSS()],
+  },
 });
