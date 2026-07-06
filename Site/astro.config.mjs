@@ -12,9 +12,9 @@ import starlightSiteGraph from 'starlight-site-graph';
 import starlightTags from 'starlight-tags';
 import starlightTelescope from 'starlight-telescope';
 import starlightUiTweaks from 'starlight-ui-tweaks';
-
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
+import { ion } from "starlight-ion-theme";
 
 const giscusPlugin = siteConfig.giscus.repo && siteConfig.giscus.repoId && siteConfig.giscus.category && siteConfig.giscus.categoryId
   ? starlightGiscus({
@@ -69,6 +69,7 @@ export default defineConfig({
       },
     }),
     sitemap(),
+    UnoCSS(),
   ],
   vite: {
     plugins: [UnoCSS()],
