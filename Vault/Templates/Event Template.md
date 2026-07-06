@@ -18,14 +18,18 @@ tags:
 
 # {{title}}
 
-> [!info] Infobox
-> **Type:** Event
-> **Date/Year:**
-> **Location:**
-> **Participants:**
-> **Outcome:**
-> **Timeline:**
-> **Status:** Draft
+```dataviewjs
+await dv.view('Views/viscerium-sidebar', {
+  accent: 'crimson',
+  sections: [
+    { label: 'Location', field: 'location' },
+    { label: 'Participants', field: 'participants' },
+    { label: 'Outcome', field: 'outcome' },
+    { label: 'Timeline', field: 'timeline.id' },
+    { label: 'Year', field: 'timeline.year' }
+  ]
+});
+```
 
 ## Summary
 
@@ -36,8 +40,6 @@ tags:
 ## Aftermath
 
 ## Timeline Placement
-
-## Summary
 
 ## Causes
 

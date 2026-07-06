@@ -13,12 +13,17 @@ height:
 
 # {{title}}
 
-> [!info] Infobox
-> **Type:** Map
-> **Map ID:**
-> **Image:**
-> **Dimensions:**
-> **Status:** Draft
+```dataviewjs
+await dv.view('Views/viscerium-sidebar', {
+  accent: 'violet',
+  sections: [
+    { label: 'Map ID', field: 'mapId' },
+    { label: 'Image', field: 'image' },
+    { label: 'Width', field: 'width' },
+    { label: 'Height', field: 'height' }
+  ]
+});
+```
 
 ## Overview
 
@@ -27,4 +32,5 @@ height:
 ## Marker Guidelines
 
 ## Related Locations
+
 ## Map Notes

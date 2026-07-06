@@ -18,20 +18,23 @@ map:
   marker: location
   layer:
     - locations
-  marker:
 tags:
 ---
 
 # {{title}}
 
-> [!info] Infobox
-> **Type:** Location
-> **Region:**
-> **Controlling faction:**
-> **Population:**
-> **Climate:**
-> **Map:**
-> **Status:** Draft
+```dataviewjs
+await dv.view('Views/viscerium-sidebar', {
+  accent: 'violet',
+  sections: [
+    { label: 'Region', field: 'region' },
+    { label: 'Faction', field: 'faction' },
+    { label: 'Population', field: 'population' },
+    { label: 'Climate', field: 'climate' },
+    { label: 'Map', field: 'map.id' }
+  ]
+});
+```
 
 ## Summary
 
@@ -44,11 +47,5 @@ tags:
 ## History
 
 ## Adventure Hooks
-
-## Summary
-
-## Geography
-
-## People
 
 ## Related

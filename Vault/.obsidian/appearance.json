@@ -1,4 +1,7 @@
 {
   "theme": "obsidian",
-  "cssTheme": "Vanilla AMOLED Color"
+  "cssTheme": "Vanilla AMOLED Color",
+  "enabledCssSnippets": [
+    "viscerium-sidebar"
+  ]
 }
