@@ -53,11 +53,19 @@ function parseFrontmatter(raw, file) {
   return { data, frontmatter, content };
 }
 
-function stringifyFrontmatter(frontmatter, slug) {
+function stringifyFrontmatter(frontmatter, slug, sourcePath) {
   const lines = frontmatter.split(/\r?\n/);
-  const slugIndex = lines.findIndex((line) => line.startsWith('slug:'));
-  if (slugIndex === -1) lines.push(`slug: ${slug}`);
-  else lines[slugIndex] = `slug: ${slug}`;
+
+  function setField(key, value) {
+    const line = `${key}: ${value}`;
+    const index = lines.findIndex((entry) => entry.startsWith(`${key}:`));
+    if (index === -1) lines.push(line);
+    else lines[index] = line;
+  }
+
+  setField('slug', slug);
+  setField('sourcePath', JSON.stringify(sourcePath));
+
   return `---\n${lines.join('\n')}\n---\n\n`;
 }
 
@@ -152,6 +160,7 @@ async function convertContent(content, currentFile, title) {
 for (const { file, parsed, slug } of publicNotes) {
   const extension = path.extname(file).toLowerCase() === '.mdx' ? '.mdx' : '.md';
   const outFile = path.join(outDir, `${slug}${extension}`);
+  const sourcePath = path.relative(sourceDir, file).replace(/\\/g, '/');
   await fs.mkdir(path.dirname(outFile), { recursive: true });
   for (const field of ['image', 'headerImage']) {
     const value = parsed.data[field];
@@ -161,7 +170,7 @@ for (const { file, parsed, slug } of publicNotes) {
   }
   if (parsed.data.asset && parsed.data.type === 'image') await copyAsset('Images', parsed.data.asset);
   const content = await convertContent(parsed.content, file, parsed.data.title);
-  await fs.writeFile(outFile, `${stringifyFrontmatter(parsed.frontmatter, slug)}${content}`);
+  await fs.writeFile(outFile, `${stringifyFrontmatter(parsed.frontmatter, slug, sourcePath)}${content}`);
   console.log(`Published ${path.relative(sourceDir, file)} -> ${path.relative(outDir, outFile)}`);
 }
 
