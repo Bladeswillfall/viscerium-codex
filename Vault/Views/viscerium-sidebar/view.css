@@ -5,7 +5,7 @@
   --viscerium-border: rgba(222, 205, 171, 0.22);
   float: right;
   clear: right;
-  width: min(21rem, 42vw);
+  width: min(24rem, 33vw);
   margin: 0.25rem 0 1.25rem 1.5rem;
   overflow: hidden;
   border: 1px solid var(--viscerium-border);
@@ -124,7 +124,7 @@
   text-transform: uppercase;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .viscerium-infobox {
     float: none;
     width: 100%;

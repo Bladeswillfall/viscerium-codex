@@ -5,6 +5,7 @@ publish: false
 status: draft
 slug: events/
 type: event
+headerImage:
 location:
 participants:
 outcome:
@@ -17,6 +18,9 @@ tags:
 ---
 
 # {{title}}
+
+%% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
+%% Page breadcrumbs: Home / {{type}} / {{title}}. Keep these as wiki links when parent pages exist. %%
 
 ```dataviewjs
 await dv.view('Views/viscerium-sidebar', {
@@ -46,3 +50,7 @@ await dv.view('Views/viscerium-sidebar', {
 ## Outcome
 
 ## Related
+
+## Comments
+
+Keep public discussion notes or moderation reminders here. Published site comments render in their own bottom section via Giscus.

@@ -57,8 +57,12 @@ async function copyAsset(category, filename) {
   return `/assets/${category.toLowerCase()}/${filename}`;
 }
 
-async function convertContent(content, currentFile) {
-  let converted = content;
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+async function convertContent(content, currentFile, title) {
+  let converted = content.replace(/^%%[\s\S]*?%%\s*/gm, '');
   const embeds = [...converted.matchAll(/!\[\[([^\]]+)\]\]/g)];
   for (const match of embeds) {
     const rawTarget = match[1].split('|')[0].trim();
@@ -71,6 +75,8 @@ async function convertContent(content, currentFile) {
       converted = converted.replace(match[0], `![${filename}](${url})`);
     }
   }
+
+  converted = converted.replace(new RegExp(`^#\\s+${escapeRegExp(title)}\\s*$`, 'im'), '').trimStart();
 
   return converted.replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, (match, target, alias) => {
     const label = alias?.trim() || target.trim();
@@ -87,10 +93,20 @@ for (const { file, parsed, slug } of publicNotes) {
   const extension = path.extname(file).toLowerCase() === '.mdx' ? '.mdx' : '.md';
   const outFile = path.join(outDir, `${slug}${extension}`);
   await fs.ensureDir(path.dirname(outFile));
-  const content = await convertContent(parsed.content, file);
-  await fs.writeFile(outFile, matter.stringify(content, parsed.data));
+  for (const field of ['image', 'headerImage']) {
+    const value = parsed.data[field];
+    if (!value || typeof value !== 'string') continue;
+    if (value.startsWith('/assets/images/')) await copyAsset('Images', path.basename(value));
+    if (value.startsWith('/assets/maps/')) await copyAsset('Maps', path.basename(value));
+    if (!value.startsWith('/')) {
+      const imageUrl = await copyAsset('Images', path.basename(value));
+      const mapUrl = imageUrl ? null : await copyAsset('Maps', path.basename(value));
+      parsed.data[field] = imageUrl ?? mapUrl ?? value;
+    }
+  }
   if (parsed.data.asset && parsed.data.type === 'image') await copyAsset('Images', parsed.data.asset);
-  if (parsed.data.image?.startsWith('/assets/maps/')) await copyAsset('Maps', path.basename(parsed.data.image));
+  const content = await convertContent(parsed.content, file, parsed.data.title);
+  await fs.writeFile(outFile, matter.stringify(content, parsed.data));
   console.log(`Published ${path.relative(sourceDir, file)} -> ${path.relative(outDir, outFile)}`);
 }
 
