@@ -1,7 +1,7 @@
 export default {
   title: 'VISCERIUM',
   description: 'The public worldbuilding codex for VISCERIUM.',
-  site: 'https://example.com',
+  site: process.env.SITE_URL ?? 'https://viscerium-codex.pages.dev',
   loreSourceDir: '../Vault/Lore',
   vaultAssetDir: '../Vault/Assets',
   githubRepoUrl: 'https://github.com/Bladeswillfall/viscerium-codex',

@@ -6,7 +6,9 @@ import matter from 'gray-matter';
 const docsDir = path.resolve(process.cwd(), 'src/content/docs');
 const outFile = path.resolve(process.cwd(), 'src/data/timelines.json');
 const timelines = {};
-for (const file of await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true })) {
+const files = (await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true })).sort();
+
+for (const file of files) {
   const id = path.relative(docsDir, file).replace(/\\/g, '/').replace(/\.(md|mdx)$/, '');
   const { data } = matter(await fs.readFile(file, 'utf8'));
   if (data.timeline?.id) {

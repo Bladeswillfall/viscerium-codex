@@ -6,24 +6,24 @@
       "type": "article"
     },
     {
-      "id": "factions/example-faction",
-      "title": "Example Faction",
-      "type": "faction"
-    },
-    {
       "id": "characters/example-character",
       "title": "Example Character",
       "type": "character"
     },
     {
-      "id": "images/example-banner",
-      "title": "Example Banner",
-      "type": "image"
-    },
-    {
       "id": "events/example-battle",
       "title": "Example Battle",
       "type": "event"
+    },
+    {
+      "id": "factions/example-faction",
+      "title": "Example Faction",
+      "type": "faction"
+    },
+    {
+      "id": "images/example-banner",
+      "title": "Example Banner",
+      "type": "image"
     },
     {
       "id": "locations/example-city",
@@ -63,26 +63,6 @@
       "type": "link"
     },
     {
-      "source": "factions/example-faction",
-      "target": "locations/example-city",
-      "type": "link"
-    },
-    {
-      "source": "factions/example-faction",
-      "target": "characters/example-character",
-      "type": "link"
-    },
-    {
-      "source": "factions/example-faction",
-      "target": "events/example-battle",
-      "type": "link"
-    },
-    {
-      "source": "factions/example-faction",
-      "target": "characters/example-character",
-      "type": "relationship"
-    },
-    {
       "source": "characters/example-character",
       "target": "locations/example-city",
       "type": "link"
@@ -101,6 +81,26 @@
       "source": "events/example-battle",
       "target": "locations/example-city",
       "type": "link"
+    },
+    {
+      "source": "factions/example-faction",
+      "target": "locations/example-city",
+      "type": "link"
+    },
+    {
+      "source": "factions/example-faction",
+      "target": "characters/example-character",
+      "type": "link"
+    },
+    {
+      "source": "factions/example-faction",
+      "target": "events/example-battle",
+      "type": "link"
+    },
+    {
+      "source": "factions/example-faction",
+      "target": "characters/example-character",
+      "type": "relationship"
     },
     {
       "source": "locations/example-city",
