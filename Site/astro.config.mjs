@@ -36,7 +36,12 @@ export default defineConfig({
     starlight({
       title: siteConfig.title,
       description: siteConfig.description,
-      customCss: ['./src/styles/custom.css'],
+      customCss: [
+        './vendor/starlight-ion-theme/styles/layers.css',
+        './vendor/starlight-ion-theme/styles/theme.css',
+        './vendor/starlight-ion-theme/styles/ec-theme.css',
+        './src/styles/custom.css',
+      ],
       plugins: [
         starlightBasePath(),
         starlightTags({
@@ -60,6 +65,7 @@ export default defineConfig({
       ],
       sidebar: await buildSidebar(),
       components: {
+        Sidebar: './src/components/IonSidebar.astro',
         Footer: './src/components/StarlightFooter.astro',
         PageSidebar: './src/components/CodexPageSidebar.astro',
       },

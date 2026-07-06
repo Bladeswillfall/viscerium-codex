@@ -3,6 +3,8 @@ import EditLink from 'virtual:starlight/components/EditLink';
 import LastUpdated from 'virtual:starlight/components/LastUpdated';
 import Pagination from 'virtual:starlight/components/Pagination';
 import GiscusComments from './GiscusComments.astro';
+import LocalIcon from './LocalIcon.astro';
+import siteConfig from '../../site.config.mjs';
 ---
 
 <button
@@ -19,6 +21,17 @@ import GiscusComments from './GiscusComments.astro';
 <GiscusComments />
 
 <footer class="sl-flex">
+  <div class="ion-codex-footer sl-flex">
+    <strong>© VISCERIUM Codex</strong>
+    <nav aria-label="Footer">
+      <a href="/">Start Here</a>
+      <a href="/graph/">World Graph</a>
+      <a href={siteConfig.githubRepoUrl} target="_blank" rel="noreferrer">
+        <LocalIcon name="github" />
+        <span>GitHub</span>
+      </a>
+    </nav>
+  </div>
   <div class="meta sl-flex">
     <EditLink />
     <LastUpdated />
@@ -68,6 +81,34 @@ import GiscusComments from './GiscusComments.astro';
     }
     .meta > :global(p:only-child) {
       margin-inline-start: auto;
+    }
+    .ion-codex-footer {
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 3rem;
+      padding: 1rem;
+      border: 1px solid var(--sl-color-hairline-light);
+      border-radius: 0.75rem;
+      background: color-mix(in srgb, var(--sl-color-bg-nav) 88%, transparent);
+      font-size: var(--sl-text-sm);
+    }
+    .ion-codex-footer nav {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem 1rem;
+    }
+    .ion-codex-footer a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--sl-color-gray-2);
+      text-decoration: none;
+    }
+    .ion-codex-footer a:hover {
+      color: var(--sl-color-accent-high);
     }
   }
 </style>

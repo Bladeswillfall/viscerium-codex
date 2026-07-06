@@ -4,6 +4,19 @@ import matter from 'gray-matter';
 
 const docsDir = new URL('./src/content/docs/', import.meta.url);
 
+const groupIcons = {
+  characters: 'character',
+  events: 'event',
+  factions: 'faction',
+  images: 'image',
+  locations: 'location',
+  maps: 'map',
+};
+
+function iconLabel(icon, label) {
+  return icon ? `[${icon}] ${label}` : label;
+}
+
 function labelFromSegment(segment) {
   return segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
@@ -21,7 +34,7 @@ export async function buildSidebar() {
       const raw = await fs.readFile(file, 'utf8');
       const title = matter(raw).data.title ?? labelFromSegment(path.basename(id));
       if (id === 'index') {
-        rootItems.unshift({ label: title, link: '/' });
+        rootItems.unshift({ label: iconLabel('home', title), link: '/', badge: { text: 'Canon', variant: 'note' } });
         continue;
       }
       const [group, ...rest] = id.split('/');
@@ -37,7 +50,7 @@ export async function buildSidebar() {
     return [
       ...rootItems.sort((a, b) => a.label.localeCompare(b.label)),
       ...[...groups.entries()].sort().map(([group, items]) => ({
-        label: labelFromSegment(group),
+        label: iconLabel(groupIcons[group], labelFromSegment(group)),
         items: items.sort((a, b) => a.label.localeCompare(b.label)),
         collapsed: true,
       })),
