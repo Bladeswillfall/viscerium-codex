@@ -4,6 +4,21 @@ import matter from 'gray-matter';
 
 const docsDir = new URL('./src/content/docs/', import.meta.url);
 
+const defaultIcon = 'i-ph:scroll-duotone';
+const groupIcons = {
+  characters: 'i-ph:users-three-duotone',
+  events: 'i-ph:sword-duotone',
+  factions: 'i-ph:flag-banner-duotone',
+  images: 'i-ph:image-duotone',
+  locations: 'i-ph:map-pin-area-duotone',
+  maps: 'i-ph:map-trifold-duotone',
+};
+
+function iconForId(id) {
+  if (id === 'index') return 'i-ph:house-duotone';
+  return groupIcons[id.split('/')[0]] ?? defaultIcon;
+}
+
 function labelFromSegment(segment) {
   return segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
@@ -21,29 +36,30 @@ export async function buildSidebar() {
       const raw = await fs.readFile(file, 'utf8');
       const title = matter(raw).data.title ?? labelFromSegment(path.basename(id));
       if (id === 'index') {
-        rootItems.unshift({ label: title, link: '/' });
+        rootItems.unshift({ icon: iconForId(id), label: title, link: '/' });
         continue;
       }
       const [group, ...rest] = id.split('/');
       const link = `/${id}/`;
       if (rest.length === 0) {
-        rootItems.push({ label: title, link });
+        rootItems.push({ icon: iconForId(id), label: title, link });
         continue;
       }
       if (!groups.has(group)) groups.set(group, []);
-      groups.get(group).push({ label: title, link });
+      groups.get(group).push({ icon: iconForId(id), label: title, link });
     }
 
     return [
       ...rootItems.sort((a, b) => a.label.localeCompare(b.label)),
       ...[...groups.entries()].sort().map(([group, items]) => ({
+        icon: groupIcons[group] ?? defaultIcon,
         label: labelFromSegment(group),
         items: items.sort((a, b) => a.label.localeCompare(b.label)),
         collapsed: true,
       })),
     ];
   } catch {
-    return [{ label: 'Start Here', link: '/' }];
+    return [{ icon: iconForId('index'), label: 'Start Here', link: '/' }];
   }
 }
 
