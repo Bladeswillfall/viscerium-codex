@@ -80,14 +80,3 @@ PUBLIC_GISCUS_CATEGORY_ID=your_category_id
 ```
 
 Do not commit secrets. These giscus values are public identifiers, but keeping them in environment variables makes the template reusable.
-
-## WorldAnvil/Wikipedia-style page layout actions
-
-The Obsidian templates now include wiki-style infobox callouts and section headings. Recommended setup:
-
-1. In Obsidian, enable the built-in **Templates** plugin and set the template folder to `Templates`.
-2. Optional: install **Templater** if you want automatic dates, prompts, or generated slugs.
-3. Optional: install **Dataview** for private dashboard/index notes inside `Vault/System/`; do not rely on Dataview output for published pages unless you also write the final content in Markdown.
-4. Optional: install **Editing Toolbar** or **Advanced Tables** if you prefer visual table editing for wiki-style infoboxes.
-5. Use the callout infobox in each template for Obsidian readability. Later, you can replace it with Astro MDX components for richer published layouts.
-6. Keep canonical public fields in frontmatter so Astro can generate maps, timelines, graph data, and SEO safely.
