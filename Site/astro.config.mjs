@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import Icons from 'starlight-plugin-icons';
+import starlight from '@astrojs/starlight';
+import UnoCSS from 'unocss/astro';
 import starlightAutoSidebar from 'starlight-auto-sidebar';
 import { starlightBasePath } from 'starlight-base-path';
 import starlightGiscus from 'starlight-giscus';
@@ -43,7 +44,6 @@ export default defineConfig({
       customCss: ['./src/styles/custom.css'],
       plugins: [
         starlightBasePath(),
-        ion(),
         starlightTags({
           sidebar: {
             position: 'bottom',
@@ -55,6 +55,7 @@ export default defineConfig({
         starlightIconsPlugin({
           codeblock: true,
           sidebar: true,
+          extractSafelist: true,
         }),
         starlightHeadingBadges(),
         starlightUiTweaks(),
@@ -74,5 +75,6 @@ export default defineConfig({
       social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
     }),
     sitemap(),
+    UnoCSS(),
   ],
 });
