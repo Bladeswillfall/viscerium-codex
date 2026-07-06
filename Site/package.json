@@ -37,5 +37,8 @@
     "starlight-telescope": "^1.0.0",
     "starlight-ui-tweaks": "^0.2.2",
     "unocss": "^66.5.9"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }
