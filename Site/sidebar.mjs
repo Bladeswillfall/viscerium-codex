@@ -4,18 +4,18 @@ import matter from 'gray-matter';
 
 const docsDir = new URL('./src/content/docs/', import.meta.url);
 
-const defaultIcon = 'i-ph:scroll-duotone';
+const defaultIcon = 'i-codex:scroll';
 const groupIcons = {
-  characters: 'i-ph:users-three-duotone',
-  events: 'i-ph:sword-duotone',
-  factions: 'i-ph:flag-banner-duotone',
-  images: 'i-ph:image-duotone',
-  locations: 'i-ph:map-pin-area-duotone',
-  maps: 'i-ph:map-trifold-duotone',
+  characters: 'i-codex:users',
+  events: 'i-codex:sword',
+  factions: 'i-codex:flag',
+  images: 'i-codex:image',
+  locations: 'i-codex:pin',
+  maps: 'i-codex:map',
 };
 
 function iconForId(id) {
-  if (id === 'index') return 'i-ph:house-duotone';
+  if (id === 'index') return 'i-codex:home';
   return groupIcons[id.split('/')[0]] ?? defaultIcon;
 }
 

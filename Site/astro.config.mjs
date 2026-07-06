@@ -1,12 +1,11 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import starlight from '@astrojs/starlight';
-import UnoCSS from 'unocss/astro';
+import UnoCSS from '@unocss/vite';
 import starlightAutoSidebar from 'starlight-auto-sidebar';
 import { starlightBasePath } from 'starlight-base-path';
 import starlightGiscus from 'starlight-giscus';
 import starlightHeadingBadges from 'starlight-heading-badges';
-import { starlightIconsPlugin } from 'starlight-plugin-icons';
+import Icons from 'starlight-plugin-icons';
 import starlightScrollToTop from 'starlight-scroll-to-top';
 import starlightSidebarSwipe from 'starlight-sidebar-swipe';
 import starlightSiteGraph from 'starlight-site-graph';
@@ -34,47 +33,45 @@ const giscusPlugin = siteConfig.giscus.repo && siteConfig.giscus.repoId && siteC
 export default defineConfig({
   site: siteConfig.site,
   integrations: [
-    UnoCSS(),
     Icons({
       sidebar: true,
       extractSafelist: true,
       starlight: {
-      title: siteConfig.title,
-      description: siteConfig.description,
-      customCss: ['./src/styles/custom.css'],
-      plugins: [
-        starlightBasePath(),
-        starlightTags({
-          sidebar: {
-            position: 'bottom',
-            collapsed: true,
-          },
-        }),
-        starlightTelescope(),
-        starlightSidebarSwipe(),
-        starlightIconsPlugin({
-          codeblock: true,
-          sidebar: true,
-          extractSafelist: true,
-        }),
-        starlightHeadingBadges(),
-        starlightUiTweaks(),
-        starlightScrollToTop(),
-        starlightAutoSidebar(),
-        ...(giscusPlugin ? [giscusPlugin] : []),
-        starlightSiteGraph(),
-      ],
-      sidebar: await buildSidebar(),
-      components: {
-        Footer: './src/components/StarlightFooter.astro',
-        PageSidebar: './src/components/CodexPageSidebar.astro',
+        title: siteConfig.title,
+        description: siteConfig.description,
+        customCss: ['./src/styles/custom.css'],
+        plugins: [
+          starlightBasePath(),
+          starlightTags({
+            sidebar: {
+              position: 'bottom',
+              collapsed: true,
+            },
+          }),
+          starlightTelescope(),
+          starlightSidebarSwipe(),
+          starlightHeadingBadges(),
+          starlightUiTweaks(),
+          starlightScrollToTop(),
+          starlightAutoSidebar(),
+          ...(giscusPlugin ? [giscusPlugin] : []),
+          starlightSiteGraph(),
+        ],
+        sidebar: await buildSidebar(),
+        components: {
+          Footer: './src/components/StarlightFooter.astro',
+          PageSidebar: './src/components/CodexPageSidebar.astro',
+        },
+        editLink: {
+          baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
+        },
+        social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
       },
-      editLink: {
-        baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
-      },
-      social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
     }),
     sitemap(),
     UnoCSS(),
   ],
+  vite: {
+    plugins: [UnoCSS()],
+  },
 });
