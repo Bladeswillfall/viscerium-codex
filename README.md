@@ -46,9 +46,10 @@ Root directory: Site
 Build command: npm run build
 Build output directory: dist
 Node version: 22.12.0
+Environment variable: SITE_URL=https://your-production-domain.example
 ```
 
-Set your real canonical URL in `Site/site.config.mjs` and `Site/astro.config.mjs` via the `site` value before production launch.
+Set `SITE_URL` in Cloudflare Pages to your real canonical URL before production launch. The build falls back to `https://viscerium-codex.pages.dev` if it is unset.
 
 ## GitHub template use
 

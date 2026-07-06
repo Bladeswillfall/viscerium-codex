@@ -18,18 +18,17 @@
     "test": "npm run build"
   },
   "dependencies": {
-    "@astrojs/sitemap": "latest",
-    "@astrojs/starlight": "latest",
-    "astro": "latest",
+    "@astrojs/sitemap": "3.7.3",
+    "@astrojs/starlight": "0.41.3",
+    "astro": "7.0.6",
     "fast-glob": "^3.3.3",
     "fs-extra": "^11.3.6",
     "gray-matter": "^4.0.3",
-    "sharp": "latest",
+    "sharp": "0.34.5",
     "starlight-auto-sidebar": "^0.4.0",
     "starlight-base-path": "^0.1.1",
     "starlight-giscus": "^1.1.0",
     "starlight-heading-badges": "^0.8.0",
-    "starlight-ion-theme": "^2.3.3",
     "starlight-plugin-icons": "^1.1.6",
     "starlight-scroll-to-top": "^1.0.1",
     "starlight-sidebar-swipe": "^0.2.0",
@@ -37,7 +36,7 @@
     "starlight-tags": "^1.0.1",
     "starlight-telescope": "^1.0.0",
     "starlight-ui-tweaks": "^0.2.2",
-    "unocss": "^66.5.9"
+    "unocss": "66.7.4"
   },
   "engines": {
     "node": ">=22.12.0"
