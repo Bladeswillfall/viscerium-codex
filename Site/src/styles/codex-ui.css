@@ -1,25 +1,4 @@
 @layer starlight.core {
-  :root {
-    --codex-accent: #b88746;
-    --codex-accent-high: #f1d29b;
-    --codex-accent-soft: rgba(184, 135, 70, .18);
-    --codex-surface: rgba(255, 255, 255, .025);
-    --codex-surface-raised: linear-gradient(135deg, rgba(184, 135, 70, .10), rgba(255, 255, 255, .02));
-    --codex-surface-accent: rgba(184, 135, 70, .10);
-    --codex-border: var(--codex-accent-soft);
-    --codex-radius: .75rem;
-    --codex-sidebar-toggle-bg: rgba(16, 16, 15, .9);
-    --sl-color-accent-low: #342516;
-    --sl-color-accent: #b88746;
-    --sl-color-accent-high: #f1d29b;
-  }
-
-  :root[data-theme='dark'] {
-    --sl-color-bg: #10100f;
-    --sl-color-bg-sidebar: #151310;
-    --sl-color-bg-nav: #151310;
-  }
-
   .codex-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
