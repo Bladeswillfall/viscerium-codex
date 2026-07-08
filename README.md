@@ -27,6 +27,16 @@ type: article
 
 The build fails if a public note is missing `title`, `description`, `slug`, or `type`.
 
+## Typography
+
+The codex typography layer lives in `Site/src/styles/typography.css`.
+
+- Display / H1 / site title: `Cinzel`
+- Body prose: `Source Serif 4`
+- UI, metadata, captions, tables, and lower headings: `IBM Plex Sans`
+- Code, terminal fragments, and inline code: `IBM Plex Mono`
+- Mathematical notation: MathJax CommonHTML output
+
 ## Codex formatting tags
 
 The sync script supports a controlled set of BBCode-like tags for worldbuilding layouts. Tags must be written on their own lines. Normal Markdown tables, inline Markdown, and fenced code blocks are left alone.
@@ -93,7 +103,47 @@ In-world quoted text.
 [/lore]
 ```
 
-Supported layout tags: `[cols]`, `[row]`, `[col]`, `[card]`, `[note]`, `[warning]`, and `[lore]`.
+Equation panel:
+
+````md
+[equation:title="Resonance decay model"]
+```math
+R(t)=R_0e^{-\lambda t}
+```
+[/equation]
+````
+
+Supported layout tags: `[cols]`, `[row]`, `[col]`, `[card]`, `[note]`, `[warning]`, `[lore]`, and `[equation]`.
+
+## Mathematical notation
+
+The codex loads MathJax on every Starlight page through `Site/src/components/CodexMath.astro`. Use GitHub-style TeX delimiters in articles:
+
+Inline math:
+
+```md
+Resonance decay can be represented as $R(t)=R_0e^{-\lambda t}$.
+```
+
+Display math:
+
+```md
+$$
+R(t)=R_0e^{-\lambda t}
+$$
+```
+
+Complex fenced equation:
+
+````md
+```math
+\begin{aligned}
+\mathcal{R}_{total}
+  &= \sum_{i=1}^{n} \alpha_i \psi_i(t) \\
+  &= \alpha_1 \psi_1(t) + \alpha_2 \psi_2(t) + \cdots + \alpha_n \psi_n(t)
+\end{aligned}
+```
+````
 
 ## Local setup
 
