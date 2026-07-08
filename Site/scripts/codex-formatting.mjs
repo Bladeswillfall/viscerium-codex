@@ -1,4 +1,4 @@
-const TAGS = new Set(['cols', 'row', 'col', 'card', 'note', 'warning', 'lore']);
+const TAGS = new Set(['cols', 'row', 'col', 'card', 'note', 'warning', 'lore', 'equation']);
 const VOIDLESS_TAG_OUTPUT = new Map([
   ['cols', 'div'],
   ['row', 'div'],
@@ -7,6 +7,7 @@ const VOIDLESS_TAG_OUTPUT = new Map([
   ['note', 'aside'],
   ['warning', 'aside'],
   ['lore', 'aside'],
+  ['equation', 'section'],
 ]);
 
 const GAP_VALUES = new Set(['none', 'xs', 'sm', 'md', 'lg', 'xl']);
@@ -128,6 +129,16 @@ function calloutClasses(tag, spec) {
   return classes;
 }
 
+function equationClasses(spec) {
+  const classes = ['cx-equation', 'tex2jax_process'];
+  if (tokens(spec).includes('compact')) classes.push('cx-equation-compact');
+  return classes;
+}
+
+function titleMarkup(className, title, options) {
+  return title ? `\n\n<p ${classAttribute([className], options)}>${escapeHtml(title)}</p>\n` : '\n';
+}
+
 function openTag(tag, spec, options) {
   const htmlTag = VOIDLESS_TAG_OUTPUT.get(tag);
   if (!htmlTag) return null;
@@ -139,8 +150,12 @@ function openTag(tag, spec, options) {
 
   const optionMap = parseKeyValueOptions(spec);
   const title = optionMap.get('title');
-  const titleMarkup = title ? `\n\n<p ${classAttribute(['cx-callout-title'], options)}>${escapeHtml(title)}</p>\n` : '\n';
-  return `<aside ${classAttribute(calloutClasses(tag, spec), options)}>${titleMarkup}`;
+
+  if (tag === 'equation') {
+    return `<section ${classAttribute(equationClasses(spec), options)}>${titleMarkup('cx-equation-title', title, options)}`;
+  }
+
+  return `<aside ${classAttribute(calloutClasses(tag, spec), options)}>${titleMarkup('cx-callout-title', title, options)}`;
 }
 
 function closeTag(tag) {
