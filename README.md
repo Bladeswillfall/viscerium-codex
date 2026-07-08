@@ -27,6 +27,74 @@ type: article
 
 The build fails if a public note is missing `title`, `description`, `slug`, or `type`.
 
+## Codex formatting tags
+
+The sync script supports a controlled set of BBCode-like tags for worldbuilding layouts. Tags must be written on their own lines. Normal Markdown tables, inline Markdown, and fenced code blocks are left alone.
+
+Equal columns:
+
+```md
+[cols]
+[col]
+Left content.
+[/col]
+
+[col]
+Right content.
+[/col]
+[/cols]
+```
+
+Unequal columns:
+
+```md
+[cols:2-1 gap=lg]
+[col]
+Wide main text.
+[/col]
+
+[col]
+Narrow sidebar.
+[/col]
+[/cols]
+```
+
+Twelve-column responsive row:
+
+```md
+[row]
+[col:12 md:8]
+Main article body.
+[/col]
+
+[col:12 md:4]
+Sidebar body.
+[/col]
+[/row]
+```
+
+Cards and callouts:
+
+```md
+[card:accent]
+Card content.
+[/card]
+
+[note:title="Archivist note"]
+Note content.
+[/note]
+
+[warning:title="Content warning"]
+Warning content.
+[/warning]
+
+[lore:title="Recovered fragment"]
+In-world quoted text.
+[/lore]
+```
+
+Supported layout tags: `[cols]`, `[row]`, `[col]`, `[card]`, `[note]`, `[warning]`, and `[lore]`.
+
 ## Local setup
 
 ```bash
