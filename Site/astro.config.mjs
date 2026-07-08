@@ -15,12 +15,36 @@ import mdx from '@astrojs/mdx';
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
 
+const webmentionHead = siteConfig.webmentions?.enabled
+  ? [
+      siteConfig.webmentions.endpoint
+        ? {
+            tag: 'link',
+            attrs: {
+              rel: 'webmention',
+              href: siteConfig.webmentions.endpoint,
+            },
+          }
+        : undefined,
+      siteConfig.webmentions.pingbackEndpoint
+        ? {
+            tag: 'link',
+            attrs: {
+              rel: 'pingback',
+              href: siteConfig.webmentions.pingbackEndpoint,
+            },
+          }
+        : undefined,
+    ].filter(Boolean)
+  : [];
+
 export default defineConfig({
   site: siteConfig.site,
   integrations: [
     starlight({
       title: siteConfig.title,
       description: siteConfig.description,
+      head: webmentionHead,
       customCss: [
         './vendor/starlight-ion-theme/styles/layers.css',
         './vendor/starlight-ion-theme/styles/theme.css',
