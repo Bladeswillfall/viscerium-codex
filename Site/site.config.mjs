@@ -9,6 +9,7 @@ const webmentionPingbackEndpoint =
   (webmentionUsername ? `https://webmention.io/${webmentionUsername}/xmlrpc` : undefined);
 const webmentionMaxMentions = Number.parseInt(env.PUBLIC_WEBMENTIONS_MAX ?? '24', 10);
 const feedMaxItems = Number.parseInt(env.PUBLIC_FEED_MAX_ITEMS ?? '50', 10);
+const ga4MeasurementId = env.PUBLIC_GA4_MEASUREMENT_ID ?? 'G-XXXXXXXXXX';
 
 export default {
   title: 'VISCERIUM',
@@ -29,6 +30,14 @@ export default {
     pingbackEndpoint: webmentionPingbackEndpoint,
     apiEndpoint: env.PUBLIC_WEBMENTION_API_ENDPOINT ?? 'https://webmention.io/api/mentions.jf2',
     maxMentions: Number.isFinite(webmentionMaxMentions) ? webmentionMaxMentions : 24,
+  },
+  analytics: {
+    ga4: {
+      // Placeholder only: replace PUBLIC_GA4_MEASUREMENT_ID with the real GA4 ID and
+      // set PUBLIC_GA4_ENABLED=1 when proper GA4 tracking is ready to go live.
+      enabled: env.PUBLIC_GA4_ENABLED === '1' && ga4MeasurementId !== 'G-XXXXXXXXXX',
+      measurementId: ga4MeasurementId,
+    },
   },
   giscus: {
     repo: env.PUBLIC_GISCUS_REPO ?? 'Bladeswillfall/viscerium-codex',

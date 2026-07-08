@@ -2,6 +2,21 @@
   container-type: inline-size;
 }
 
+@media (min-width: 72rem) {
+  .main-frame:has(> .codex-two-column-content) {
+    max-inline-size: none;
+  }
+
+  .main-frame > .codex-two-column-content {
+    box-sizing: border-box;
+    inline-size: calc(100vw - var(--sl-sidebar-width, 0rem));
+    inline-size: calc(100dvw - var(--sl-sidebar-width, 0rem));
+    max-inline-size: calc(100vw - var(--sl-sidebar-width, 0rem));
+    max-inline-size: calc(100dvw - var(--sl-sidebar-width, 0rem));
+    margin-inline: 0;
+  }
+}
+
 .right-sidebar-container,
 .right-sidebar {
   width: 100%;
