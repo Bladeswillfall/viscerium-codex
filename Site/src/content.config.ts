@@ -17,9 +17,21 @@ const calendarDateSchema = z.object({
   precision: z.enum(['day', 'month', 'year']).optional(),
   displayCalendars: z.array(z.string()).optional(),
 });
+const calendarEventLinkSchema = z.union([
+  z.string(),
+  z.object({
+    href: z.string().optional(),
+    article: z.string().optional(),
+    label: z.string().optional(),
+  }),
+]);
+const calendarEventLinksSchema = z.record(calendarEventLinkSchema);
 const calendarShowcaseSchema = z.object({
   calendar: z.string(),
   year: z.number().int().optional(),
+  eventLinks: calendarEventLinksSchema.optional(),
+  observanceLinks: calendarEventLinksSchema.optional(),
+  links: calendarEventLinksSchema.optional(),
 });
 
 export const collections = {
