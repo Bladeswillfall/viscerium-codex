@@ -45,34 +45,38 @@ This page tests three things: native Starlight MDX components, the VISCERIUM cod
 This is deliberately overloaded. Delete it later if it stops being useful, but keep the syntax examples somewhere because the codex formatting tags are intended for everyday article writing.
 :::
 
+[quote]A codex page should not feel like raw Markdown wearing a costume. The formatting layer should make doctrine, fragments, tables, warnings, equations, and prose feel like parts of the same archive.|VISCERIUM component gallery note[/quote]
+
 ## Typography system
 
-The codex uses **Cinzel** as the display face for the main title layer, **Source Serif 4** for long-form prose, **IBM Plex Sans** for interface and metadata, and **IBM Plex Mono** for code or technical fragments.
+[card:accent]
+The codex uses **Cinzel** as the display face for the main title layer, **Literata** for long-form prose and H2 section headings, **Saira Semi Condensed** for interface and metadata, and **JetBrains Mono** for code or technical fragments.
 
 [cols:2-1 gap=lg]
 [col]
 # Cinzel H1 Display
 
-## Source Serif H2 Archive Layer
+## Literata H2 Archive Layer
 
 This body copy should feel like a public codex: readable, literary, and archival without becoming too ornate. It needs to carry CITADEL prose and ENTROPY technical notes without forcing either era to dress as the other.
 
-### IBM Plex Sans lower heading
+### Saira Semi Condensed lower heading
 
-Small labels, navigation, metadata, tables, captions, and structural UI should feel cleaner and more industrial than the prose.
+Small labels, navigation, metadata, tables, captions, and structural UI should feel sharper and more industrial than the prose.
 [/col]
 
 [col]
-[card:accent]
+[card:muted]
 ### Font roles
 
 - Display: `Cinzel`
-- Body: `Source Serif 4`
-- UI: `IBM Plex Sans`
-- Code: `IBM Plex Mono`
+- Body: `Literata`
+- UI: `Saira Semi Condensed`
+- Code: `JetBrains Mono`
 [/card]
 [/col]
 [/cols]
+[/card]
 
 ```txt
 L23A: RTLR/ar
@@ -82,7 +86,44 @@ ASTU-NEARSIGHT-DOC-771
 
 ## Codex formatting tags
 
-The tags below are transformed during the Obsidian-to-Starlight sync step. They are written like BBCode, but rendered as responsive layout HTML with controlled CSS classes.
+[note:title="Authoring layer"]
+The tags below are transformed during the Obsidian-to-Starlight sync step. They are written like BBCode, but rendered as responsive layout HTML with controlled CSS classes. Use them when the article needs structure without hand-coding each section.
+[/note]
+
+[cols:1-1-1 gap=lg]
+[col]
+[card:accent]
+### Layout
+
+- `[cols]`
+- `[row]`
+- `[col]`
+- responsive ratios
+[/card]
+[/col]
+
+[col]
+[card]
+### Content panels
+
+- `[card]`
+- `[note]`
+- `[warning]`
+- `[lore]`
+[/card]
+[/col]
+
+[col]
+[card:muted]
+### Special sections
+
+- `[quote]`
+- `[equation]`
+- fenced `math`
+- normal Markdown tables
+[/card]
+[/col]
+[/cols]
 
 ### Equal columns
 
@@ -98,6 +139,7 @@ Right column content.
 [/cols]
 ```
 
+[card:muted]
 [cols]
 [col]
 ### Askalia
@@ -119,6 +161,7 @@ Fertile land, cheap mead, and roads where the trees know how to keep secrets.
 - Dangerous travel between counties
 [/col]
 [/cols]
+[/card]
 
 ### Unequal columns
 
@@ -134,6 +177,7 @@ Narrow sidebar note.
 [/cols]
 ```
 
+[card]
 [cols:2-1 gap=lg]
 [col]
 ### Wide article body
@@ -155,6 +199,7 @@ Use this for quick facts, warnings, trade goods, faction doctrine, or a tiny tim
 [/card]
 [/col]
 [/cols]
+[/card]
 
 ### Image and text split
 
@@ -170,9 +215,10 @@ Text beside the image.
 [/cols]
 ```
 
+[card:muted]
 [cols:1-2 align=center]
 [col]
-[card:muted compact]
+[card:accent compact]
 ### Image slot
 
 This column is where an Obsidian image embed can sit. The sync script resolves embeds before the page is rendered.
@@ -183,6 +229,7 @@ This column is where an Obsidian image embed can sit. The sync script resolves e
 A useful codex page often needs an artefact, map, banner, heraldic mark, weapon plate, or portrait beside text without exposing a fake table. This layout gives you that without having to write HTML in every article.
 [/col]
 [/cols]
+[/card]
 
 ### 12-column row layout
 
@@ -198,6 +245,7 @@ Sidebar. Full width on mobile, four-twelfths on desktop.
 [/row]
 ```
 
+[card]
 [row gap=lg]
 [col:12 md:8]
 ### Main lore lane
@@ -206,7 +254,7 @@ Use `[row]` when you need more precise control than simple `[cols]` ratios. Colu
 [/col]
 
 [col:12 md:4]
-[card]
+[card:accent]
 ### Infobox lane
 
 - `col:12` on mobile
@@ -215,6 +263,7 @@ Use `[row]` when you need more precise control than simple `[cols]` ratios. Colu
 [/card]
 [/col]
 [/row]
+[/card]
 
 ### Responsive reordering
 
@@ -230,6 +279,7 @@ Visual first on desktop, second on mobile.
 [/row]
 ```
 
+[card:muted]
 [row]
 [col:12 md:6 order-md:2]
 ### Reading order
@@ -245,8 +295,9 @@ This appears first on desktop but second on mobile.
 [/card]
 [/col]
 [/row]
+[/card]
 
-### Cards and callouts
+### Cards, callouts, and quotes
 
 ```md
 [card]
@@ -264,6 +315,8 @@ Warning content.
 [lore:title="In-world fragment"]
 Lore fragment.
 [/lore]
+
+[quote]The horn did not sound. It remembered.|Recovered fragment[/quote]
 ```
 
 [cols]
@@ -296,6 +349,13 @@ This example could mark slavery, body horror, execution, plague, or any other ma
 The horn did not sound. It remembered.
 [/lore]
 
+[quote]The horn did not sound. It remembered.|Recovered fragment, Lorndale Archive[/quote]
+
+### Tables and safety checks
+
+[cols:2-1 gap=lg]
+[col]
+[card:muted]
 ### Tables are untouched
 
 This is a normal Markdown table. The codex formatter does not modify it.
@@ -305,7 +365,11 @@ This is a normal Markdown table. The codex formatter does not modify it.
 | Population band | 3 | Still regular Markdown. |
 | Trade risk | 8 | No invisible layout behavior. |
 | Canon status | 1 | Rendered as a table. |
+[/card]
+[/col]
 
+[col]
+[card]
 ### Tags inside code blocks are untouched
 
 ```md
@@ -315,9 +379,13 @@ This is documentation, not a real layout.
 [/col]
 [/cols]
 ```
+[/card]
+[/col]
+[/cols]
 
 ## Mathematical notation
 
+[card:accent]
 Inline TeX can be written like GitHub-style Markdown: $a^2+b^2=c^2$.
 
 Display TeX can be written with double-dollar delimiters:
@@ -325,6 +393,7 @@ Display TeX can be written with double-dollar delimiters:
 $$
 a^2+b^2=c^2
 $$
+[/card]
 
 Fenced `math` blocks are converted into display equations at runtime:
 
@@ -458,7 +527,7 @@ Good for turning a dense codex index into a browsable overview.
 
 1. Write lore in `Vault/Lore` using normal Markdown.
 
-2. Use codex tags such as `[cols:2-1]`, `[row]`, `[col:12 md:8]`, `[card]`, `[note]`, `[warning]`, `[lore]`, and `[equation]` when you need layout.
+2. Use codex tags such as `[cols:2-1]`, `[row]`, `[col:12 md:8]`, `[card]`, `[note]`, `[warning]`, `[lore]`, `[quote]`, and `[equation]` when you need layout.
 
 3. Run the sync and build commands.
 
