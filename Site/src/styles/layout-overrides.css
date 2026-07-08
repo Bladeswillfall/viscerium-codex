@@ -2,6 +2,11 @@
   container-type: inline-size;
 }
 
+.right-sidebar-container,
+.right-sidebar {
+  width: 100%;
+}
+
 .codex-comments,
 .codex-site-footer {
   box-sizing: border-box;
