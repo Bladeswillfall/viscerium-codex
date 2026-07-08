@@ -5,6 +5,42 @@ import { PageBacklinks, PageGraph } from 'starlight-site-graph/components';
 
 const { starlightRoute } = Astro.locals;
 const entry = starlightRoute.entry.data;
+
+function isPresent(value) {
+  return value !== undefined && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0);
+}
+
+function isExternalUrl(value) {
+  return typeof value === 'string' && /^[a-z][a-z0-9+.-]*:/i.test(value);
+}
+
+function normaliseAssetPath(value, category = 'images') {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.startsWith('/') || isExternalUrl(trimmed)) return trimmed;
+  return `/assets/${category}/${trimmed.split('/').pop()}`;
+}
+
+function normaliseRoute(value) {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.startsWith('/') || trimmed.startsWith('#') || isExternalUrl(trimmed)) return trimmed;
+  return `/${trimmed.replace(/^\/+|\/+$/g, '')}/`;
+}
+
+function formatValue(value) {
+  return Array.isArray(value) ? value.join(', ') : String(value).replace(/-/g, ' ');
+}
+
+const rawImageSource = entry.image ?? (entry.type === 'image' ? entry.asset : undefined);
+const sidebarImage = normaliseAssetPath(rawImageSource);
+const imageDetailHref = normaliseRoute(entry.imagePage);
+const imageAlt = entry.alt ?? `${entry.title} image`;
+const artworkTitle = entry.imageTitle ?? (entry.type === 'image' ? entry.title : undefined);
+const artworkArtist = entry.artist ?? entry.credit;
+const resolution = entry.width && entry.height ? `${entry.width} × ${entry.height}` : undefined;
 const sidebarFields = [
   ['Type', entry.type],
   ['Status', entry.status],
@@ -13,14 +49,17 @@ const sidebarFields = [
   ['Location', entry.location],
   ['Character', entry.character],
   ['Tags', entry.tags],
-].filter(([, value]) => value !== undefined && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0));
-const imageSource = entry.image ?? (entry.type === 'image' ? entry.asset : undefined);
-const sidebarImage = typeof imageSource === 'string' && imageSource.startsWith('/') ? imageSource : undefined;
-const imageAlt = entry.alt ?? `${entry.title} image`;
-
-function formatValue(value) {
-  return Array.isArray(value) ? value.join(', ') : String(value).replace(/-/g, ' ');
-}
+  ['Artwork', entry.imageTitle],
+  ['Artist', entry.artist],
+  ['Editor', entry.editor],
+  ['Source', entry.source],
+  ['Source URL', entry.sourceUrl],
+  ['Credit', entry.artist ? undefined : entry.credit],
+  ['License', entry.license],
+  ['Rights', entry.rights],
+  ['Usage', entry.usage],
+  ['Resolution', resolution],
+].filter(([, value]) => isPresent(value));
 ---
 
 {
@@ -32,7 +71,23 @@ function formatValue(value) {
       <aside class="right-sidebar-panel codex-page-sidebar sl-hidden lg:sl-block" aria-label="Page sidebar">
         <div class="sl-container">
           <section class="codex-sidebar-card" aria-labelledby="codex-sidebar-title">
-            {sidebarImage && <img class="codex-sidebar-image" src={sidebarImage} alt={imageAlt} loading="lazy" decoding="async" />}
+            {sidebarImage && (
+              <div class="codex-sidebar-artwork">
+                {imageDetailHref ? (
+                  <a class="codex-sidebar-image-link" href={imageDetailHref} aria-label={`Open image details for ${artworkTitle ?? entry.title}`}>
+                    <img class="codex-sidebar-image" src={sidebarImage} alt={imageAlt} loading="lazy" decoding="async" />
+                  </a>
+                ) : (
+                  <img class="codex-sidebar-image" src={sidebarImage} alt={imageAlt} loading="lazy" decoding="async" />
+                )}
+                {(artworkTitle || artworkArtist) && (
+                  <div class="codex-sidebar-art-caption">
+                    {artworkTitle && <p class="codex-sidebar-art-title">{artworkTitle}</p>}
+                    {artworkArtist && <p class="codex-sidebar-art-artist">by {artworkArtist}</p>}
+                  </div>
+                )}
+              </div>
+            )}
             <div class="codex-sidebar-body">
               <p class="codex-sidebar-kicker">{entry.type ?? 'Entry'}</p>
               <h2 id="codex-sidebar-title">{entry.title}</h2>
@@ -42,7 +97,7 @@ function formatValue(value) {
                   {sidebarFields.map(([label, value]) => (
                     <div>
                       <dt>{label}</dt>
-                      <dd>{formatValue(value)}</dd>
+                      <dd>{isExternalUrl(value) ? <a href={value} target="_blank" rel="noreferrer">Open source</a> : formatValue(value)}</dd>
                     </div>
                   ))}
                 </dl>
