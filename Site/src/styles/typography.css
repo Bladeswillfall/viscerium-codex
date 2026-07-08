@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Source+Serif+4:opsz,wght@8..60,400..900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --vc-font-display: 'Cinzel', Georgia, 'Times New Roman', serif;
+  --vc-font-body: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --vc-font-ui: 'IBM Plex Sans', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --vc-font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --sl-font: var(--vc-font-ui);
+  --sl-font-mono: var(--vc-font-mono);
+}
+
+html,
+body,
+.sl-markdown-content {
+  font-family: var(--vc-font-body);
+}
+
+.site-title,
+.header .site-title,
+.sl-markdown-content h1,
+.content-panel h1,
+h1#_top {
+  font-family: var(--vc-font-display);
+  font-weight: 650;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.sl-markdown-content h2,
+.content-panel h2 {
+  font-family: var(--vc-font-body);
+  font-weight: 750;
+  letter-spacing: .01em;
+}
+
+.sl-markdown-content h3,
+.sl-markdown-content h4,
+.sl-markdown-content h5,
+.sl-markdown-content h6,
+.content-panel h3,
+.content-panel h4,
+.content-panel h5,
+.content-panel h6 {
+  font-family: var(--vc-font-ui);
+  font-weight: 650;
+  letter-spacing: .015em;
+}
+
+nav,
+button,
+input,
+select,
+textarea,
+.header,
+.sidebar-pane,
+.right-sidebar,
+.pagination-links,
+.codex-meta,
+.codex-sidebar-meta,
+.codex-breadcrumbs,
+.codex-comments,
+.codex-warning,
+.ion-codex-footer,
+.cx-callout-title,
+figcaption,
+table th {
+  font-family: var(--vc-font-ui);
+}
+
+p,
+li,
+blockquote,
+table td,
+.sl-markdown-content dd {
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}
+
+code,
+pre,
+kbd,
+samp,
+.expressive-code,
+.expressive-code pre,
+.expressive-code code {
+  font-family: var(--vc-font-mono);
+}
+
+.sl-markdown-content code:not(pre code) {
+  font-size: .92em;
+}
+
+/* MathJax and codex equation panels. */
+.cx-equation {
+  margin-block: 1.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--codex-accent-soft);
+  border-radius: .85rem;
+  background: linear-gradient(145deg, rgba(184, 135, 70, .10), rgba(255, 255, 255, .025));
+}
+
+.cx-equation-title {
+  margin: 0 0 .75rem;
+  color: var(--sl-color-accent-high);
+  font-family: var(--vc-font-ui);
+  font-size: var(--sl-text-sm);
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.cx-math-display {
+  margin-block: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: .35rem;
+}
+
+.cx-equation > :first-child,
+.cx-math-display > :first-child {
+  margin-top: 0;
+}
+
+.cx-equation > :last-child,
+.cx-math-display > :last-child {
+  margin-bottom: 0;
+}
+
+mjx-container {
+  font-size: 1.04em;
+}
+
+mjx-container[jax='CHTML'][display='true'] {
+  margin: 1rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: .25rem;
+}
