@@ -1,64 +1,61 @@
 @layer starlight.core {
   :root {
-    --calendar-surface: rgba(255, 255, 255, .035);
-    --calendar-surface-strong: rgba(255, 255, 255, .065);
-    --calendar-border: rgba(184, 135, 70, .18);
-    --calendar-border-strong: rgba(184, 135, 70, .34);
-    --calendar-text: rgba(255, 255, 255, .9);
-    --calendar-muted: rgba(255, 255, 255, .58);
-    --calendar-winter: #bcd7de;
-    --calendar-spring: #f0d989;
-    --calendar-summer: #b9d6ad;
-    --calendar-autumn: #e0b27e;
-    --calendar-leap: #b8a7dc;
-    --calendar-holiday: #e7868d;
-    --calendar-marker: #ff6969;
+    --calendar-surface: rgba(255, 255, 255, .025);
+    --calendar-surface-soft: rgba(255, 255, 255, .04);
+    --calendar-border: rgba(184, 135, 70, .16);
+    --calendar-border-strong: rgba(184, 135, 70, .32);
+    --calendar-text: rgba(255, 255, 255, .88);
+    --calendar-muted: rgba(255, 255, 255, .56);
+    --calendar-winter: #9cc9d3;
+    --calendar-spring: #dfc862;
+    --calendar-summer: #94be8c;
+    --calendar-autumn: #d29b65;
+    --calendar-leap: #a893d0;
+    --calendar-holiday: #d86f78;
+    --calendar-marker: #ee5f67;
   }
 
   .calendar-module {
-    margin-block: 2.5rem;
-    padding: clamp(1rem, 2vw, 1.35rem);
+    margin-block: 2.75rem;
+    padding: clamp(1.15rem, 2.2vw, 1.75rem);
     border: 1px solid var(--calendar-border);
-    border-radius: 1.25rem;
-    background:
-      radial-gradient(circle at top left, rgba(184, 135, 70, .12), transparent 28rem),
-      linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .012));
-    box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, .22);
+    border-radius: 1.35rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .032), rgba(255, 255, 255, .012));
   }
 
   .calendar-module__intro {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 1rem;
-    margin-block-end: 1.35rem;
+    gap: 1.15rem;
+    margin-block-end: clamp(1.5rem, 3vw, 2.25rem);
   }
 
   .calendar-module__intro h2 {
-    margin-block: .1rem .35rem;
+    margin-block: .1rem .45rem;
     color: var(--sl-color-white);
     font-family: var(--vc-font-display);
-    letter-spacing: .02em;
+    letter-spacing: .015em;
   }
 
   .calendar-module__intro p:not(.codex-kicker) {
-    max-width: 70ch;
+    max-width: 68ch;
     color: var(--sl-color-gray-2);
   }
 
   .calendar-module__facts {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-    gap: .8rem;
+    gap: 1rem 1.25rem;
     padding: 1rem;
     border: 1px solid var(--calendar-border);
     border-radius: 1rem;
-    background: rgba(0, 0, 0, .22);
+    background: rgba(0, 0, 0, .16);
   }
 
   .calendar-module__facts div,
   .calendar-legend dl div {
     display: grid;
-    gap: .22rem;
+    gap: .24rem;
   }
 
   .calendar-module__facts dt,
@@ -80,18 +77,17 @@
 
   .calendar-year-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
-    gap: clamp(1rem, 2vw, 1.35rem);
+    grid-template-columns: repeat(auto-fit, minmax(min(21rem, 100%), 1fr));
+    gap: clamp(1.35rem, 2.5vw, 2rem);
     align-items: start;
   }
 
   .calendar-month {
     min-width: 0;
-    padding: .75rem;
+    padding: .85rem;
     border: 1px solid var(--calendar-border);
-    border-radius: 1rem;
-    background: linear-gradient(180deg, var(--calendar-surface-strong), var(--calendar-surface));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035);
+    border-radius: 1.05rem;
+    background: var(--calendar-surface);
   }
 
   .calendar-month h3 {
@@ -99,12 +95,12 @@
     align-items: baseline;
     justify-content: space-between;
     gap: .75rem;
-    margin: 0 0 .7rem;
+    margin: 0 0 .85rem;
     color: var(--sl-color-white);
     font-family: var(--vc-font-ui);
-    font-size: clamp(1.05rem, 1.25vw, 1.22rem);
-    font-weight: 650;
-    letter-spacing: .01em;
+    font-size: clamp(1.05rem, 1.4vw, 1.28rem);
+    font-weight: 600;
+    letter-spacing: .005em;
     text-align: start;
   }
 
@@ -117,7 +113,7 @@
   .calendar-days {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: .22rem;
+    gap: .42rem;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -126,21 +122,24 @@
   .calendar-days--intercalary {
     display: inline-grid;
     grid-template-columns: repeat(2, minmax(3.35rem, 1fr));
-    width: min(100%, 7.25rem);
+    width: min(100%, 7.75rem);
+  }
+
+  .calendar-day,
+  .calendar-day + .calendar-day {
+    margin: 0;
   }
 
   .calendar-day {
     --calendar-season-color: var(--calendar-spring);
     position: relative;
     min-width: 0;
-    min-height: 2.55rem;
-    aspect-ratio: 1 / .78;
+    min-height: 3.05rem;
+    aspect-ratio: 1 / .88;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, .06);
-    border-radius: .42rem;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .025)),
-      color-mix(in srgb, var(--calendar-season-color) 18%, #101010);
+    border: 1px solid rgba(255, 255, 255, .075);
+    border-radius: .7rem;
+    background: rgba(255, 255, 255, .025);
     color: var(--calendar-text);
     font-family: var(--vc-font-ui);
     transition:
@@ -153,22 +152,24 @@
   .calendar-day::before {
     content: '';
     position: absolute;
-    inset-block-start: 0;
-    inset-inline: 0;
-    height: .2rem;
+    inset-block-start: .42rem;
+    inset-inline-start: .42rem;
+    width: .42rem;
+    height: .42rem;
+    border-radius: 999px;
     background: var(--calendar-season-color);
-    opacity: .88;
+    opacity: .9;
     pointer-events: none;
   }
 
   .calendar-day a,
   .calendar-day > span {
     display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
-    padding: .46rem .48rem .38rem;
+    padding: .55rem;
     color: inherit;
     text-decoration: none;
   }
@@ -182,7 +183,8 @@
   .calendar-day:focus-within {
     transform: translateY(-1px);
     border-color: var(--calendar-border-strong);
-    box-shadow: 0 .5rem 1.25rem rgba(0, 0, 0, .26);
+    background: var(--calendar-surface-soft);
+    box-shadow: 0 .45rem 1rem rgba(0, 0, 0, .18);
   }
 
   .calendar-day__number {
@@ -191,12 +193,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 1.45rem;
-    height: 1.45rem;
-    border-radius: .35rem;
+    min-width: 1.6rem;
+    height: 1.6rem;
+    border-radius: .5rem;
     color: var(--calendar-text);
-    font-size: clamp(.88rem, 1.55vw, 1.05rem);
-    font-weight: 760;
+    font-size: clamp(.95rem, 1.55vw, 1.12rem);
+    font-weight: 700;
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
@@ -204,15 +206,16 @@
   .calendar-day__weekday {
     position: absolute;
     z-index: 2;
-    inset-block-end: .38rem;
-    inset-inline: .48rem;
+    inset-block-end: .42rem;
+    inset-inline: .42rem;
     overflow: hidden;
     color: var(--calendar-muted);
-    font-size: .58rem;
+    font-size: .6rem;
     font-weight: 700;
-    letter-spacing: .03em;
+    letter-spacing: .035em;
     line-height: 1;
     opacity: 0;
+    text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
     transition: opacity .16s ease;
@@ -230,26 +233,24 @@
   .calendar-day--leap { --calendar-season-color: var(--calendar-leap); }
 
   .calendar-day--holiday {
-    border-color: color-mix(in srgb, var(--calendar-holiday) 55%, transparent);
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025)),
-      color-mix(in srgb, var(--calendar-holiday) 26%, #101010);
+    border-color: color-mix(in srgb, var(--calendar-holiday) 45%, transparent);
   }
 
   .calendar-day--holiday::after {
     content: '';
     position: absolute;
     z-index: 1;
-    inset: .32rem;
-    border: 1px solid color-mix(in srgb, var(--calendar-holiday) 45%, transparent);
-    border-radius: .32rem;
+    inset: .34rem;
+    border: 1px solid color-mix(in srgb, var(--calendar-holiday) 42%, transparent);
+    border-radius: .5rem;
     pointer-events: none;
   }
 
-  .calendar-day--marker .calendar-day__number {
+  .calendar-day--marker .calendar-day__number,
+  .calendar-day--holiday .calendar-day__number {
     color: #fff;
-    background: color-mix(in srgb, var(--calendar-marker) 70%, #101010);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--calendar-marker) 42%, transparent);
+    background: color-mix(in srgb, var(--calendar-marker) 68%, #101010);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--calendar-marker) 36%, transparent);
   }
 
   .calendar-day--inactive {
@@ -261,7 +262,7 @@
     padding: 1rem;
     border: 1px solid var(--calendar-border);
     border-radius: 1rem;
-    background: rgba(0, 0, 0, .22);
+    background: rgba(0, 0, 0, .16);
   }
 
   .calendar-legend h3 {
@@ -273,7 +274,7 @@
   .calendar-legend dl {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-    gap: .8rem 1rem;
+    gap: .9rem 1rem;
     margin: 0;
   }
 
@@ -286,11 +287,10 @@
   .calendar-key {
     display: inline-grid;
     place-items: center;
-    width: 1rem;
-    height: 1rem;
+    width: .9rem;
+    height: .9rem;
     border: 1px solid rgba(255, 255, 255, .18);
-    border-radius: .25rem;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16);
+    border-radius: 999px;
   }
 
   .calendar-key--winter { background: var(--calendar-winter); }
@@ -298,15 +298,19 @@
   .calendar-key--summer { background: var(--calendar-summer); }
   .calendar-key--autumn { background: var(--calendar-autumn); }
   .calendar-key--leap { background: var(--calendar-leap); }
-  .calendar-key--holiday { background: var(--calendar-holiday); }
+  .calendar-key--holiday {
+    border-radius: .25rem;
+    background: var(--calendar-holiday);
+  }
   .calendar-key--marker {
+    border-radius: .35rem;
     background: color-mix(in srgb, var(--calendar-marker) 70%, #101010);
     color: #fff;
   }
   .calendar-key--marker::after {
     content: '!';
     color: #fff;
-    font-size: .68rem;
+    font-size: .62rem;
     font-weight: 900;
     line-height: 1;
   }
@@ -398,7 +402,7 @@
     }
 
     .calendar-day {
-      min-height: 2.25rem;
+      min-height: 2.75rem;
     }
   }
 }
