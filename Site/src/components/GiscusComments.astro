@@ -169,6 +169,21 @@ const serializedConfig = JSON.stringify(socialConfig);
         return 'responded';
       };
 
+      const actionNouns = {
+        liked: 'like',
+        reposted: 'repost',
+        bookmarked: 'bookmark',
+        replied: 'reply',
+        mentioned: 'mention',
+        responded: 'response',
+      };
+
+      const pluralize = (noun, count) => {
+        if (count === 1) return noun;
+        if (noun === 'reply') return 'replies';
+        return `${noun}s`;
+      };
+
       const getMentionDate = (mention) => {
         const rawDate = mention?.published || mention?.['wm-received'];
         const date = rawDate ? new Date(rawDate) : null;
@@ -213,7 +228,10 @@ const serializedConfig = JSON.stringify(socialConfig);
             return total;
           }, {});
           const countText = Object.entries(counts)
-            .map(([action, count]) => `${count} ${action}${count === 1 ? '' : action.endsWith('s') ? 'es' : 's'}`)
+            .map(([action, count]) => {
+              const noun = actionNouns[action] || 'response';
+              return `${count} ${pluralize(noun, count)}`;
+            })
             .join(' · ');
 
           state.textContent = `${mentions.length} wider-web response${mentions.length === 1 ? '' : 's'}.`;
