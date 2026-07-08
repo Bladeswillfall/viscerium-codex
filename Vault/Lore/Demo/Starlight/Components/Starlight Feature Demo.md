@@ -1,11 +1,20 @@
 ---
 title: Starlight Feature Demo
-description: "A VISCERIUM codex demo page for testing Obsidian Markdown, Astro Starlight rendering, headings, asides, code blocks, tables, details, embeds, and frontmatter behaviour."
+description: "A VISCERIUM codex demo page for testing Obsidian Markdown, Astro Starlight rendering, headings, asides, code blocks, tables, images, calendar rendering, and frontmatter behaviour."
 headerImage: /assets/images/viscerium-banner.webp
 publish: true
 status: canon
-slug: demo/starlight-feature-demo
 type: system
+calendarDate:
+  calendar: okse
+  year: 20004
+  month: solmanuthur
+  day: 16
+  displayCalendars:
+    - okse
+calendarShowcase:
+  calendar: okse
+  year: 4
 era:
   - CITADEL
   - SMOG
@@ -39,35 +48,29 @@ pagefind: false
 
 %%
 Obsidian-only note:
-Copy this file into `Vault/Lore/Demo/Starlight Feature Demo.md`.
-The repo sync script strips Obsidian comments like this before publishing.
+This file is the source of `/demo/starlight/components/starlight-feature-demo/`.
+The build syncs this note from `Vault/Lore` into `Site/src/content/docs`.
 %%
 
-This page is a visual stress-test for the VISCERIUM codex. It is intentionally overloaded. Keep it around while tuning theme, typography, sidebar labels, table of contents depth, admonitions, code windows, and Obsidian-to-Starlight publishing behaviour.
+This page is a visual stress-test for the VISCERIUM codex. It is intentionally overloaded, but it stays as **plain Markdown** so it remains comfortable to edit in Obsidian.
 
-The tone samples below use VISCERIUM material because a sterile demo page lies to you. Your site needs to survive actual codex prose: dense faction names, occult terminology, short quotes, long paragraphs, ugly tables, embedded assets, and half-finished notes.
+The calendar visible near the page title is not written with MDX. It is rendered by the site layout from the `calendarDate` and `calendarShowcase` frontmatter above.
 
 :::note[Demo intent]
-This file is written as **plain Markdown** so it opens cleanly in Obsidian and should pass through the repo's `Vault/Lore` sync pipeline. Components like live cards, tabs, file trees, badges, icons, and link buttons need MDX or Markdoc. Use the companion `Starlight Component Gallery.mdx` for those.
+This page should show an automatic Okse date badge and a full Okse calendar module. If either is missing on the live site, the deployment is either stale or the calendar component failed during build.
 :::
 
-## Rendering checklist
+## Calendar rendering check
 
-- [ ] Frontmatter parses without build errors.
-- [ ] The banner appears at the top of the page.
-- [ ] Sidebar label shows as `Feature Demo` with a badge.
-- [ ] H2 and H3 headings appear in the right-hand table of contents.
-- [ ] H4-H6 headings render but do not clutter the table of contents.
-- [ ] Asides render as styled Starlight callouts.
-- [ ] Code blocks show syntax highlighting, titles, frames, line highlights, and diffs.
-- [ ] Tables remain readable on mobile.
-- [ ] Details/summary accordions open and close correctly.
-- [ ] Footnotes jump correctly.
-- [ ] Obsidian embeds and wikilinks either resolve or fail gracefully.
+Expected visible result on this exact route:
+
+- [ ] An event-date badge for `16 Sólmanuthur, 20004` appears under the page title.
+- [ ] A full Okse calendar grid appears near the page title.
+- [ ] The footer link to [the calendar page](/calendar/) resolves.
+
+The same calendar module should also appear on the canonical [Okse Calendar](/calendar/) page.
 
 ## Frontmatter features being tested
-
-This page uses several Starlight and codex-specific frontmatter fields:
 
 | Field | Purpose | Expected effect |
 |---|---|---|
@@ -76,6 +79,8 @@ This page uses several Starlight and codex-specific frontmatter fields:
 | `publish: true` | Codex sync gate | Marks the note as public. |
 | `status: canon` | Codex sync gate | Marks the note as publishable canon. |
 | `type: system` | Codex schema field | Useful for filtering and graphing. |
+| `calendarDate` | Codex date engine | Renders an automatic linked Okse date badge. |
+| `calendarShowcase` | Codex calendar module | Renders the full Okse calendar without MDX imports. |
 | `era`, `faction`, `tags` | Codex taxonomy | Should be accepted by the current schema. |
 | `sidebar` | Sidebar label/order/badge | Tests navigation display. |
 | `tableOfContents` | TOC depth | Keeps only H2-H3 in the page TOC. |
@@ -101,14 +106,6 @@ This H3 should appear in the table of contents if the page settings above are ho
 
 This H4 should render visually but should not appear in the table of contents with the current frontmatter.
 
-##### H5: Tiny detail
-
-Useful for deep reference notes, but do not overuse it.
-
-###### H6: Probably too deep
-
-If your codex page needs H6s, the page probably needs to be split.
-
 ## Paragraph rhythm
 
 Short paragraph:
@@ -133,20 +130,12 @@ A plain note aside is good for neutral context, authorial reminders, or harmless
 Every faction page should answer: **what story does this nation tell itself about why it deserves to survive?**
 :::
 
-:::tip[Icon test]{icon="heart"}
-This tests a custom aside icon. If the icon fails, check the icon name against Starlight's built-in icon set.
-:::
-
 :::caution
 Use caution callouts for non-fatal problems: unstable terminology, canon risk, confusing aliases, or half-deprecated lore.
 :::
 
 :::danger[Canon hazard]
 Use danger callouts sparingly. If every note has one, none of them matter.
-
-- This page contains deliberate stress-test content.
-- Do not mistake demo snippets for final canon.
-- Delete or hide this page before public launch if it feels too artificial.
 :::
 
 ## Blockquotes
@@ -160,30 +149,17 @@ Use danger callouts sparingly. If every note has one, none of them matter.
 
 ## Lists
 
-### Unordered list
-
 - Resonance
 - Warfare
 - Culture
   - Social hierarchy
   - Religion
   - History
-    - Public myth
-    - Private shame
-
-### Ordered list
 
 1. Name the pressure.
 2. Name who benefits from it.
 3. Name who bleeds for it.
 4. Name what breaks when it changes.
-
-### Task list
-
-- [x] Write the public-facing hook.
-- [x] Add a grim, tactile detail.
-- [ ] Replace placeholder art.
-- [ ] Check all wikilinks.
 
 ## Tables
 
@@ -192,61 +168,41 @@ Use danger callouts sparingly. If every note has one, none of them matter.
 | ASTU | Open hands, open minds | Trade security, sea lanes, democratic friction | Short text |
 | TCSC | Progress through unity | Rail power, heavy industry, ideological cohesion | Longer cell text to check wrapping across responsive layouts |
 | KRG | Recovery, salvage, contract survival | Money, deniability, second-hand hardware | Acronym-heavy |
-| Krass Dominion | Tradition survives the weather | Land, fog, inheritance, cunning | Pagan/druidic phrasing |
 | Republic of Askalia | Coin as freedom | Exploitation, slavery, guild pressure | Content warning risk |
 
-## Tables (BBcode-style)
-
-Below is a test for BBcode-like tables for aligning formatting columns/rows without using the regular markdown tables style.
+## Authoring layout tags
 
 [cols:2-1 gap=lg]
 [col]
-Main prose.
+Main article body. This column should behave like normal prose and should not be crushed by the right sidebar or header image.
 [/col]
 
 [col]
 [card:accent]
-Sidebar content.
+### Sidebar content
+
+This card tests the BBCode-like authoring layer.
 [/card]
 [/col]
 [/cols]
 
-Test 2 with rows:
-
-[row]
-[col:12 md:8]
-Main article body.
-[/col]
-
-[col:12 md:4]
-Sidebar body.
-[/col]
-[/row]
-
 ## Links and wikilinks
 
-Normal Markdown links should work in Obsidian and Starlight:
-
 - [Codex home](/)
-- [Astro Starlight docs](https://starlight.astro.build/)
-
-Obsidian wikilinks should be converted by the codex sync script only when the target note is published and can be matched by title or filename:
-
+- [Okse Calendar](/calendar/)
 - [[Republic of Askalia]]
 - [[Myrkild]]
 - [[Nonexistent Demo Target|Custom label for a missing target]]
 
 ## Images and embeds
 
-Markdown image using a public URL:
+Markdown image using a public URL. This should stay inside the article lane and must not float over text:
 
 ![Astro default open graph image](https://raw.githubusercontent.com/withastro/docs/main/public/default-og-image.png)
 
 Obsidian embed syntax for a vault asset:
 
 ![[Tech timeline for VISCERIUM.jpg]]
-
-If the embedded asset is not present in `Vault/Assets/Images`, `Vault/Assets/Maps`, or `Vault/Assets/Documents`, the sync script should replace it with a missing-asset warning.
 
 ## Details / disclosure blocks
 
@@ -258,29 +214,11 @@ The hidden content can include **Markdown**, lists, and links.
 - First hidden item
 - Second hidden item
 - Third hidden item with `inline code`
-
-This is useful for spoilers, deprecated lore, mechanical notes, or long author comments.
 </details>
-
-## Raw HTML snippets
-
-Some HTML is useful in Markdown pages.
-
-<figure>
-  <blockquote>
-    <p>The wall was not built to keep monsters out. It was built to decide who counted as human when the monsters came.</p>
-  </blockquote>
-  <figcaption>— demo epigraph for a defensive doctrine page</figcaption>
-</figure>
-
-Small UI fragments: <mark>highlighted text</mark>, <small>fine print</small>, <kbd>Ctrl</kbd> + <kbd>K</kbd>.
 
 ## Code blocks
 
-### Plain fenced code
-
-```js
-// codex-demo.js
+```js title="codex-demo.js" {2-4}
 export function pressureTestFaction(faction) {
   if (!faction.publicMyth) return 'Decoration wearing a flag';
   if (!faction.materialPressure) return 'Aesthetic without engine';
@@ -288,81 +226,17 @@ export function pressureTestFaction(faction) {
 }
 ```
 
-### Highlighted lines
-
-```js {2-4}
-const faction = 'Republic of Askalia';
-const publicStory = 'Trade makes men free';
-const hiddenCost = 'Everything has a price, including people';
-const verdict = publicStory.includes('free') && hiddenCost.includes('price');
-console.log({ faction, verdict });
-```
-
-### Highlighted text and regex markers
-
-```js "Resonance" /Wyrdweave|Galdyr/
-const forces = ['Resonance', 'Wyrdweave', 'Galdyr'];
-console.log(forces.join(' / '));
-```
-
-### Inserted and deleted markers
-
-```js ins="Republic" del="Kingdom"
-const oldName = 'Kingdom of Askalia';
-const newName = 'Republic of Askalia';
-```
-
-### Diff block with language
-
-```diff lang="md"
-- The nation is rich and powerful.
-+ Askalia is rich because it learned how to turn dependency into law.
-```
-
-### Terminal frame with title
-
 ```bash title="Local Starlight check"
 cd Site
 npm run sync
 npm run build
 ```
 
-### No frame
-
-```bash frame="none"
-echo "This should render without a terminal/code-editor frame."
-```
-
-### JSON sample
-
-```json title="codex-page.json"
-{
-  "title": "Starlight Feature Demo",
-  "publish": true,
-  "status": "canon",
-  "type": "system",
-  "pagefind": false
-}
-```
-
 ## Footnotes
 
-This sentence has a footnote.[^1] This sentence has another footnote with a longer label.[^codex-note]
+This sentence has a footnote.[^1]
 
 [^1]: A short footnote for checking Starlight's default footnote styling.
-[^codex-note]: A longer footnote. Use these for small clarifications, not for hiding essential canon. If the footnote is required to understand the page, it belongs in the main text.
-
-## Horizontal rule
-
-Above the rule.
-
----
-
-Below the rule.
-
-## Stress paragraph: dense lore names
-
-Galdyr, the Wyrdweave, the Myrkild, the Naranor, ASTU, TCSC, KRG, the Republic of Askalia, the Krass Dominion, the Okse Dominion, and the Throatless all appear in one paragraph to check line-height, wrapping, search excerpts, and whether the page starts to look like alphabet soup. If it does, the design is not the only problem; the writing may need cleaner rhythm.
 
 ## Final deletion note
 
