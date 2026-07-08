@@ -1,0 +1,204 @@
+---
+title: Starlight Component Gallery
+description: "An MDX companion page for testing live Astro Starlight components in the VISCERIUM codex."
+publish: true
+status: canon
+slug: demo/starlight-component-gallery
+type: system
+tags:
+  - demo
+  - starlight
+  - mdx
+sidebar:
+  label: Component Gallery
+  order: 1000
+  badge:
+    text: MDX
+    variant: caution
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 3
+pagefind: false
+prev: false
+next: false
+---
+
+import {
+  Badge,
+  Card,
+  CardGrid,
+  Code,
+  FileTree,
+  Icon,
+  LinkButton,
+  LinkCard,
+  Steps,
+  Tabs,
+  TabItem,
+} from '@astrojs/starlight/components';
+
+export const codexExample = `const faction = 'TCSC';\nconst doctrine = 'slow-moving walls with civil-industrial compatibility';\nconsole.log({ faction, doctrine });`;
+
+This page is the MDX companion to `Starlight Feature Demo.md`. Use it when you want to see the live Starlight component layouts that plain Markdown cannot render as JSX.
+
+:::caution[MDX-only test page]
+Copy this file into `Vault/Lore/Demo/Starlight Component Gallery.mdx`. If the build fails, your current site setup does not have MDX component rendering enabled, even though the sync script accepts `.mdx` files.
+:::
+
+## Badges
+
+- <Badge text="Default" />
+- <Badge text="Note" variant="note" />
+- <Badge text="Success" variant="success" />
+- <Badge text="Tip" variant="tip" />
+- <Badge text="Caution" variant="caution" />
+- <Badge text="Danger" variant="danger" />
+- <Badge text="Small" size="small" />
+- <Badge text="Medium" size="medium" />
+- <Badge text="Large" size="large" />
+
+## Icons
+
+<Icon name="star" label="Star icon" /> <Icon name="rocket" label="Rocket icon" /> <Icon name="open-book" label="Open book icon" /> <Icon name="information" label="Information icon" />
+
+## Link buttons
+
+<LinkButton href="/" icon="right-arrow">Codex Home</LinkButton>{' '}
+<LinkButton href="https://starlight.astro.build/" variant="secondary" icon="external" iconPlacement="start">Starlight Docs</LinkButton>{' '}
+<LinkButton href="/demo/starlight-feature-demo/" variant="minimal">Markdown Demo</LinkButton>
+
+## Cards
+
+<Card title="Plain card">
+A simple boxed content region for a doctrine note, faction warning, or summary.
+</Card>
+
+<Card title="Icon card" icon="open-book">
+Good for turning a dense codex index into a browsable overview.
+</Card>
+
+## Card grid
+
+<CardGrid>
+  <Card title="CITADEL" icon="open-book">
+    Steel, bone, thrones, early gunpowder, and walls that decide who lives long enough to matter.
+  </Card>
+  <Card title="SMOG" icon="seti:config">
+    Industry, mud, gas masks, labour politics, trench memory, and engines choking on progress.
+  </Card>
+  <Card title="NEARSIGHT" icon="database">
+    Near-future war, exoskeletons, drones, high walls, green districts, and slums beyond the line.
+  </Card>
+  <Card title="ENTROPY" icon="rocket">
+    Vacuum warfare, body modification, dark cyberpunk cities, and cosmic pressure finally made visible.
+  </Card>
+</CardGrid>
+
+## Staggered card grid
+
+<CardGrid stagger>
+  <Card title="Beauty" icon="heart">
+    The setting should still have wonder. Without beauty, the horror has nothing to corrupt.
+  </Card>
+  <Card title="Danger" icon="warning">
+    The world should punish carelessness, vanity, and soft assumptions.
+  </Card>
+</CardGrid>
+
+## Link cards
+
+<LinkCard title="Markdown Feature Demo" href="/demo/starlight-feature-demo/" description="Plain Markdown page for Obsidian-safe rendering tests." />
+
+<CardGrid>
+  <LinkCard title="Codex Home" href="/" description="Return to the public VISCERIUM codex root." />
+  <LinkCard title="Starlight Components" href="https://starlight.astro.build/components/using-components/" description="Official reference for Starlight components." />
+</CardGrid>
+
+## File tree
+
+<FileTree>
+
+- Vault
+  - Lore
+    - Demo
+      - **Starlight Feature Demo.md** plain Markdown stress test
+      - **Starlight Component Gallery.mdx** live component stress test
+  - Assets
+    - Images
+      - Tech timeline for VISCERIUM.jpg
+    - Maps/
+    - Documents/
+- Site
+  - src
+    - content
+      - docs/ regenerated output; do not edit by hand
+  - scripts
+    - sync-public-notes.mjs
+- README.md
+
+</FileTree>
+
+## Steps
+
+<Steps>
+
+1. Copy the Markdown demo into `Vault/Lore/Demo/Starlight Feature Demo.md`.
+
+2. Copy this MDX page into `Vault/Lore/Demo/Starlight Component Gallery.mdx`.
+
+3. Run the sync and build commands.
+
+   ```bash title="Build test"
+   cd Site
+   npm run sync
+   npm run build
+   ```
+
+4. Check the public site and delete the demo pages once styling is stable.
+
+</Steps>
+
+## Tabs
+
+<Tabs>
+  <TabItem label="ASTU" icon="rocket">
+    Fast, maritime, trade-first, internationally connected, and politically polished.
+  </TabItem>
+  <TabItem label="TCSC" icon="database">
+    Heavy, land-connected, industrial, rail-dependent, and designed around collective endurance.
+  </TabItem>
+  <TabItem label="KRG" icon="seti:config">
+    Contract-driven, opportunistic, salvaged, deniable, and happy to use whoever's kit still works.
+  </TabItem>
+</Tabs>
+
+## Synchronized tabs
+
+First group:
+
+<Tabs syncKey="era-demo">
+  <TabItem label="CITADEL">Stone, oaths, bone, old roads.</TabItem>
+  <TabItem label="NEARSIGHT">Concrete, drones, plate carriers, green-glass districts.</TabItem>
+</Tabs>
+
+Second group with the same labels and sync key:
+
+<Tabs syncKey="era-demo">
+  <TabItem label="CITADEL">Best for myths becoming law.</TabItem>
+  <TabItem label="NEARSIGHT">Best for systems pretending they are not myths.</TabItem>
+</Tabs>
+
+## Code component
+
+<Code code={codexExample} lang="js" title="codex-doctrine.js" mark={["TCSC", "civil-industrial"]} />
+
+## Mixed component stress test
+
+<CardGrid>
+  <Card title="A useful page" icon="approve-check-circle">
+    Has pressure, consequence, texture, and a reason to exist.
+  </Card>
+  <Card title="A weak page" icon="warning">
+    Has names, aesthetics, and nothing that changes the world.
+  </Card>
+</CardGrid>
