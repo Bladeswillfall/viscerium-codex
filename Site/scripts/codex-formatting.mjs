@@ -9,7 +9,6 @@ const VOIDLESS_TAG_OUTPUT = new Map([
   ['lore', 'aside'],
 ]);
 
-const BREAKPOINTS = new Set(['sm', 'md', 'lg', 'xl']);
 const GAP_VALUES = new Set(['none', 'xs', 'sm', 'md', 'lg', 'xl']);
 const ALIGN_VALUES = new Set(['start', 'center', 'end', 'stretch']);
 const JUSTIFY_VALUES = new Set(['start', 'center', 'end', 'between', 'around', 'evenly']);
@@ -149,8 +148,8 @@ function closeTag(tag) {
   return htmlTag ? `\n</${htmlTag}>` : null;
 }
 
-function transformCodexTagLine(line, options) {
-  const match = line.match(/^\s*\[(\/)?([a-z][a-z0-9-]*)(?::([^\]]*))?\]\s*$/i);
+function parseCodexTagLine(line) {
+  const match = line.match(/^\s*\[(\/)?([a-z][a-z0-9-]*)(?:(?::|\s+)([^\]]*))?\]\s*$/i);
   if (!match) return null;
 
   const closing = Boolean(match[1]);
@@ -158,7 +157,24 @@ function transformCodexTagLine(line, options) {
   const spec = match[3] ?? '';
 
   if (!TAGS.has(tag)) return null;
-  return closing ? closeTag(tag) : openTag(tag, spec, options);
+  return { closing, tag, spec };
+}
+
+function transformCodexTagLine(line, stack, options) {
+  const parsed = parseCodexTagLine(line);
+  if (!parsed) return null;
+
+  if (!parsed.closing) {
+    stack.push(parsed.tag);
+    return openTag(parsed.tag, parsed.spec, options);
+  }
+
+  if (stack.at(-1) !== parsed.tag) {
+    return null;
+  }
+
+  stack.pop();
+  return closeTag(parsed.tag);
 }
 
 function isFenceStart(line) {
@@ -177,6 +193,7 @@ function isFenceEnd(line, fence) {
 export function transformCodexFormatting(markdown, options = {}) {
   const lines = String(markdown).split(/\r?\n/);
   const out = [];
+  const stack = [];
   let fence = null;
 
   for (const line of lines) {
@@ -193,7 +210,7 @@ export function transformCodexFormatting(markdown, options = {}) {
       continue;
     }
 
-    out.push(transformCodexTagLine(line, options) ?? line);
+    out.push(transformCodexTagLine(line, stack, options) ?? line);
   }
 
   return out.join('\n');
