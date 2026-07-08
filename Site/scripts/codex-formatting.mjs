@@ -1,4 +1,4 @@
-const TAGS = new Set(['cols', 'row', 'col', 'card', 'note', 'warning', 'lore', 'equation']);
+const TAGS = new Set(['cols', 'row', 'col', 'card', 'note', 'warning', 'lore', 'equation', 'quote']);
 const VOIDLESS_TAG_OUTPUT = new Map([
   ['cols', 'div'],
   ['row', 'div'],
@@ -8,6 +8,7 @@ const VOIDLESS_TAG_OUTPUT = new Map([
   ['warning', 'aside'],
   ['lore', 'aside'],
   ['equation', 'section'],
+  ['quote', 'figure'],
 ]);
 
 const GAP_VALUES = new Set(['none', 'xs', 'sm', 'md', 'lg', 'xl']);
@@ -135,6 +136,12 @@ function equationClasses(spec) {
   return classes;
 }
 
+function quoteClasses(spec) {
+  const classes = ['cx-quote'];
+  if (tokens(spec).includes('compact')) classes.push('cx-quote-compact');
+  return classes;
+}
+
 function titleMarkup(className, title, options) {
   return title ? `\n\n<p ${classAttribute([className], options)}>${escapeHtml(title)}</p>\n` : '\n';
 }
@@ -147,6 +154,7 @@ function openTag(tag, spec, options) {
   if (tag === 'row') return `<div ${classAttribute(rowClasses(spec), options)}>\n`;
   if (tag === 'col') return `<div ${classAttribute(colClasses(spec), options)}>\n`;
   if (tag === 'card') return `<div ${classAttribute(cardClasses(spec), options)}>\n`;
+  if (tag === 'quote') return `<figure ${classAttribute(quoteClasses(spec), options)}>\n<blockquote ${classAttribute(['cx-quote-body'], options)}>\n`;
 
   const optionMap = parseKeyValueOptions(spec);
   const title = optionMap.get('title');
@@ -159,6 +167,7 @@ function openTag(tag, spec, options) {
 }
 
 function closeTag(tag) {
+  if (tag === 'quote') return '\n</blockquote>\n</figure>';
   const htmlTag = VOIDLESS_TAG_OUTPUT.get(tag);
   return htmlTag ? `\n</${htmlTag}>` : null;
 }
@@ -173,6 +182,32 @@ function parseCodexTagLine(line) {
 
   if (!TAGS.has(tag)) return null;
   return { closing, tag, spec };
+}
+
+function splitQuoteContent(rawContent) {
+  const content = String(rawContent ?? '').trim();
+  const separatorIndex = content.lastIndexOf('|');
+  if (separatorIndex === -1) return { text: content, author: '' };
+  return {
+    text: content.slice(0, separatorIndex).trim(),
+    author: content.slice(separatorIndex + 1).trim(),
+  };
+}
+
+function quoteMarkup(text, author, options) {
+  const cite = author
+    ? `\n<figcaption ${classAttribute(['cx-quote-author'], options)}>${escapeHtml(author)}</figcaption>`
+    : '';
+
+  return `<figure ${classAttribute(['cx-quote'], options)}>\n<blockquote ${classAttribute(['cx-quote-body'], options)}>\n<p>${escapeHtml(text)}</p>\n</blockquote>${cite}\n</figure>`;
+}
+
+function transformInlineQuoteLine(line, options) {
+  const match = line.match(/^\s*\[quote\]([\s\S]*?)\[\/quote\]\s*$/i);
+  if (!match) return null;
+  const { text, author } = splitQuoteContent(match[1]);
+  if (!text) return null;
+  return quoteMarkup(text, author, options);
 }
 
 function transformCodexTagLine(line, stack, options) {
@@ -225,7 +260,7 @@ export function transformCodexFormatting(markdown, options = {}) {
       continue;
     }
 
-    out.push(transformCodexTagLine(line, stack, options) ?? line);
+    out.push(transformInlineQuoteLine(line, options) ?? transformCodexTagLine(line, stack, options) ?? line);
   }
 
   return out.join('\n');
