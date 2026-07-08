@@ -19,13 +19,28 @@ No secrets are required for the default template. Set `SITE_URL` to your Cloudfl
 
 ## Optional giscus comments environment variables
 
-If you want the collapsible comments section to load GitHub Discussions comments, add these Cloudflare Pages environment variables after configuring giscus:
+The comments component renders on every Starlight page. It will show a setup warning until giscus is configured.
+
+After enabling GitHub Discussions, installing the giscus GitHub app, and choosing the repository/category at `https://giscus.app/`, add these Cloudflare Pages environment variables:
 
 ```text
-PUBLIC_GISCUS_REPO
 PUBLIC_GISCUS_REPO_ID
-PUBLIC_GISCUS_CATEGORY
 PUBLIC_GISCUS_CATEGORY_ID
 ```
 
-Leave them unset to keep the comments accordion as a setup placeholder.
+The project defaults to `PUBLIC_GISCUS_REPO=Bladeswillfall/viscerium-codex`, `PUBLIC_GISCUS_CATEGORY=General`, and `PUBLIC_GISCUS_MAPPING=pathname`. You can override any of them in Cloudflare Pages if needed:
+
+```text
+PUBLIC_GISCUS_REPO
+PUBLIC_GISCUS_CATEGORY
+PUBLIC_GISCUS_MAPPING
+PUBLIC_GISCUS_STRICT
+PUBLIC_GISCUS_REACTIONS_ENABLED
+PUBLIC_GISCUS_EMIT_METADATA
+PUBLIC_GISCUS_INPUT_POSITION
+PUBLIC_GISCUS_THEME
+PUBLIC_GISCUS_LANG
+PUBLIC_GISCUS_LOADING
+```
+
+Leave the giscus ID variables unset to keep the comments accordion as a setup placeholder.
