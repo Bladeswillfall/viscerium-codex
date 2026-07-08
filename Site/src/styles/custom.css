@@ -209,7 +209,7 @@
 
 .sl-markdown-content blockquote::after {
   content: "”";
-  inset-block-end: -1.05rem;
+  inset-block-end: -4.6rem;
   inset-inline-end: .5rem;
 }
 
