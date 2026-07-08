@@ -1,48 +1,106 @@
 ---
 import siteConfig from '../../site.config.mjs';
 
-const config = siteConfig.giscus ?? {};
+const giscusConfigSource = siteConfig.giscus ?? {};
 const giscusConfig = {
-  repo: config.repo ?? '',
-  repoId: config.repoId ?? '',
-  category: config.category ?? '',
-  categoryId: config.categoryId ?? '',
-  mapping: config.mapping ?? 'pathname',
-  strict: config.strict ?? '0',
-  reactionsEnabled: config.reactionsEnabled ?? '1',
-  emitMetadata: config.emitMetadata ?? '0',
-  inputPosition: config.inputPosition ?? 'bottom',
-  theme: config.theme ?? 'noborder_dark',
-  lang: config.lang ?? 'en',
-  loading: config.loading ?? 'lazy',
+  repo: giscusConfigSource.repo ?? '',
+  repoId: giscusConfigSource.repoId ?? '',
+  category: giscusConfigSource.category ?? '',
+  categoryId: giscusConfigSource.categoryId ?? '',
+  mapping: giscusConfigSource.mapping ?? 'pathname',
+  strict: giscusConfigSource.strict ?? '0',
+  reactionsEnabled: giscusConfigSource.reactionsEnabled ?? '1',
+  emitMetadata: giscusConfigSource.emitMetadata ?? '0',
+  inputPosition: giscusConfigSource.inputPosition ?? 'bottom',
+  theme: giscusConfigSource.theme ?? 'noborder_dark',
+  lang: giscusConfigSource.lang ?? 'en',
+  loading: giscusConfigSource.loading ?? 'lazy',
 };
 
-const requiredFields = ['repo', 'repoId', 'category', 'categoryId'];
-const missingFields = requiredFields.filter((field) => !giscusConfig[field]);
-const configured = missingFields.length === 0;
-const serializedConfig = JSON.stringify(giscusConfig);
+const requiredGiscusFields = ['repo', 'repoId', 'category', 'categoryId'];
+const missingGiscusFields = requiredGiscusFields.filter((field) => !giscusConfig[field]);
+const giscusConfigured = missingGiscusFields.length === 0;
+
+const webmentionConfigSource = siteConfig.webmentions ?? {};
+const webmentionsConfigured = Boolean(webmentionConfigSource.enabled && webmentionConfigSource.apiEndpoint);
+const webmentionConfig = {
+  apiEndpoint: webmentionConfigSource.apiEndpoint ?? 'https://webmention.io/api/mentions.jf2',
+  maxMentions: webmentionConfigSource.maxMentions ?? 24,
+};
+
+const commentsConfigured = giscusConfigured || webmentionsConfigured;
+const socialSurfaces = [
+  webmentionsConfigured ? 'Webmentions' : undefined,
+  giscusConfigured ? 'GitHub Discussions' : undefined,
+].filter(Boolean);
+const socialHint = socialSurfaces.length > 0 ? socialSurfaces.join(' + ') : 'Setup required';
+const socialConfig = {
+  giscus: giscusConfigured ? giscusConfig : null,
+  webmentions: webmentionsConfigured ? webmentionConfig : null,
+};
+const serializedConfig = JSON.stringify(socialConfig);
 ---
 
 <section
   class="codex-comments"
   aria-labelledby="codex-comments-title"
-  data-giscus-comments
-  data-giscus-config={configured ? serializedConfig : undefined}
+  data-codex-social-comments
+  data-social-config={commentsConfigured ? serializedConfig : undefined}
 >
-  <details open={configured}>
+  <details open={commentsConfigured}>
     <summary id="codex-comments-title">
-      <span>Page comments</span>
-      <span class="codex-comments-hint">GitHub Discussions via giscus</span>
+      <span>Page discussion</span>
+      <span class="codex-comments-hint">{socialHint}</span>
     </summary>
     <div class="codex-comments-panel">
-      {configured ? (
-        <div class="giscus" data-giscus-container></div>
+      {commentsConfigured ? (
+        <>
+          <div class="codex-social-intro">
+            <div>
+              <p class="codex-social-kicker">Comments, mentions, and reactions</p>
+              <p>
+                Respond from the wider web with a link back to this page, or join the GitHub discussion below.
+                Both routes are gathered here so the page has one social trail instead of competing comment boxes.
+              </p>
+            </div>
+            {webmentionsConfigured && (
+              <p class="codex-social-count" data-webmention-summary hidden></p>
+            )}
+          </div>
+
+          {webmentionsConfigured && (
+            <section class="codex-webmentions" aria-labelledby="codex-webmentions-title" data-webmentions>
+              <div class="codex-social-subhead">
+                <h3 id="codex-webmentions-title">Across the wider web</h3>
+                <p data-webmention-state>Loading Webmentions…</p>
+              </div>
+              <div class="codex-webmention-list" data-webmention-list></div>
+            </section>
+          )}
+
+          {giscusConfigured ? (
+            <section class="codex-giscus-block" aria-labelledby="codex-giscus-title">
+              <div class="codex-social-subhead">
+                <h3 id="codex-giscus-title">GitHub discussion</h3>
+                <p>For longer thoughts, corrections, and lore debate.</p>
+              </div>
+              <div class="giscus" data-giscus-container></div>
+            </section>
+          ) : (
+            <div class="codex-warning codex-social-warning">
+              <p><strong>GitHub discussion comments are installed but not configured yet.</strong></p>
+              <p>
+                Missing giscus setting{missingGiscusFields.length === 1 ? '' : 's'}: <code>{missingGiscusFields.join(', ')}</code>.
+                Add the matching public environment variables in Cloudflare Pages and your local <code>Site/.env</code> file.
+              </p>
+            </div>
+          )}
+        </>
       ) : (
         <div class="codex-warning">
-          <p><strong>Comments are installed but not configured yet.</strong></p>
+          <p><strong>The social section is installed but not configured yet.</strong></p>
           <p>
-            Missing giscus setting{missingFields.length === 1 ? '' : 's'}: <code>{missingFields.join(', ')}</code>.
-            Add the matching public environment variables in Cloudflare Pages and your local <code>Site/.env</code> file.
+            Configure Webmentions with <code>PUBLIC_WEBMENTION_IO_USERNAME</code>, and configure GitHub Discussions with the existing giscus public environment variables.
           </p>
         </div>
       )}
@@ -50,71 +108,393 @@ const serializedConfig = JSON.stringify(giscusConfig);
   </details>
 </section>
 
-{configured && (
+{commentsConfigured && (
   <script is:inline>
     (() => {
       const GISCUS_ORIGIN = 'https://giscus.app';
       const GISCUS_CLIENT = `${GISCUS_ORIGIN}/client.js`;
       const currentScript = document.currentScript;
-      const section = currentScript?.previousElementSibling?.matches?.('[data-giscus-comments]')
+      const section = currentScript?.previousElementSibling?.matches?.('[data-codex-social-comments]')
         ? currentScript.previousElementSibling
-        : document.querySelector('[data-giscus-comments]:not([data-giscus-mounted])');
+        : document.querySelector('[data-codex-social-comments]:not([data-social-mounted])');
 
-      if (!section || section.dataset.giscusMounted === 'true') return;
-
-      const container = section.querySelector('[data-giscus-container]');
-      if (!container) return;
+      if (!section || section.dataset.socialMounted === 'true') return;
 
       let config;
       try {
-        config = JSON.parse(section.dataset.giscusConfig || '{}');
+        config = JSON.parse(section.dataset.socialConfig || '{}');
       } catch {
         return;
       }
 
-      if (!config.repo || !config.repoId || !config.category || !config.categoryId) return;
+      section.dataset.socialMounted = 'true';
 
-      section.dataset.giscusMounted = 'true';
-
-      const getTheme = () => config.theme || 'noborder_dark';
-
-      const script = document.createElement('script');
-      script.src = GISCUS_CLIENT;
-      script.async = true;
-      script.crossOrigin = 'anonymous';
-
-      const attributes = {
-        'data-repo': config.repo,
-        'data-repo-id': config.repoId,
-        'data-category': config.category,
-        'data-category-id': config.categoryId,
-        'data-mapping': config.mapping || 'pathname',
-        'data-strict': config.strict ?? '0',
-        'data-reactions-enabled': config.reactionsEnabled ?? '1',
-        'data-emit-metadata': config.emitMetadata ?? '0',
-        'data-input-position': config.inputPosition || 'bottom',
-        'data-theme': getTheme(),
-        'data-lang': config.lang || 'en',
-        'data-loading': config.loading || 'lazy',
+      const getCanonicalTarget = () => {
+        const canonical = document.querySelector('link[rel="canonical"]')?.href || window.location.href;
+        const url = new URL(canonical, window.location.href);
+        url.hash = '';
+        url.search = '';
+        return url.href;
       };
 
-      for (const [name, value] of Object.entries(attributes)) {
-        if (value !== undefined && value !== null && value !== '') script.setAttribute(name, String(value));
-      }
-
-      container.replaceChildren(script);
-
-      const syncTheme = () => {
-        const frame = section.querySelector('iframe.giscus-frame');
-        if (!frame?.contentWindow) return;
-        frame.contentWindow.postMessage({ giscus: { setConfig: { theme: getTheme() } } }, GISCUS_ORIGIN);
+      const toSafeUrl = (value) => {
+        if (!value || typeof value !== 'string') return null;
+        try {
+          const url = new URL(value, window.location.href);
+          return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+        } catch {
+          return null;
+        }
       };
 
-      new MutationObserver(syncTheme).observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['data-theme'],
-      });
-      document.addEventListener('starlight:theme-select', () => window.setTimeout(syncTheme, 0));
+      const createElement = (tagName, className, text) => {
+        const element = document.createElement(tagName);
+        if (className) element.className = className;
+        if (text !== undefined && text !== null) element.textContent = text;
+        return element;
+      };
+
+      const truncate = (value, length = 520) => {
+        const text = String(value || '').trim().replace(/\s+/g, ' ');
+        return text.length > length ? `${text.slice(0, length - 1)}…` : text;
+      };
+
+      const getMentionAction = (mention) => {
+        const property = mention?.['wm-property'];
+        if (property === 'like-of') return 'liked';
+        if (property === 'repost-of') return 'reposted';
+        if (property === 'bookmark-of') return 'bookmarked';
+        if (property === 'in-reply-to') return 'replied';
+        if (property === 'mention-of') return 'mentioned';
+        return 'responded';
+      };
+
+      const getMentionDate = (mention) => {
+        const rawDate = mention?.published || mention?.['wm-received'];
+        const date = rawDate ? new Date(rawDate) : null;
+        return date && !Number.isNaN(date.valueOf()) ? date : null;
+      };
+
+      const renderWebmentions = async () => {
+        const webmentionConfig = config.webmentions;
+        const list = section.querySelector('[data-webmention-list]');
+        const state = section.querySelector('[data-webmention-state]');
+        const summary = section.querySelector('[data-webmention-summary]');
+        if (!webmentionConfig?.apiEndpoint || !list || !state) return;
+
+        try {
+          const apiUrl = new URL(webmentionConfig.apiEndpoint);
+          apiUrl.searchParams.set('target', getCanonicalTarget());
+          apiUrl.searchParams.set('per-page', String(webmentionConfig.maxMentions || 24));
+
+          const response = await fetch(apiUrl.href, { headers: { Accept: 'application/json' } });
+          if (!response.ok) throw new Error(`Webmention request failed: ${response.status}`);
+
+          const data = await response.json();
+          const maxMentions = Number(webmentionConfig.maxMentions) || 24;
+          const mentions = Array.isArray(data.children)
+            ? data.children
+                .filter((mention) => !mention?.['wm-private'])
+                .sort((a, b) => (getMentionDate(b)?.valueOf() || 0) - (getMentionDate(a)?.valueOf() || 0))
+                .slice(0, maxMentions)
+            : [];
+
+          list.replaceChildren();
+
+          if (mentions.length === 0) {
+            state.textContent = 'No wider-web responses yet.';
+            if (summary) summary.hidden = true;
+            return;
+          }
+
+          const counts = mentions.reduce((total, mention) => {
+            const action = getMentionAction(mention);
+            total[action] = (total[action] || 0) + 1;
+            return total;
+          }, {});
+          const countText = Object.entries(counts)
+            .map(([action, count]) => `${count} ${action}${count === 1 ? '' : action.endsWith('s') ? 'es' : 's'}`)
+            .join(' · ');
+
+          state.textContent = `${mentions.length} wider-web response${mentions.length === 1 ? '' : 's'}.`;
+          if (summary) {
+            summary.textContent = countText;
+            summary.hidden = false;
+          }
+
+          for (const mention of mentions) {
+            const article = createElement('article', `codex-webmention-card h-cite codex-webmention-${getMentionAction(mention)}`);
+            const author = mention.author || {};
+            const authorName = author.name || author.url || 'Someone';
+            const authorUrl = toSafeUrl(author.url);
+            const authorPhoto = toSafeUrl(author.photo);
+            const sourceUrl = toSafeUrl(mention.url);
+            const published = getMentionDate(mention);
+            const action = getMentionAction(mention);
+
+            if (authorPhoto) {
+              const avatar = document.createElement('img');
+              avatar.className = 'codex-webmention-avatar u-photo';
+              avatar.src = authorPhoto;
+              avatar.alt = '';
+              avatar.loading = 'lazy';
+              avatar.referrerPolicy = 'no-referrer';
+              article.append(avatar);
+            } else {
+              article.append(createElement('span', 'codex-webmention-avatar codex-webmention-avatar-fallback', '•'));
+            }
+
+            const body = createElement('div', 'codex-webmention-body');
+            const meta = createElement('p', 'codex-webmention-meta');
+
+            const authorElement = authorUrl ? document.createElement('a') : createElement('span');
+            authorElement.className = 'p-author h-card';
+            authorElement.textContent = authorName;
+            if (authorUrl) {
+              authorElement.href = authorUrl;
+              authorElement.rel = 'nofollow ugc noopener noreferrer';
+              authorElement.target = '_blank';
+            }
+            meta.append(authorElement, document.createTextNode(` ${action}`));
+
+            if (published) {
+              const time = document.createElement('time');
+              time.className = 'dt-published';
+              time.dateTime = published.toISOString();
+              time.textContent = published.toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              });
+              meta.append(document.createTextNode(' · '), time);
+            }
+
+            body.append(meta);
+
+            const text = mention.content?.text;
+            if (text && !['liked', 'reposted'].includes(action)) {
+              body.append(createElement('p', 'codex-webmention-content p-content', truncate(text)));
+            }
+
+            if (sourceUrl) {
+              const source = document.createElement('a');
+              source.className = 'codex-webmention-source u-url';
+              source.href = sourceUrl;
+              source.rel = 'nofollow ugc noopener noreferrer';
+              source.target = '_blank';
+              source.textContent = 'View source';
+              body.append(source);
+            }
+
+            article.append(body);
+            list.append(article);
+          }
+        } catch {
+          state.textContent = 'Could not load wider-web responses.';
+        }
+      };
+
+      const mountGiscus = () => {
+        const giscusConfig = config.giscus;
+        const container = section.querySelector('[data-giscus-container]');
+        if (!giscusConfig || !container || section.dataset.giscusMounted === 'true') return;
+        if (!giscusConfig.repo || !giscusConfig.repoId || !giscusConfig.category || !giscusConfig.categoryId) return;
+
+        section.dataset.giscusMounted = 'true';
+
+        const getTheme = () => giscusConfig.theme || 'noborder_dark';
+
+        const script = document.createElement('script');
+        script.src = GISCUS_CLIENT;
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+
+        const attributes = {
+          'data-repo': giscusConfig.repo,
+          'data-repo-id': giscusConfig.repoId,
+          'data-category': giscusConfig.category,
+          'data-category-id': giscusConfig.categoryId,
+          'data-mapping': giscusConfig.mapping || 'pathname',
+          'data-strict': giscusConfig.strict ?? '0',
+          'data-reactions-enabled': giscusConfig.reactionsEnabled ?? '1',
+          'data-emit-metadata': giscusConfig.emitMetadata ?? '0',
+          'data-input-position': giscusConfig.inputPosition || 'bottom',
+          'data-theme': getTheme(),
+          'data-lang': giscusConfig.lang || 'en',
+          'data-loading': giscusConfig.loading || 'lazy',
+        };
+
+        for (const [name, value] of Object.entries(attributes)) {
+          if (value !== undefined && value !== null && value !== '') script.setAttribute(name, String(value));
+        }
+
+        container.replaceChildren(script);
+
+        const syncTheme = () => {
+          const frame = section.querySelector('iframe.giscus-frame');
+          if (!frame?.contentWindow) return;
+          frame.contentWindow.postMessage({ giscus: { setConfig: { theme: getTheme() } } }, GISCUS_ORIGIN);
+        };
+
+        new MutationObserver(syncTheme).observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ['data-theme'],
+        });
+        document.addEventListener('starlight:theme-select', () => window.setTimeout(syncTheme, 0));
+      };
+
+      renderWebmentions();
+      mountGiscus();
     })();
   </script>
 )}
+
+<style is:global>
+  .codex-social-intro {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-block: .25rem 1rem;
+    padding-block-end: 1rem;
+    border-bottom: 1px solid rgba(184, 135, 70, .16);
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+
+  .codex-social-intro p {
+    margin: 0;
+  }
+
+  .codex-social-kicker {
+    color: var(--sl-color-accent-high);
+    font-size: var(--sl-text-xs);
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .codex-social-count {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: .35rem .65rem;
+    border: 1px solid rgba(184, 135, 70, .24);
+    background: rgba(184, 135, 70, .10);
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-xs);
+  }
+
+  .codex-webmentions,
+  .codex-giscus-block,
+  .codex-social-warning {
+    margin-block-start: 1rem;
+  }
+
+  .codex-giscus-block {
+    padding-block-start: 1rem;
+    border-top: 1px solid rgba(184, 135, 70, .16);
+  }
+
+  .codex-social-subhead {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: baseline;
+    margin-block-end: .75rem;
+  }
+
+  .codex-social-subhead h3,
+  .codex-social-subhead p {
+    margin: 0;
+  }
+
+  .codex-social-subhead h3 {
+    color: var(--sl-color-white);
+    font-size: 1rem;
+  }
+
+  .codex-social-subhead p {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+
+  .codex-webmention-list {
+    display: grid;
+    gap: .75rem;
+  }
+
+  .codex-webmention-card {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: .75rem;
+    padding: .75rem;
+    border: 1px solid rgba(184, 135, 70, .16);
+    background: rgba(255, 255, 255, .018);
+  }
+
+  .codex-webmention-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid rgba(184, 135, 70, .22);
+    border-radius: 999px;
+    object-fit: cover;
+    background: rgba(184, 135, 70, .10);
+  }
+
+  .codex-webmention-avatar-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sl-color-accent-high);
+  }
+
+  .codex-webmention-body {
+    min-width: 0;
+  }
+
+  .codex-webmention-meta,
+  .codex-webmention-content {
+    margin: 0;
+  }
+
+  .codex-webmention-meta {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+
+  .codex-webmention-meta a,
+  .codex-webmention-source {
+    color: var(--sl-color-accent-high);
+    text-decoration: none;
+  }
+
+  .codex-webmention-meta a:hover,
+  .codex-webmention-source:hover {
+    color: var(--sl-color-white);
+    text-decoration: underline;
+  }
+
+  .codex-webmention-content {
+    margin-block-start: .35rem;
+    color: var(--sl-color-gray-2);
+    font-size: var(--sl-text-sm);
+    line-height: 1.5;
+  }
+
+  .codex-webmention-source {
+    display: inline-flex;
+    margin-block-start: .45rem;
+    font-size: var(--sl-text-xs);
+  }
+
+  @media (max-width: 42rem) {
+    .codex-social-intro,
+    .codex-social-subhead {
+      display: grid;
+    }
+
+    .codex-social-count {
+      width: fit-content;
+    }
+  }
+</style>
