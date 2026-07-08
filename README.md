@@ -57,7 +57,7 @@ Create a new repository from this template, replace the example lore with your p
 
 ## Optional community integrations
 
-- giscus comments: this template already renders giscus from `Site/src/components/GiscusComments.astro`; set the public environment variables below to enable it.
+- giscus comments: this template renders giscus from `Site/src/components/GiscusComments.astro`; set the public environment variables below to enable it.
 - Buttondown/newsletter: add your public form endpoint as an environment variable or documented placeholder.
 - GA4/GTM and Cloudflare Web Analytics: add only public IDs through environment variables or Cloudflare settings.
 
@@ -70,13 +70,33 @@ Actions for you:
 1. Enable **GitHub Discussions** in your repository.
 2. Install the giscus GitHub app for the repository.
 3. Go to `https://giscus.app/` and choose your repository and discussion category.
-4. Add these public environment variables in Cloudflare Pages and in a local `.env` file if needed:
+4. Add the required public environment variables in Cloudflare Pages and in a local `Site/.env` file if needed.
+
+Required variables:
 
 ```bash
-PUBLIC_GISCUS_REPO=owner/repo
 PUBLIC_GISCUS_REPO_ID=your_repo_id
-PUBLIC_GISCUS_CATEGORY=General
 PUBLIC_GISCUS_CATEGORY_ID=your_category_id
+```
+
+The repo and category names already default to this project and `General`, but you can override them:
+
+```bash
+PUBLIC_GISCUS_REPO=Bladeswillfall/viscerium-codex
+PUBLIC_GISCUS_CATEGORY=General
+```
+
+Optional variables:
+
+```bash
+PUBLIC_GISCUS_MAPPING=pathname
+PUBLIC_GISCUS_STRICT=0
+PUBLIC_GISCUS_REACTIONS_ENABLED=1
+PUBLIC_GISCUS_EMIT_METADATA=0
+PUBLIC_GISCUS_INPUT_POSITION=bottom
+PUBLIC_GISCUS_THEME=preferred_color_scheme
+PUBLIC_GISCUS_LANG=en
+PUBLIC_GISCUS_LOADING=lazy
 ```
 
 Do not commit secrets. These giscus values are public identifiers, but keeping them in environment variables makes the template reusable.
