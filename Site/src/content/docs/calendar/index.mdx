@@ -4,15 +4,14 @@ description: The first implemented VISCERIUM calendar, rendered from structured 
 publish: true
 status: canon
 type: calendar
+calendarShowcase:
+  calendar: okse
+  year: 4
 ---
-
-import CalendarYear from '../../../components/calendar/CalendarYear.astro';
 
 The Okse Calendar is the first implemented calendar system in the codex. It is rendered from structured calendar data rather than a static image, so event articles can link back to individual days and the site can later show equivalent dates in other cultural calendars.
 
-The visible year below is a leap year so that both Engimanutur days are shown. The underlying engine still calculates ordinary years and leap years separately.
-
-<CalendarYear calendarId="okse" />
+The visible year above is a leap year so that both Engimanutur days are shown. The underlying engine still calculates ordinary years and leap years separately.
 
 ## Using Okse dates in articles
 
