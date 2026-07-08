@@ -158,6 +158,7 @@ export default defineConfig({
         './src/styles/custom.css',
         './src/styles/calendar.css',
         './src/styles/layout-overrides.css',
+        './src/styles/sidebar-overlay.css',
       ],
       plugins: [
         starlightBasePath(),
