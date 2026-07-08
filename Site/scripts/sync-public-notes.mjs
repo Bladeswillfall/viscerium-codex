@@ -124,13 +124,32 @@ function hasCalendarShortcodes(content) {
   return /^\s*\[Calendar:[^\]]+\]\s*$/im.test(content);
 }
 
+function normaliseEventLinks(links) {
+  if (!links || typeof links !== 'object' || Array.isArray(links)) return undefined;
+  const normalised = {};
+  for (const [slug, value] of Object.entries(links)) {
+    if (typeof value === 'string' && value.trim()) {
+      normalised[slug] = value.trim();
+      continue;
+    }
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      const href = typeof value.href === 'string' && value.href.trim() ? value.href.trim() : undefined;
+      const article = typeof value.article === 'string' && value.article.trim() ? value.article.trim() : undefined;
+      const label = typeof value.label === 'string' && value.label.trim() ? value.label.trim() : undefined;
+      if (href || article) normalised[slug] = { href, article, label };
+    }
+  }
+  return Object.keys(normalised).length > 0 ? normalised : undefined;
+}
+
 function normaliseCalendarBlock(block) {
   if (!block || typeof block !== 'object') return null;
   const calendar = typeof block.calendar === 'string' ? block.calendar : undefined;
   const year = block.year === undefined ? undefined : Number(block.year);
   if (!calendar) return null;
   if (year !== undefined && (!Number.isInteger(year) || year < 1)) return null;
-  return { calendar, year };
+  const eventLinks = normaliseEventLinks(block.eventLinks ?? block.observanceLinks ?? block.links);
+  return eventLinks ? { calendar, year, eventLinks } : { calendar, year };
 }
 
 function parseInlineCalendarSpec(id, spec) {
@@ -194,7 +213,8 @@ function transformCalendarShortcodes(content, parsed, currentFile, outFile) {
     used = true;
     const calendarId = JSON.stringify(block.calendar);
     const yearProp = block.year === undefined ? '' : ` year={${block.year}}`;
-    return `<CalendarYear calendarId={${calendarId}}${yearProp} />`;
+    const eventLinksProp = block.eventLinks ? ` eventLinks={${JSON.stringify(block.eventLinks)}}` : '';
+    return `<CalendarYear calendarId={${calendarId}}${yearProp}${eventLinksProp} />`;
   });
 
   const output = lines.join('\n');
