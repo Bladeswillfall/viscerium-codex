@@ -3,6 +3,7 @@ import process from 'node:process';
 import fs from 'node:fs/promises';
 import { constants as fsConstants } from 'node:fs';
 import siteConfig from '../site.config.mjs';
+import { transformCodexFormatting } from './codex-formatting.mjs';
 
 const siteRoot = process.cwd();
 const sourceDir = path.resolve(siteRoot, siteConfig.loreSourceDir);
@@ -146,7 +147,7 @@ async function convertContent(content, currentFile, title) {
 
   converted = converted.replace(new RegExp(`^#\\s+${escapeRegExp(title)}\\s*$`, 'im'), '').trimStart();
 
-  return converted.replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, (match, target, alias) => {
+  converted = converted.replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, (match, target, alias) => {
     const label = alias?.trim() || target.trim();
     const slug = slugByName.get(noteKey(target));
     if (!slug) {
@@ -154,6 +155,10 @@ async function convertContent(content, currentFile, title) {
       return label;
     }
     return `[${label}](${route(slug)})`;
+  });
+
+  return transformCodexFormatting(converted, {
+    jsx: path.extname(currentFile).toLowerCase() === '.mdx',
   });
 }
 
