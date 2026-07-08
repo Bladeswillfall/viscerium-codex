@@ -71,6 +71,7 @@ export default defineConfig({
         './vendor/starlight-ion-theme/styles/theme.css',
         './vendor/starlight-ion-theme/styles/ec-theme.css',
         './src/styles/typography.css',
+        './src/styles/codex-ui.css',
         './src/styles/custom.css',
         './src/styles/layout-overrides.css',
       ],
