@@ -260,6 +260,73 @@
 .cx-callout-lore { font-style: italic; color: var(--sl-color-gray-2); background: rgba(255, 255, 255, .025); }
 .cx-callout-compact { padding: .75rem; margin-block: .75rem; }
 
+.cx-quote {
+  position: relative;
+  margin-block: 2rem;
+  padding: 1.25rem 1.5rem 1rem;
+  overflow: hidden;
+  border-block: 1px solid var(--codex-accent-soft);
+  border-inline-start: 4px solid var(--codex-accent);
+  border-radius: 0;
+  background:
+    linear-gradient(90deg, rgba(184, 135, 70, .14), transparent 42%),
+    rgba(255, 255, 255, .022);
+}
+
+.cx-quote::before {
+  content: "“";
+  position: absolute;
+  inset-block-start: -.95rem;
+  inset-inline-end: .65rem;
+  color: rgba(184, 135, 70, .18);
+  font-family: var(--vc-font-display);
+  font-size: clamp(4rem, 12vw, 7rem);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.cx-quote-body {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--sl-color-white);
+  font-family: var(--vc-font-section);
+  font-size: clamp(1.15rem, 1.8vw, 1.55rem);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.cx-quote-body p {
+  margin: 0;
+}
+
+.cx-quote-author {
+  position: relative;
+  z-index: 1;
+  margin-block-start: .85rem;
+  padding-block-start: .65rem;
+  border-block-start: 1px solid rgba(184, 135, 70, .24);
+  color: var(--sl-color-accent-high);
+  font-family: var(--vc-font-ui);
+  font-size: var(--sl-text-sm);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.cx-quote-author::before {
+  content: "— ";
+}
+
+.cx-quote-compact {
+  margin-block: 1rem;
+  padding: .9rem 1rem .8rem;
+}
+
 /* Sharp VISCERIUM surfaces. Keep controls/buttons interactive, but remove rounded containers. */
 :where(
   .sl-markdown-content .card,
@@ -283,6 +350,7 @@
   .cx-card,
   .cx-callout,
   .cx-equation,
+  .cx-quote,
   .world-map,
   .graph-edge,
   .timeline-event,
