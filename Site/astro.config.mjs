@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import starlight from '@astrojs/starlight';
 import starlightAutoSidebar from 'starlight-auto-sidebar';
 import { starlightBasePath } from 'starlight-base-path';
+import starlightChangelogs, { makeChangelogsSidebarLinks } from 'starlight-changelogs';
 import starlightHeadingBadges from 'starlight-heading-badges';
 import { starlightIconsPlugin } from 'starlight-plugin-icons';
 import starlightScrollToTop from 'starlight-scroll-to-top';
@@ -140,6 +141,33 @@ const ga4Head = siteConfig.analytics?.ga4?.enabled
     ]
   : [];
 
+const sidebar = [
+  ...(await buildSidebar()),
+  {
+    label: '[history] Changelogs',
+    collapsed: false,
+    items: [
+      ...makeChangelogsSidebarLinks([
+        {
+          type: 'latest',
+          base: 'changelog',
+          label: 'Latest changes',
+        },
+        {
+          type: 'all',
+          base: 'changelog',
+          label: 'Version history',
+        },
+        {
+          type: 'recent',
+          base: 'changelog',
+          count: 3,
+        },
+      ]),
+    ],
+  },
+];
+
 export default defineConfig({
   site: siteConfig.site,
   integrations: [
@@ -169,6 +197,7 @@ export default defineConfig({
           },
         }),
         starlightTelescope(),
+        starlightChangelogs(),
         starlightSidebarSwipe(),
         starlightIconsPlugin({
           codeblock: true,
@@ -180,7 +209,7 @@ export default defineConfig({
         starlightAutoSidebar(),
         starlightSiteGraph(),
       ],
-      sidebar: await buildSidebar(),
+      sidebar,
       components: {
         Sidebar: './src/components/IonSidebar.astro',
         Footer: './src/components/StarlightFooter.astro',
