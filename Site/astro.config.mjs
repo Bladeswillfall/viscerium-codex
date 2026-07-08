@@ -15,6 +15,27 @@ import mdx from '@astrojs/mdx';
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
 
+const feedHead = [
+  {
+    tag: 'link',
+    attrs: {
+      rel: 'alternate',
+      type: 'application/rss+xml',
+      title: `${siteConfig.feeds?.title ?? siteConfig.title} RSS`,
+      href: '/rss.xml',
+    },
+  },
+  {
+    tag: 'link',
+    attrs: {
+      rel: 'alternate',
+      type: 'application/atom+xml',
+      title: `${siteConfig.feeds?.title ?? siteConfig.title} Atom`,
+      href: '/atom.xml',
+    },
+  },
+];
+
 const webmentionHead = siteConfig.webmentions?.enabled
   ? [
       siteConfig.webmentions.endpoint
@@ -44,7 +65,7 @@ export default defineConfig({
     starlight({
       title: siteConfig.title,
       description: siteConfig.description,
-      head: webmentionHead,
+      head: [...feedHead, ...webmentionHead],
       customCss: [
         './vendor/starlight-ion-theme/styles/layers.css',
         './vendor/starlight-ion-theme/styles/theme.css',
