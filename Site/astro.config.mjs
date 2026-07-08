@@ -59,7 +59,24 @@ const webmentionHead = siteConfig.webmentions?.enabled
     ].filter(Boolean)
   : [];
 
+const faviconPath = '/favicons/viscerium-favicon.svg';
+
 const faviconHead = [
+  {
+    tag: 'link',
+    attrs: {
+      rel: 'icon',
+      type: 'image/svg+xml',
+      href: faviconPath,
+    },
+  },
+  {
+    tag: 'link',
+    attrs: {
+      rel: 'shortcut icon',
+      href: faviconPath,
+    },
+  },
   {
     tag: 'link',
     attrs: {
@@ -90,7 +107,7 @@ export default defineConfig({
     starlight({
       title: siteConfig.title,
       description: siteConfig.description,
-      favicon: '/favicon.svg',
+      favicon: faviconPath,
       head: [...feedHead, ...webmentionHead, ...faviconHead],
       customCss: [
         './vendor/starlight-ion-theme/styles/layers.css',
