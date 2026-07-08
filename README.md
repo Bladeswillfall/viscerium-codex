@@ -179,7 +179,31 @@ Create a new repository from this template, replace the example lore with your p
 - Webmentions: the same section can display wider-web comments, replies, likes, reposts, bookmarks, and mentions collected by Webmention.io.
 - giscus comments: GitHub Discussions still render in the same section, beneath wider-web responses, instead of becoming a competing second comment box.
 - Buttondown/newsletter: add your public form endpoint as an environment variable or documented placeholder.
+- Sitemap: `@astrojs/sitemap` is installed and configured in `Site/astro.config.mjs`; it uses `siteConfig.site`, which is controlled by `SITE_URL`.
+- Partytown: `@astrojs/partytown` is installed and configured in `Site/astro.config.mjs` with `dataLayer.push` forwarding for future GA4/GTM-style analytics.
 - GA4/GTM and Cloudflare Web Analytics: add only public IDs through environment variables or Cloudflare settings.
+
+## Site integrations and analytics placeholders
+
+Installed Astro integrations are configured in `Site/astro.config.mjs`:
+
+- `@astrojs/sitemap` generates the site map from the canonical `site` value. Set `SITE_URL` before production launch so generated URLs use the real domain.
+- `@astrojs/partytown` moves supported third-party scripts off the main thread. It currently forwards `dataLayer.push` so the GA4 placeholder can work once it is properly enabled.
+
+GA4 is intentionally placeholder-only. The code path exists, but it will not emit tracking scripts while the Measurement ID is still `G-XXXXXXXXXX`.
+
+When proper GA4 tracking is ready, add the real public values in Cloudflare Pages and local `Site/.env` files as needed:
+
+```bash
+PUBLIC_GA4_ENABLED=1
+PUBLIC_GA4_MEASUREMENT_ID=G-REAL_MEASUREMENT_ID
+```
+
+Do not enable GA4 with the placeholder ID in production.
+
+## To-do list
+
+- [ ] Complete proper GA4 implementation: replace `G-XXXXXXXXXX` with the real GA4 Measurement ID, set `PUBLIC_GA4_ENABLED=1`, verify tracking in GA4 Realtime/DebugView, then redeploy.
 
 ## Enable Webmentions
 
