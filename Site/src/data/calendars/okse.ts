@@ -6,7 +6,7 @@ export const okseCalendar: CalendarDefinition = {
   shortName: 'Okse',
   description:
     'A thirteen-month Okse calendar with one annual intercalary day, one leap day every fourth year, and a seven-day week.',
-  defaultYear: 1,
+  defaultYear: 4,
   epoch: {
     absoluteDay: 0,
     year: 1,
