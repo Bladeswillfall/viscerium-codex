@@ -22,7 +22,7 @@ import siteConfig from '../../site.config.mjs';
 <CodexMath />
 <GiscusComments />
 
-<footer class="sl-flex">
+<footer class="codex-site-footer sl-flex">
   <div class="ion-codex-footer sl-flex">
     <strong>© VISCERIUM Codex</strong>
     <nav aria-label="Footer">
@@ -71,9 +71,11 @@ import siteConfig from '../../site.config.mjs';
 
 <style>
   @layer starlight.core {
-    footer {
+    .codex-site-footer {
       flex-direction: column;
       gap: 1.5rem;
+      box-sizing: border-box;
+      max-width: none;
     }
     .meta {
       gap: 0.75rem 3rem;
