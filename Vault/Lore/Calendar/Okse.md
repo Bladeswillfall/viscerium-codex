@@ -4,9 +4,10 @@ description: "The Okse calendar detail route used by date badges and anchored ca
 publish: true
 status: canon
 type: calendar
-calendarShowcase:
-  calendar: okse
-  year: 4
+calendarBlocks:
+  ID-0001:
+    calendar: okse
+    year: 4
 sidebar:
   label: Okse Calendar
   order: 6
@@ -30,6 +31,8 @@ Date badges link here with anchors such as:
 /calendar/okse/#solmanuthur-16
 /calendar/okse/#engimanutur-02
 ```
+
+[Calendar:ID-0001]
 
 The rendered year above is a leap year so both Engimanutur days are visible.
 
