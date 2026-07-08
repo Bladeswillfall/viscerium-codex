@@ -8,6 +8,15 @@ import { starlightTagsExtension } from 'starlight-tags/schema';
 const stringOrStrings = z.union([z.string(), z.array(z.string())]);
 const looseRecord = z.record(z.unknown());
 const frontmatterDate = z.coerce.date();
+const calendarDateSchema = z.object({
+  calendar: z.string(),
+  year: z.number().int(),
+  month: z.string().optional(),
+  day: z.number().int().optional(),
+  intercalaryDay: z.string().optional(),
+  precision: z.enum(['day', 'month', 'year']).optional(),
+  displayCalendars: z.array(z.string()).optional(),
+});
 
 export const collections = {
   docs: defineCollection({
@@ -19,6 +28,7 @@ export const collections = {
         slug: z.string().optional(),
         sourcePath: z.string().optional(),
         type: z.string().optional(),
+        calendarDate: calendarDateSchema.optional(),
         date: frontmatterDate.optional(),
         published: frontmatterDate.optional(),
         updated: frontmatterDate.optional(),
