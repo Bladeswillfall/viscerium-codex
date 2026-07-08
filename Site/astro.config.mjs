@@ -1,4 +1,6 @@
 import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
+import partytown from '@astrojs/partytown';
 import sitemap from '@astrojs/sitemap';
 import starlight from '@astrojs/starlight';
 import starlightAutoSidebar from 'starlight-auto-sidebar';
@@ -11,7 +13,6 @@ import starlightSiteGraph from 'starlight-site-graph';
 import starlightTags from 'starlight-tags';
 import starlightTelescope from 'starlight-telescope';
 import starlightUiTweaks from 'starlight-ui-tweaks';
-import mdx from '@astrojs/mdx';
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
 
@@ -101,6 +102,44 @@ const faviconHead = [
   },
 ];
 
+const ga4MeasurementId = siteConfig.analytics?.ga4?.measurementId ?? 'G-XXXXXXXXXX';
+
+// GA4 placeholder only. Keep disabled until PUBLIC_GA4_MEASUREMENT_ID is replaced
+// with the real property ID and PUBLIC_GA4_ENABLED=1 is set in the deploy environment.
+const ga4Head = siteConfig.analytics?.ga4?.enabled
+  ? [
+      {
+        tag: 'script',
+        attrs: {
+          type: 'text/partytown',
+          async: true,
+          src: `https://www.googletagmanager.com/gtag/js?id=${ga4MeasurementId}`,
+        },
+      },
+      {
+        tag: 'script',
+        attrs: {
+          type: 'text/partytown',
+          id: 'ga4-init',
+          'data-ga4-measurement-id': ga4MeasurementId,
+        },
+        content: `
+          const measurementId = document
+            .getElementById('ga4-init')
+            .getAttribute('data-ga4-measurement-id');
+
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+
+          gtag('js', new Date());
+          gtag('config', measurementId);
+        `,
+      },
+    ]
+  : [];
+
 export default defineConfig({
   site: siteConfig.site,
   integrations: [
@@ -108,7 +147,7 @@ export default defineConfig({
       title: siteConfig.title,
       description: siteConfig.description,
       favicon: faviconPath,
-      head: [...feedHead, ...webmentionHead, ...faviconHead],
+      head: [...feedHead, ...webmentionHead, ...faviconHead, ...ga4Head],
       customCss: [
         './vendor/starlight-ion-theme/styles/layers.css',
         './vendor/starlight-ion-theme/styles/theme.css',
@@ -151,6 +190,11 @@ export default defineConfig({
       social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
     }),
     mdx(),
+    partytown({
+      config: {
+        forward: ['dataLayer.push'],
+      },
+    }),
     sitemap(),
   ],
 });
