@@ -12,7 +12,7 @@ const giscusConfig = {
   reactionsEnabled: config.reactionsEnabled ?? '1',
   emitMetadata: config.emitMetadata ?? '0',
   inputPosition: config.inputPosition ?? 'bottom',
-  theme: config.theme ?? 'preferred_color_scheme',
+  theme: config.theme ?? 'noborder_dark',
   lang: config.lang ?? 'en',
   loading: config.loading ?? 'lazy',
 };
@@ -76,11 +76,7 @@ const serializedConfig = JSON.stringify(giscusConfig);
 
       section.dataset.giscusMounted = 'true';
 
-      const getTheme = () => {
-        const theme = document.documentElement.dataset.theme;
-        if (theme === 'dark' || theme === 'light') return theme;
-        return config.theme || 'preferred_color_scheme';
-      };
+      const getTheme = () => config.theme || 'noborder_dark';
 
       const script = document.createElement('script');
       script.src = GISCUS_CLIENT;
