@@ -11,6 +11,7 @@ timeline:
   year: 1200
   precision: exact
   order: 1
+sourcePath: "Eras/CITADEL/Events/Example Battle.md"
 ---
 
 Example Battle is a public event note that appears on the example timeline.

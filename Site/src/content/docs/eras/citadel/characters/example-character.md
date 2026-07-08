@@ -9,6 +9,7 @@ faction: Example Faction
 location: Example City
 tags:
   - example
+sourcePath: "Eras/CITADEL/Characters/Example Character.md"
 ---
 
 Example Character is a template-friendly protagonist, antagonist, witness, or scholar.

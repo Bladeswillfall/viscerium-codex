@@ -13,6 +13,7 @@ tags:
 relationships:
   allies:
     - Example Character
+sourcePath: "Eras/CITADEL/Factions/Example Faction.md"
 ---
 
 The Example Faction is a placeholder society for testing navigation, wikilinks, and metadata.

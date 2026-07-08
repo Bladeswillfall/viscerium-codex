@@ -6,7 +6,7 @@
     "image": "/assets/maps/example-world.webp",
     "width": 2000,
     "height": 1200,
-    "page": "/maps/example-world/",
+    "page": "/eras/citadel/maps/example-world-map/",
     "markers": [
       {
         "title": "Example City",
@@ -17,7 +17,7 @@
         "layer": [
           "cities"
         ],
-        "page": "/locations/example-city/"
+        "page": "/eras/citadel/locations/example-city/"
       }
     ]
   }

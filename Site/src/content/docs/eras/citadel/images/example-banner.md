@@ -11,6 +11,7 @@ credit: "Unknown / placeholder"
 license: "Placeholder"
 related:
   - Example Faction
+sourcePath: "Eras/CITADEL/Images/Example Banner.md"
 ---
 
 This metadata note documents a public image stored in `Vault/Assets/Images/`.

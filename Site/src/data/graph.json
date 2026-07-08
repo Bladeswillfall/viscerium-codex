@@ -1,115 +1,150 @@
 {
   "nodes": [
     {
-      "id": "characters/example-character",
+      "id": "degel-system/crucibus",
+      "title": "Crucibus",
+      "type": "article"
+    },
+    {
+      "id": "degel-system/degel",
+      "title": "Degel",
+      "type": "article"
+    },
+    {
+      "id": "degel-system/errack",
+      "title": "Errack",
+      "type": "article"
+    },
+    {
+      "id": "degel-system/eye-of-visi",
+      "title": "Eye of Visi",
+      "type": "article"
+    },
+    {
+      "id": "degel-system/eye-of-vordr",
+      "title": "Eye of Vordr",
+      "type": "article"
+    },
+    {
+      "id": "degel-system/the-shards",
+      "title": "The Shards",
+      "type": "article"
+    },
+    {
+      "id": "demo/starlight/components/starlight-component-gallery",
+      "title": "Starlight Component Gallery",
+      "type": "system"
+    },
+    {
+      "id": "demo/starlight/components/starlight-feature-demo",
+      "title": "Starlight Feature Demo",
+      "type": "system"
+    },
+    {
+      "id": "eras/citadel/characters/example-character",
       "title": "Example Character",
       "type": "character"
     },
     {
-      "id": "events/example-battle",
+      "id": "eras/citadel/events/example-battle",
       "title": "Example Battle",
       "type": "event"
     },
     {
-      "id": "factions/example-faction",
+      "id": "eras/citadel/factions/example-faction",
       "title": "Example Faction",
       "type": "faction"
     },
     {
-      "id": "images/example-banner",
+      "id": "eras/citadel/images/example-banner",
       "title": "Example Banner",
       "type": "image"
+    },
+    {
+      "id": "eras/citadel/locations/example-city",
+      "title": "Example City",
+      "type": "location"
+    },
+    {
+      "id": "eras/citadel/maps/example-world-map",
+      "title": "Example World Map",
+      "type": "map"
     },
     {
       "id": "index",
       "title": "Start Here",
       "type": "article"
-    },
-    {
-      "id": "locations/example-city",
-      "title": "Example City",
-      "type": "location"
-    },
-    {
-      "id": "maps/example-world",
-      "title": "Example World Map",
-      "type": "map"
     }
   ],
   "edges": [
     {
-      "source": "characters/example-character",
-      "target": "locations/example-city",
+      "source": "eras/citadel/characters/example-character",
+      "target": "eras/citadel/locations/example-city",
       "type": "link"
     },
     {
-      "source": "characters/example-character",
-      "target": "events/example-battle",
+      "source": "eras/citadel/characters/example-character",
+      "target": "eras/citadel/events/example-battle",
       "type": "link"
     },
     {
-      "source": "events/example-battle",
-      "target": "factions/example-faction",
+      "source": "eras/citadel/events/example-battle",
+      "target": "eras/citadel/factions/example-faction",
       "type": "link"
     },
     {
-      "source": "events/example-battle",
-      "target": "locations/example-city",
+      "source": "eras/citadel/events/example-battle",
+      "target": "eras/citadel/locations/example-city",
       "type": "link"
     },
     {
-      "source": "factions/example-faction",
-      "target": "locations/example-city",
+      "source": "eras/citadel/factions/example-faction",
+      "target": "eras/citadel/locations/example-city",
       "type": "link"
     },
     {
-      "source": "factions/example-faction",
-      "target": "characters/example-character",
+      "source": "eras/citadel/factions/example-faction",
+      "target": "eras/citadel/characters/example-character",
       "type": "link"
     },
     {
-      "source": "factions/example-faction",
-      "target": "events/example-battle",
+      "source": "eras/citadel/factions/example-faction",
+      "target": "eras/citadel/events/example-battle",
       "type": "link"
     },
     {
-      "source": "factions/example-faction",
-      "target": "characters/example-character",
+      "source": "eras/citadel/factions/example-faction",
+      "target": "eras/citadel/characters/example-character",
       "type": "relationship"
     },
     {
-      "source": "index",
-      "target": "factions/example-faction",
+      "source": "eras/citadel/locations/example-city",
+      "target": "eras/citadel/factions/example-faction",
+      "type": "link"
+    },
+    {
+      "source": "eras/citadel/locations/example-city",
+      "target": "eras/citadel/events/example-battle",
       "type": "link"
     },
     {
       "source": "index",
-      "target": "characters/example-character",
+      "target": "eras/citadel/factions/example-faction",
       "type": "link"
     },
     {
       "source": "index",
-      "target": "locations/example-city",
+      "target": "eras/citadel/characters/example-character",
       "type": "link"
     },
     {
       "source": "index",
-      "target": "events/example-battle",
+      "target": "eras/citadel/locations/example-city",
       "type": "link"
     },
     {
       "source": "index",
-      "target": "maps/example-world",
-      "type": "link"
-    },
-    {
-      "source": "locations/example-city",
-      "target": "factions/example-faction",
-      "type": "link"
-    },
-    {
-      "source": "locations/example-city",
-      "target": "events/example-battle",
+      "target": "eras/citadel/events/example-battle",
       "type": "link"
     }
   ]

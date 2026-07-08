@@ -1,10 +1,12 @@
 ---
 title: Start Here
-description: "Welcome page for this reusable worldbuilding codex template."
+description: Welcome page for this reusable worldbuilding codex template.
 publish: true
 status: canon
 slug: index
 type: article
+headerImage: /assets/images/viscerium-banner.webp
+sourcePath: "Introduction/Start Here.md"
 ---
 
 Welcome to your public worldbuilding codex. This example vault publishes only notes in `Vault/Lore/` with `publish: true` and `status: canon`.

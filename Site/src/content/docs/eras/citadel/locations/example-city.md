@@ -13,6 +13,7 @@ map:
   marker: city
   layer:
     - cities
+sourcePath: "Eras/CITADEL/Locations/Example City.md"
 ---
 
 Example City is a public location note with generated map marker data.
