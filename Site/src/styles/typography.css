@@ -29,7 +29,7 @@ h1#_top {
 .sl-markdown-content h2,
 .content-panel h2 {
   font-family: var(--vc-font-body);
-  font-weight: 750;
+  font-weight: 400;
   letter-spacing: .01em;
 }
 
@@ -42,7 +42,7 @@ h1#_top {
 .content-panel h5,
 .content-panel h6 {
   font-family: var(--vc-font-ui);
-  font-weight: 650;
+  font-weight: 400;
   letter-spacing: .015em;
 }
 
