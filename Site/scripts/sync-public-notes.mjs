@@ -31,6 +31,18 @@ function noteKey(input) {
   return String(input).trim().toLowerCase();
 }
 
+function assetKey(input) {
+  return path.basename(String(input).trim()).toLowerCase();
+}
+
+function isExternalUrl(value) {
+  return typeof value === 'string' && /^[a-z][a-z0-9+.-]*:/i.test(value);
+}
+
+function isPlainAssetFilename(value) {
+  return typeof value === 'string' && value.trim() && !value.startsWith('/') && !isExternalUrl(value);
+}
+
 function parseFrontmatter(raw, file) {
   if (!raw.startsWith('---\n')) throw new Error(`Missing frontmatter: ${path.relative(siteRoot, file)}`);
   const end = raw.indexOf('\n---', 4);
@@ -86,6 +98,7 @@ async function walk(dir) {
 const files = (await walk(sourceDir)).filter((file) => /\.(md|mdx)$/i.test(file)).sort();
 const publicNotes = [];
 const slugByName = new Map();
+const imageSlugByAsset = new Map();
 const warnings = [];
 
 for (const file of files) {
@@ -104,6 +117,13 @@ for (const file of files) {
   slugByName.set(noteKey(parsed.data.title), slug);
 }
 
+for (const note of publicNotes) {
+  const asset = note.parsed.data.asset;
+  if (note.parsed.data.type === 'image' && typeof asset === 'string' && asset.trim()) {
+    imageSlugByAsset.set(assetKey(asset), note.slug);
+  }
+}
+
 await emptyDir(outDir);
 await fs.mkdir(publicAssetDir, { recursive: true });
 
@@ -114,6 +134,20 @@ async function copyAsset(category, filename) {
   await fs.mkdir(path.dirname(target), { recursive: true });
   await fs.copyFile(source, target);
   return `/assets/${category.toLowerCase()}/${filename}`;
+}
+
+async function copyReferencedAsset(value) {
+  if (!value || typeof value !== 'string') return null;
+  if (value.startsWith('/assets/images/')) return copyAsset('Images', path.basename(value));
+  if (value.startsWith('/assets/maps/')) return copyAsset('Maps', path.basename(value));
+  if (isPlainAssetFilename(value)) return copyAsset('Images', path.basename(value));
+  return null;
+}
+
+function markdownImage(filename, url) {
+  const image = `![${filename}](${url})`;
+  const imageSlug = imageSlugByAsset.get(assetKey(filename));
+  return imageSlug ? `[${image}](${route(imageSlug)})` : image;
 }
 
 function escapeRegExp(value) {
@@ -237,7 +271,7 @@ async function convertContent(content, currentFile, parsed, outFile, outputRequi
       warnings.push(`Missing embedded asset "${filename}" in ${path.relative(sourceDir, currentFile)}`);
       converted = converted.replace(match[0], `**Missing asset:** ${filename}`);
     } else {
-      converted = converted.replace(match[0], `![${filename}](${url})`);
+      converted = converted.replace(match[0], markdownImage(filename, url));
     }
   }
 
@@ -268,10 +302,7 @@ for (const { file, parsed, slug } of publicNotes) {
   const sourcePath = path.relative(sourceDir, file).replace(/\\/g, '/');
   await fs.mkdir(path.dirname(outFile), { recursive: true });
   for (const field of ['image', 'headerImage']) {
-    const value = parsed.data[field];
-    if (!value || typeof value !== 'string') continue;
-    if (value.startsWith('/assets/images/')) await copyAsset('Images', path.basename(value));
-    if (value.startsWith('/assets/maps/')) await copyAsset('Maps', path.basename(value));
+    await copyReferencedAsset(parsed.data[field]);
   }
   if (parsed.data.asset && parsed.data.type === 'image') await copyAsset('Images', parsed.data.asset);
   const result = await convertContent(parsed.content, file, parsed, outFile, extension === '.mdx');
@@ -279,5 +310,7 @@ for (const { file, parsed, slug } of publicNotes) {
   console.log(`Published ${path.relative(sourceDir, file)} -> ${path.relative(outDir, outFile)}`);
 }
 
-for (const warning of [...new Set(warnings)]) console.warn(`Warning: ${warning}`);
-console.log(`Synced ${publicNotes.length} public notes from Vault/Lore.`);
+if (warnings.length > 0) {
+  console.warn('\nSync warnings:');
+  for (const warning of warnings) console.warn(`- ${warning}`);
+}

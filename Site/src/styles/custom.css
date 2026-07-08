@@ -7,7 +7,10 @@
 .world-map img { display: block; max-width: 100%; }
 .map-marker { position: absolute; transform: translate(-50%, -50%); width: 1rem; height: 1rem; border-radius: 999px; background: var(--codex-accent); border: 2px solid #fff; }
 .image-figure { margin: 1.5rem 0; }
+.image-figure-link { display: block; color: inherit; }
 .image-figure img { border-radius: .5rem; border: 1px solid var(--codex-accent-soft); }
+.image-figure-link img { transition: border-color .2s ease, filter .2s ease, transform .2s ease; }
+.image-figure-link:hover img, .image-figure-link:focus-visible img { border-color: var(--sl-color-accent-high); filter: brightness(1.06); }
 .image-figure figcaption { color: var(--sl-color-gray-3); font-size: .9rem; }
 .codex-comments { margin-top: 3rem; border-top: 1px solid var(--codex-accent-soft); padding-top: 1rem; }
 .codex-comments details { border: 1px solid var(--codex-accent-soft); border-radius: var(--codex-radius); background: var(--codex-surface); }
@@ -16,6 +19,7 @@
 .codex-comments-hint { color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); font-weight: 400; }
 .codex-comments-panel { padding: 0 1rem 1rem; }
 .codex-header-image { object-fit: cover; border: 0; border-radius: var(--codex-radius); width: 100%; max-height: 22rem; margin: 0; display: block; box-shadow: none; }
+.codex-header-image-artwork { object-fit: contain; max-height: min(70vh, 48rem); background: rgba(0, 0, 0, .22); }
 .codex-breadcrumbs { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--codex-accent-soft); color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); }
 .codex-breadcrumbs a { color: var(--codex-accent-high); text-decoration: none; }
 .codex-breadcrumbs a:hover { color: var(--sl-color-white); text-decoration: underline; }
@@ -77,7 +81,14 @@
 
 .codex-page-sidebar .sl-container { display: grid; gap: 1rem; }
 .codex-sidebar-card { overflow: hidden; background: #151515; box-shadow: 0 1rem 2rem rgba(0,0,0,.18); }
-.codex-sidebar-image { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-bottom: 1px solid var(--codex-accent-soft); }
+.codex-sidebar-artwork { border-bottom: 1px solid var(--codex-accent-soft); }
+.codex-sidebar-image-link { display: block; color: inherit; text-decoration: none; }
+.codex-sidebar-image { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.codex-sidebar-image-link .codex-sidebar-image { transition: filter .2s ease, transform .2s ease; }
+.codex-sidebar-image-link:hover .codex-sidebar-image, .codex-sidebar-image-link:focus-visible .codex-sidebar-image { filter: brightness(1.08); transform: scale(1.01); }
+.codex-sidebar-art-caption { padding: .65rem .85rem .75rem; border-top: 1px solid rgba(184,135,70,.14); background: rgba(255,255,255,.025); }
+.codex-sidebar-art-title { margin: 0; color: var(--sl-color-white); font-size: var(--sl-text-sm); font-weight: 700; line-height: 1.35; }
+.codex-sidebar-art-artist { margin: .2rem 0 0; color: var(--sl-color-gray-3); font-size: var(--sl-text-xs); line-height: 1.35; }
 .codex-sidebar-body { padding: 1rem; }
 .codex-sidebar-kicker { margin: 0 0 .35rem; color: var(--codex-accent-high); font-size: var(--sl-text-xs); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .codex-sidebar-card h2 { margin: 0; }
@@ -85,7 +96,7 @@
 .codex-sidebar-meta { display: grid; gap: .65rem; margin: 1rem 0 0; }
 .codex-sidebar-meta div { display: grid; gap: .15rem; padding-top: .65rem; border-top: 1px solid rgba(184,135,70,.14); }
 .codex-sidebar-meta dt { color: var(--sl-color-gray-3); font-size: var(--sl-text-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.codex-sidebar-meta dd { margin: 0; color: var(--sl-color-white); font-size: var(--sl-text-sm); text-transform: capitalize; }
+.codex-sidebar-meta dd { margin: 0; color: var(--sl-color-white); font-size: var(--sl-text-sm); text-transform: none; }
 
 /* Native Markdown blockquotes. */
 .sl-markdown-content blockquote {
@@ -258,8 +269,6 @@
 .cx-order-3 { order: 3; }
 .cx-order-4 { order: 4; }
 .cx-order-5 { order: 5; }
-.cx-order-6 { order: 6; }
-.cx-order-7 { order: 7; }
 .cx-order-8 { order: 8; }
 .cx-order-9 { order: 9; }
 .cx-order-10 { order: 10; }

@@ -8,6 +8,11 @@ type: faction
 era: Example Era
 capital: Example City
 territory: Example Valley
+image: example-banner.webp
+imagePage: /eras/citadel/images/example-banner/
+imageTitle: Example Banner
+artist: Unknown placeholder artist
+alt: "A simple placeholder fantasy banner."
 tags:
   - example
 relationships:
