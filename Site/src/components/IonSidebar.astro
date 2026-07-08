@@ -3,9 +3,82 @@ import MobileMenuFooter from 'virtual:starlight/components/MobileMenuFooter';
 import SidebarSublist from './IonSidebarSublist.astro';
 
 const { sidebar } = Astro.locals.starlightRoute;
+const changelogSidebarLabel = 'Changelogs';
+const isChangelogGroup = (entry: any) =>
+  entry.type === 'group' && entry.label.split(']').pop()?.trim() === changelogSidebarLabel;
+const changelogSidebar = sidebar.filter(isChangelogGroup);
+const mainSidebar = sidebar.filter((entry: any) => !isChangelogGroup(entry));
 ---
 
-<SidebarSublist sublist={sidebar} nestedCount={0} />
-<div class="md:sl-hidden">
-  <MobileMenuFooter {...Astro.props} />
+<div class="codex-sidebar-layout">
+  <SidebarSublist sublist={mainSidebar} nestedCount={0} />
+  {changelogSidebar.length > 0 && (
+    <aside class="codex-changelog-sidebar" aria-label="Changelogs">
+      <SidebarSublist sublist={changelogSidebar} nestedCount={0} />
+    </aside>
+  )}
+  <div class="md:sl-hidden">
+    <MobileMenuFooter {...Astro.props} />
+  </div>
 </div>
+
+<style>
+  @layer starlight.core {
+    .codex-sidebar-layout {
+      display: flex;
+      min-block-size: 100%;
+      flex-direction: column;
+    }
+
+    .codex-changelog-sidebar {
+      margin-block-start: clamp(1.25rem, 4vh, 2.5rem);
+      padding: .75rem .6rem .85rem;
+      border-block-start: 1px solid rgba(184, 135, 70, .34);
+      border-radius: .85rem;
+      background:
+        linear-gradient(135deg, rgba(184, 135, 70, .14), rgba(255, 255, 255, .03)),
+        rgba(255, 255, 255, .02);
+      box-shadow:
+        inset 0 0 0 1px rgba(184, 135, 70, .10),
+        0 .75rem 1.6rem rgba(0, 0, 0, .18);
+    }
+
+    @media (min-width: 50rem) {
+      .codex-changelog-sidebar {
+        margin-block-start: auto;
+      }
+    }
+
+    .codex-changelog-sidebar :global(.top-level) {
+      margin: 0;
+    }
+
+    .codex-changelog-sidebar :global(.top-level > li + li) {
+      margin-top: .35rem;
+    }
+
+    .codex-changelog-sidebar :global(summary) {
+      margin-top: 0;
+      margin-bottom: .4rem;
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .codex-changelog-sidebar :global(.large) {
+      color: var(--sl-color-accent-high);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .codex-changelog-sidebar :global(a) {
+      border: 1px solid transparent;
+    }
+
+    .codex-changelog-sidebar :global(a:hover),
+    .codex-changelog-sidebar :global(a:focus) {
+      border-color: rgba(184, 135, 70, .28);
+      background: rgba(184, 135, 70, .10);
+      text-decoration: none;
+    }
+  }
+</style>

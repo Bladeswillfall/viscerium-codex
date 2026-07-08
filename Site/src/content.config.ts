@@ -2,6 +2,7 @@ import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { docsLoader } from '@astrojs/starlight/loaders';
 import { docsSchema } from '@astrojs/starlight/schema';
+import { changelogsLoader } from 'starlight-changelogs/loader';
 import { pageSiteGraphSchema } from 'starlight-site-graph/schema';
 import { starlightTagsExtension } from 'starlight-tags/schema';
 
@@ -70,5 +71,16 @@ export const collections = {
         related: z.array(z.string()).optional(),
       }),
     }),
+  }),
+  changelogs: defineCollection({
+    loader: changelogsLoader([
+      {
+        provider: 'keep-a-changelog',
+        base: 'changelog',
+        title: 'VISCERIUM Codex',
+        changelog: './CHANGELOG.md',
+        pageSize: 10,
+      },
+    ]),
   }),
 };
