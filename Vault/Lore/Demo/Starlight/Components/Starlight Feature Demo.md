@@ -12,9 +12,10 @@ calendarDate:
   day: 16
   displayCalendars:
     - okse
-calendarShowcase:
-  calendar: okse
-  year: 4
+calendarBlocks:
+  ID-0001:
+    calendar: okse
+    year: 4
 era:
   - CITADEL
   - SMOG
@@ -54,10 +55,10 @@ The build syncs this note from `Vault/Lore` into `Site/src/content/docs`.
 
 This page is a visual stress-test for the VISCERIUM codex. It is intentionally overloaded, but it stays as **plain Markdown** so it remains comfortable to edit in Obsidian.
 
-The calendar visible near the page title is not written with MDX. It is rendered by the site layout from the `calendarDate` and `calendarShowcase` frontmatter above.
+The small date badge near the page title is rendered from `calendarDate`. The full calendar grid is placed manually with `[Calendar:ID-0001]` in the body below.
 
 :::note[Demo intent]
-This page should show an automatic Okse date badge and a full Okse calendar module. If either is missing on the live site, the deployment is either stale or the calendar component failed during build.
+This page should show an automatic Okse date badge near the title, and a full Okse calendar module exactly where the shortcode is placed.
 :::
 
 ## Calendar rendering check
@@ -65,8 +66,10 @@ This page should show an automatic Okse date badge and a full Okse calendar modu
 Expected visible result on this exact route:
 
 - [ ] An event-date badge for `16 Sólmanuthur, 20004` appears under the page title.
-- [ ] A full Okse calendar grid appears near the page title.
+- [ ] A full Okse calendar grid appears below this checklist, where `[Calendar:ID-0001]` is written.
 - [ ] The footer link to [the calendar page](/calendar/) resolves.
+
+[Calendar:ID-0001]
 
 The same calendar module should also appear on the canonical [Okse Calendar](/calendar/) page.
 
@@ -80,7 +83,8 @@ The same calendar module should also appear on the canonical [Okse Calendar](/ca
 | `status: canon` | Codex sync gate | Marks the note as publishable canon. |
 | `type: system` | Codex schema field | Useful for filtering and graphing. |
 | `calendarDate` | Codex date engine | Renders an automatic linked Okse date badge. |
-| `calendarShowcase` | Codex calendar module | Renders the full Okse calendar without MDX imports. |
+| `calendarBlocks` | Codex calendar module registry | Defines reusable calendar placements for this note. |
+| `[Calendar:ID-0001]` | Codex placement shortcode | Renders the full Okse calendar exactly where placed. |
 | `era`, `faction`, `tags` | Codex taxonomy | Should be accepted by the current schema. |
 | `sidebar` | Sidebar label/order/badge | Tests navigation display. |
 | `tableOfContents` | TOC depth | Keeps only H2-H3 in the page TOC. |
