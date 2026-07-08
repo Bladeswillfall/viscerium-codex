@@ -38,19 +38,6 @@
       box-shadow: none;
     }
 
-    .main-frame {
-      grid-column: 1 / -1 !important;
-      inline-size: 100%;
-      max-inline-size: none;
-      margin-inline-start: 0 !important;
-      padding-inline-start: 0 !important;
-    }
-
-    .main-frame > .codex-two-column-content {
-      inline-size: 100%;
-      max-inline-size: none;
-    }
-
     html:not(.codex-sidebar-collapsed) .codex-sidebar-toggle {
       inset-inline-start: calc(var(--codex-sidebar-overlay-width) + .75rem);
     }
