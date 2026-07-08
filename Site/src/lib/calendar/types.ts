@@ -47,7 +47,19 @@ export type CalendarObservance = {
   day?: number;
   intercalaryDay?: string;
   description?: string;
+  /** Public route for a full article about this observance/event. */
+  href?: string;
+  /** Alias for href, useful when authoring calendar data as event/article metadata. */
+  article?: string;
 };
+
+export type CalendarEventLink = string | {
+  href?: string;
+  article?: string;
+  label?: string;
+};
+
+export type CalendarEventLinks = Record<string, CalendarEventLink>;
 
 export type CalendarDefinition = {
   id: string;
