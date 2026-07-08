@@ -71,11 +71,6 @@
   }
 }
 
-.right-sidebar-container,
-.right-sidebar {
-  width: 100%;
-}
-
 @media (min-width: 900px) {
   .viscerium-infobox { width: min(24rem, 33vw); }
 }
