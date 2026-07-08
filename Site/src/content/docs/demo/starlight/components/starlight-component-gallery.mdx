@@ -39,6 +39,8 @@ import {
   Tabs,
   TabItem,
 } from '@astrojs/starlight/components';
+import CalendarDateBadge from '../../../../../components/calendar/CalendarDateBadge.astro';
+import CalendarYear from '../../../../../components/calendar/CalendarYear.astro';
 
 This page tests three things: native Starlight MDX components, the VISCERIUM codex formatting tags that can be written directly inside normal lore pages, and the new typography/math rendering layer.
 
@@ -424,6 +426,50 @@ R(t)=R_0e^{-\lambda t}
 ```
 
 </section>
+
+## Calendar components
+
+These examples test the new VISCERIUM calendar engine: structured dates, hidden absolute world-time, automatic weekday calculation, leap-day validation, article date badges, and full-year rendering.
+
+```yaml
+calendarDate:
+  calendar: okse
+  year: 20004
+  month: solmanuthur
+  day: 16
+  displayCalendars:
+    - okse
+```
+
+<CalendarDateBadge
+  title="Calendar date badge demo"
+  date={{
+    calendar: 'okse',
+    year: 20004,
+    month: 'solmanuthur',
+    day: 16,
+    displayCalendars: ['okse'],
+  }}
+/>
+
+```yaml
+calendarDate:
+  calendar: okse
+  year: 20004
+  intercalaryDay: engimanutur-02
+```
+
+<CalendarDateBadge
+  title="Leap-day badge demo"
+  date={{
+    calendar: 'okse',
+    year: 20004,
+    intercalaryDay: 'engimanutur-02',
+    displayCalendars: ['okse'],
+  }}
+/>
+
+<CalendarYear calendarId="okse" year={4} />
 
 ## Starlight components
 
