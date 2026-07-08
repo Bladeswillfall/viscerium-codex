@@ -1,6 +1,15 @@
+.codex-two-column-content {
+  container-type: inline-size;
+}
+
+.codex-comments,
+.codex-site-footer {
+  box-sizing: border-box;
+  max-width: none;
+}
+
 @media (min-width: 72rem) {
   [data-has-sidebar][data-has-toc] .codex-two-column-content {
-    container-type: inline-size;
     display: block;
     width: 100%;
   }
@@ -53,6 +62,12 @@
     border-inline-start: 0;
     padding-block-start: 0;
     padding-inline-start: 0;
+  }
+
+  [data-has-sidebar] .codex-main-pane .codex-comments,
+  [data-has-sidebar] .codex-main-pane .codex-site-footer {
+    width: 100cqw;
+    max-width: 100cqw;
   }
 }
 
