@@ -1,0 +1,82 @@
+---
+---
+
+<script is:inline>
+  (() => {
+    const MATHJAX_SCRIPT_ID = 'viscerium-mathjax';
+    const MATHJAX_SRC = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js';
+
+    const findMathPreBlocks = () => {
+      return [...document.querySelectorAll('pre')].filter((pre) => {
+        if (pre.dataset.mathProcessed === 'true') return false;
+        const code = pre.querySelector('code');
+        const languageHints = [
+          pre.dataset.language,
+          pre.getAttribute('data-language'),
+          pre.className,
+          code?.className,
+        ].filter(Boolean).join(' ').toLowerCase();
+
+        return /(?:^|\s|-)math(?:\s|$)/.test(languageHints) || languageHints.includes('language-math');
+      });
+    };
+
+    const convertMathCodeBlocks = () => {
+      for (const pre of findMathPreBlocks()) {
+        const code = pre.querySelector('code');
+        const source = (code?.textContent ?? pre.textContent ?? '').trim();
+        if (!source) continue;
+
+        const replacement = document.createElement('div');
+        replacement.className = 'cx-math-display tex2jax_process';
+        replacement.textContent = `\\[\n${source}\n\\]`;
+
+        const expressiveWrapper = pre.closest('.expressive-code');
+        const target = expressiveWrapper ?? pre;
+        pre.dataset.mathProcessed = 'true';
+        target.replaceWith(replacement);
+      }
+    };
+
+    const typesetMath = () => {
+      convertMathCodeBlocks();
+      if (window.MathJax?.typesetPromise) {
+        window.MathJax.typesetPromise().catch((error) => console.warn('MathJax typeset failed', error));
+      }
+    };
+
+    window.MathJax = window.MathJax ?? {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        tags: 'ams',
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore|mathjax_ignore',
+        processHtmlClass: 'tex2jax_process|sl-markdown-content|content-panel|cx-equation|cx-math-display',
+      },
+      startup: {
+        ready() {
+          MathJax.startup.defaultReady();
+          typesetMath();
+          document.documentElement.classList.add('viscerium-math-ready');
+        },
+      },
+    };
+
+    convertMathCodeBlocks();
+
+    if (!document.getElementById(MATHJAX_SCRIPT_ID)) {
+      const script = document.createElement('script');
+      script.id = MATHJAX_SCRIPT_ID;
+      script.src = MATHJAX_SRC;
+      script.async = true;
+      document.head.appendChild(script);
+    }
+
+    document.addEventListener('astro:page-load', typesetMath);
+  })();
+</script>
