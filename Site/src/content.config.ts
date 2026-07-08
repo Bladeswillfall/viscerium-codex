@@ -7,6 +7,7 @@ import { starlightTagsExtension } from 'starlight-tags/schema';
 
 const stringOrStrings = z.union([z.string(), z.array(z.string())]);
 const looseRecord = z.record(z.unknown());
+const frontmatterDate = z.coerce.date();
 
 export const collections = {
   docs: defineCollection({
@@ -18,6 +19,9 @@ export const collections = {
         slug: z.string().optional(),
         sourcePath: z.string().optional(),
         type: z.string().optional(),
+        date: frontmatterDate.optional(),
+        published: frontmatterDate.optional(),
+        updated: frontmatterDate.optional(),
         era: stringOrStrings.optional(),
         faction: stringOrStrings.optional(),
         character: stringOrStrings.optional(),
