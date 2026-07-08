@@ -1,0 +1,139 @@
+---
+import { getCalendar } from '../../lib/calendar/registry';
+import { getCalendarYearDates, isLeapYear, resolveCalendarDate } from '../../lib/calendar/convert';
+
+interface Props {
+  calendarId?: string;
+  year?: number;
+}
+
+const { calendarId = 'okse' } = Astro.props as Props;
+const calendar = getCalendar(calendarId);
+const year = (Astro.props as Props).year ?? calendar.defaultYear;
+const dates = getCalendarYearDates(calendar.id, year);
+const datesByAnchor = new Map(dates.map((date) => [date.anchor, date]));
+const seasonLabels = ['winter', 'spring', 'summer', 'autumn'];
+
+function getDateForMonthDay(month: string, day: number) {
+  return datesByAnchor.get(`${month}-${String(day).padStart(2, '0')}`);
+}
+
+function getDateForIntercalary(slug: string) {
+  return datesByAnchor.get(slug);
+}
+---
+
+<section class="calendar-module" aria-labelledby="calendar-module-title">
+  <div class="calendar-module__intro">
+    <div>
+      <p class="codex-kicker">World-time calendar</p>
+      <h2 id="calendar-module-title">{calendar.name}</h2>
+      {calendar.description && <p>{calendar.description}</p>}
+    </div>
+    <dl class="calendar-module__facts codex-frame">
+      <div>
+        <dt>Rendered year</dt>
+        <dd>{year}</dd>
+      </div>
+      <div>
+        <dt>Leap rule</dt>
+        <dd>{calendar.leapRule?.label ?? 'No leap years'}</dd>
+      </div>
+      <div>
+        <dt>Leap year?</dt>
+        <dd>{isLeapYear(calendar, year) ? 'Yes' : 'No'}</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="calendar-year-grid">
+    {calendar.months.map((month) => (
+      <section class="calendar-month" aria-labelledby={`calendar-${month.slug}`}>
+        <h3 id={`calendar-${month.slug}`}>{month.name} <span>({month.ordinal})</span></h3>
+        <ol class="calendar-days" aria-label={`${month.name} days`}>
+          {Array.from({ length: month.days }, (_, index) => {
+            const day = index + 1;
+            const resolved = getDateForMonthDay(month.slug, day) ?? resolveCalendarDate({ calendar: calendar.id, year, month: month.slug, day });
+            const hasHoliday = resolved.observances.some((observance) => observance.type === 'holiday');
+            const hasSeasonMarker = resolved.observances.some((observance) => observance.type !== 'holiday');
+            return (
+              <li
+                id={resolved.anchor}
+                class:list={[
+                  'calendar-day',
+                  `calendar-day--${resolved.season}`,
+                  hasHoliday && 'calendar-day--holiday',
+                  hasSeasonMarker && 'calendar-day--marker',
+                ]}
+              >
+                <a href={`#${resolved.anchor}`} aria-label={resolved.label} title={resolved.label}>
+                  <span class="calendar-day__number">{day}</span>
+                  <span class="calendar-day__weekday">{resolved.weekday}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+    ))}
+
+    <section class="calendar-month calendar-month--intercalary" aria-labelledby="calendar-engimanutur">
+      <h3 id="calendar-engimanutur">Engimanutur <span>(0th/14th)</span></h3>
+      <ol class="calendar-days calendar-days--intercalary" aria-label="Engimanutur days">
+        {calendar.intercalaryDays.map((intercalaryDay) => {
+          const resolved = getDateForIntercalary(intercalaryDay.slug);
+          const visible = Boolean(resolved);
+          return (
+            <li
+              id={intercalaryDay.slug}
+              class:list={[
+                'calendar-day',
+                'calendar-day--intercalary',
+                `calendar-day--${intercalaryDay.season}`,
+                intercalaryDay.leapOnly && 'calendar-day--leap',
+                resolved?.observances.some((observance) => observance.type !== 'holiday') && 'calendar-day--marker',
+                !visible && 'calendar-day--inactive',
+              ]}
+            >
+              {resolved ? (
+                <a href={`#${resolved.anchor}`} aria-label={resolved.label} title={resolved.label}>
+                  <span class="calendar-day__number">{String(intercalaryDay.day).padStart(2, '0')}</span>
+                  <span class="calendar-day__weekday">{resolved.weekday}</span>
+                </a>
+              ) : (
+                <span aria-label={`${intercalaryDay.name} ${intercalaryDay.day} only exists in leap years`}>
+                  <span class="calendar-day__number">{String(intercalaryDay.day).padStart(2, '0')}</span>
+                  <span class="calendar-day__weekday">Leap only</span>
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+
+    <section class="calendar-legend codex-frame" aria-labelledby="calendar-legend-title">
+      <h3 id="calendar-legend-title">Key</h3>
+      <dl>
+        {seasonLabels.map((season) => (
+          <div>
+            <dt><span class={`calendar-key calendar-key--${season}`}></span>{season}</dt>
+            <dd>Season band</dd>
+          </div>
+        ))}
+        <div>
+          <dt><span class="calendar-key calendar-key--leap"></span>Leap day</dt>
+          <dd>Only appears in leap years</dd>
+        </div>
+        <div>
+          <dt><span class="calendar-key calendar-key--holiday"></span>Holiday</dt>
+          <dd>Marked observance</dd>
+        </div>
+        <div>
+          <dt><span class="calendar-key calendar-key--marker"></span>Red number</dt>
+          <dd>Solstice, equinox, or seasonal marker</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+</section>
