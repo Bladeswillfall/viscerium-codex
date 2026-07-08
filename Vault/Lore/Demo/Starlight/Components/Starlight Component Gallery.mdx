@@ -1,10 +1,18 @@
 ---
 title: Starlight Component Gallery
-description: "A gallery for testing live Astro Starlight components, VISCERIUM codex authoring tags, typography, and math rendering."
+description: "A gallery for testing live Astro Starlight components, VISCERIUM codex authoring tags, typography, math rendering, and calendar frontmatter rendering."
 publish: true
 status: canon
-slug: demo/starlight-component-gallery
 type: system
+calendarDate:
+  calendar: okse
+  year: 20004
+  intercalaryDay: engimanutur-02
+  displayCalendars:
+    - okse
+calendarShowcase:
+  calendar: okse
+  year: 4
 tags:
   - demo
   - starlight
@@ -12,6 +20,7 @@ tags:
   - formatting
   - typography
   - math
+  - calendar
 sidebar:
   label: Component Gallery
   order: 1000
@@ -39,11 +48,19 @@ import {
   TabItem,
 } from '@astrojs/starlight/components';
 
-This page tests three things: native Starlight MDX components, the VISCERIUM codex formatting tags that can be written directly inside normal lore pages, and the new typography/math rendering layer.
+This page tests native Starlight MDX components, the VISCERIUM codex formatting tags, typography/math rendering, and the new calendar layer.
 
 :::caution[Gallery page]
-This is deliberately overloaded. Delete it later if it stops being useful, but keep the syntax examples somewhere because the codex formatting tags are intended for everyday article writing.
+This page is deliberately overloaded. Delete it later if it stops being useful, but keep the syntax examples somewhere because the codex formatting tags are intended for everyday article writing.
 :::
+
+## Calendar components
+
+The full Okse calendar should render near the page title from `calendarShowcase` frontmatter. This proves the calendar can be displayed on an MDX page without manually importing the calendar component into the note body.
+
+The page also declares an intercalary leap-day `calendarDate`, so the automatic date badge should show `Engimanutur 02` for year `20004`.
+
+<LinkButton href="/calendar/" icon="right-arrow">Open the canonical calendar page</LinkButton>
 
 ## Typography system
 
@@ -86,18 +103,6 @@ The tags below are transformed during the Obsidian-to-Starlight sync step. They 
 
 ### Equal columns
 
-```md
-[cols]
-[col]
-Left column content.
-[/col]
-
-[col]
-Right column content.
-[/col]
-[/cols]
-```
-
 [cols]
 [col]
 ### Askalia
@@ -120,151 +125,7 @@ Fertile land, cheap mead, and roads where the trees know how to keep secrets.
 [/col]
 [/cols]
 
-### Unequal columns
-
-```md
-[cols:2-1]
-[col]
-Wide main article prose.
-[/col]
-
-[col]
-Narrow sidebar note.
-[/col]
-[/cols]
-```
-
-[cols:2-1 gap=lg]
-[col]
-### Wide article body
-
-The Republic of Askalia looks clean from the balcony. From the street, it looks bought. Coin moves through its markets with the force of weather, carrying grain, citrus, contracts, blood, silence, and whatever name a person had before a bill of sale replaced it.
-
-This wider column is for primary article prose. It should feel like the normal reading lane of the page rather than a table pretending to be layout.
-[/col]
-
-[col]
-[card:accent]
-### Sidebar use
-
-Use this for quick facts, warnings, trade goods, faction doctrine, or a tiny timeline.
-
-- Ratio: `2-1`
-- Mobile: stacked
-- Desktop: wide/narrow
-[/card]
-[/col]
-[/cols]
-
-### Image and text split
-
-```md
-[cols:1-2]
-[col]
-![[Some Image.jpg]]
-[/col]
-
-[col]
-Text beside the image.
-[/col]
-[/cols]
-```
-
-[cols:1-2 align=center]
-[col]
-[card:muted compact]
-### Image slot
-
-This column is where an Obsidian image embed can sit. The sync script resolves embeds before the page is rendered.
-[/card]
-[/col]
-
-[col]
-A useful codex page often needs an artefact, map, banner, heraldic mark, weapon plate, or portrait beside text without exposing a fake table. This layout gives you that without having to write HTML in every article.
-[/col]
-[/cols]
-
-### 12-column row layout
-
-```md
-[row]
-[col:12 md:8]
-Main content. Full width on mobile, eight-twelfths on desktop.
-[/col]
-
-[col:12 md:4]
-Sidebar. Full width on mobile, four-twelfths on desktop.
-[/col]
-[/row]
-```
-
-[row gap=lg]
-[col:12 md:8]
-### Main lore lane
-
-Use `[row]` when you need more precise control than simple `[cols]` ratios. Columns use a 12-column grid at wider screen sizes and stack naturally on mobile.
-[/col]
-
-[col:12 md:4]
-[card]
-### Infobox lane
-
-- `col:12` on mobile
-- `md:4` on desktop
-- No Markdown table required
-[/card]
-[/col]
-[/row]
-
-### Responsive reordering
-
-```md
-[row]
-[col:12 md:6 order-md:2]
-Text first on mobile, second on desktop.
-[/col]
-
-[col:12 md:6 order-md:1]
-Visual first on desktop, second on mobile.
-[/col]
-[/row]
-```
-
-[row]
-[col:12 md:6 order-md:2]
-### Reading order
-
-On mobile, this text appears first. On desktop, it moves to the right. This is useful when the natural reading order and the best desktop composition are not the same thing.
-[/col]
-
-[col:12 md:6 order-md:1]
-[card:accent]
-### Visual / quote / map slot
-
-This appears first on desktop but second on mobile.
-[/card]
-[/col]
-[/row]
-
 ### Cards and callouts
-
-```md
-[card]
-Card content.
-[/card]
-
-[note:title="Archivist note"]
-Note content.
-[/note]
-
-[warning:title="Content warning"]
-Warning content.
-[/warning]
-
-[lore:title="In-world fragment"]
-Lore fragment.
-[/lore]
-```
 
 [cols]
 [col]
@@ -296,26 +157,6 @@ This example could mark slavery, body horror, execution, plague, or any other ma
 The horn did not sound. It remembered.
 [/lore]
 
-### Tables are untouched
-
-This is a normal Markdown table. The codex formatter does not modify it.
-
-| Field | Value | Notes |
-|---|---:|---|
-| Population band | 3 | Still regular Markdown. |
-| Trade risk | 8 | No invisible layout behavior. |
-| Canon status | 1 | Rendered as a table. |
-
-### Tags inside code blocks are untouched
-
-```md
-[cols:2-1]
-[col]
-This is documentation, not a real layout.
-[/col]
-[/cols]
-```
-
 ## Mathematical notation
 
 Inline TeX can be written like GitHub-style Markdown: $a^2+b^2=c^2$.
@@ -326,25 +167,7 @@ $$
 a^2+b^2=c^2
 $$
 
-Fenced `math` blocks are converted into display equations at runtime:
-
-```math
-\begin{aligned}
-\mathcal{R}_{total}
-  &= \sum_{i=1}^{n} \alpha_i \psi_i(t) \\
-  &= \alpha_1 \psi_1(t) + \alpha_2 \psi_2(t) + \cdots + \alpha_n \psi_n(t)
-\end{aligned}
-```
-
 Use the codex equation wrapper when a formula needs a title or article-level panel treatment:
-
-````md
-[equation:title="Resonance decay model"]
-```math
-R(t)=R_0e^{-\lambda t}
-```
-[/equation]
-````
 
 [equation:title="Resonance decay model"]
 ```math
@@ -356,15 +179,6 @@ R(t)=R_0e^{-\lambda t}
 
 These are native Starlight MDX components. Use them when the page really needs imported components rather than simple codex authoring tags.
 
-## Code block
-
-```js title="codex-doctrine.js" {1,2}
-const faction = 'TCSC';
-const doctrine = 'slow-moving walls with civil-industrial compatibility';
-
-console.log({ faction, doctrine });
-```
-
 ## Badges
 
 - <Badge text="Default" />
@@ -373,9 +187,6 @@ console.log({ faction, doctrine });
 - <Badge text="Tip" variant="tip" />
 - <Badge text="Caution" variant="caution" />
 - <Badge text="Danger" variant="danger" />
-- <Badge text="Small" size="small" />
-- <Badge text="Medium" size="medium" />
-- <Badge text="Large" size="large" />
 
 ## Icons
 
@@ -414,101 +225,35 @@ Good for turning a dense codex index into a browsable overview.
   </Card>
 </CardGrid>
 
-## Link cards
-
-<LinkCard title="Markdown Feature Demo" href="/demo/starlight/components/starlight-feature-demo/" description="Plain Markdown page for Obsidian-safe rendering tests." />
-
-<CardGrid>
-  <LinkCard title="Codex Home" href="/" description="Return to the public VISCERIUM codex root." />
-  <LinkCard title="Starlight Components" href="https://starlight.astro.build/components/using-components/" description="Official reference for Starlight components." />
-</CardGrid>
-
 ## File tree
 
 <FileTree>
-
-- Vault
-  - Lore
-    - Demo
-      - Starlight
-        - Components
-          - **Starlight Feature Demo.md** plain Markdown stress test
-          - **Starlight Component Gallery.mdx** live component, typography, math, and codex formatting stress test
-  - Assets
-    - Images
-      - Tech timeline for VISCERIUM.jpg
-    - Maps/
-    - Documents/
-- Site
-  - src
-    - content
-      - docs/ regenerated output; do not edit by hand
-    - styles
-      - typography.css
-  - scripts
-    - sync-public-notes.mjs
-    - codex-formatting.mjs
-- README.md
-
+- Vault/
+  - Lore/
+    - Calendar.md
+    - Demo/
+      - Starlight/
+        - Components/
+          - Starlight Feature Demo.md
+          - Starlight Component Gallery.mdx
+- Site/
+  - src/
+    - components/calendar/
+    - lib/calendar/
 </FileTree>
-
-## Steps
-
-<Steps>
-
-1. Write lore in `Vault/Lore` using normal Markdown.
-
-2. Use codex tags such as `[cols:2-1]`, `[row]`, `[col:12 md:8]`, `[card]`, `[note]`, `[warning]`, `[lore]`, and `[equation]` when you need layout.
-
-3. Run the sync and build commands.
-
-   ```bash title="Build test"
-   cd Site
-   npm run sync
-   npm run build
-   ```
-
-4. Check the public site and tune CSS only once, not per article.
-
-</Steps>
 
 ## Tabs
 
 <Tabs>
-  <TabItem label="ASTU" icon="rocket">
-    Fast, maritime, trade-first, internationally connected, and politically polished.
+  <TabItem label="Markdown">
+    Plain Markdown pages should use `calendarDate` and `calendarShowcase` frontmatter.
   </TabItem>
-  <TabItem label="TCSC" icon="database">
-    Heavy, land-connected, industrial, rail-dependent, and designed around collective endurance.
-  </TabItem>
-  <TabItem label="KRG" icon="seti:config">
-    Contract-driven, opportunistic, salvaged, deniable, and happy to use whoever's kit still works.
+  <TabItem label="MDX">
+    MDX pages can also use the same frontmatter, without importing calendar components directly.
   </TabItem>
 </Tabs>
 
-## Synchronized tabs
+## Link cards
 
-First group:
-
-<Tabs syncKey="era-demo">
-  <TabItem label="CITADEL">Stone, oaths, bone, old roads.</TabItem>
-  <TabItem label="NEARSIGHT">Concrete, drones, plate carriers, green-glass districts.</TabItem>
-</Tabs>
-
-Second group with the same labels and sync key:
-
-<Tabs syncKey="era-demo">
-  <TabItem label="CITADEL">Best for myths becoming law.</TabItem>
-  <TabItem label="NEARSIGHT">Best for systems pretending they are not myths.</TabItem>
-</Tabs>
-
-## Mixed component stress test
-
-<CardGrid>
-  <Card title="A useful page" icon="approve-check-circle">
-    Has pressure, consequence, texture, and a reason to exist.
-  </Card>
-  <Card title="A weak page" icon="warning">
-    Has names, aesthetics, and nothing that changes the world.
-  </Card>
-</CardGrid>
+<LinkCard title="Markdown Feature Demo" href="/demo/starlight/components/starlight-feature-demo/" description="Plain Markdown page for Obsidian-safe rendering tests." />
+<LinkCard title="Okse Calendar" href="/calendar/" description="Canonical rendered calendar route." />
