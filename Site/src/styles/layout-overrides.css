@@ -11,7 +11,8 @@
     box-sizing: border-box;
     inline-size: calc(100vw - var(--sl-sidebar-width, 0rem));
     inline-size: calc(100dvw - var(--sl-sidebar-width, 0rem));
-    max-inline-size: 100%;
+    max-inline-size: calc(100vw - var(--sl-sidebar-width, 0rem));
+    max-inline-size: calc(100dvw - var(--sl-sidebar-width, 0rem));
     margin-inline: 0;
   }
 }
