@@ -175,13 +175,45 @@ Create a new repository from this template, replace the example lore with your p
 
 ## Optional community integrations
 
-- giscus comments: this template renders giscus from `Site/src/components/GiscusComments.astro`; set the public environment variables below to enable it.
+- Unified page discussion: this template renders one **Page discussion** section at the bottom of every Starlight page from `Site/src/components/GiscusComments.astro`.
+- Webmentions: the same section can display wider-web comments, replies, likes, reposts, bookmarks, and mentions collected by Webmention.io.
+- giscus comments: GitHub Discussions still render in the same section, beneath wider-web responses, instead of becoming a competing second comment box.
 - Buttondown/newsletter: add your public form endpoint as an environment variable or documented placeholder.
 - GA4/GTM and Cloudflare Web Analytics: add only public IDs through environment variables or Cloudflare settings.
 
+## Enable Webmentions
+
+This template uses Webmention.io as the Webmention receiver/display API because it works cleanly with a static Cloudflare Pages site. Bridgy and Bridgy Fed can then be used as bridges that feed social/fediverse responses into Webmention.io.
+
+Actions for you:
+
+1. Set `SITE_URL` to the final canonical domain first.
+2. Sign in to Webmention.io with that domain.
+3. Add the required public environment variable in Cloudflare Pages and in a local `Site/.env` file if needed.
+4. Redeploy the site so Starlight emits the `<link rel="webmention">` discovery tag in every page head.
+5. Connect Bridgy classic if you want backfeed from existing social accounts, or Bridgy Fed if you want the site itself bridged into the fediverse/Bluesky-style networks.
+
+Required variable:
+
+```bash
+PUBLIC_WEBMENTION_IO_USERNAME=your-domain.example
+```
+
+Optional variables:
+
+```bash
+PUBLIC_WEBMENTIONS_ENABLED=1
+PUBLIC_WEBMENTIONS_MAX=24
+PUBLIC_WEBMENTION_ENDPOINT=https://webmention.io/your-domain.example/webmention
+PUBLIC_WEBMENTION_PINGBACK_ENDPOINT=https://webmention.io/your-domain.example/xmlrpc
+PUBLIC_WEBMENTION_API_ENDPOINT=https://webmention.io/api/mentions.jf2
+```
+
+Set `PUBLIC_WEBMENTIONS_ENABLED=0` to hide the Webmention portion without removing the code.
+
 ## Enable collapsible GitHub comments
 
-This template includes a **Page comments** section at the bottom of every Starlight page. It uses [giscus](https://giscus.app/) and stays in visible setup-warning mode until configured.
+This template includes the GitHub Discussions portion inside the same **Page discussion** section. It uses [giscus](https://giscus.app/) and stays in visible setup-warning mode until configured.
 
 Actions for you:
 
@@ -217,4 +249,4 @@ PUBLIC_GISCUS_LANG=en
 PUBLIC_GISCUS_LOADING=lazy
 ```
 
-Do not commit secrets. These giscus values are public identifiers, but keeping them in environment variables makes the template reusable.
+Do not commit secrets. These giscus and Webmention values are public identifiers, but keeping them in environment variables makes the template reusable.
