@@ -17,7 +17,7 @@ export default {
     reactionsEnabled: env.PUBLIC_GISCUS_REACTIONS_ENABLED ?? '1',
     emitMetadata: env.PUBLIC_GISCUS_EMIT_METADATA ?? '0',
     inputPosition: env.PUBLIC_GISCUS_INPUT_POSITION ?? 'bottom',
-    theme: env.PUBLIC_GISCUS_THEME ?? 'preferred_color_scheme',
+    theme: env.PUBLIC_GISCUS_THEME ?? 'noborder_dark',
     lang: env.PUBLIC_GISCUS_LANG ?? 'en',
     loading: env.PUBLIC_GISCUS_LOADING ?? 'lazy',
   },
