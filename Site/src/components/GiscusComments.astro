@@ -57,14 +57,14 @@ const serializedConfig = JSON.stringify(socialConfig);
         <>
           <div class="codex-social-intro">
             <div>
-              <p class="codex-social-kicker">Comments, mentions, and reactions</p>
+              <p class="codex-kicker">Comments, mentions, and reactions</p>
               <p>
                 Respond from the wider web with a link back to this page, or join the GitHub discussion below.
                 Both routes are gathered here so the page has one social trail instead of competing comment boxes.
               </p>
             </div>
             {webmentionsConfigured && (
-              <p class="codex-social-count" data-webmention-summary hidden></p>
+              <p class="codex-pill codex-social-count" data-webmention-summary hidden></p>
             )}
           </div>
 
@@ -384,22 +384,9 @@ const serializedConfig = JSON.stringify(socialConfig);
     margin: 0;
   }
 
-  .codex-social-kicker {
-    color: var(--sl-color-accent-high);
-    font-size: var(--sl-text-xs);
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-  }
-
   .codex-social-count {
     flex: 0 0 auto;
     margin: 0;
-    padding: .35rem .65rem;
-    border: 1px solid rgba(184, 135, 70, .24);
-    background: rgba(184, 135, 70, .10);
-    color: var(--sl-color-gray-2);
-    font-size: var(--sl-text-xs);
   }
 
   .codex-webmentions,
@@ -447,7 +434,8 @@ const serializedConfig = JSON.stringify(socialConfig);
     gap: .75rem;
     padding: .75rem;
     border: 1px solid rgba(184, 135, 70, .16);
-    background: rgba(255, 255, 255, .018);
+    border-radius: var(--codex-radius);
+    background: var(--codex-surface);
   }
 
   .codex-webmention-avatar {
