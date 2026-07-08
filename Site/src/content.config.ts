@@ -34,6 +34,7 @@ export const collections = {
         type: z.string().optional(),
         calendarDate: calendarDateSchema.optional(),
         calendarShowcase: calendarShowcaseSchema.optional(),
+        calendarBlocks: z.record(calendarShowcaseSchema).optional(),
         date: frontmatterDate.optional(),
         published: frontmatterDate.optional(),
         updated: frontmatterDate.optional(),
