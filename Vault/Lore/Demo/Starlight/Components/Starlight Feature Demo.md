@@ -210,6 +210,18 @@ Sidebar content.
 [/col]
 [/cols]
 
+Test 2 with rows:
+
+[row]
+[col:12 md:8]
+Main article body.
+[/col]
+
+[col:12 md:4]
+Sidebar body.
+[/col]
+[/row]
+
 ## Links and wikilinks
 
 Normal Markdown links should work in Obsidian and Starlight:
