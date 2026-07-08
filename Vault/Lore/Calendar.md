@@ -4,9 +4,10 @@ description: "The first implemented VISCERIUM calendar, rendered from structured
 publish: true
 status: canon
 type: calendar
-calendarShowcase:
-  calendar: okse
-  year: 4
+calendarBlocks:
+  ID-0001:
+    calendar: okse
+    year: 4
 sidebar:
   label: Calendar
   order: 5
@@ -20,7 +21,9 @@ tableOfContents:
 
 The Okse Calendar is the first implemented calendar system in the codex. It is rendered from structured calendar data rather than a static image, so event articles can link back to individual days and the site can later show equivalent dates in other cultural calendars.
 
-The visible calendar module above is rendered from `calendarShowcase` frontmatter. This keeps the page Obsidian-friendly: the note remains plain Markdown, while Astro renders the heavy visual component during the site build.
+The visible calendar module below is placed with a BBCode-like shortcode in the note body. This keeps the page Obsidian-friendly: the note remains plain Markdown, while the sync step converts only this page to generated MDX for Astro.
+
+[Calendar:ID-0001]
 
 ## Why this page exists
 
@@ -31,6 +34,29 @@ This is the canonical public calendar route for the codex:
 ```
 
 The rendered year is currently `4`, a leap year, so both Engimanutur days appear in the grid.
+
+## Placing calendars in articles
+
+Define the calendar block in frontmatter:
+
+```yaml
+calendarBlocks:
+  ID-0001:
+    calendar: okse
+    year: 4
+```
+
+Then place it anywhere in the Markdown body:
+
+```md
+[Calendar:ID-0001]
+```
+
+For quick tests, you can also write the calendar directly:
+
+```md
+[Calendar:okse year=4]
+```
 
 ## Using Okse dates in articles
 
