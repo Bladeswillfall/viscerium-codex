@@ -1,6 +1,6 @@
 ---
 title: Starlight Component Gallery
-description: "An MDX companion page for testing live Astro Starlight components in the VISCERIUM codex."
+description: "A gallery for testing live Astro Starlight components and VISCERIUM codex authoring tags."
 publish: true
 status: canon
 slug: demo/starlight-component-gallery
@@ -9,6 +9,7 @@ tags:
   - demo
   - starlight
   - mdx
+  - formatting
 sidebar:
   label: Component Gallery
   order: 1000
@@ -36,11 +37,251 @@ import {
   TabItem,
 } from '@astrojs/starlight/components';
 
-This page is the MDX companion to `Starlight Feature Demo.md`. Use it when you want to see the live Starlight component layouts that plain Markdown cannot render as JSX.
+This page tests two things: native Starlight MDX components and the VISCERIUM codex formatting tags that can be written directly inside normal lore pages.
 
-:::caution[MDX-only test page]
-Copy this file into `Vault/Lore/Demo/Starlight Component Gallery.mdx`. If the build fails, your current site setup does not have MDX component rendering enabled, even though the sync script accepts `.mdx` files.
+:::caution[Gallery page]
+This is deliberately overloaded. Delete it later if it stops being useful, but keep the syntax examples somewhere because the codex formatting tags are intended for everyday article writing.
 :::
+
+## Codex formatting tags
+
+The tags below are transformed during the Obsidian-to-Starlight sync step. They are written like BBCode, but rendered as responsive layout HTML with controlled CSS classes.
+
+### Equal columns
+
+```md
+[cols]
+[col]
+Left column content.
+[/col]
+
+[col]
+Right column content.
+[/col]
+[/cols]
+```
+
+[cols]
+[col]
+### Askalia
+
+Coin moves quickly here. That is not prosperity. That is velocity.
+
+- Trade-first politics
+- Public senate, private pressure
+- Guild power hidden behind polite law
+[/col]
+
+[col]
+### Satol
+
+Fertile land, cheap mead, and roads where the trees know how to keep secrets.
+
+- Farming economy
+- Dense forests
+- Dangerous travel between counties
+[/col]
+[/cols]
+
+### Unequal columns
+
+```md
+[cols:2-1]
+[col]
+Wide main article prose.
+[/col]
+
+[col]
+Narrow sidebar note.
+[/col]
+[/cols]
+```
+
+[cols:2-1 gap=lg]
+[col]
+### Wide article body
+
+The Republic of Askalia looks clean from the balcony. From the street, it looks bought. Coin moves through its markets with the force of weather, carrying grain, citrus, contracts, blood, silence, and whatever name a person had before a bill of sale replaced it.
+
+This wider column is for primary article prose. It should feel like the normal reading lane of the page rather than a table pretending to be layout.
+[/col]
+
+[col]
+[card:accent]
+### Sidebar use
+
+Use this for quick facts, warnings, trade goods, faction doctrine, or a tiny timeline.
+
+- Ratio: `2-1`
+- Mobile: stacked
+- Desktop: wide/narrow
+[/card]
+[/col]
+[/cols]
+
+### Image and text split
+
+```md
+[cols:1-2]
+[col]
+![[Some Image.jpg]]
+[/col]
+
+[col]
+Text beside the image.
+[/col]
+[/cols]
+```
+
+[cols:1-2 align=center]
+[col]
+[card:muted compact]
+### Image slot
+
+This column is where an Obsidian image embed can sit. The sync script resolves embeds before the page is rendered.
+[/card]
+[/col]
+
+[col]
+A useful codex page often needs an artefact, map, banner, heraldic mark, weapon plate, or portrait beside text without exposing a fake table. This layout gives you that without having to write HTML in every article.
+[/col]
+[/cols]
+
+### 12-column row layout
+
+```md
+[row]
+[col:12 md:8]
+Main content. Full width on mobile, eight-twelfths on desktop.
+[/col]
+
+[col:12 md:4]
+Sidebar. Full width on mobile, four-twelfths on desktop.
+[/col]
+[/row]
+```
+
+[row gap=lg]
+[col:12 md:8]
+### Main lore lane
+
+Use `[row]` when you need more precise control than simple `[cols]` ratios. Columns use a 12-column grid at wider screen sizes and stack naturally on mobile.
+[/col]
+
+[col:12 md:4]
+[card]
+### Infobox lane
+
+- `col:12` on mobile
+- `md:4` on desktop
+- No Markdown table required
+[/card]
+[/col]
+[/row]
+
+### Responsive reordering
+
+```md
+[row]
+[col:12 md:6 order-md:2]
+Text first on mobile, second on desktop.
+[/col]
+
+[col:12 md:6 order-md:1]
+Visual first on desktop, second on mobile.
+[/col]
+[/row]
+```
+
+[row]
+[col:12 md:6 order-md:2]
+### Reading order
+
+On mobile, this text appears first. On desktop, it moves to the right. This is useful when the natural reading order and the best desktop composition are not the same thing.
+[/col]
+
+[col:12 md:6 order-md:1]
+[card:accent]
+### Visual / quote / map slot
+
+This appears first on desktop but second on mobile.
+[/card]
+[/col]
+[/row]
+
+### Cards and callouts
+
+```md
+[card]
+Card content.
+[/card]
+
+[note:title="Archivist note"]
+Note content.
+[/note]
+
+[warning:title="Content warning"]
+Warning content.
+[/warning]
+
+[lore:title="In-world fragment"]
+Lore fragment.
+[/lore]
+```
+
+[cols]
+[col]
+[card]
+### Plain card
+
+Good for compact summaries inside an article.
+[/card]
+[/col]
+
+[col]
+[card:warning]
+### Warning card
+
+Good for content warnings, faction risks, or unstable canon.
+[/card]
+[/col]
+[/cols]
+
+[note:title="Archivist note"]
+This is a controlled note callout. Use it for production notes, source notes, or author-facing caveats.
+[/note]
+
+[warning:title="Content warning"]
+This example could mark slavery, body horror, execution, plague, or any other material that needs a clear reader warning.
+[/warning]
+
+[lore:title="Recovered fragment"]
+The horn did not sound. It remembered.
+[/lore]
+
+### Tables are untouched
+
+This is a normal Markdown table. The codex formatter does not modify it.
+
+| Field | Value | Notes |
+|---|---:|---|
+| Population band | 3 | Still regular Markdown. |
+| Trade risk | 8 | No invisible layout behavior. |
+| Canon status | 1 | Rendered as a table. |
+
+### Tags inside code blocks are untouched
+
+```md
+[cols:2-1]
+[col]
+This is documentation, not a real layout.
+[/col]
+[/cols]
+```
+
+## Starlight components
+
+These are native Starlight MDX components. Use them when the page really needs imported components rather than simple codex authoring tags.
 
 ## Code block
 
@@ -71,7 +312,7 @@ console.log({ faction, doctrine });
 
 <LinkButton href="/" icon="right-arrow">Codex Home</LinkButton>{' '}
 <LinkButton href="https://starlight.astro.build/" variant="secondary" icon="external" iconPlacement="start">Starlight Docs</LinkButton>{' '}
-<LinkButton href="/demo/starlight-feature-demo/" variant="minimal">Markdown Demo</LinkButton>
+<LinkButton href="/demo/starlight/components/starlight-feature-demo/" variant="minimal">Markdown Demo</LinkButton>
 
 ## Cards
 
@@ -100,20 +341,9 @@ Good for turning a dense codex index into a browsable overview.
   </Card>
 </CardGrid>
 
-## Staggered card grid
-
-<CardGrid stagger>
-  <Card title="Beauty" icon="heart">
-    The setting should still have wonder. Without beauty, the horror has nothing to corrupt.
-  </Card>
-  <Card title="Danger" icon="warning">
-    The world should punish carelessness, vanity, and soft assumptions.
-  </Card>
-</CardGrid>
-
 ## Link cards
 
-<LinkCard title="Markdown Feature Demo" href="/demo/starlight-feature-demo/" description="Plain Markdown page for Obsidian-safe rendering tests." />
+<LinkCard title="Markdown Feature Demo" href="/demo/starlight/components/starlight-feature-demo/" description="Plain Markdown page for Obsidian-safe rendering tests." />
 
 <CardGrid>
   <LinkCard title="Codex Home" href="/" description="Return to the public VISCERIUM codex root." />
@@ -127,8 +357,10 @@ Good for turning a dense codex index into a browsable overview.
 - Vault
   - Lore
     - Demo
-      - **Starlight Feature Demo.md** plain Markdown stress test
-      - **Starlight Component Gallery.mdx** live component stress test
+      - Starlight
+        - Components
+          - **Starlight Feature Demo.md** plain Markdown stress test
+          - **Starlight Component Gallery.mdx** live component and codex formatting stress test
   - Assets
     - Images
       - Tech timeline for VISCERIUM.jpg
@@ -140,6 +372,7 @@ Good for turning a dense codex index into a browsable overview.
       - docs/ regenerated output; do not edit by hand
   - scripts
     - sync-public-notes.mjs
+    - codex-formatting.mjs
 - README.md
 
 </FileTree>
@@ -148,9 +381,9 @@ Good for turning a dense codex index into a browsable overview.
 
 <Steps>
 
-1. Copy the Markdown demo into `Vault/Lore/Demo/Starlight Feature Demo.md`.
+1. Write lore in `Vault/Lore` using normal Markdown.
 
-2. Copy this MDX page into `Vault/Lore/Demo/Starlight Component Gallery.mdx`.
+2. Use codex tags such as `[cols:2-1]`, `[row]`, `[col:12 md:8]`, `[card]`, `[note]`, `[warning]`, and `[lore]` when you need layout.
 
 3. Run the sync and build commands.
 
@@ -160,7 +393,7 @@ Good for turning a dense codex index into a browsable overview.
    npm run build
    ```
 
-4. Check the public site and delete the demo pages once styling is stable.
+4. Check the public site and tune CSS only once, not per article.
 
 </Steps>
 
@@ -204,12 +437,3 @@ Second group with the same labels and sync key:
     Has names, aesthetics, and nothing that changes the world.
   </Card>
 </CardGrid>
-
-## Code block
-
-```js title="codex-doctrine.js" {1,2}
-const faction = 'TCSC';
-const doctrine = 'slow-moving walls with civil-industrial compatibility';
-
-console.log({ faction, doctrine });
-```
