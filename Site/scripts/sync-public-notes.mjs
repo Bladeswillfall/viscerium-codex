@@ -2,6 +2,7 @@ import path from 'node:path';
 import process from 'node:process';
 import fs from 'node:fs/promises';
 import { constants as fsConstants } from 'node:fs';
+import matter from 'gray-matter';
 import siteConfig from '../site.config.mjs';
 import { transformCodexFormatting } from './codex-formatting.mjs';
 
@@ -10,6 +11,7 @@ const sourceDir = path.resolve(siteRoot, siteConfig.loreSourceDir);
 const assetRoot = path.resolve(siteRoot, siteConfig.vaultAssetDir);
 const outDir = path.resolve(siteRoot, 'src/content/docs');
 const publicAssetDir = path.resolve(siteRoot, 'public/assets');
+const calendarComponentPath = path.resolve(siteRoot, 'src/components/calendar/CalendarYear.astro');
 const requiredFields = ['title', 'description', 'type'];
 
 function cleanSlug(slug) {
@@ -29,29 +31,17 @@ function noteKey(input) {
   return String(input).trim().toLowerCase();
 }
 
-function parseScalar(value) {
-  const trimmed = value.trim();
-  if (trimmed === 'true') return true;
-  if (trimmed === 'false') return false;
-  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-    return trimmed.slice(1, -1);
-  }
-  return trimmed;
-}
-
 function parseFrontmatter(raw, file) {
   if (!raw.startsWith('---\n')) throw new Error(`Missing frontmatter: ${path.relative(siteRoot, file)}`);
   const end = raw.indexOf('\n---', 4);
   if (end === -1) throw new Error(`Unclosed frontmatter: ${path.relative(siteRoot, file)}`);
   const frontmatter = raw.slice(4, end).trimEnd();
-  const content = raw.slice(end + 4).replace(/^\r?\n/, '');
-  const data = {};
-  for (const line of frontmatter.split(/\r?\n/)) {
-    const match = line.match(/^([A-Za-z][\w-]*):(?:\s*(.*))?$/);
-    if (!match || match[2] === undefined) continue;
-    data[match[1]] = parseScalar(match[2]);
-  }
-  return { data, frontmatter, content };
+  const parsed = matter(raw);
+  return {
+    data: parsed.data ?? {},
+    frontmatter,
+    content: parsed.content.replace(/^\r?\n/, ''),
+  };
 }
 
 function stringifyFrontmatter(frontmatter, slug, sourcePath) {
@@ -130,7 +120,93 @@ function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-async function convertContent(content, currentFile, title) {
+function hasCalendarShortcodes(content) {
+  return /^\s*\[Calendar:[^\]]+\]\s*$/im.test(content);
+}
+
+function normaliseCalendarBlock(block) {
+  if (!block || typeof block !== 'object') return null;
+  const calendar = typeof block.calendar === 'string' ? block.calendar : undefined;
+  const year = block.year === undefined ? undefined : Number(block.year);
+  if (!calendar) return null;
+  if (year !== undefined && (!Number.isInteger(year) || year < 1)) return null;
+  return { calendar, year };
+}
+
+function parseInlineCalendarSpec(id, spec) {
+  const block = { calendar: id };
+  const pairs = [...String(spec ?? '').matchAll(/([a-z][\w-]*)=(?:"([^"]*)"|'([^']*)'|([^\s]+))/gi)];
+  for (const pair of pairs) {
+    const key = pair[1].toLowerCase();
+    const value = pair[2] ?? pair[3] ?? pair[4] ?? '';
+    if (key === 'calendar') block.calendar = value;
+    if (key === 'year') block.year = Number(value);
+  }
+  return normaliseCalendarBlock(block);
+}
+
+function mdxImportPath(outFile) {
+  let relative = path.relative(path.dirname(outFile), calendarComponentPath).replace(/\\/g, '/');
+  if (!relative.startsWith('.')) relative = `./${relative}`;
+  return relative;
+}
+
+function calendarShortcodeWarning(message) {
+  return [
+    '<aside className="cx-callout cx-callout-warning">',
+    '<p className="cx-callout-title">Calendar shortcode warning</p>',
+    `<p>${message.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`,
+    '</aside>',
+  ].join('\n');
+}
+
+function transformCalendarShortcodes(content, parsed, currentFile, outFile) {
+  const calendarBlocks = parsed.data.calendarBlocks && typeof parsed.data.calendarBlocks === 'object'
+    ? parsed.data.calendarBlocks
+    : {};
+  let used = false;
+  let fence = null;
+
+  const lines = String(content).split(/\r?\n/).map((line) => {
+    const fenceStart = line.match(/^\s*(`{3,}|~{3,})/);
+    if (fence) {
+      const endPattern = fence.marker === '`' ? /^\s*`{3,}/ : /^\s*~{3,}/;
+      const end = line.match(endPattern);
+      if (end && end[0].trim().length >= fence.length) fence = null;
+      return line;
+    }
+    if (fenceStart) {
+      fence = { marker: fenceStart[1][0], length: fenceStart[1].length };
+      return line;
+    }
+
+    const match = line.match(/^\s*\[Calendar:([^\]\s]+)(?:\s+([^\]]+))?\]\s*$/i);
+    if (!match) return line;
+
+    const id = match[1];
+    const inlineSpec = match[2] ?? '';
+    const block = normaliseCalendarBlock(calendarBlocks[id]) ?? parseInlineCalendarSpec(id, inlineSpec);
+    if (!block) {
+      warnings.push(`Unknown or invalid calendar shortcode "${id}" in ${path.relative(sourceDir, currentFile)}`);
+      return calendarShortcodeWarning(`No valid calendar block found for ${id}. Add a calendarBlocks entry or use [Calendar:okse year=4].`);
+    }
+
+    used = true;
+    const calendarId = JSON.stringify(block.calendar);
+    const yearProp = block.year === undefined ? '' : ` year={${block.year}}`;
+    return `<CalendarYear calendarId={${calendarId}}${yearProp} />`;
+  });
+
+  const output = lines.join('\n');
+  if (!used) return { content: output, used: false };
+
+  return {
+    content: `import CalendarYear from '${mdxImportPath(outFile)}';\n\n${output}`,
+    used: true,
+  };
+}
+
+async function convertContent(content, currentFile, parsed, outFile, outputRequiresMdx) {
   let converted = content.replace(/^%%[\s\S]*?%%\s*/gm, '');
   const embeds = [...converted.matchAll(/!\[\[([^\]]+)\]\]/g)];
   for (const match of embeds) {
@@ -145,7 +221,7 @@ async function convertContent(content, currentFile, title) {
     }
   }
 
-  converted = converted.replace(new RegExp(`^#\\s+${escapeRegExp(title)}\\s*$`, 'im'), '').trimStart();
+  converted = converted.replace(new RegExp(`^#\\s+${escapeRegExp(parsed.data.title)}\\s*$`, 'im'), '').trimStart();
 
   converted = converted.replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, (match, target, alias) => {
     const label = alias?.trim() || target.trim();
@@ -157,13 +233,17 @@ async function convertContent(content, currentFile, title) {
     return `[${label}](${route(slug)})`;
   });
 
-  return transformCodexFormatting(converted, {
-    jsx: path.extname(currentFile).toLowerCase() === '.mdx',
+  converted = transformCodexFormatting(converted, {
+    jsx: outputRequiresMdx,
   });
+
+  return transformCalendarShortcodes(converted, parsed, currentFile, outFile);
 }
 
 for (const { file, parsed, slug } of publicNotes) {
-  const extension = path.extname(file).toLowerCase() === '.mdx' ? '.mdx' : '.md';
+  const sourceIsMdx = path.extname(file).toLowerCase() === '.mdx';
+  const shortcodeRequiresMdx = hasCalendarShortcodes(parsed.content);
+  const extension = sourceIsMdx || shortcodeRequiresMdx ? '.mdx' : '.md';
   const outFile = path.join(outDir, `${slug}${extension}`);
   const sourcePath = path.relative(sourceDir, file).replace(/\\/g, '/');
   await fs.mkdir(path.dirname(outFile), { recursive: true });
@@ -174,8 +254,8 @@ for (const { file, parsed, slug } of publicNotes) {
     if (value.startsWith('/assets/maps/')) await copyAsset('Maps', path.basename(value));
   }
   if (parsed.data.asset && parsed.data.type === 'image') await copyAsset('Images', parsed.data.asset);
-  const content = await convertContent(parsed.content, file, parsed.data.title);
-  await fs.writeFile(outFile, `${stringifyFrontmatter(parsed.frontmatter, slug, sourcePath)}${content}`);
+  const result = await convertContent(parsed.content, file, parsed, outFile, extension === '.mdx');
+  await fs.writeFile(outFile, `${stringifyFrontmatter(parsed.frontmatter, slug, sourcePath)}${result.content}`);
   console.log(`Published ${path.relative(sourceDir, file)} -> ${path.relative(outDir, outFile)}`);
 }
 
