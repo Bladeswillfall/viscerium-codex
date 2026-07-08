@@ -8,6 +8,7 @@ const webmentionPingbackEndpoint =
   env.PUBLIC_WEBMENTION_PINGBACK_ENDPOINT ??
   (webmentionUsername ? `https://webmention.io/${webmentionUsername}/xmlrpc` : undefined);
 const webmentionMaxMentions = Number.parseInt(env.PUBLIC_WEBMENTIONS_MAX ?? '24', 10);
+const feedMaxItems = Number.parseInt(env.PUBLIC_FEED_MAX_ITEMS ?? '50', 10);
 
 export default {
   title: 'VISCERIUM',
@@ -16,6 +17,12 @@ export default {
   loreSourceDir: '../Vault/Lore',
   vaultAssetDir: '../Vault/Assets',
   githubRepoUrl: 'https://github.com/Bladeswillfall/viscerium-codex',
+  feeds: {
+    title: env.PUBLIC_FEED_TITLE ?? 'VISCERIUM Codex',
+    description: env.PUBLIC_FEED_DESCRIPTION ?? 'Latest public canon updates from the VISCERIUM codex.',
+    language: env.PUBLIC_FEED_LANGUAGE ?? 'en',
+    maxItems: Number.isFinite(feedMaxItems) ? feedMaxItems : 50,
+  },
   webmentions: {
     enabled: env.PUBLIC_WEBMENTIONS_ENABLED !== '0' && Boolean(webmentionEndpoint),
     endpoint: webmentionEndpoint,
