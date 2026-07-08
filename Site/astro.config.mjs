@@ -73,6 +73,7 @@ export default defineConfig({
         './src/styles/typography.css',
         './src/styles/codex-ui.css',
         './src/styles/custom.css',
+        './src/styles/calendar.css',
         './src/styles/layout-overrides.css',
       ],
       plugins: [
