@@ -1,5 +1,14 @@
 const env = process.env;
 
+const webmentionUsername = env.PUBLIC_WEBMENTION_IO_USERNAME;
+const webmentionEndpoint =
+  env.PUBLIC_WEBMENTION_ENDPOINT ??
+  (webmentionUsername ? `https://webmention.io/${webmentionUsername}/webmention` : undefined);
+const webmentionPingbackEndpoint =
+  env.PUBLIC_WEBMENTION_PINGBACK_ENDPOINT ??
+  (webmentionUsername ? `https://webmention.io/${webmentionUsername}/xmlrpc` : undefined);
+const webmentionMaxMentions = Number.parseInt(env.PUBLIC_WEBMENTIONS_MAX ?? '24', 10);
+
 export default {
   title: 'VISCERIUM',
   description: 'The public worldbuilding codex for VISCERIUM.',
@@ -7,6 +16,13 @@ export default {
   loreSourceDir: '../Vault/Lore',
   vaultAssetDir: '../Vault/Assets',
   githubRepoUrl: 'https://github.com/Bladeswillfall/viscerium-codex',
+  webmentions: {
+    enabled: env.PUBLIC_WEBMENTIONS_ENABLED !== '0' && Boolean(webmentionEndpoint),
+    endpoint: webmentionEndpoint,
+    pingbackEndpoint: webmentionPingbackEndpoint,
+    apiEndpoint: env.PUBLIC_WEBMENTION_API_ENDPOINT ?? 'https://webmention.io/api/mentions.jf2',
+    maxMentions: Number.isFinite(webmentionMaxMentions) ? webmentionMaxMentions : 24,
+  },
   giscus: {
     repo: env.PUBLIC_GISCUS_REPO ?? 'Bladeswillfall/viscerium-codex',
     repoId: env.PUBLIC_GISCUS_REPO_ID,
