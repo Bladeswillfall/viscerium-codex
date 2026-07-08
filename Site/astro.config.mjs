@@ -18,7 +18,6 @@ import siteConfig from './site.config.mjs';
 export default defineConfig({
   site: siteConfig.site,
   integrations: [
-    mdx(),
     starlight({
       title: siteConfig.title,
       description: siteConfig.description,
@@ -59,6 +58,7 @@ export default defineConfig({
       },
       social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
     }),
+    mdx(),
     sitemap(),
   ],
 });
