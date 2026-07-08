@@ -164,6 +164,7 @@
 
   .calendar-day a,
   .calendar-day > span {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -203,10 +204,10 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .calendar-day__weekday {
+  .calendar-day__weekday,
+  .calendar-day__events {
     position: absolute;
     z-index: 2;
-    inset-block-end: .42rem;
     inset-inline: .42rem;
     overflow: hidden;
     color: var(--calendar-muted);
@@ -221,8 +222,27 @@
     transition: opacity .16s ease;
   }
 
+  .calendar-day__weekday {
+    inset-block-end: .42rem;
+  }
+
+  .calendar-day__events {
+    inset-block-end: .34rem;
+    color: var(--sl-color-white);
+  }
+
   .calendar-day:hover .calendar-day__weekday,
   .calendar-day:focus-within .calendar-day__weekday {
+    opacity: 1;
+  }
+
+  .calendar-day--linked-event:hover .calendar-day__weekday,
+  .calendar-day--linked-event:focus-within .calendar-day__weekday {
+    opacity: 0;
+  }
+
+  .calendar-day--linked-event:hover .calendar-day__events,
+  .calendar-day--linked-event:focus-within .calendar-day__events {
     opacity: 1;
   }
 
@@ -244,6 +264,24 @@
     border: 1px solid color-mix(in srgb, var(--calendar-holiday) 42%, transparent);
     border-radius: .5rem;
     pointer-events: none;
+  }
+
+  .calendar-day--linked-event {
+    border-color: color-mix(in srgb, var(--sl-color-accent-high) 38%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sl-color-accent-high) 16%, transparent);
+  }
+
+  .calendar-day--linked-event a::after {
+    content: '↗';
+    position: absolute;
+    z-index: 3;
+    inset-block-start: .28rem;
+    inset-inline-end: .34rem;
+    color: var(--sl-color-accent-high);
+    font-size: .64rem;
+    font-weight: 900;
+    line-height: 1;
+    opacity: .82;
   }
 
   .calendar-day--marker .calendar-day__number,
@@ -302,7 +340,8 @@
     border-radius: .25rem;
     background: var(--calendar-holiday);
   }
-  .calendar-key--marker {
+  .calendar-key--marker,
+  .calendar-key--linked {
     border-radius: .35rem;
     background: color-mix(in srgb, var(--calendar-marker) 70%, #101010);
     color: #fff;
@@ -311,6 +350,16 @@
     content: '!';
     color: #fff;
     font-size: .62rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .calendar-key--linked {
+    background: color-mix(in srgb, var(--sl-color-accent-high) 65%, #101010);
+  }
+  .calendar-key--linked::after {
+    content: '↗';
+    color: #fff;
+    font-size: .58rem;
     font-weight: 900;
     line-height: 1;
   }
