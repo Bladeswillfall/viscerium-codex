@@ -31,6 +31,10 @@ function noteKey(input) {
   return String(input).trim().toLowerCase();
 }
 
+function assetKey(input) {
+  return path.basename(String(input).trim()).toLowerCase();
+}
+
 function isExternalUrl(value) {
   return typeof value === 'string' && /^[a-z][a-z0-9+.-]*:/i.test(value);
 }
@@ -94,6 +98,7 @@ async function walk(dir) {
 const files = (await walk(sourceDir)).filter((file) => /\.(md|mdx)$/i.test(file)).sort();
 const publicNotes = [];
 const slugByName = new Map();
+const imageSlugByAsset = new Map();
 const warnings = [];
 
 for (const file of files) {
@@ -110,6 +115,13 @@ for (const file of files) {
   const basename = path.basename(file, path.extname(file));
   slugByName.set(noteKey(basename), slug);
   slugByName.set(noteKey(parsed.data.title), slug);
+}
+
+for (const note of publicNotes) {
+  const asset = note.parsed.data.asset;
+  if (note.parsed.data.type === 'image' && typeof asset === 'string' && asset.trim()) {
+    imageSlugByAsset.set(assetKey(asset), note.slug);
+  }
 }
 
 await emptyDir(outDir);
@@ -130,6 +142,12 @@ async function copyReferencedAsset(value) {
   if (value.startsWith('/assets/maps/')) return copyAsset('Maps', path.basename(value));
   if (isPlainAssetFilename(value)) return copyAsset('Images', path.basename(value));
   return null;
+}
+
+function markdownImage(filename, url) {
+  const image = `![${filename}](${url})`;
+  const imageSlug = imageSlugByAsset.get(assetKey(filename));
+  return imageSlug ? `[${image}](${route(imageSlug)})` : image;
 }
 
 function escapeRegExp(value) {
@@ -253,7 +271,7 @@ async function convertContent(content, currentFile, parsed, outFile, outputRequi
       warnings.push(`Missing embedded asset "${filename}" in ${path.relative(sourceDir, currentFile)}`);
       converted = converted.replace(match[0], `**Missing asset:** ${filename}`);
     } else {
-      converted = converted.replace(match[0], `![${filename}](${url})`);
+      converted = converted.replace(match[0], markdownImage(filename, url));
     }
   }
 
