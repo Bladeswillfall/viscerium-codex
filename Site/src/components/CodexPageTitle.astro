@@ -1,6 +1,5 @@
 ---
 import CalendarDateBadge from './calendar/CalendarDateBadge.astro';
-import CalendarYear from './calendar/CalendarYear.astro';
 
 const { starlightRoute } = Astro.locals;
 const entry = starlightRoute.entry.data;
@@ -23,9 +22,6 @@ const breadcrumbs = breadcrumbParts.map((part, index) => {
 )}
 <h1 id="_top">{entry.title}</h1>
 {entry.calendarDate && <CalendarDateBadge date={entry.calendarDate} title="Event date" />}
-{entry.calendarShowcase && (
-  <CalendarYear calendarId={entry.calendarShowcase.calendar} year={entry.calendarShowcase.year} />
-)}
 {breadcrumbs.length > 0 && (
   <nav class="codex-breadcrumbs" aria-label="Breadcrumbs">
     <a href="/">Home</a>
