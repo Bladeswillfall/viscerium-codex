@@ -3,9 +3,23 @@ import CalendarDateBadge from './calendar/CalendarDateBadge.astro';
 
 const { starlightRoute } = Astro.locals;
 const entry = starlightRoute.entry.data;
+
+function isExternalUrl(value) {
+  return typeof value === 'string' && /^[a-z][a-z0-9+.-]*:/i.test(value);
+}
+
+function normaliseAssetPath(value, category = 'images') {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.startsWith('/') || isExternalUrl(trimmed)) return trimmed;
+  return `/assets/${category}/${trimmed.split('/').pop()}`;
+}
+
 const imageSource = entry.headerImage ?? entry.image ?? (entry.type === 'image' ? entry.asset : undefined);
-const headerImage = typeof imageSource === 'string' && imageSource.startsWith('/') ? imageSource : undefined;
+const headerImage = normaliseAssetPath(imageSource);
 const headerAlt = entry.alt ?? `${entry.title} header image`;
+const headerClass = entry.type === 'image' ? 'codex-header-image codex-header-image-artwork' : 'codex-header-image';
 const slugPath = entry.slug ?? starlightRoute.entry.id.replace(/\.(md|mdx)$/, '');
 const breadcrumbParts = slugPath === 'index' ? [] : String(slugPath).split('/').filter(Boolean);
 const breadcrumbs = breadcrumbParts.map((part, index) => {
@@ -18,7 +32,7 @@ const breadcrumbs = breadcrumbParts.map((part, index) => {
 ---
 
 {headerImage && (
-  <img class="codex-header-image" src={headerImage} alt={headerAlt} loading="eager" decoding="async" />
+  <img class={headerClass} src={headerImage} alt={headerAlt} loading="eager" decoding="async" />
 )}
 <h1 id="_top">{entry.title}</h1>
 {entry.calendarDate && <CalendarDateBadge date={entry.calendarDate} title="Event date" />}
