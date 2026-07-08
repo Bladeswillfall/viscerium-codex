@@ -17,20 +17,20 @@
 
 .hero { border-bottom: 1px solid var(--codex-accent-soft); }
 .codex-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem; }
-.codex-card { border: 1px solid var(--codex-accent-soft); border-radius: .75rem; padding: 1rem; background: linear-gradient(135deg, rgba(184,135,70,.10), rgba(255,255,255,.02)); }
+.codex-card { border: 1px solid var(--codex-accent-soft); border-radius: 0; padding: 1rem; background: linear-gradient(135deg, rgba(184,135,70,.10), rgba(255,255,255,.02)); }
 .codex-card h3 { margin-top: 0; }
 .codex-meta { color: var(--sl-color-gray-3); font-size: .9rem; }
 .codex-warning { border-left: 4px solid var(--codex-accent); padding: .75rem 1rem; background: var(--codex-accent-soft); }
 .world-graph { display: grid; gap: .75rem; }
 .graph-edge, .timeline-event { border-left: 3px solid var(--codex-accent); padding: .5rem 1rem; margin: .75rem 0; background: rgba(255,255,255,.03); }
-.world-map { position: relative; overflow: auto; border: 1px solid var(--codex-accent-soft); border-radius: .75rem; min-height: 20rem; background: #171410; }
+.world-map { position: relative; overflow: auto; border: 1px solid var(--codex-accent-soft); border-radius: 0; min-height: 20rem; background: #171410; }
 .world-map img { display: block; max-width: 100%; }
 .map-marker { position: absolute; transform: translate(-50%, -50%); width: 1rem; height: 1rem; border-radius: 999px; background: var(--codex-accent); border: 2px solid #fff; }
 .image-figure { margin: 1.5rem 0; }
-.image-figure img { border-radius: .75rem; border: 1px solid var(--codex-accent-soft); }
+.image-figure img { border-radius: 0; border: 1px solid var(--codex-accent-soft); }
 .image-figure figcaption { color: var(--sl-color-gray-3); font-size: .9rem; }
 .codex-comments { margin-top: 3rem; border-top: 1px solid var(--codex-accent-soft); padding-top: 1rem; }
-.codex-comments details { border: 1px solid var(--codex-accent-soft); border-radius: .75rem; background: rgba(255,255,255,.025); }
+.codex-comments details { border: 1px solid var(--codex-accent-soft); border-radius: 0; background: rgba(255,255,255,.025); }
 .codex-comments summary { display: flex; justify-content: space-between; gap: 1rem; cursor: pointer; padding: 1rem; color: var(--sl-color-white); font-weight: 700; }
 .codex-comments summary::marker { color: var(--codex-accent); }
 .codex-comments-hint { color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); font-weight: 400; }
@@ -160,7 +160,7 @@
   .viscerium-infobox { width: min(24rem, 33vw); }
 }
 .codex-page-sidebar .sl-container { display: grid; gap: 1rem; }
-.codex-sidebar-card { overflow: hidden; border: 1px solid var(--codex-accent-soft); border-radius: .85rem; background: linear-gradient(145deg, rgba(184,135,70,.12), rgba(255,255,255,.025)); box-shadow: 0 1rem 2rem rgba(0,0,0,.18); }
+.codex-sidebar-card { overflow: hidden; border: 1px solid var(--codex-accent-soft); border-radius: 0; background: linear-gradient(145deg, rgba(184,135,70,.12), rgba(255,255,255,.025)); box-shadow: 0 1rem 2rem rgba(0,0,0,.18); }
 .codex-sidebar-image { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-bottom: 1px solid var(--codex-accent-soft); }
 .codex-sidebar-body { padding: 1rem; }
 .codex-sidebar-kicker { margin: 0 0 .35rem; color: var(--codex-accent-high); font-size: var(--sl-text-xs); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
@@ -214,7 +214,7 @@
 .cx-card {
   padding: 1rem;
   border: 1px solid var(--codex-accent-soft);
-  border-radius: .85rem;
+  border-radius: 0;
   background: linear-gradient(145deg, rgba(184, 135, 70, .12), rgba(255, 255, 255, .025));
   box-shadow: 0 .75rem 1.5rem rgba(0, 0, 0, .12);
 }
@@ -243,7 +243,7 @@
   padding: 1rem;
   border: 1px solid var(--codex-accent-soft);
   border-inline-start: 4px solid var(--codex-accent);
-  border-radius: .65rem;
+  border-radius: 0;
   background: rgba(184, 135, 70, .10);
 }
 
@@ -259,6 +259,38 @@
 .cx-callout-danger { border-inline-start-color: #d66; background: rgba(214, 102, 102, .10); }
 .cx-callout-lore { font-style: italic; color: var(--sl-color-gray-2); background: rgba(255, 255, 255, .025); }
 .cx-callout-compact { padding: .75rem; margin-block: .75rem; }
+
+/* Sharp VISCERIUM surfaces. Keep controls/buttons interactive, but remove rounded containers. */
+:where(
+  .sl-markdown-content .card,
+  .sl-markdown-content .sl-card,
+  .sl-markdown-content .starlight-aside,
+  .sl-markdown-content aside,
+  .sl-markdown-content blockquote,
+  .sl-markdown-content table,
+  .sl-markdown-content img,
+  .expressive-code,
+  .expressive-code .frame,
+  .expressive-code .header,
+  .expressive-code pre,
+  .file-tree,
+  .sl-badge,
+  .badge,
+  .codex-card,
+  .codex-warning,
+  .codex-comments details,
+  .codex-sidebar-card,
+  .cx-card,
+  .cx-callout,
+  .cx-equation,
+  .world-map,
+  .graph-edge,
+  .timeline-event,
+  .image-figure img,
+  .ion-codex-footer
+) {
+  border-radius: 0 !important;
+}
 
 .cx-order-1 { order: 1; }
 .cx-order-2 { order: 2; }
