@@ -1,0 +1,22 @@
+/* Generic Markdown media safety.
+   Keeps images from escaping the article lane when demo/content pages use remote images
+   or Obsidian-resolved assets. */
+.sl-markdown-content img,
+.sl-markdown-content picture,
+.sl-markdown-content video,
+.sl-markdown-content canvas,
+.sl-markdown-content svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.sl-markdown-content img {
+  margin-block: 1rem;
+  border-radius: var(--codex-radius, .75rem);
+}
+
+.sl-markdown-content figure {
+  max-width: 100%;
+  overflow: hidden;
+}
