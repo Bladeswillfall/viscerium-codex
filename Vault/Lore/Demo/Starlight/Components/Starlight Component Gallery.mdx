@@ -1,6 +1,6 @@
 ---
 title: Starlight Component Gallery
-description: "A gallery for testing live Astro Starlight components and VISCERIUM codex authoring tags."
+description: "A gallery for testing live Astro Starlight components, VISCERIUM codex authoring tags, typography, and math rendering."
 publish: true
 status: canon
 slug: demo/starlight-component-gallery
@@ -10,6 +10,8 @@ tags:
   - starlight
   - mdx
   - formatting
+  - typography
+  - math
 sidebar:
   label: Component Gallery
   order: 1000
@@ -37,11 +39,46 @@ import {
   TabItem,
 } from '@astrojs/starlight/components';
 
-This page tests two things: native Starlight MDX components and the VISCERIUM codex formatting tags that can be written directly inside normal lore pages.
+This page tests three things: native Starlight MDX components, the VISCERIUM codex formatting tags that can be written directly inside normal lore pages, and the new typography/math rendering layer.
 
 :::caution[Gallery page]
 This is deliberately overloaded. Delete it later if it stops being useful, but keep the syntax examples somewhere because the codex formatting tags are intended for everyday article writing.
 :::
+
+## Typography system
+
+The codex uses **Cinzel** as the display face for the main title layer, **Source Serif 4** for long-form prose, **IBM Plex Sans** for interface and metadata, and **IBM Plex Mono** for code or technical fragments.
+
+[cols:2-1 gap=lg]
+[col]
+# Cinzel H1 Display
+
+## Source Serif H2 Archive Layer
+
+This body copy should feel like a public codex: readable, literary, and archival without becoming too ornate. It needs to carry CITADEL prose and ENTROPY technical notes without forcing either era to dress as the other.
+
+### IBM Plex Sans lower heading
+
+Small labels, navigation, metadata, tables, captions, and structural UI should feel cleaner and more industrial than the prose.
+[/col]
+
+[col]
+[card:accent]
+### Font roles
+
+- Display: `Cinzel`
+- Body: `Source Serif 4`
+- UI: `IBM Plex Sans`
+- Code: `IBM Plex Mono`
+[/card]
+[/col]
+[/cols]
+
+```txt
+L23A: RTLR/ar
+ASTU-NEARSIGHT-DOC-771
+λ-resonance-scan --threshold 0.047
+```
 
 ## Codex formatting tags
 
@@ -279,6 +316,42 @@ This is documentation, not a real layout.
 [/cols]
 ```
 
+## Mathematical notation
+
+Inline TeX can be written like GitHub-style Markdown: $R(t)=R_0e^{-\lambda t}$.
+
+Display TeX can be written with double-dollar delimiters:
+
+$$
+R(t)=R_0e^{-\lambda t}
+$$
+
+Fenced `math` blocks are converted into display equations at runtime:
+
+```math
+\begin{aligned}
+\mathcal{R}_{total}
+  &= \sum_{i=1}^{n} \alpha_i \psi_i(t) \\
+  &= \alpha_1 \psi_1(t) + \alpha_2 \psi_2(t) + \cdots + \alpha_n \psi_n(t)
+\end{aligned}
+```
+
+Use the codex equation wrapper when a formula needs a title or article-level panel treatment:
+
+```md
+[equation:title="Resonance decay model"]
+```math
+R(t)=R_0e^{-\lambda t}
+```
+[/equation]
+```
+
+[equation:title="Resonance decay model"]
+```math
+R(t)=R_0e^{-\lambda t}
+```
+[/equation]
+
 ## Starlight components
 
 These are native Starlight MDX components. Use them when the page really needs imported components rather than simple codex authoring tags.
@@ -360,7 +433,7 @@ Good for turning a dense codex index into a browsable overview.
       - Starlight
         - Components
           - **Starlight Feature Demo.md** plain Markdown stress test
-          - **Starlight Component Gallery.mdx** live component and codex formatting stress test
+          - **Starlight Component Gallery.mdx** live component, typography, math, and codex formatting stress test
   - Assets
     - Images
       - Tech timeline for VISCERIUM.jpg
@@ -370,6 +443,8 @@ Good for turning a dense codex index into a browsable overview.
   - src
     - content
       - docs/ regenerated output; do not edit by hand
+    - styles
+      - typography.css
   - scripts
     - sync-public-notes.mjs
     - codex-formatting.mjs
@@ -383,7 +458,7 @@ Good for turning a dense codex index into a browsable overview.
 
 1. Write lore in `Vault/Lore` using normal Markdown.
 
-2. Use codex tags such as `[cols:2-1]`, `[row]`, `[col:12 md:8]`, `[card]`, `[note]`, `[warning]`, and `[lore]` when you need layout.
+2. Use codex tags such as `[cols:2-1]`, `[row]`, `[col:12 md:8]`, `[card]`, `[note]`, `[warning]`, `[lore]`, and `[equation]` when you need layout.
 
 3. Run the sync and build commands.
 
