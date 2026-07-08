@@ -32,9 +32,9 @@ The build fails if a public note is missing `title`, `description`, `slug`, or `
 The codex typography layer lives in `Site/src/styles/typography.css`.
 
 - Display / H1 / site title: `Cinzel`
-- Body prose: `Source Serif 4`
-- UI, metadata, captions, tables, and lower headings: `IBM Plex Sans`
-- Code, terminal fragments, and inline code: `IBM Plex Mono`
+- Body prose and H2 section headers: `Literata`
+- UI, metadata, captions, tables, and lower headings: `Saira Semi Condensed`
+- Code, terminal fragments, and inline code: `JetBrains Mono`
 - Mathematical notation: MathJax CommonHTML output
 
 ## Codex formatting tags
