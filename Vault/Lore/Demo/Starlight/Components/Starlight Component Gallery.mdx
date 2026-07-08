@@ -1,4 +1,4 @@
----
+0---
 title: Starlight Component Gallery
 description: "An MDX companion page for testing live Astro Starlight components in the VISCERIUM codex."
 publish: true
@@ -27,7 +27,6 @@ import {
   Badge,
   Card,
   CardGrid,
-  Code,
   FileTree,
   Icon,
   LinkButton,
@@ -37,13 +36,20 @@ import {
   TabItem,
 } from '@astrojs/starlight/components';
 
-export const codexExample = `const faction = 'TCSC';\nconst doctrine = 'slow-moving walls with civil-industrial compatibility';\nconsole.log({ faction, doctrine });`;
-
 This page is the MDX companion to `Starlight Feature Demo.md`. Use it when you want to see the live Starlight component layouts that plain Markdown cannot render as JSX.
 
 :::caution[MDX-only test page]
 Copy this file into `Vault/Lore/Demo/Starlight Component Gallery.mdx`. If the build fails, your current site setup does not have MDX component rendering enabled, even though the sync script accepts `.mdx` files.
 :::
+
+## Code block
+
+```js title="codex-doctrine.js" {1,2}
+const faction = 'TCSC';
+const doctrine = 'slow-moving walls with civil-industrial compatibility';
+
+console.log({ faction, doctrine });
+```
 
 ## Badges
 
