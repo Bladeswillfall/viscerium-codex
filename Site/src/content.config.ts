@@ -17,6 +17,10 @@ const calendarDateSchema = z.object({
   precision: z.enum(['day', 'month', 'year']).optional(),
   displayCalendars: z.array(z.string()).optional(),
 });
+const calendarShowcaseSchema = z.object({
+  calendar: z.string(),
+  year: z.number().int().optional(),
+});
 
 export const collections = {
   docs: defineCollection({
@@ -29,6 +33,7 @@ export const collections = {
         sourcePath: z.string().optional(),
         type: z.string().optional(),
         calendarDate: calendarDateSchema.optional(),
+        calendarShowcase: calendarShowcaseSchema.optional(),
         date: frontmatterDate.optional(),
         published: frontmatterDate.optional(),
         updated: frontmatterDate.optional(),
