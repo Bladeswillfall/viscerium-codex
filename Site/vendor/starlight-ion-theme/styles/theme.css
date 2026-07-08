@@ -1,10 +1,21 @@
 @layer ion {
-  /* Specify colors. NOTE: YOU CAN CUSTOMIZE THESE HOWEVER YOU WANT! */
+  /* VISCERIUM theme tokens. This vendored Ion stylesheet is the source of truth for global colour variables. */
   :root {
+    --codex-page-bg: #101010;
+    --codex-accent: #b88746;
+    --codex-accent-high: #f1d29b;
+    --codex-accent-soft: rgba(184, 135, 70, .18);
+    --codex-surface: rgba(255, 255, 255, .025);
+    --codex-surface-raised: linear-gradient(135deg, rgba(184, 135, 70, .10), rgba(255, 255, 255, .02));
+    --codex-surface-accent: rgba(184, 135, 70, .10);
+    --codex-border: var(--codex-accent-soft);
+    --codex-radius: .75rem;
+    --codex-sidebar-toggle-bg: rgba(16, 16, 15, .9);
+
     /* Dark mode colors */
-    --sl-color-accent-low: #3c0017;
-    --sl-color-accent: #bd0249;
-    --sl-color-accent-high: #ff78ac;
+    --sl-color-accent-low: #342516;
+    --sl-color-accent: var(--codex-accent);
+    --sl-color-accent-high: var(--codex-accent-high);
     --sl-color-white: #ffffff;
     --sl-color-gray-1: #c2c2c2;
     --sl-color-gray-2: #a3a3a3;
@@ -33,10 +44,16 @@
     --sl-text-2xl: 1.5rem;
   }
 
+  :root[data-theme="dark"] {
+    --sl-color-bg: var(--codex-page-bg);
+    --sl-color-bg-sidebar: #151310;
+    --sl-color-bg-nav: #151310;
+  }
+
   :root[data-theme="light"] {
-    --sl-color-accent-low: #ff78ac;
-    --sl-color-accent: #bd0249;
-    --sl-color-accent-high: #3c0017;
+    --sl-color-accent-low: #f1d29b;
+    --sl-color-accent: var(--codex-accent);
+    --sl-color-accent-high: #342516;
     --sl-color-white: #17181c;
     --sl-color-gray-1: #24272f;
     --sl-color-gray-2: #353841;
