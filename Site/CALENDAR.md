@@ -61,6 +61,33 @@ calendarDate:
 
 `engimanutur-02` only exists in leap years; invalid use will fail the build.
 
+## Placing full calendars in pages
+
+Full calendar grids are placed with an Obsidian-friendly shortcode in the note body:
+
+```md
+[Calendar:ID-0001]
+```
+
+Define the block in the page frontmatter:
+
+```yaml
+calendarBlocks:
+  ID-0001:
+    calendar: okse
+    year: 4
+```
+
+The source note can stay as Markdown. During sync, any page that uses a `[Calendar:...]` shortcode is emitted as generated MDX so Astro can render the real `CalendarYear` component at that exact position.
+
+For quick tests, the shortcode can also use an inline calendar id and year:
+
+```md
+[Calendar:okse year=4]
+```
+
+Prefer the `calendarBlocks` form for real articles because it keeps configuration in frontmatter and placement in the body.
+
 ## Files
 
 - `src/data/calendars/okse.ts` — Okse calendar definition.
@@ -70,7 +97,9 @@ calendarDate:
 - `src/components/calendar/CalendarYear.astro` — full calendar rendering.
 - `src/components/calendar/CalendarDateBadge.astro` — article date badge.
 - `src/styles/calendar.css` — calendar visuals.
-- `src/content/docs/calendar/index.mdx` — public calendar page.
+- `scripts/sync-public-notes.mjs` — expands `[Calendar:...]` shortcodes into placed Astro components during the Obsidian sync.
+- `Vault/Lore/Calendar.md` — Obsidian-source public calendar overview.
+- `Vault/Lore/Calendar/Okse.md` — Obsidian-source detailed Okse calendar route used by date-badge anchors.
 
 ## Adding future calendars
 
