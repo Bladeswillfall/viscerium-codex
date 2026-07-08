@@ -59,13 +59,39 @@ const webmentionHead = siteConfig.webmentions?.enabled
     ].filter(Boolean)
   : [];
 
+const faviconHead = [
+  {
+    tag: 'link',
+    attrs: {
+      rel: 'mask-icon',
+      href: '/favicons/viscerium-mask.svg',
+      color: '#0b0b0d',
+    },
+  },
+  {
+    tag: 'link',
+    attrs: {
+      rel: 'manifest',
+      href: '/site.webmanifest',
+    },
+  },
+  {
+    tag: 'meta',
+    attrs: {
+      name: 'theme-color',
+      content: '#0b0b0d',
+    },
+  },
+];
+
 export default defineConfig({
   site: siteConfig.site,
   integrations: [
     starlight({
       title: siteConfig.title,
       description: siteConfig.description,
-      head: [...feedHead, ...webmentionHead],
+      favicon: '/favicon.svg',
+      head: [...feedHead, ...webmentionHead, ...faviconHead],
       customCss: [
         './vendor/starlight-ion-theme/styles/layers.css',
         './vendor/starlight-ion-theme/styles/theme.css',
