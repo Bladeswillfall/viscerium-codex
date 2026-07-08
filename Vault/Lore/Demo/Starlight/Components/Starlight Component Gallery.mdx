@@ -1,6 +1,6 @@
 ---
 title: Starlight Component Gallery
-description: "A gallery for testing live Astro Starlight components, VISCERIUM codex authoring tags, typography, math rendering, and calendar frontmatter rendering."
+description: "A gallery for testing live Astro Starlight components, VISCERIUM codex authoring tags, typography, math rendering, and calendar placement shortcodes."
 publish: true
 status: canon
 type: system
@@ -10,9 +10,10 @@ calendarDate:
   intercalaryDay: engimanutur-02
   displayCalendars:
     - okse
-calendarShowcase:
-  calendar: okse
-  year: 4
+calendarBlocks:
+  ID-0001:
+    calendar: okse
+    year: 4
 tags:
   - demo
   - starlight
@@ -43,12 +44,11 @@ import {
   Icon,
   LinkButton,
   LinkCard,
-  Steps,
   Tabs,
   TabItem,
 } from '@astrojs/starlight/components';
 
-This page tests native Starlight MDX components, the VISCERIUM codex formatting tags, typography/math rendering, and the new calendar layer.
+This page tests native Starlight MDX components, the VISCERIUM codex formatting tags, typography/math rendering, and the new calendar placement layer.
 
 :::caution[Gallery page]
 This page is deliberately overloaded. Delete it later if it stops being useful, but keep the syntax examples somewhere because the codex formatting tags are intended for everyday article writing.
@@ -56,7 +56,13 @@ This page is deliberately overloaded. Delete it later if it stops being useful, 
 
 ## Calendar components
 
-The full Okse calendar should render near the page title from `calendarShowcase` frontmatter. This proves the calendar can be displayed on an MDX page without manually importing the calendar component into the note body.
+The full Okse calendar is now placed with a shortcode, not automatically injected into the page title area. This allows the calendar to appear wherever the note author places it.
+
+```md
+[Calendar:ID-0001]
+```
+
+[Calendar:ID-0001]
 
 The page also declares an intercalary leap-day `calendarDate`, so the automatic date badge should show `Engimanutur 02` for year `20004`.
 
@@ -167,8 +173,6 @@ $$
 a^2+b^2=c^2
 $$
 
-Use the codex equation wrapper when a formula needs a title or article-level panel treatment:
-
 [equation:title="Resonance decay model"]
 ```math
 R(t)=R_0e^{-\lambda t}
@@ -246,10 +250,10 @@ Good for turning a dense codex index into a browsable overview.
 
 <Tabs>
   <TabItem label="Markdown">
-    Plain Markdown pages should use `calendarDate` and `calendarShowcase` frontmatter.
+    Plain Markdown pages can use `calendarDate`, define `calendarBlocks`, and place `[Calendar:ID-0001]` in the body.
   </TabItem>
   <TabItem label="MDX">
-    MDX pages can also use the same frontmatter, without importing calendar components directly.
+    MDX pages can use the same shortcode and frontmatter pattern.
   </TabItem>
 </Tabs>
 
