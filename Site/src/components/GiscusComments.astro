@@ -1,13 +1,34 @@
 ---
-const repo = import.meta.env.PUBLIC_GISCUS_REPO;
-const repoId = import.meta.env.PUBLIC_GISCUS_REPO_ID;
-const category = import.meta.env.PUBLIC_GISCUS_CATEGORY;
-const categoryId = import.meta.env.PUBLIC_GISCUS_CATEGORY_ID;
-const configured = Boolean(repo && repoId && category && categoryId);
-const giscusClient = `${'https://giscus.app'}/client.js`;
+import siteConfig from '../../site.config.mjs';
+
+const config = siteConfig.giscus ?? {};
+const giscusConfig = {
+  repo: config.repo ?? '',
+  repoId: config.repoId ?? '',
+  category: config.category ?? '',
+  categoryId: config.categoryId ?? '',
+  mapping: config.mapping ?? 'pathname',
+  strict: config.strict ?? '0',
+  reactionsEnabled: config.reactionsEnabled ?? '1',
+  emitMetadata: config.emitMetadata ?? '0',
+  inputPosition: config.inputPosition ?? 'bottom',
+  theme: config.theme ?? 'preferred_color_scheme',
+  lang: config.lang ?? 'en',
+  loading: config.loading ?? 'lazy',
+};
+
+const requiredFields = ['repo', 'repoId', 'category', 'categoryId'];
+const missingFields = requiredFields.filter((field) => !giscusConfig[field]);
+const configured = missingFields.length === 0;
+const serializedConfig = JSON.stringify(giscusConfig);
 ---
 
-<section class="codex-comments" aria-labelledby="codex-comments-title">
+<section
+  class="codex-comments"
+  aria-labelledby="codex-comments-title"
+  data-giscus-comments
+  data-giscus-config={configured ? serializedConfig : undefined}
+>
   <details open={configured}>
     <summary id="codex-comments-title">
       <span>Page comments</span>
@@ -15,28 +36,89 @@ const giscusClient = `${'https://giscus.app'}/client.js`;
     </summary>
     <div class="codex-comments-panel">
       {configured ? (
-        <script
-          src={giscusClient}
-          data-repo={repo}
-          data-repo-id={repoId}
-          data-category={category}
-          data-category-id={categoryId}
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="bottom"
-          data-theme="preferred_color_scheme"
-          data-lang="en"
-          crossorigin="anonymous"
-          async
-        ></script>
+        <div class="giscus" data-giscus-container></div>
       ) : (
         <div class="codex-warning">
-          <p><strong>Comments are ready but not enabled yet.</strong></p>
-          <p>Set the public giscus environment variables documented in the README to enable comments on every published page.</p>
+          <p><strong>Comments are installed but not configured yet.</strong></p>
+          <p>
+            Missing giscus setting{missingFields.length === 1 ? '' : 's'}: <code>{missingFields.join(', ')}</code>.
+            Add the matching public environment variables in Cloudflare Pages and your local <code>Site/.env</code> file.
+          </p>
         </div>
       )}
     </div>
   </details>
 </section>
+
+{configured && (
+  <script is:inline>
+    (() => {
+      const GISCUS_ORIGIN = 'https://giscus.app';
+      const GISCUS_CLIENT = `${GISCUS_ORIGIN}/client.js`;
+      const currentScript = document.currentScript;
+      const section = currentScript?.previousElementSibling?.matches?.('[data-giscus-comments]')
+        ? currentScript.previousElementSibling
+        : document.querySelector('[data-giscus-comments]:not([data-giscus-mounted])');
+
+      if (!section || section.dataset.giscusMounted === 'true') return;
+
+      const container = section.querySelector('[data-giscus-container]');
+      if (!container) return;
+
+      let config;
+      try {
+        config = JSON.parse(section.dataset.giscusConfig || '{}');
+      } catch {
+        return;
+      }
+
+      if (!config.repo || !config.repoId || !config.category || !config.categoryId) return;
+
+      section.dataset.giscusMounted = 'true';
+
+      const getTheme = () => {
+        const theme = document.documentElement.dataset.theme;
+        if (theme === 'dark' || theme === 'light') return theme;
+        return config.theme || 'preferred_color_scheme';
+      };
+
+      const script = document.createElement('script');
+      script.src = GISCUS_CLIENT;
+      script.async = true;
+      script.crossOrigin = 'anonymous';
+
+      const attributes = {
+        'data-repo': config.repo,
+        'data-repo-id': config.repoId,
+        'data-category': config.category,
+        'data-category-id': config.categoryId,
+        'data-mapping': config.mapping || 'pathname',
+        'data-strict': config.strict ?? '0',
+        'data-reactions-enabled': config.reactionsEnabled ?? '1',
+        'data-emit-metadata': config.emitMetadata ?? '0',
+        'data-input-position': config.inputPosition || 'bottom',
+        'data-theme': getTheme(),
+        'data-lang': config.lang || 'en',
+        'data-loading': config.loading || 'lazy',
+      };
+
+      for (const [name, value] of Object.entries(attributes)) {
+        if (value !== undefined && value !== null && value !== '') script.setAttribute(name, String(value));
+      }
+
+      container.replaceChildren(script);
+
+      const syncTheme = () => {
+        const frame = section.querySelector('iframe.giscus-frame');
+        if (!frame?.contentWindow) return;
+        frame.contentWindow.postMessage({ giscus: { setConfig: { theme: getTheme() } } }, GISCUS_ORIGIN);
+      };
+
+      new MutationObserver(syncTheme).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme'],
+      });
+      document.addEventListener('starlight:theme-select', () => window.setTimeout(syncTheme, 0));
+    })();
+  </script>
+)}
