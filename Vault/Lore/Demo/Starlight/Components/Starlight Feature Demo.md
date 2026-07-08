@@ -194,6 +194,22 @@ Use danger callouts sparingly. If every note has one, none of them matter.
 | Krass Dominion | Tradition survives the weather | Land, fog, inheritance, cunning | Pagan/druidic phrasing |
 | Republic of Askalia | Coin as freedom | Exploitation, slavery, guild pressure | Content warning risk |
 
+## Tables (BBcode-style)
+
+Below is a test for BBcode-like tables for aligning formatting columns/rows without using the regular markdown tables style.
+
+[cols:2-1 gap=lg]
+[col]
+Main prose.
+[/col]
+
+[col]
+[card:accent]
+Sidebar content.
+[/card]
+[/col]
+[/cols]
+
 ## Links and wikilinks
 
 Normal Markdown links should work in Obsidian and Starlight:
