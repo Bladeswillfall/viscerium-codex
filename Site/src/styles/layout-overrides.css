@@ -98,6 +98,7 @@
 
   [data-has-sidebar][data-has-toc] .codex-main-pane > main > .content-panel:not(:first-child) {
     grid-column: 1;
+    grid-row: 2;
   }
 
   [data-has-sidebar][data-has-toc] .codex-main-pane > .right-sidebar-container {
