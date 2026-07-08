@@ -39,7 +39,7 @@ The codex typography layer lives in `Site/src/styles/typography.css`.
 
 ## Codex formatting tags
 
-The sync script supports a controlled set of BBCode-like tags for worldbuilding layouts. Tags must be written on their own lines. Normal Markdown tables, inline Markdown, and fenced code blocks are left alone.
+The sync script supports a controlled set of BBCode-like tags for worldbuilding layouts. Tags must be written on their own lines unless otherwise noted. Normal Markdown tables, inline Markdown, and fenced code blocks are left alone.
 
 Equal columns:
 
@@ -103,6 +103,14 @@ In-world quoted text.
 [/lore]
 ```
 
+Stylised quotation:
+
+```md
+[quote]The horn did not sound. It remembered.|Recovered fragment, Lorndale Archive[/quote]
+```
+
+The quote text goes before the final `|`; the author/source goes after it. If there is no `|`, the quote renders without an author line.
+
 Equation panel:
 
 ````md
@@ -113,7 +121,7 @@ R(t)=R_0e^{-\lambda t}
 [/equation]
 ````
 
-Supported layout tags: `[cols]`, `[row]`, `[col]`, `[card]`, `[note]`, `[warning]`, `[lore]`, and `[equation]`.
+Supported layout tags: `[cols]`, `[row]`, `[col]`, `[card]`, `[note]`, `[warning]`, `[lore]`, `[quote]`, and `[equation]`.
 
 ## Mathematical notation
 
