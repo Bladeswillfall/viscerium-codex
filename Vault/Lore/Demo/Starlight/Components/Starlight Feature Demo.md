@@ -1,6 +1,7 @@
 ---
 title: Starlight Feature Demo
 description: "A VISCERIUM codex demo page for testing Obsidian Markdown, Astro Starlight rendering, headings, asides, code blocks, tables, details, embeds, and frontmatter behaviour."
+headerImage: /assets/images/viscerium-banner.webp
 publish: true
 status: canon
 slug: demo/starlight-feature-demo
