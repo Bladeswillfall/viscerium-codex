@@ -21,7 +21,7 @@ body,
 .content-panel h1,
 h1#_top {
   font-family: var(--vc-font-display);
-  font-weight: 650;
+  font-weight: 400;
   letter-spacing: .035em;
   text-transform: uppercase;
 }
