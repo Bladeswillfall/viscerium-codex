@@ -1,13 +1,15 @@
 ---
 import { getCalendar } from '../../lib/calendar/registry';
 import { getCalendarYearDates, isLeapYear, resolveCalendarDate } from '../../lib/calendar/convert';
+import type { CalendarEventLink, CalendarEventLinks, CalendarObservance, ResolvedCalendarDate } from '../../lib/calendar/types';
 
 interface Props {
   calendarId?: string;
   year?: number;
+  eventLinks?: CalendarEventLinks;
 }
 
-const { calendarId = 'okse' } = Astro.props as Props;
+const { calendarId = 'okse', eventLinks = {} } = Astro.props as Props;
 const calendar = getCalendar(calendarId);
 const year = (Astro.props as Props).year ?? calendar.defaultYear;
 const dates = getCalendarYearDates(calendar.id, year);
@@ -20,6 +22,48 @@ function getDateForMonthDay(month: string, day: number) {
 
 function getDateForIntercalary(slug: string) {
   return datesByAnchor.get(slug);
+}
+
+function routeLike(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return '#';
+  if (/^(https?:|mailto:|#|\/)/i.test(trimmed)) return trimmed;
+  return `/${trimmed.replace(/^\/+|\/+$/g, '')}/`;
+}
+
+function resolveLinkValue(link?: CalendarEventLink): { href?: string; label?: string } {
+  if (!link) return {};
+  if (typeof link === 'string') return { href: routeLike(link) };
+  return {
+    href: link.href ? routeLike(link.href) : link.article ? routeLike(link.article) : undefined,
+    label: link.label,
+  };
+}
+
+function getObservanceLink(observance: CalendarObservance) {
+  return resolveLinkValue(eventLinks[observance.slug] ?? observance.href ?? observance.article);
+}
+
+function getLinkedObservances(resolved: ResolvedCalendarDate) {
+  return resolved.observances
+    .map((observance) => ({ observance, link: getObservanceLink(observance) }))
+    .filter((item) => Boolean(item.link.href));
+}
+
+function getCellMeta(resolved: ResolvedCalendarDate) {
+  const linkedObservances = getLinkedObservances(resolved);
+  const primaryLinkedObservance = linkedObservances[0];
+  const observanceNames = resolved.observances.map((observance) => observance.name);
+  const targetLabel = primaryLinkedObservance?.link.label ?? primaryLinkedObservance?.observance.name;
+  const title = [resolved.label, ...observanceNames].join(' — ');
+
+  return {
+    href: primaryLinkedObservance?.link.href ?? `#${resolved.anchor}`,
+    hasLinkedEvent: Boolean(primaryLinkedObservance?.link.href),
+    title: targetLabel ? `${title} — open ${targetLabel}` : title,
+    ariaLabel: targetLabel ? `${resolved.label}; open ${targetLabel}` : resolved.label,
+    eventNames: observanceNames,
+  };
 }
 ---
 
@@ -56,6 +100,7 @@ function getDateForIntercalary(slug: string) {
             const resolved = getDateForMonthDay(month.slug, day) ?? resolveCalendarDate({ calendar: calendar.id, year, month: month.slug, day });
             const hasHoliday = resolved.observances.some((observance) => observance.type === 'holiday');
             const hasSeasonMarker = resolved.observances.some((observance) => observance.type !== 'holiday');
+            const meta = getCellMeta(resolved);
             return (
               <li
                 id={resolved.anchor}
@@ -64,11 +109,15 @@ function getDateForIntercalary(slug: string) {
                   `calendar-day--${resolved.season}`,
                   hasHoliday && 'calendar-day--holiday',
                   hasSeasonMarker && 'calendar-day--marker',
+                  meta.hasLinkedEvent && 'calendar-day--linked-event',
                 ]}
               >
-                <a href={`#${resolved.anchor}`} aria-label={resolved.label} title={resolved.label}>
+                <a href={meta.href} aria-label={meta.ariaLabel} title={meta.title}>
                   <span class="calendar-day__number">{day}</span>
                   <span class="calendar-day__weekday">{resolved.weekday}</span>
+                  {meta.eventNames.length > 0 && (
+                    <span class="calendar-day__events">{meta.eventNames.join(', ')}</span>
+                  )}
                 </a>
               </li>
             );
@@ -83,6 +132,7 @@ function getDateForIntercalary(slug: string) {
         {calendar.intercalaryDays.map((intercalaryDay) => {
           const resolved = getDateForIntercalary(intercalaryDay.slug);
           const visible = Boolean(resolved);
+          const meta = resolved ? getCellMeta(resolved) : undefined;
           return (
             <li
               id={intercalaryDay.slug}
@@ -92,13 +142,17 @@ function getDateForIntercalary(slug: string) {
                 `calendar-day--${intercalaryDay.season}`,
                 intercalaryDay.leapOnly && 'calendar-day--leap',
                 resolved?.observances.some((observance) => observance.type !== 'holiday') && 'calendar-day--marker',
+                meta?.hasLinkedEvent && 'calendar-day--linked-event',
                 !visible && 'calendar-day--inactive',
               ]}
             >
-              {resolved ? (
-                <a href={`#${resolved.anchor}`} aria-label={resolved.label} title={resolved.label}>
+              {resolved && meta ? (
+                <a href={meta.href} aria-label={meta.ariaLabel} title={meta.title}>
                   <span class="calendar-day__number">{String(intercalaryDay.day).padStart(2, '0')}</span>
                   <span class="calendar-day__weekday">{resolved.weekday}</span>
+                  {meta.eventNames.length > 0 && (
+                    <span class="calendar-day__events">{meta.eventNames.join(', ')}</span>
+                  )}
                 </a>
               ) : (
                 <span aria-label={`${intercalaryDay.name} ${intercalaryDay.day} only exists in leap years`}>
@@ -132,6 +186,10 @@ function getDateForIntercalary(slug: string) {
         <div>
           <dt><span class="calendar-key calendar-key--marker"></span>Red number</dt>
           <dd>Solstice, equinox, or seasonal marker</dd>
+        </div>
+        <div>
+          <dt><span class="calendar-key calendar-key--linked"></span>Linked event</dt>
+          <dd>Opens an event article</dd>
         </div>
       </dl>
     </section>
