@@ -13,7 +13,7 @@ The Codex now uses `@astrojs/cloudflare` because the contact form depends on Ast
 Root directory: Site
 Build command: npm run build
 Deploy command: npx wrangler deploy
-Node version: 22.12.0
+Node version: 24
 ```
 
 5. Set the canonical site URL:
