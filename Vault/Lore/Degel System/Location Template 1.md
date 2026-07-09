@@ -1,8 +1,8 @@
 ---
 title:
 description:
-publish: false
-status: draft
+publish: true
+status: cannon
 faction:
 region:
 population:
@@ -25,6 +25,7 @@ tags:
 %% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
 
 ## Summary
+test text in this place
 
 ## Geography
 
