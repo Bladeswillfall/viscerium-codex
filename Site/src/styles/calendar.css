@@ -129,25 +129,30 @@
   }
 
   .calendar-days {
-    display: table;
-    width: 100%;
+    display: table !important;
+    inline-size: 100% !important;
+    width: 100% !important;
     max-width: 100%;
     min-width: 0;
     margin: 0;
-    overflow: visible;
+    overflow: visible !important;
     border: 0;
     border-collapse: separate;
     border-spacing: .22rem;
-    table-layout: fixed;
+    table-layout: fixed !important;
     background: transparent;
   }
 
   .calendar-days tbody {
-    display: table-row-group;
+    display: table-row-group !important;
+    inline-size: 100%;
+    width: 100%;
   }
 
   .calendar-days tr {
-    display: table-row;
+    display: table-row !important;
+    inline-size: 100%;
+    width: 100%;
   }
 
   .calendar-days tbody,
@@ -158,14 +163,22 @@
 
   .calendar-days td,
   .calendar-days th {
-    display: table-cell;
+    display: table-cell !important;
     padding: 0;
     border: 0;
     background: transparent;
   }
 
+  .calendar-days--month .calendar-day {
+    width: calc(100% / 7);
+  }
+
   .calendar-days--intercalary {
-    width: min(100%, 7rem);
+    width: min(100%, 7rem) !important;
+  }
+
+  .calendar-days--intercalary .calendar-day {
+    width: 50%;
   }
 
   .calendar-day {
