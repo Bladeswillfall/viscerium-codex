@@ -12,9 +12,11 @@ The Codex now uses `@astrojs/cloudflare` because the contact form depends on Ast
 ```text
 Root directory: Site
 Build command: npm run build
-Deploy command: npx wrangler deploy
+Deploy command: npm run deploy
 Node version: 24
 ```
+
+`npm run deploy` uses `wrangler.deploy.jsonc`. The config is intentionally not named `wrangler.jsonc`, because Astro's Cloudflare build reads default Wrangler config files before `dist/_worker.js/index.js` exists.
 
 5. Set the canonical site URL:
 
