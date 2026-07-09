@@ -18,7 +18,7 @@
 .codex-comments summary::marker { color: var(--codex-accent); }
 .codex-comments-hint { color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); font-weight: 400; }
 .codex-comments-panel { padding: 0 1rem 1rem; }
-.codex-header-image { object-fit: cover; border: 0; border-radius: var(--codex-radius); width: 100%; max-height: 22rem; margin: 0; display: block; box-shadow: none; }
+.codex-header-image { object-fit: contain; border: 0; border-radius: var(--codex-radius); width: 100%; max-height: 18rem; margin: 0; display: block; box-shadow: none; }
 .codex-header-image-artwork { object-fit: contain; max-height: min(70vh, 48rem); background: rgba(0, 0, 0, .22); }
 .codex-breadcrumbs { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--codex-accent-soft); color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); }
 .codex-breadcrumbs a { color: var(--codex-accent-high); text-decoration: none; }
@@ -80,10 +80,10 @@
 }
 
 .codex-page-sidebar .sl-container { display: grid; gap: 1rem; }
-.codex-sidebar-card { overflow: hidden; background: #151515; box-shadow: 0 1rem 2rem rgba(0,0,0,.18); }
+.codex-sidebar-card { background: #151515; box-shadow: 0 1rem 2rem rgba(0,0,0,.18); }
 .codex-sidebar-artwork { border-bottom: 1px solid var(--codex-accent-soft); }
 .codex-sidebar-image-link { display: block; color: inherit; text-decoration: none; }
-.codex-sidebar-image { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.codex-sidebar-image { display: block; width: 100%; height: auto; object-fit: cover; }
 .codex-sidebar-image-link .codex-sidebar-image { transition: filter .2s ease, transform .2s ease; }
 .codex-sidebar-image-link:hover .codex-sidebar-image, .codex-sidebar-image-link:focus-visible .codex-sidebar-image { filter: brightness(1.08); transform: scale(1.01); }
 .codex-sidebar-art-caption { padding: .65rem .85rem .75rem; border-top: 1px solid rgba(184,135,70,.14); background: rgba(255,255,255,.025); }
@@ -244,6 +244,7 @@
 
 .cx-callout {
   margin-block: 1.5rem;
+  margin-top: 0;
   padding: 1rem;
   border: 1px solid var(--codex-accent-soft);
   border-inline-start: 4px solid var(--codex-accent);
