@@ -98,13 +98,19 @@
     padding-block-end: .2rem;
   }
 
+  .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2 {
+    position: relative;
+    padding-block-start: clamp(2rem, 4vw, 3rem);
+  }
+
   .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2::before {
     content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: clamp(-1.5rem, -2vw, -.75rem);
     display: block;
     inline-size: min(100%, 42rem);
-    block-size: clamp(3.25rem, 7vw, 5.75rem);
-    margin-block: clamp(-2.4rem, -3.5vw, -1.25rem) clamp(-2.2rem, -3vw, -1rem);
-    margin-inline-start: clamp(-3rem, -5vw, -1rem);
+    block-size: clamp(2.25rem, 4.5vw, 3.75rem);
     background: var(--era-heading-ornament-color);
     pointer-events: none;
     opacity: .78;
@@ -119,11 +125,14 @@
   }
 
   @media (max-width: 42rem) {
+    .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2 {
+      padding-block-start: 1.75rem;
+    }
+
     .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2::before {
+      inset-inline-start: 0;
       inline-size: 100%;
-      block-size: 3rem;
-      margin-block: -1.15rem -.85rem;
-      margin-inline-start: 0;
+      block-size: 2rem;
       opacity: .62;
     }
   }
