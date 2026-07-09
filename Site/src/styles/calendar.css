@@ -27,11 +27,17 @@
   .calendar-module__intro {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'summary'
+      'facts';
     gap: clamp(.9rem, 1.7vw, 1.15rem);
     margin-block-end: clamp(1rem, 2vw, 1.45rem);
   }
 
   .calendar-module__summary {
+    grid-area: summary;
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
     min-width: 0;
     max-width: 100%;
     overflow-wrap: normal;
@@ -63,6 +69,9 @@
   }
 
   .calendar-module__facts {
+    grid-area: facts;
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: .75rem .95rem;
@@ -511,10 +520,18 @@
   @container (min-width: 60rem) {
     .calendar-module__intro {
       grid-template-columns: minmax(24rem, 1fr) minmax(18rem, 24rem);
+      grid-template-areas: 'summary facts';
       align-items: stretch;
     }
 
+    .calendar-module__summary {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+    }
+
     .calendar-module__facts {
+      grid-column: 2 !important;
+      grid-row: 1 !important;
       align-self: stretch;
     }
   }
