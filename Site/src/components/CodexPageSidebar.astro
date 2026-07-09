@@ -123,14 +123,35 @@ const sidebarFields = [
 <style>
   @layer starlight.core {
     .right-sidebar-panel {
-      padding: 1rem var(--sl-sidebar-pad-x);
+      box-sizing: border-box;
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      padding: 1rem 0;
     }
+
     .sl-container {
-      width: calc(var(--sl-sidebar-width) - 2 * var(--sl-sidebar-pad-x));
+      box-sizing: border-box;
+      display: grid;
+      gap: 1rem;
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      margin-inline: 0;
+      padding-inline: 0;
     }
+
+    .codex-sidebar-card,
+    .codex-sidebar-section,
+    :global(starlight-toc nav) {
+      width: 100%;
+      min-width: 0;
+    }
+
     .codex-sidebar-section {
       margin-top: 1.5rem;
     }
+
     .right-sidebar-panel :global(h2) {
       color: var(--sl-color-white);
       font-size: var(--sl-text-h5);
@@ -138,6 +159,7 @@ const sidebarFields = [
       line-height: var(--sl-line-height-headings);
       margin-bottom: 0.5rem;
     }
+
     .right-sidebar-panel :global(:where(a)) {
       display: block;
       font-size: var(--sl-text-xs);
@@ -145,13 +167,9 @@ const sidebarFields = [
       color: var(--sl-color-gray-3);
       overflow-wrap: anywhere;
     }
+
     .right-sidebar-panel :global(:where(a):hover) {
       color: var(--sl-color-white);
-    }
-    @media (min-width: 72rem) {
-      .sl-container {
-        max-width: calc(((100vw - var(--sl-sidebar-width) - 2 * var(--sl-content-pad-x) - 2 * var(--sl-sidebar-pad-x)) * 0.333));
-      }
     }
   }
 </style>
