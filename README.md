@@ -1,6 +1,8 @@
-# Obsidian → Astro Starlight Worldbuilding Codex Template
+# VISCERIUM Codex
 
-This repository is a beginner-friendly template for publishing a public worldbuilding codex from an Obsidian vault. Write lore in `Vault/`, mark finished public notes with frontmatter, and let the Astro/Starlight site in `Site/` build a static website for Cloudflare Pages.
+This repository publishes the public VISCERIUM worldbuilding codex from an Obsidian vault into an Astro/Starlight site. Write lore in `Vault/`, mark finished public notes with frontmatter, and let the Astro/Starlight site in `Site/` build the Codex.
+
+The site now uses the Cloudflare adapter so the contact form can run through Astro Actions, server islands, Resend, and Turnstile on Cloudflare Workers.
 
 ## Folder structure
 
@@ -157,28 +159,26 @@ npm run build
 
 Use `npm run dev:sync` when you want to sync notes and start the local site in one command.
 
-## Cloudflare Pages settings
+## Cloudflare Workers settings
 
 ```text
 Root directory: Site
 Build command: npm run build
-Build output directory: dist
+Deploy command: npx wrangler deploy
 Node version: 22.12.0
-Environment variable: SITE_URL=https://your-production-domain.example
+Environment variable: SITE_URL=https://codex.viscerium.co.uk
 ```
 
-Set `SITE_URL` in Cloudflare Pages to your real canonical URL before production launch. The build falls back to `https://viscerium-codex.pages.dev` if it is unset.
+Set `SITE_URL` in Cloudflare to the real canonical URL before production launch. The build falls back to `https://codex.viscerium.co.uk` if it is unset.
 
-## GitHub template use
-
-Create a new repository from this template, replace the example lore with your project, update `Site/site.config.mjs`, push to GitHub, then connect the repo to Cloudflare Pages.
+The contact form also requires the runtime values documented in `Site/CONTACT_FORM_SETUP.md`.
 
 ## Optional community integrations
 
 - Unified page discussion: this template renders one **Page discussion** section at the bottom of every Starlight page from `Site/src/components/GiscusComments.astro`.
 - Webmentions: the same section can display wider-web comments, replies, likes, reposts, bookmarks, and mentions collected by Webmention.io.
 - giscus comments: GitHub Discussions still render in the same section, beneath wider-web responses, instead of becoming a competing second comment box.
-- Buttondown/newsletter: add your public form endpoint as an environment variable or documented placeholder.
+- Ko-fi / Patreon / socials: placeholders live in `Site/src/config/supportLinks.mjs` and can be activated by adding real URLs.
 - Sitemap: `@astrojs/sitemap` is installed and configured in `Site/astro.config.mjs`; it uses `siteConfig.site`, which is controlled by `SITE_URL`.
 - Partytown: `@astrojs/partytown` is installed and configured in `Site/astro.config.mjs` with `dataLayer.push` forwarding for future GA4/GTM-style analytics.
 - GA4/GTM and Cloudflare Web Analytics: add only public IDs through environment variables or Cloudflare settings.
@@ -192,85 +192,9 @@ Installed Astro integrations are configured in `Site/astro.config.mjs`:
 
 GA4 is intentionally placeholder-only. The code path exists, but it will not emit tracking scripts while the Measurement ID is still `G-XXXXXXXXXX`.
 
-When proper GA4 tracking is ready, add the real public values in Cloudflare Pages and local `Site/.env` files as needed:
+When proper GA4 tracking is ready, add the real public values in Cloudflare and local `Site/.env` files as needed:
 
 ```bash
 PUBLIC_GA4_ENABLED=1
 PUBLIC_GA4_MEASUREMENT_ID=G-REAL_MEASUREMENT_ID
 ```
-
-Do not enable GA4 with the placeholder ID in production.
-
-## To-do list
-
-- [ ] Complete proper GA4 implementation: replace `G-XXXXXXXXXX` with the real GA4 Measurement ID, set `PUBLIC_GA4_ENABLED=1`, verify tracking in GA4 Realtime/DebugView, then redeploy.
-
-## Enable Webmentions
-
-This template uses Webmention.io as the Webmention receiver/display API because it works cleanly with a static Cloudflare Pages site. Bridgy and Bridgy Fed can then be used as bridges that feed social/fediverse responses into Webmention.io.
-
-Actions for you:
-
-1. Set `SITE_URL` to the final canonical domain first.
-2. Sign in to Webmention.io with that domain.
-3. Add the required public environment variable in Cloudflare Pages and in a local `Site/.env` file if needed.
-4. Redeploy the site so Starlight emits the `<link rel="webmention">` discovery tag in every page head.
-5. Connect Bridgy classic if you want backfeed from existing social accounts, or Bridgy Fed if you want the site itself bridged into the fediverse/Bluesky-style networks.
-
-Required variable:
-
-```bash
-PUBLIC_WEBMENTION_IO_USERNAME=your-domain.example
-```
-
-Optional variables:
-
-```bash
-PUBLIC_WEBMENTIONS_ENABLED=1
-PUBLIC_WEBMENTIONS_MAX=24
-PUBLIC_WEBMENTION_ENDPOINT=https://webmention.io/your-domain.example/webmention
-PUBLIC_WEBMENTION_PINGBACK_ENDPOINT=https://webmention.io/your-domain.example/xmlrpc
-PUBLIC_WEBMENTION_API_ENDPOINT=https://webmention.io/api/mentions.jf2
-```
-
-Set `PUBLIC_WEBMENTIONS_ENABLED=0` to hide the Webmention portion without removing the code.
-
-## Enable collapsible GitHub comments
-
-This template includes the GitHub Discussions portion inside the same **Page discussion** section. It uses [giscus](https://giscus.app/) and stays in visible setup-warning mode until configured.
-
-Actions for you:
-
-1. Enable **GitHub Discussions** in your repository.
-2. Install the giscus GitHub app for the repository.
-3. Go to `https://giscus.app/` and choose your repository and discussion category.
-4. Add the required public environment variables in Cloudflare Pages and in a local `Site/.env` file if needed.
-
-Required variables:
-
-```bash
-PUBLIC_GISCUS_REPO_ID=your_repo_id
-PUBLIC_GISCUS_CATEGORY_ID=your_category_id
-```
-
-The repo and category names already default to this project and `General`, but you can override them:
-
-```bash
-PUBLIC_GISCUS_REPO=Bladeswillfall/viscerium-codex
-PUBLIC_GISCUS_CATEGORY=General
-```
-
-Optional variables:
-
-```bash
-PUBLIC_GISCUS_MAPPING=pathname
-PUBLIC_GISCUS_STRICT=0
-PUBLIC_GISCUS_REACTIONS_ENABLED=1
-PUBLIC_GISCUS_EMIT_METADATA=0
-PUBLIC_GISCUS_INPUT_POSITION=bottom
-PUBLIC_GISCUS_THEME=noborder_dark
-PUBLIC_GISCUS_LANG=en
-PUBLIC_GISCUS_LOADING=lazy
-```
-
-Do not commit secrets. These giscus and Webmention values are public identifiers, but keeping them in environment variables makes the template reusable.
