@@ -3,8 +3,9 @@ export const prerender = false;
 
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import ContactForm from '../components/contact/ContactForm.astro';
+import { getServerEnv } from '../lib/contact/env';
 
-const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const turnstileSiteKey = getServerEnv('PUBLIC_TURNSTILE_SITE_KEY') ?? '';
 const hasTurnstile = Boolean(turnstileSiteKey && !turnstileSiteKey.includes('placeholder'));
 ---
 
