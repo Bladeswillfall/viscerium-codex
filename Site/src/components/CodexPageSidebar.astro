@@ -11,6 +11,10 @@ function isPresent(value) {
   return value !== undefined && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0);
 }
 
+function isPlainObject(value) {
+  return value && typeof value === 'object' && !Array.isArray(value);
+}
+
 function isExternalUrl(value) {
   return typeof value === 'string' && /^[a-z][a-z0-9+.-]*:/i.test(value);
 }
@@ -37,6 +41,39 @@ function formatValue(value) {
 
 function getFieldValue(source, field) {
   return String(field).split('.').reduce((value, key) => value?.[key], source);
+}
+
+function normaliseSidebarField(field) {
+  if (Array.isArray(field)) {
+    const [label, value] = field;
+    return isPresent(label) && isPresent(value) ? { label, value } : null;
+  }
+  if (!isPlainObject(field)) return null;
+  const label = field.label ?? field.title ?? field.name;
+  const value = field.value ?? field.text;
+  return isPresent(label) && isPresent(value) ? { label, value, href: normaliseRoute(field.href) } : null;
+}
+
+function normaliseSidebarItem(item) {
+  if (typeof item === 'string') return { label: item };
+  if (!isPlainObject(item)) return null;
+  const label = item.label ?? item.title ?? item.name ?? item.value;
+  if (!isPresent(label)) return null;
+  return { label, href: normaliseRoute(item.href) };
+}
+
+function normaliseSidebarSection(section) {
+  if (!isPlainObject(section)) return null;
+  const fields = Array.isArray(section.fields)
+    ? section.fields.map(normaliseSidebarField).filter(Boolean)
+    : [];
+  const items = Array.isArray(section.items)
+    ? section.items.map(normaliseSidebarItem).filter(Boolean)
+    : [];
+  const title = section.title ?? section.label;
+  const note = section.note ?? section.description;
+  if (!isPresent(title) && fields.length === 0 && items.length === 0 && !isPresent(note)) return null;
+  return { title, fields, items, note };
 }
 
 const sidebarFieldsByType = {
@@ -114,7 +151,7 @@ const artworkArtist = entry.artist ?? entry.credit;
 const resolution = entry.width && entry.height ? `${entry.width} × ${entry.height}` : undefined;
 const typeSpecificFields = (sidebarFieldsByType[entry.type] ?? [])
   .map(([label, field]) => [label, getFieldValue(entry, field)]);
-const sidebarFields = [
+const defaultSidebarFields = [
   ['Type', entry.type],
   ['Status', entry.status],
   ['Era', entry.era],
@@ -138,7 +175,17 @@ const sidebarFields = [
   ['Rights', entry.rights],
   ['Usage', entry.usage],
   ['Resolution', resolution],
-].filter(([, value]) => isPresent(value));
+].filter(([, value]) => isPresent(value)).map(([label, value]) => ({ label, value }));
+const sidebarConfig = isPlainObject(entry.sidebar) ? entry.sidebar : {};
+const customSidebarFields = Array.isArray(sidebarConfig.meta)
+  ? sidebarConfig.meta.map(normaliseSidebarField).filter(Boolean)
+  : [];
+const sidebarFields = sidebarConfig.replaceMeta === true && customSidebarFields.length > 0
+  ? customSidebarFields
+  : defaultSidebarFields;
+const customSidebarSections = Array.isArray(sidebarConfig.sections)
+  ? sidebarConfig.sections.map(normaliseSidebarSection).filter(Boolean)
+  : [];
 ---
 
 {
@@ -173,13 +220,40 @@ const sidebarFields = [
               {entry.description && <p class="codex-sidebar-description">{entry.description}</p>}
               {sidebarFields.length > 0 && (
                 <dl class="codex-sidebar-meta">
-                  {sidebarFields.map(([label, value]) => (
+                  {sidebarFields.map(({ label, value, href }) => (
                     <div>
                       <dt>{label}</dt>
-                      <dd>{isExternalUrl(value) ? <a href={value} target="_blank" rel="noreferrer">Open source</a> : formatValue(value)}</dd>
+                      <dd>{href ? <a href={href}>{formatValue(value)}</a> : isExternalUrl(value) ? <a href={value} target="_blank" rel="noreferrer">Open source</a> : formatValue(value)}</dd>
                     </div>
                   ))}
                 </dl>
+              )}
+              {customSidebarSections.length > 0 && (
+                <div class="codex-sidebar-subsections">
+                  {customSidebarSections.map((section) => (
+                    <section class="codex-sidebar-subsection">
+                      {section.title && <h3>{section.title}</h3>}
+                      {section.fields.length > 0 && (
+                        <dl class="codex-sidebar-meta codex-sidebar-meta-compact">
+                          {section.fields.map(({ label, value, href }) => (
+                            <div>
+                              <dt>{label}</dt>
+                              <dd>{href ? <a href={href}>{formatValue(value)}</a> : isExternalUrl(value) ? <a href={value} target="_blank" rel="noreferrer">Open source</a> : formatValue(value)}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      )}
+                      {section.items.length > 0 && (
+                        <ul class="codex-sidebar-list">
+                          {section.items.map((item) => (
+                            <li>{item.href ? <a href={item.href}>{item.label}</a> : item.label}</li>
+                          ))}
+                        </ul>
+                      )}
+                      {section.note && <p class="codex-sidebar-note">{section.note}</p>}
+                    </section>
+                  ))}
+                </div>
               )}
             </div>
           </section>
@@ -236,6 +310,56 @@ const sidebarFields = [
       font-weight: 600;
       line-height: var(--sl-line-height-headings);
       margin-bottom: 0.5rem;
+    }
+
+    .codex-sidebar-subsections {
+      border-top: 1px solid var(--sl-color-gray-5);
+      margin-top: 1rem;
+      padding-top: 0.25rem;
+    }
+
+    .codex-sidebar-subsection {
+      border-top: 1px solid color-mix(in srgb, var(--sl-color-gray-5), transparent 45%);
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+    }
+
+    .codex-sidebar-subsection:first-child {
+      border-top: 0;
+      margin-top: 0;
+    }
+
+    .codex-sidebar-subsection h3 {
+      color: var(--sl-color-gray-2);
+      font-size: var(--sl-text-xs);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin: 0 0 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .codex-sidebar-meta-compact {
+      margin-top: 0;
+    }
+
+    .codex-sidebar-list {
+      color: var(--sl-color-gray-3);
+      font-size: var(--sl-text-xs);
+      line-height: 1.55;
+      margin: 0.25rem 0 0;
+      padding-inline-start: 1.1rem;
+    }
+
+    .codex-sidebar-list li + li {
+      margin-top: 0.35rem;
+    }
+
+    .codex-sidebar-note {
+      color: var(--sl-color-gray-3);
+      font-size: var(--sl-text-xs);
+      font-style: italic;
+      line-height: 1.6;
+      margin: 0.75rem 0 0;
     }
 
     .right-sidebar-panel :global(:where(a)) {
