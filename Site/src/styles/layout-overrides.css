@@ -6,8 +6,37 @@
 }
 
 .right-sidebar-container,
-.right-sidebar {
-  width: 100%;
+.right-sidebar,
+.right-sidebar-panel,
+.codex-page-sidebar {
+  box-sizing: border-box;
+  width: 100% !important;
+  inline-size: 100% !important;
+  max-width: none !important;
+  max-inline-size: none !important;
+  min-width: 0;
+  min-inline-size: 0;
+
+  /*
+    The left navigation is now an overlay and sets --sl-sidebar-width to 0rem.
+    Starlight's right-sidebar internals also read that token, so without this
+    local reset the page sidebar collapses into a narrow vertical strip.
+  */
+  --sl-sidebar-width: 100%;
+  --sl-sidebar-pad-x: 0rem;
+}
+
+.right-sidebar-panel > .sl-container,
+.codex-page-sidebar > .sl-container,
+.right-sidebar .sl-container {
+  box-sizing: border-box;
+  width: 100% !important;
+  inline-size: 100% !important;
+  max-width: none !important;
+  max-inline-size: none !important;
+  min-width: 0;
+  min-inline-size: 0;
+  margin-inline: 0 !important;
 }
 
 .codex-comments,
@@ -68,8 +97,10 @@
   .main-frame > .codex-two-column-content > .codex-main-pane > .right-sidebar-container {
     grid-column: 1;
     grid-row: 2;
-    width: 100%;
+    width: 100% !important;
+    inline-size: 100% !important;
     max-width: min(100%, 46rem);
+    max-inline-size: min(100%, 46rem);
     min-width: 0;
     margin-top: 0;
   }
@@ -90,7 +121,7 @@
   }
 
   .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) {
-    grid-template-columns: minmax(0, 1fr) minmax(16rem, 21rem);
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 21rem);
     column-gap: clamp(1.5rem, 3vw, 3rem);
     row-gap: 0;
     align-items: start;
@@ -103,19 +134,33 @@
   .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) > .right-sidebar-container {
     grid-column: 2;
     grid-row: 1;
-    max-width: none;
+    width: 100% !important;
+    inline-size: 100% !important;
+    max-width: none !important;
+    max-inline-size: none !important;
     align-self: start;
   }
 
   .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .right-sidebar {
     position: sticky;
     top: var(--sl-nav-height);
+    width: 100% !important;
+    inline-size: 100% !important;
     max-height: calc(100vh - var(--sl-nav-height));
     overflow-y: auto;
     scrollbar-width: none;
     border-inline-start: 1px solid var(--sl-color-hairline);
     padding-block-start: 1rem;
     padding-inline-start: 1rem;
+  }
+
+  .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .right-sidebar-panel,
+  .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .codex-page-sidebar,
+  .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .codex-page-sidebar > .sl-container {
+    width: 100% !important;
+    inline-size: 100% !important;
+    max-width: none !important;
+    max-inline-size: none !important;
   }
 
   .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .codex-comments,
