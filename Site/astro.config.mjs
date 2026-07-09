@@ -186,7 +186,6 @@ export default defineConfig({
         './src/styles/support.css',
       ],
       components: {
-        Head: './src/components/StarlightHead.astro',
         PageFrame: './src/components/PageFrame.astro',
         PageTitle: './src/components/PageTitle.astro',
         TableOfContents: './src/components/RightSidebar.astro',
