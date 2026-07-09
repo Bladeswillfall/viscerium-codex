@@ -33,6 +33,17 @@
 
   .calendar-module__summary {
     min-width: 0;
+    max-width: 100%;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: manual;
+  }
+
+  .calendar-module__summary *,
+  .calendar-module__facts * {
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: manual;
   }
 
   .calendar-module__intro h2 {
@@ -497,9 +508,9 @@
     }
   }
 
-  @container (min-width: 46rem) {
+  @container (min-width: 60rem) {
     .calendar-module__intro {
-      grid-template-columns: minmax(0, 1.1fr) minmax(17rem, .9fr);
+      grid-template-columns: minmax(24rem, 1fr) minmax(18rem, 24rem);
       align-items: stretch;
     }
 
