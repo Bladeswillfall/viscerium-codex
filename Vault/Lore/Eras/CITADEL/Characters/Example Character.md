@@ -1,66 +1,102 @@
 ---
 title: Example Character
-description: "A sample public character linked to the faction, city, and battle examples."
+description: "A sample public character that demonstrates metadata, wikilinks, tags, layout cards, and related entries."
 publish: true
 status: canon
-slug: characters/example-character
+slug: eras/citadel/characters/example-character
 type: character
+era: CITADEL
 faction: Example Faction
 location: Example City
+character: Example Character
+species: Human
+occupation: Archivist witness
+alignment: Reluctant ally
 tags:
   - example
+  - character-template
+  - citadel
+relationships:
+  allies:
+    - Example Faction
+  rivals:
+    - Example Battle Survivors
+related:
+  - Example Faction
+  - Example City
+  - Example Battle
 ---
 
-# Example Character
+Example Character is a template-friendly protagonist, antagonist, witness, scholar, or unreliable chronicler. They live in [[Example City]], have ties to [[Example Faction]], and study the contested history of [[Example Battle]].
 
-Example Character is a template-friendly protagonist, antagonist, witness, or scholar.
-
-They live in [[Example City]] and study the history of [[Example Battle]].
-
-
-# {{title}}
-
-%% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
-%% Page breadcrumbs: Home / {{type}} / {{title}}. Keep these as wiki links when parent pages exist. %%
-
-```dataviewjs
-await dv.view('Views/viscerium-sidebar', {
-  accent: 'crimson',
-  sections: [
-    { label: 'Faction', field: 'faction' },
-    { label: 'Location', field: 'location' },
-    { label: 'Era', field: 'era' },
-    { label: 'Species', field: 'species' },
-    { label: 'Occupation', field: 'occupation' },
-    { label: 'Alignment', field: 'alignment' },
-    { label: 'Allies', field: 'relationships.allies' },
-    { label: 'Rivals', field: 'relationships.rivals' }
-  ]
-});
-```
-
+[cols:2-1 gap=lg]
+[col]
 ## Summary
+
+Use this section for the readable hook: who they are, what they want, what makes them dangerous, and why they matter to the Codex.
+
+[note:title="Authoring note"]
+The public sidebar is generated from frontmatter. Keep the article body for prose, context, and story texture instead of repeating every metadata field in manual tables.
+[/note]
 
 ## Appearance
 
+Describe silhouette, clothing, equipment, scars, colours, posture, voice, and any era-specific visual language.
+
 ## Personality
+
+Summarise the character's public face, private contradictions, fears, habits, humour, and breaking points.
+[/col]
+
+[col]
+[card:accent compact]
+**Template features used**
+
+- Frontmatter sidebar metadata
+- Starlight tags
+- Wikilinks for backlinks and graph view
+- Related entries
+- Responsive `[cols]` layout
+[/card]
+
+[warning:title="Spoiler handling"]
+Keep secret biography, unrevealed loyalties, and future-era consequences in `Vault/Private/` or mark the note `publish: false` until the reveal is safe.
+[/warning]
+[/col]
+[/cols]
 
 ## Biography
 
 ### Early Life
 
+Explain the origin point that shaped their worldview. Keep this grounded: family, class, region, oath, debt, wound, faith, or disgrace.
+
 ### Major Events
+
+Tie the character to published events using wikilinks so the site graph becomes useful. For example: [[Example Battle]].
 
 ## Abilities and Resources
 
+List capabilities that change scenes: authority, training, money, allies, local knowledge, occult skill, weapons, ships, land, debts, or blackmail.
+
 ## Relationships
+
+Use prose for nuance and frontmatter for quick sidebar/graph data.
+
+- [[Example Faction]] — their main institutional tie.
+- [[Example City]] — their home, prison, or hunting ground.
+- [[Example Battle]] — the event that stains their reputation.
+
+[lore:title="Recovered fragment"]
+"A person is rarely remembered for the thing they meant to become. The world keeps better records of the mess they left behind."
+[/lore]
 
 ## Notes and Secrets
 
-Keep private information in `Vault/Private/` or leave `publish: false`.
+Keep private information in `Vault/Private/` or leave `publish: false` until it belongs in public canon.
 
 ## Related
 
-## Comments
-
-Keep public discussion notes or moderation reminders here. Published site comments render in their own bottom section via Giscus.
+- [[Example Faction]]
+- [[Example City]]
+- [[Example Battle]]

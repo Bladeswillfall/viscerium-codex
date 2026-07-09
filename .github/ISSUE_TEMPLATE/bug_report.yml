@@ -1,5 +1,5 @@
 name: Site bug report
-description: Report a rendering, layout, build, or technical issue on the VISCERIUM Codex.
+description: Report a rendering, layout, build, content, navigation, or technical issue on the VISCERIUM Codex.
 title: "[Bug]: "
 labels:
   - bug
@@ -7,7 +7,26 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for helping improve the Codex. Use this for public, trackable technical issues. For private messages, use the contact page instead.
+        Thanks for helping improve the Codex. Use this for public, trackable issues. Do not include private lore, unreleased spoilers, credentials, or personal data.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Issue area
+      description: Pick the closest area so the report is easier to triage.
+      options:
+        - Page rendering / Markdown output
+        - Layout / responsive design
+        - Build / deployment
+        - Navigation / sidebar
+        - Search / tags / graph
+        - Calendar
+        - Map / timeline
+        - Metadata / page sidebar
+        - Feeds / changelog
+        - Accessibility
+        - Other
+    validations:
+      required: true
   - type: input
     id: page
     attributes:
@@ -19,9 +38,9 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: What is broken?
-      description: Describe the issue clearly.
-      placeholder: The calendar overflows when...
+      label: What happened?
+      description: Describe the issue clearly. Include the broken content, visible error, or unexpected behaviour.
+      placeholder: The page sidebar shows...
     validations:
       required: true
   - type: textarea
@@ -32,16 +51,39 @@ body:
     validations:
       required: true
   - type: textarea
-    id: details
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Give a minimal path to trigger the problem.
+      value: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: false
+  - type: textarea
+    id: environment
     attributes:
       label: Device / browser details
-      description: Browser, screen size, OS, or anything else relevant.
+      description: Browser, screen size, OS, device, or local build command if relevant.
+      placeholder: Firefox 128, Windows 11, 1440px wide / npm run build
     validations:
       required: false
   - type: textarea
     id: screenshots
     attributes:
-      label: Screenshots
-      description: Drag images here if helpful.
+      label: Screenshots or logs
+      description: Drag images here, or paste the smallest useful log excerpt.
     validations:
       required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Reporter checklist
+      options:
+        - label: I checked that this is safe to discuss publicly.
+          required: true
+        - label: I searched for an existing issue before opening this one.
+          required: false
+        - label: I included a page URL, screenshot, or reproduction steps where possible.
+          required: false
