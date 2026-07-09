@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import cloudflare from '@astrojs/cloudflare';
 import mdx from '@astrojs/mdx';
 import partytown from '@astrojs/partytown';
 import sitemap from '@astrojs/sitemap';
@@ -170,6 +171,10 @@ const sidebar = [
 
 export default defineConfig({
   site: siteConfig.site,
+  adapter: cloudflare({
+    imageService: 'compile',
+    prerenderEnvironment: 'node',
+  }),
   integrations: [
     starlight({
       title: siteConfig.title,
@@ -185,6 +190,7 @@ export default defineConfig({
         './src/styles/content-media.css',
         './src/styles/custom.css',
         './src/styles/calendar.css',
+        './src/styles/support.css',
         './src/styles/layout-overrides.css',
         './src/styles/sidebar-overlay.css',
       ],
