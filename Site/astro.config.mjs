@@ -189,6 +189,8 @@ export default defineConfig({
         './src/styles/layout-overrides.css',
         './src/styles/support.css',
         './src/styles/sharp-ui.css',
+        './src/styles/color-tokens.css',
+        './src/styles/a11y.css',
       ],
       components: {
         Sidebar: './src/components/IonSidebar.astro',
