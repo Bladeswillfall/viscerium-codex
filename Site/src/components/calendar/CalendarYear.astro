@@ -15,6 +15,8 @@ const year = (Astro.props as Props).year ?? calendar.defaultYear;
 const dates = getCalendarYearDates(calendar.id, year);
 const datesByAnchor = new Map(dates.map((date) => [date.anchor, date]));
 const seasonLabels = ['winter', 'spring', 'summer', 'autumn'];
+const daysPerWeek = 7;
+const intercalaryColumns = 2;
 
 function getDateForMonthDay(month: string, day: number) {
   return datesByAnchor.get(`${month}-${String(day).padStart(2, '0')}`);
@@ -69,21 +71,21 @@ function getCellMeta(resolved: ResolvedCalendarDate) {
 
 <section class="calendar-module" aria-labelledby="calendar-module-title">
   <div class="calendar-module__intro">
-    <div>
+    <div class="calendar-module__summary">
       <p class="codex-kicker">World-time calendar</p>
       <h2 id="calendar-module-title">{calendar.name}</h2>
       {calendar.description && <p>{calendar.description}</p>}
     </div>
     <dl class="calendar-module__facts codex-frame">
-      <div>
+      <div class="calendar-module__fact">
         <dt>Rendered year</dt>
         <dd>{year}</dd>
       </div>
-      <div>
+      <div class="calendar-module__fact">
         <dt>Leap rule</dt>
         <dd>{calendar.leapRule?.label ?? 'No leap years'}</dd>
       </div>
-      <div>
+      <div class="calendar-module__fact">
         <dt>Leap year?</dt>
         <dd>{isLeapYear(calendar, year) ? 'Yes' : 'No'}</dd>
       </div>
@@ -94,76 +96,99 @@ function getCellMeta(resolved: ResolvedCalendarDate) {
     {calendar.months.map((month) => (
       <section class="calendar-month" aria-labelledby={`calendar-${month.slug}`}>
         <h3 id={`calendar-${month.slug}`}>{month.name} <span>({month.ordinal})</span></h3>
-        <ol class="calendar-days" aria-label={`${month.name} days`}>
-          {Array.from({ length: month.days }, (_, index) => {
-            const day = index + 1;
-            const resolved = getDateForMonthDay(month.slug, day) ?? resolveCalendarDate({ calendar: calendar.id, year, month: month.slug, day });
-            const hasHoliday = resolved.observances.some((observance) => observance.type === 'holiday');
-            const hasSeasonMarker = resolved.observances.some((observance) => observance.type !== 'holiday');
-            const meta = getCellMeta(resolved);
-            return (
-              <li
-                id={resolved.anchor}
-                class:list={[
-                  'calendar-day',
-                  `calendar-day--${resolved.season}`,
-                  hasHoliday && 'calendar-day--holiday',
-                  hasSeasonMarker && 'calendar-day--marker',
-                  meta.hasLinkedEvent && 'calendar-day--linked-event',
-                ]}
-              >
-                <a href={meta.href} aria-label={meta.ariaLabel} title={meta.title}>
-                  <span class="calendar-day__number">{day}</span>
-                  <span class="calendar-day__weekday">{resolved.weekday}</span>
-                  {meta.eventNames.length > 0 && (
-                    <span class="calendar-day__events">{meta.eventNames.join(', ')}</span>
-                  )}
-                </a>
-              </li>
-            );
-          })}
-        </ol>
+        <table class="calendar-days calendar-days--month" aria-label={`${month.name} days`}>
+          <tbody>
+            {Array.from({ length: Math.ceil(month.days / daysPerWeek) }, (_, weekIndex) => (
+              <tr class="calendar-week">
+                {Array.from({ length: daysPerWeek }, (_, weekdayIndex) => {
+                  const day = weekIndex * daysPerWeek + weekdayIndex + 1;
+                  if (day > month.days) {
+                    return <td class="calendar-day calendar-day--empty" aria-hidden="true"></td>;
+                  }
+
+                  const resolved = getDateForMonthDay(month.slug, day) ?? resolveCalendarDate({ calendar: calendar.id, year, month: month.slug, day });
+                  const hasHoliday = resolved.observances.some((observance) => observance.type === 'holiday');
+                  const hasSeasonMarker = resolved.observances.some((observance) => observance.type !== 'holiday');
+                  const meta = getCellMeta(resolved);
+
+                  return (
+                    <td
+                      id={resolved.anchor}
+                      class:list={[
+                        'calendar-day',
+                        `calendar-day--${resolved.season}`,
+                        hasHoliday && 'calendar-day--holiday',
+                        hasSeasonMarker && 'calendar-day--marker',
+                        meta.hasLinkedEvent && 'calendar-day--linked-event',
+                      ]}
+                    >
+                      <a href={meta.href} aria-label={meta.ariaLabel} title={meta.title}>
+                        <span class="calendar-day__number">{day}</span>
+                        <span class="calendar-day__weekday">{resolved.weekday}</span>
+                        {meta.eventNames.length > 0 && (
+                          <span class="calendar-day__events">{meta.eventNames.join(', ')}</span>
+                        )}
+                      </a>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
     ))}
 
     <section class="calendar-month calendar-month--intercalary" aria-labelledby="calendar-engimanutur">
       <h3 id="calendar-engimanutur">Engimanutur <span>(0th/14th)</span></h3>
-      <ol class="calendar-days calendar-days--intercalary" aria-label="Engimanutur days">
-        {calendar.intercalaryDays.map((intercalaryDay) => {
-          const resolved = getDateForIntercalary(intercalaryDay.slug);
-          const visible = Boolean(resolved);
-          const meta = resolved ? getCellMeta(resolved) : undefined;
-          return (
-            <li
-              id={intercalaryDay.slug}
-              class:list={[
-                'calendar-day',
-                'calendar-day--intercalary',
-                `calendar-day--${intercalaryDay.season}`,
-                intercalaryDay.leapOnly && 'calendar-day--leap',
-                resolved?.observances.some((observance) => observance.type !== 'holiday') && 'calendar-day--marker',
-                meta?.hasLinkedEvent && 'calendar-day--linked-event',
-                !visible && 'calendar-day--inactive',
-              ]}
-            >
-              {resolved && meta ? (
-                <a href={meta.href} aria-label={meta.ariaLabel} title={meta.title}>
-                  <span class="calendar-day__number">{String(intercalaryDay.day).padStart(2, '0')}</span>
-                  <span class="calendar-day__weekday">{resolved.weekday}</span>
-                  {meta.eventNames.length > 0 && (
-                    <span class="calendar-day__events">{meta.eventNames.join(', ')}</span>
-                  )}
-                </a>
-              ) : (
-                <span aria-label={`${intercalaryDay.name} ${intercalaryDay.day} only exists in leap years`}>
-                  <span class="calendar-day__number">{String(intercalaryDay.day).padStart(2, '0')}</span>
-                  <span class="calendar-day__weekday">Leap only</span>
-                </span>
-              )}
-            </li>
-          );
-        })}
-      </ol>
+      <table class="calendar-days calendar-days--intercalary" aria-label="Engimanutur days">
+        <tbody>
+          {Array.from({ length: Math.ceil(calendar.intercalaryDays.length / intercalaryColumns) }, (_, rowIndex) => (
+            <tr class="calendar-week">
+              {Array.from({ length: intercalaryColumns }, (_, columnIndex) => {
+                const intercalaryDay = calendar.intercalaryDays[rowIndex * intercalaryColumns + columnIndex];
+                if (!intercalaryDay) {
+                  return <td class="calendar-day calendar-day--empty" aria-hidden="true"></td>;
+                }
+
+                const resolved = getDateForIntercalary(intercalaryDay.slug);
+                const visible = Boolean(resolved);
+                const meta = resolved ? getCellMeta(resolved) : undefined;
+
+                return (
+                  <td
+                    id={intercalaryDay.slug}
+                    class:list={[
+                      'calendar-day',
+                      'calendar-day--intercalary',
+                      `calendar-day--${intercalaryDay.season}`,
+                      intercalaryDay.leapOnly && 'calendar-day--leap',
+                      resolved?.observances.some((observance) => observance.type !== 'holiday') && 'calendar-day--marker',
+                      meta?.hasLinkedEvent && 'calendar-day--linked-event',
+                      !visible && 'calendar-day--inactive',
+                    ]}
+                  >
+                    {resolved && meta ? (
+                      <a href={meta.href} aria-label={meta.ariaLabel} title={meta.title}>
+                        <span class="calendar-day__number">{String(intercalaryDay.day).padStart(2, '0')}</span>
+                        <span class="calendar-day__weekday">{resolved.weekday}</span>
+                        {meta.eventNames.length > 0 && (
+                          <span class="calendar-day__events">{meta.eventNames.join(', ')}</span>
+                        )}
+                      </a>
+                    ) : (
+                      <span aria-label={`${intercalaryDay.name} ${intercalaryDay.day} only exists in leap years`}>
+                        <span class="calendar-day__number">{String(intercalaryDay.day).padStart(2, '0')}</span>
+                        <span class="calendar-day__weekday">Leap only</span>
+                      </span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </section>
 
     <section class="calendar-legend codex-frame" aria-labelledby="calendar-legend-title">
