@@ -1,0 +1,212 @@
+@layer starlight.core {
+  /*
+    Colour tokens use hex/hex-alpha fallbacks first, then OKLCH overrides in
+    supporting browsers. This makes OKLCH the active colour space while keeping
+    older browsers on stable fallbacks.
+  */
+  :root {
+    color-scheme: dark;
+    --codex-page-bg: #101010;
+    --codex-bg: #101010;
+    --codex-bg-soft: #151310;
+    --codex-accent: #b88746;
+    --codex-accent-high: #f1d29b;
+    --codex-accent-soft: #b887462e;
+    --codex-surface: #ffffff06;
+    --codex-surface-raised: linear-gradient(135deg, #b887461a, #ffffff05);
+    --codex-surface-accent: #b887461a;
+    --codex-border: var(--codex-accent-soft);
+    --codex-border-strong: #b8874657;
+    --codex-sidebar-toggle-bg: #10100fe6;
+    --codex-red: #bd0249;
+    --codex-blue: #9cc9d3;
+    --codex-green: #94be8c;
+
+    --sl-color-bg: var(--codex-page-bg);
+    --sl-color-bg-nav: #151310;
+    --sl-color-bg-sidebar: #151310;
+    --sl-color-bg-inline-code: #b887461f;
+    --sl-color-hairline: #b8874629;
+    --sl-color-hairline-light: #ffffff14;
+    --sl-color-text: #f4efe5e6;
+    --sl-color-accent-low: #342516;
+    --sl-color-accent: var(--codex-accent);
+    --sl-color-accent-high: var(--codex-accent-high);
+    --sl-color-white: #ffffff;
+    --sl-color-gray-1: #c2c2c2;
+    --sl-color-gray-2: #a3a3a3;
+    --sl-color-gray-3: #838383;
+    --sl-color-gray-4: #3f3f3f;
+    --sl-color-gray-5: #262626;
+    --sl-color-gray-6: #121212;
+    --sl-color-black: #070707;
+    --sl-color-red-low: #3c0017;
+    --sl-color-red: #bd0249;
+    --sl-color-red-high: #ff78ac;
+    --sl-color-purple-low: #33225b;
+    --sl-color-purple: #8a5cf5;
+    --sl-color-purple-high: #9975ee;
+    --sl-border: #262626;
+    --pagefind-ui-border: #262626;
+    --pagefind-ui-primary: var(--sl-color-accent);
+
+    --calendar-surface: #ffffff06;
+    --calendar-surface-soft: #ffffff0a;
+    --calendar-border: #b8874629;
+    --calendar-border-strong: #b8874652;
+    --calendar-text: #ffffffe0;
+    --calendar-muted: #ffffff8f;
+    --calendar-winter: #9cc9d3;
+    --calendar-spring: #dfc862;
+    --calendar-summer: #94be8c;
+    --calendar-autumn: #d29b65;
+    --calendar-leap: #a893d0;
+    --calendar-holiday: #d86f78;
+    --calendar-marker: #ee5f67;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+    --codex-page-bg: #f1eee8;
+    --codex-bg: #f3efe7;
+    --codex-bg-soft: #e9e2d5;
+    --codex-surface: #ffffff8a;
+    --codex-surface-raised: linear-gradient(135deg, #b887461a, #ffffffb8);
+    --codex-surface-accent: #8e5d231a;
+    --codex-border: #5c3a122e;
+    --codex-border-strong: #5c3a1252;
+    --codex-shadow: 0 1rem 2rem #3726141c;
+
+    --sl-color-bg: var(--codex-page-bg);
+    --sl-color-bg-nav: #f6f2eaea;
+    --sl-color-bg-sidebar: #ebe6dc;
+    --sl-color-bg-inline-code: #754e221c;
+    --sl-color-hairline: #5c3a1229;
+    --sl-color-hairline-light: #5c3a121a;
+    --sl-color-text: #1e1c19e6;
+    --sl-color-accent-low: #f1d29b;
+    --sl-color-accent: #8e5d23;
+    --sl-color-accent-high: #342516;
+    --sl-color-white: #17181c;
+    --sl-color-gray-1: #24272f;
+    --sl-color-gray-2: #353841;
+    --sl-color-gray-3: #545861;
+    --sl-color-gray-4: #888b96;
+    --sl-color-gray-5: #c0c2c7;
+    --sl-color-gray-6: #eceef2;
+    --sl-color-gray-7: #f5f6f8;
+    --sl-color-black: #ffffff;
+    --sl-color-red-low: #ff78ac;
+    --sl-color-red: #bd0249;
+    --sl-color-red-high: #3c0017;
+    --sl-color-purple-low: #edd1fa;
+    --sl-color-purple: #bb3df5;
+    --sl-color-purple-high: #660891;
+    --sl-border: #c0c2c7;
+    --pagefind-ui-border: #eceef2;
+    --pagefind-ui-primary: var(--sl-color-accent);
+  }
+
+  @supports (color: oklch(50% 0.1 120)) {
+    :root {
+      --codex-page-bg: oklch(17.3% 0 89.9);
+      --codex-bg: oklch(17.3% 0 89.9);
+      --codex-bg-soft: oklch(18.8% 0.007 78.1);
+      --codex-accent: oklch(65.8% 0.102 72.2);
+      --codex-accent-high: oklch(87.7% 0.079 81.6);
+      --codex-accent-soft: oklch(65.8% 0.102 72.2 / 0.18);
+      --codex-surface: oklch(100% 0 89.9 / 0.025);
+      --codex-surface-raised: linear-gradient(135deg, oklch(65.8% 0.102 72.2 / 0.10), oklch(100% 0 89.9 / 0.02));
+      --codex-surface-accent: oklch(65.8% 0.102 72.2 / 0.10);
+      --codex-border: var(--codex-accent-soft);
+      --codex-border-strong: oklch(65.8% 0.102 72.2 / 0.34);
+      --codex-sidebar-toggle-bg: oklch(17.3% 0 89.9 / 0.90);
+      --codex-red: oklch(51.0% 0.203 10.8);
+      --codex-blue: oklch(80.7% 0.049 212.8);
+      --codex-green: oklch(75.8% 0.083 140.6);
+
+      --sl-color-bg: var(--codex-page-bg);
+      --sl-color-bg-nav: oklch(18.8% 0.007 78.1);
+      --sl-color-bg-sidebar: oklch(18.8% 0.007 78.1);
+      --sl-color-bg-inline-code: oklch(65.8% 0.102 72.2 / 0.12);
+      --sl-color-hairline: oklch(65.8% 0.102 72.2 / 0.16);
+      --sl-color-hairline-light: oklch(100% 0 89.9 / 0.08);
+      --sl-color-text: oklch(95.6% 0.016 83 / 0.90);
+      --sl-color-accent-low: oklch(27.8% 0.034 65.7);
+      --sl-color-accent: var(--codex-accent);
+      --sl-color-accent-high: var(--codex-accent-high);
+      --sl-color-white: oklch(100% 0 89.9);
+      --sl-color-gray-1: oklch(81.4% 0 89.9);
+      --sl-color-gray-2: oklch(71.5% 0 89.9);
+      --sl-color-gray-3: oklch(61.0% 0 89.9);
+      --sl-color-gray-4: oklch(36.8% 0 89.9);
+      --sl-color-gray-5: oklch(26.9% 0 89.9);
+      --sl-color-gray-6: oklch(18.2% 0 89.9);
+      --sl-color-black: oklch(12.9% 0 89.9);
+      --sl-color-red-low: oklch(22.9% 0.092 4.8);
+      --sl-color-red: oklch(51.0% 0.203 10.8);
+      --sl-color-red-high: oklch(74.5% 0.172 357.9);
+      --sl-color-purple-low: oklch(30.6% 0.098 293.5);
+      --sl-color-purple: oklch(60.4% 0.218 292.5);
+      --sl-color-purple-high: oklch(65.2% 0.175 294.8);
+      --sl-border: oklch(26.9% 0 89.9);
+      --pagefind-ui-border: oklch(26.9% 0 89.9);
+      --pagefind-ui-primary: var(--sl-color-accent);
+
+      --calendar-surface: oklch(100% 0 89.9 / 0.025);
+      --calendar-surface-soft: oklch(100% 0 89.9 / 0.04);
+      --calendar-border: oklch(65.8% 0.102 72.2 / 0.16);
+      --calendar-border-strong: oklch(65.8% 0.102 72.2 / 0.32);
+      --calendar-text: oklch(100% 0 89.9 / 0.88);
+      --calendar-muted: oklch(100% 0 89.9 / 0.56);
+      --calendar-winter: oklch(80.7% 0.049 212.8);
+      --calendar-spring: oklch(83.2% 0.125 96.8);
+      --calendar-summer: oklch(75.8% 0.083 140.6);
+      --calendar-autumn: oklch(73.0% 0.096 64.8);
+      --calendar-leap: oklch(70.4% 0.090 299.9);
+      --calendar-holiday: oklch(66.5% 0.132 15.9);
+      --calendar-marker: oklch(67.1% 0.177 19.9);
+    }
+
+    :root[data-theme='light'] {
+      --codex-page-bg: oklch(95.2% 0.015 80);
+      --codex-bg: oklch(95.4% 0.018 80);
+      --codex-bg-soft: oklch(91.6% 0.025 80);
+      --codex-surface: oklch(100% 0 89.9 / 0.54);
+      --codex-surface-raised: linear-gradient(135deg, oklch(65.8% 0.102 72.2 / 0.10), oklch(100% 0 89.9 / 0.72));
+      --codex-surface-accent: oklch(52.9% 0.095 65.7 / 0.10);
+      --codex-border: oklch(36.5% 0.073 65.7 / 0.18);
+      --codex-border-strong: oklch(36.5% 0.073 65.7 / 0.32);
+      --codex-shadow: 0 1rem 2rem oklch(29% 0.05 70 / 0.11);
+
+      --sl-color-bg: var(--codex-page-bg);
+      --sl-color-bg-nav: oklch(96.3% 0.015 80 / 0.92);
+      --sl-color-bg-sidebar: oklch(92.4% 0.024 80);
+      --sl-color-bg-inline-code: oklch(42% 0.080 65.7 / 0.11);
+      --sl-color-hairline: oklch(36.5% 0.073 65.7 / 0.16);
+      --sl-color-hairline-light: oklch(36.5% 0.073 65.7 / 0.10);
+      --sl-color-text: oklch(24.0% 0.010 80 / 0.90);
+      --sl-color-accent-low: oklch(87.7% 0.079 81.6);
+      --sl-color-accent: oklch(52.9% 0.095 65.7);
+      --sl-color-accent-high: oklch(27.8% 0.034 65.7);
+      --sl-color-white: oklch(21.0% 0.008 274.5);
+      --sl-color-gray-1: oklch(27.3% 0.015 269.1);
+      --sl-color-gray-2: oklch(34.1% 0.016 270.9);
+      --sl-color-gray-3: oklch(46.0% 0.015 266.6);
+      --sl-color-gray-4: oklch(63.8% 0.017 273.7);
+      --sl-color-gray-5: oklch(81.4% 0.007 268.5);
+      --sl-color-gray-6: oklch(94.9% 0.006 264.5);
+      --sl-color-gray-7: oklch(97.3% 0.003 264.5);
+      --sl-color-black: oklch(100% 0 89.9);
+      --sl-color-red-low: oklch(74.5% 0.172 357.9);
+      --sl-color-red: oklch(51.0% 0.203 10.8);
+      --sl-color-red-high: oklch(22.9% 0.092 4.8);
+      --sl-color-purple-low: oklch(89.7% 0.063 315.1);
+      --sl-color-purple: oklch(62.4% 0.263 312.4);
+      --sl-color-purple-high: oklch(39.6% 0.194 310.2);
+      --sl-border: oklch(81.4% 0.007 268.5);
+      --pagefind-ui-border: oklch(94.9% 0.006 264.5);
+      --pagefind-ui-primary: var(--sl-color-accent);
+    }
+  }
+}
