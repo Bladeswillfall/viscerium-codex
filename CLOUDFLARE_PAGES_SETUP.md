@@ -1,37 +1,37 @@
-# Cloudflare Workers setup
+# Cloudflare Pages setup
 
-The Codex now uses `@astrojs/cloudflare` because the contact form depends on Astro Actions and a server island. Cloudflare Pages-only deployment is no longer the preferred target for this branch; use a Cloudflare Worker project instead.
+This project is currently connected through Cloudflare's **Pages configuration** UI. That UI does not expose a separate deploy command; it builds from the configured Git commit using the build command and output directory.
 
-## Recommended deployment
+## Current deployment settings
 
-1. Push this repository to GitHub.
-2. In Cloudflare, choose **Workers & Pages → Create application → Workers → Import a repository**.
-3. Select this repository.
-4. Use these build settings:
+Use these settings in **Workers & Pages → viscerium-codex → Settings → Build**:
 
 ```text
 Root directory: Site
 Build command: npm run build
-Deploy command: npm run deploy
+Build output directory: dist
 Node version: 24
 ```
 
-`npm run deploy` uses `wrangler.deploy.jsonc`. The config is intentionally not named `wrangler.jsonc`, because Astro's Cloudflare build reads default Wrangler config files before `dist/_worker.js/index.js` exists.
+The build still runs the Obsidian sync and generated-data scripts during `npm run build`, so `Site/src/content/docs/` is regenerated from `Vault/Lore/` before Astro builds.
 
-5. Set the canonical site URL:
+## Important retry note
+
+Cloudflare's **Retry deployment** action retries the exact same commit that failed. It does not automatically switch that failed deployment to a newer commit on `main`.
+
+If a deployment log shows an older commit SHA, push a new commit to `main` or start a fresh deployment from the latest commit rather than retrying the old failed deployment.
+
+## Canonical URL
+
+Set the canonical site URL:
 
 ```text
 SITE_URL=https://codex.viscerium.co.uk
 ```
 
-6. Add the contact form runtime values described in `Site/CONTACT_FORM_SETUP.md`.
-7. Attach the custom domain `codex.viscerium.co.uk` to the Worker once the nameservers and DNS zone are active in Cloudflare.
-
-The build still runs the Obsidian sync and generated-data scripts during `npm run build`, so `Site/src/content/docs/` is regenerated from `Vault/Lore/` before Astro builds.
-
 ## Contact form secrets
 
-At minimum, the Worker needs these values before the contact form can send mail:
+At minimum, the project needs these values before the contact form can send mail:
 
 ```text
 RESEND_API_KEY
@@ -48,7 +48,7 @@ Use Cloudflare secrets for `RESEND_API_KEY` and `TURNSTILE_SECRET_KEY`.
 
 The comments component renders on every Starlight page. It will show a setup warning until giscus is configured.
 
-After enabling GitHub Discussions, installing the giscus GitHub app, and choosing the repository/category at `https://giscus.app/`, add these Worker environment variables:
+After enabling GitHub Discussions, installing the giscus GitHub app, and choosing the repository/category at `https://giscus.app/`, add these Cloudflare environment variables:
 
 ```text
 PUBLIC_GISCUS_REPO_ID
