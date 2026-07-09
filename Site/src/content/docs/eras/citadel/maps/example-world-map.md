@@ -9,6 +9,7 @@ mapId: example-world
 image: /assets/maps/example-world.webp
 width: 2000
 height: 1200
+era: CITADEL
 sourcePath: "Eras/CITADEL/Maps/Example World Map.md"
 ---
 

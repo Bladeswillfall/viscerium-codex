@@ -8,6 +8,11 @@ type: faction
 era: Example Era
 capital: Example City
 territory: Example Valley
+image: example-banner.webp
+imagePage: /eras/citadel/images/example-banner/
+imageTitle: Example Banner
+artist: Unknown placeholder artist
+alt: "A simple placeholder fantasy banner."
 tags:
   - example
 relationships:
@@ -25,7 +30,7 @@ It is based in [Example City](/eras/citadel/locations/example-city/) and is asso
 |     |     |     |
 |     |     |     |
 
-![example-banner.webp](/assets/images/example-banner.webp)
+[![example-banner.webp](/assets/images/example-banner.webp)](/eras/citadel/images/example-banner/)
 
 ## Related
 

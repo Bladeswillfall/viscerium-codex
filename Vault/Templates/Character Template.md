@@ -3,9 +3,6 @@ title:
 description:
 publish: false
 status: draft
-slug: characters/
-type: character
-era:
 faction:
 location:
 species:
@@ -29,7 +26,6 @@ relationships:
 %% Image details: set `imagePage` to the published image metadata page, e.g. `/eras/citadel/images/example-portrait/`. %%
 %% Use `imageTitle` and `artist` to show the artwork name and artist beneath the sidebar image. %%
 %% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
-%% Page breadcrumbs: Home / {{type}} / {{title}}. Keep these as wiki links when parent pages exist. %%
 
 ```dataviewjs
 await dv.view('Views/viscerium-sidebar', {
@@ -68,6 +64,8 @@ await dv.view('Views/viscerium-sidebar', {
 Keep private information in `Vault/Private/` or leave `publish: false`.
 
 ## Related
+
+---
 
 ## Comments
 

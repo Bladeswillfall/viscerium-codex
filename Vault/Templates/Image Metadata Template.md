@@ -3,8 +3,6 @@ title:
 description:
 publish: false
 status: draft
-slug: images/
-type: image
 headerImage:
 asset:
 alt:
@@ -25,7 +23,6 @@ related:
 
 %% Image asset: set `asset` to the image filename stored in `Vault/Assets/Images/`, e.g. `portrait.webp`. Published image pages automatically render the asset and copy it to `/assets/images/...`. %%
 %% Link articles back to this metadata note with `imagePage: /path/to/this/image-page/`. %%
-%% Page breadcrumbs: Home / {{type}} / {{title}}. Keep these as wiki links when parent pages exist. %%
 
 
 ```dataviewjs
@@ -60,6 +57,8 @@ Record where this image came from, who made it, who edited it, and whether it is
 Describe where this image is used in the codex and whether it may be reused elsewhere.
 
 ## Related
+
+---
 
 ## Comments
 

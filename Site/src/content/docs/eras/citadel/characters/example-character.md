@@ -9,6 +9,7 @@ faction: Example Faction
 location: Example City
 tags:
   - example
+era: CITADEL
 sourcePath: "Eras/CITADEL/Characters/Example Character.md"
 ---
 

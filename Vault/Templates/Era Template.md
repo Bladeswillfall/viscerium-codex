@@ -3,8 +3,6 @@ title:
 description:
 publish: false
 status: draft
-slug: eras/
-type: era
 headerImage:
 start:
 end:
@@ -17,7 +15,6 @@ tags:
 # {{title}}
 
 %% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
-%% Page breadcrumbs: Home / {{type}} / {{title}}. Keep these as wiki links when parent pages exist. %%
 
 ```dataviewjs
 await dv.view('Views/viscerium-sidebar', {
@@ -40,6 +37,8 @@ await dv.view('Views/viscerium-sidebar', {
 ## Important People and Factions
 
 ## Legacy
+
+---
 
 ## Comments
 
