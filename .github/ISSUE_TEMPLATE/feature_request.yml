@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest a site feature, navigation improvement, or new Codex tool.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Feature summary
+      description: What would you like added or changed?
+    validations:
+      required: true
+  - type: textarea
+    id: benefit
+    attributes:
+      label: Why would this help?
+      description: Explain the reader, editing, or worldbuilding benefit.
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or references
+      description: Optional examples, screenshots, or sites with a similar pattern.
+    validations:
+      required: false

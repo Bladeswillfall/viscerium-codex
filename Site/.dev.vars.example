@@ -1,0 +1,12 @@
+# Copy to Site/.dev.vars for local Cloudflare Worker development.
+# Never commit Site/.dev.vars.
+
+# Resend
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+CONTACT_TO_EMAIL=your-proton-address@example.com
+CONTACT_FROM_EMAIL="VISCERIUM Codex <contact@mail.viscerium.co.uk>"
+
+# Verification. Set to "none" only for local testing.
+CONTACT_VERIFICATION_PROVIDER=turnstile
+PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAAAAAAAAAAAAAAAA
+TURNSTILE_SECRET_KEY=0x4AAAAAAAAAAAAAAAAAAAAA

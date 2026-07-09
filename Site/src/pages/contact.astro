@@ -1,0 +1,33 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+---
+
+<StarlightPage frontmatter={{ title: 'Contact', description: 'Contact options for the VISCERIUM Codex.' }}>
+  <section class="support-page support-page--contact">
+    <header class="support-hero codex-frame">
+      <p class="codex-kicker">Private contact</p>
+      <h1>Contact us</h1>
+      <p>
+        The private contact form is temporarily paused while the Codex deployment is kept on Cloudflare Pages.
+        Public, trackable issues can still be opened through GitHub.
+      </p>
+    </header>
+
+    <section class="support-note codex-frame">
+      <h2>Use GitHub for public site issues</h2>
+      <p>
+        For typos, broken links, site bugs, feature requests, or content corrections, use the public support routes.
+        This keeps the work visible and easier to track.
+      </p>
+      <a class="support-button" href="/support/">Open support page</a>
+    </section>
+
+    <section class="support-note codex-frame">
+      <h2>Private messages</h2>
+      <p>
+        For collaboration, rights, credit, or sensitive concerns, private contact will return once the form is moved to
+        a separate Worker endpoint that will not interfere with the static Codex deployment.
+      </p>
+    </section>
+  </section>
+</StarlightPage>

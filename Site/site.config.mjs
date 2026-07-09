@@ -14,7 +14,7 @@ const ga4MeasurementId = env.PUBLIC_GA4_MEASUREMENT_ID ?? 'G-XXXXXXXXXX';
 export default {
   title: 'VISCERIUM',
   description: 'The public worldbuilding codex for VISCERIUM.',
-  site: env.SITE_URL ?? 'https://viscerium-codex.pages.dev',
+  site: env.SITE_URL ?? 'https://codex.viscerium.co.uk',
   loreSourceDir: '../Vault/Lore',
   vaultAssetDir: '../Vault/Assets',
   githubRepoUrl: 'https://github.com/Bladeswillfall/viscerium-codex',

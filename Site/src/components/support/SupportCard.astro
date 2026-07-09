@@ -1,0 +1,35 @@
+---
+import LocalIcon from '../LocalIcon.astro';
+
+interface Props {
+  title: string;
+  text: string;
+  icon: string;
+  action?: string;
+  href?: string;
+  placeholder?: boolean;
+}
+
+const { title, text, icon, action, href, placeholder = false } = Astro.props as Props;
+const isLive = Boolean(href) && !placeholder;
+---
+
+{isLive ? (
+  <a class="support-card" href={href} target={href?.startsWith('http') ? '_blank' : undefined} rel={href?.startsWith('http') ? 'noreferrer' : undefined}>
+    <span class="support-card__icon"><LocalIcon name={icon} /></span>
+    <span class="support-card__body">
+      <strong>{title}</strong>
+      <span>{text}</span>
+      {action && <em>{action}</em>}
+    </span>
+  </a>
+) : (
+  <div class="support-card support-card--placeholder" aria-disabled="true">
+    <span class="support-card__icon"><LocalIcon name={icon} /></span>
+    <span class="support-card__body">
+      <strong>{title}</strong>
+      <span>{text}</span>
+      {action && <em>{action}</em>}
+    </span>
+  </div>
+)}

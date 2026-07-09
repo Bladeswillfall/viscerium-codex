@@ -1,5 +1,5 @@
 {
-  "name": "obsidian-starlight-codex-template",
+  "name": "viscerium-codex",
   "type": "module",
   "version": "0.1.0",
   "private": true,
@@ -43,7 +43,7 @@
     "unocss": "66.7.4"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.16.0"
   },
   "allowScripts": {
     "sharp@0.34.5": true,
