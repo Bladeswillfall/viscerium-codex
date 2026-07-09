@@ -1,6 +1,7 @@
 ---
 title: Okse Dominion
 description: "A harsh mountain dominion of the Oksmun, built on endurance, fortification, oil, slave labour, and old Vetruxi blood."
+slug: degel-system/okse-dominion
 publish: true
 status: canon
 faction: Okse Dominion
