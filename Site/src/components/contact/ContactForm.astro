@@ -1,0 +1,79 @@
+---
+import { actions } from 'astro:actions';
+import { contactReasons } from '../../config/supportLinks.mjs';
+
+interface Props {
+  turnstileSiteKey?: string;
+}
+
+const { turnstileSiteKey = '' } = Astro.props as Props;
+const hasTurnstile = Boolean(turnstileSiteKey && !turnstileSiteKey.includes('placeholder'));
+---
+
+<form class="contact-form codex-frame" method="POST" action={actions.contact} data-contact-form novalidate>
+  <div class="contact-form__status" data-contact-status role="status" aria-live="polite" hidden></div>
+
+  <div class="contact-form__grid">
+    <label>
+      <span>Name</span>
+      <input name="name" type="text" autocomplete="name" required maxlength="120" />
+      <small data-error-for="name"></small>
+    </label>
+
+    <label>
+      <span>Email</span>
+      <input name="email" type="email" autocomplete="email" required maxlength="254" />
+      <small data-error-for="email"></small>
+    </label>
+  </div>
+
+  <label>
+    <span>Subject</span>
+    <input name="subject" type="text" required maxlength="160" />
+    <small data-error-for="subject"></small>
+  </label>
+
+  <label>
+    <span>Reason</span>
+    <select name="reason" required>
+      {contactReasons.map((reason) => <option value={reason.value}>{reason.label}</option>)}
+    </select>
+    <small data-error-for="reason"></small>
+  </label>
+
+  <label>
+    <span>Related page URL <em>optional</em></span>
+    <input name="pageUrl" type="url" inputmode="url" placeholder="https://www.viscerium.com/..." maxlength="500" />
+    <small data-error-for="pageUrl"></small>
+  </label>
+
+  <label>
+    <span>Message</span>
+    <textarea name="message" required rows="9" maxlength="5000"></textarea>
+    <small data-error-for="message"></small>
+  </label>
+
+  <label class="contact-form__consent">
+    <input name="consent" type="checkbox" required />
+    <span>I am happy for you to reply by email about this message.</span>
+  </label>
+  <small data-error-for="consent"></small>
+
+  <label class="contact-form__honeypot" aria-hidden="true" tabindex="-1">
+    <span>Company website</span>
+    <input name="companyWebsite" type="text" autocomplete="off" tabindex="-1" />
+  </label>
+
+  {hasTurnstile ? (
+    <div class="contact-form__turnstile">
+      <div class="cf-turnstile" data-sitekey={turnstileSiteKey}></div>
+      <small data-error-for="cf-turnstile-response"></small>
+    </div>
+  ) : (
+    <p class="contact-form__notice">
+      Turnstile is ready but not active. Add <code>PUBLIC_TURNSTILE_SITE_KEY</code> and <code>TURNSTILE_SECRET_KEY</code> to enable verification.
+    </p>
+  )}
+
+  <button class="support-button" type="submit" data-contact-submit>Send message</button>
+</form>
