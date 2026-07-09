@@ -74,7 +74,9 @@ const hasTurnstile = Boolean(turnstileSiteKey && !turnstileSiteKey.includes('pla
       if (!turnstile) return;
       document.querySelectorAll('.cf-turnstile[data-sitekey]:not([data-turnstile-rendered])').forEach((node) => {
         if (!(node instanceof HTMLElement)) return;
-        const widgetId = turnstile.render(node);
+        const sitekey = node.dataset.sitekey;
+        if (!sitekey) return;
+        const widgetId = turnstile.render(node, { sitekey });
         node.dataset.turnstileRendered = String(widgetId);
       });
     };
