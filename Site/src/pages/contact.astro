@@ -1,116 +1,33 @@
 ---
-export const prerender = false;
-
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
-import ContactForm from '../components/contact/ContactForm.astro';
-import { getServerEnv } from '../lib/contact/env';
-
-const turnstileSiteKey = getServerEnv('PUBLIC_TURNSTILE_SITE_KEY') ?? '';
-const hasTurnstile = Boolean(turnstileSiteKey && !turnstileSiteKey.includes('placeholder'));
 ---
 
-<StarlightPage frontmatter={{ title: 'Contact', description: 'Send a private message to the VISCERIUM Codex.' }}>
+<StarlightPage frontmatter={{ title: 'Contact', description: 'Contact options for the VISCERIUM Codex.' }}>
   <section class="support-page support-page--contact">
     <header class="support-hero codex-frame">
       <p class="codex-kicker">Private contact</p>
       <h1>Contact us</h1>
       <p>
-        Use this form for private messages, collaboration, rights or credit concerns, or anything that should not be a public GitHub issue.
+        The private contact form is temporarily paused while the Codex deployment is kept on Cloudflare Pages.
+        Public, trackable issues can still be opened through GitHub.
       </p>
     </header>
 
-    <ContactForm server:defer turnstileSiteKey={turnstileSiteKey}>
-      <div class="contact-form contact-form--fallback codex-frame" slot="fallback">
-        <p class="codex-kicker">Loading secure form</p>
-        <p>The contact form is loading.</p>
-      </div>
-    </ContactForm>
-
-    <aside class="support-note codex-frame">
-      <h2>Public issue or edit?</h2>
+    <section class="support-note codex-frame">
+      <h2>Use GitHub for public site issues</h2>
       <p>
-        For typos, broken links, site bugs, feature requests, or content corrections, use the GitHub routes on the support page instead.
+        For typos, broken links, site bugs, feature requests, or content corrections, use the public support routes.
+        This keeps the work visible and easier to track.
       </p>
-      <a class="support-button support-button--secondary" href="/support/">Open support page</a>
-    </aside>
+      <a class="support-button" href="/support/">Open support page</a>
+    </section>
+
+    <section class="support-note codex-frame">
+      <h2>Private messages</h2>
+      <p>
+        For collaboration, rights, credit, or sensitive concerns, private contact will return once the form is moved to
+        a separate Worker endpoint that will not interfere with the static Codex deployment.
+      </p>
+    </section>
   </section>
-
-  {hasTurnstile && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>}
-
-  <script>
-    import { actions, isInputError } from 'astro:actions';
-
-    const getTurnstile = () => window.turnstile;
-
-    const setStatus = (form, state, message) => {
-      const status = form.querySelector('[data-contact-status]');
-      if (!(status instanceof HTMLElement)) return;
-      status.hidden = false;
-      status.dataset.state = state;
-      status.textContent = message;
-    };
-
-    const clearFieldErrors = (form) => {
-      form.querySelectorAll('[data-error-for]').forEach((node) => {
-        node.textContent = '';
-      });
-    };
-
-    const setFieldErrors = (form, fields) => {
-      for (const [name, messages] of Object.entries(fields ?? {})) {
-        const errorNode = form.querySelector(`[data-error-for="${CSS.escape(name)}"]`);
-        if (errorNode) errorNode.textContent = Array.isArray(messages) ? messages.join(' ') : String(messages);
-      }
-    };
-
-    const setBusy = (form, busy) => {
-      const button = form.querySelector('[data-contact-submit]');
-      if (!(button instanceof HTMLButtonElement)) return;
-      button.toggleAttribute('disabled', busy);
-      button.textContent = busy ? 'Sending…' : 'Send message';
-    };
-
-    const renderTurnstileWidgets = () => {
-      const turnstile = getTurnstile();
-      if (!turnstile) return;
-      document.querySelectorAll('.cf-turnstile[data-sitekey]:not([data-turnstile-rendered])').forEach((node) => {
-        if (!(node instanceof HTMLElement)) return;
-        const sitekey = node.dataset.sitekey;
-        if (!sitekey) return;
-        const widgetId = turnstile.render(node, { sitekey });
-        node.dataset.turnstileRendered = String(widgetId);
-      });
-    };
-
-    window.addEventListener('load', renderTurnstileWidgets);
-
-    const observer = new MutationObserver(() => renderTurnstileWidgets());
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-
-    document.addEventListener('submit', async (event) => {
-      const form = event.target;
-      if (!(form instanceof HTMLFormElement) || !form.matches('[data-contact-form]')) return;
-
-      event.preventDefault();
-      clearFieldErrors(form);
-      setBusy(form, true);
-      setStatus(form, 'pending', 'Sending message…');
-
-      const formData = new FormData(form);
-      const { data, error } = await actions.contact(formData);
-
-      setBusy(form, false);
-
-      if (error) {
-        if (isInputError(error)) setFieldErrors(form, error.fields);
-        setStatus(form, 'error', error.message ?? 'Unable to send the message. Please check the form and try again.');
-        getTurnstile()?.reset();
-        return;
-      }
-
-      setStatus(form, 'success', data?.message ?? 'Thanks, your message has been sent.');
-      form.reset();
-      getTurnstile()?.reset();
-    });
-  </script>
 </StarlightPage>
