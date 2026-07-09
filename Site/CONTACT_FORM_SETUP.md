@@ -9,7 +9,7 @@ Set these values in your Cloudflare Worker environment or local `Site/.dev.vars`
 ```bash
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 CONTACT_TO_EMAIL=your-proton-address@example.com
-CONTACT_FROM_EMAIL="VISCERIUM Codex <contact@viscerium.com>"
+CONTACT_FROM_EMAIL="VISCERIUM Codex <contact@mail.viscerium.co.uk>"
 CONTACT_VERIFICATION_PROVIDER=turnstile
 PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAAAAAAAAAAAAAAAA
 TURNSTILE_SECRET_KEY=0x4AAAAAAAAAAAAAAAAAAAAA
@@ -19,12 +19,12 @@ TURNSTILE_SECRET_KEY=0x4AAAAAAAAAAAAAAAAAAAAA
 
 ## Resend
 
-1. Verify the sending domain in Resend.
+1. Verify `mail.viscerium.co.uk` as the sending domain in Resend.
 2. Add the DNS records Resend provides for SPF/DKIM/domain verification.
 3. Create an API key.
 4. Set `RESEND_API_KEY`, `CONTACT_FROM_EMAIL`, and `CONTACT_TO_EMAIL` in the Worker environment.
 
-For early testing, Resend's default onboarding sender may work, but production should use a verified domain-based sender such as `VISCERIUM Codex <contact@viscerium.com>`.
+For early testing, Resend's default onboarding sender may work, but production should use the verified `.co.uk` sender: `VISCERIUM Codex <contact@mail.viscerium.co.uk>`.
 
 ## Turnstile
 
