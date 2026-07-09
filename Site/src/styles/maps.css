@@ -1,0 +1,88 @@
+@layer starlight.core {
+  .codex-map,
+  .map-panel,
+  .map-frame,
+  .codex-image-panel {
+    margin-block: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--codex-border);
+    border-radius: var(--codex-radius-lg);
+    background: var(--codex-surface-raised);
+  }
+
+  .codex-map img,
+  .map-panel img,
+  .map-frame img,
+  .codex-image-panel img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .codex-map figcaption,
+  .map-panel figcaption,
+  .map-frame figcaption,
+  .codex-image-panel figcaption {
+    margin: 0;
+    padding: .75rem .95rem;
+    border-top: 1px solid var(--codex-border);
+    color: var(--sl-color-gray-3);
+    font-family: var(--vc-font-ui);
+    font-size: var(--sl-text-sm);
+    background: rgba(0, 0, 0, .15);
+  }
+
+  .map-grid,
+  .codex-map-grid,
+  .image-grid,
+  .codex-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+    gap: 1rem;
+    margin-block: 1.5rem;
+  }
+
+  .map-card,
+  .codex-map-card,
+  .image-card,
+  .codex-gallery-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--codex-border);
+    border-radius: var(--codex-radius);
+    background: var(--codex-surface-raised);
+  }
+
+  .map-card__body,
+  .codex-map-card__body,
+  .image-card__body,
+  .codex-gallery-card__body {
+    padding: .95rem;
+  }
+
+  .map-card h3,
+  .codex-map-card h3,
+  .image-card h3,
+  .codex-gallery-card h3 {
+    margin-top: 0;
+    color: var(--sl-color-white);
+  }
+
+  .map-card p,
+  .codex-map-card p,
+  .image-card p,
+  .codex-gallery-card p {
+    color: var(--sl-color-gray-2);
+  }
+
+  .map-card > :last-child,
+  .codex-map-card > :last-child,
+  .image-card > :last-child,
+  .codex-gallery-card > :last-child,
+  .map-card__body > :last-child,
+  .codex-map-card__body > :last-child,
+  .image-card__body > :last-child,
+  .codex-gallery-card__body > :last-child {
+    margin-bottom: 0;
+  }
+}
