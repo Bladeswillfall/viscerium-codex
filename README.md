@@ -2,7 +2,7 @@
 
 This repository publishes the public VISCERIUM worldbuilding codex from an Obsidian vault into an Astro/Starlight site. Write lore in `Vault/`, mark finished public notes with frontmatter, and let the Astro/Starlight site in `Site/` build the Codex.
 
-The site now uses the Cloudflare adapter so the contact form can run through Astro Actions, server islands, Resend, and Turnstile on Cloudflare Workers.
+The main Codex currently builds as a static Cloudflare Pages site. The private contact form has been deferred so the Pages deployment can stay simple and stable.
 
 ## Folder structure
 
@@ -159,21 +159,19 @@ npm run build
 
 Use `npm run dev:sync` when you want to sync notes and start the local site in one command.
 
-## Cloudflare Workers settings
+## Cloudflare Pages settings
 
 ```text
 Root directory: Site
 Build command: npm run build
-Deploy command: npm run deploy
+Build output directory: dist
 Node version: 24
 Environment variable: SITE_URL=https://codex.viscerium.co.uk
 ```
 
-`npm run deploy` uses `Site/wrangler.deploy.jsonc`. The deploy config is intentionally not named `wrangler.jsonc`, because Astro reads default Wrangler config files during `astro build` before the generated Worker entry exists.
-
 Set `SITE_URL` in Cloudflare to the real canonical URL before production launch. The build falls back to `https://codex.viscerium.co.uk` if it is unset.
 
-The contact form also requires the runtime values documented in `Site/CONTACT_FORM_SETUP.md`.
+No committed Wrangler file is required for the current Pages deployment. Keep any Resend/Turnstile secrets out of the static site until the contact form is moved to a separate Worker endpoint.
 
 ## Optional community integrations
 
