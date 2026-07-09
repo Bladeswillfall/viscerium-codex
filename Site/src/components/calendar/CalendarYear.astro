@@ -220,3 +220,34 @@ function getCellMeta(resolved: ResolvedCalendarDate) {
     </section>
   </div>
 </section>
+
+<style is:global>
+  @layer starlight.core {
+    @media (max-width: 95rem) {
+      .calendar-module .calendar-module__intro {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+
+      .calendar-module .calendar-module__summary,
+      .calendar-module .calendar-module__facts {
+        grid-column: 1 / -1 !important;
+        min-width: 0 !important;
+        inline-size: auto !important;
+        max-inline-size: none !important;
+      }
+
+      .calendar-module .calendar-module__summary *,
+      .calendar-module .calendar-module__facts * {
+        overflow-wrap: normal !important;
+        word-break: normal !important;
+        hyphens: manual !important;
+      }
+    }
+
+    @media (min-width: 95.001rem) {
+      .calendar-module .calendar-module__intro {
+        grid-template-columns: minmax(24rem, 1fr) minmax(18rem, 24rem) !important;
+      }
+    }
+  }
+</style>
