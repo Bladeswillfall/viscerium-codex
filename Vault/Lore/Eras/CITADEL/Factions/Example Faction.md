@@ -82,7 +82,7 @@ Describe doctrine in plain language first. Then add units, equipment, recruitmen
 
 Use this for banners, colours, shapes, materials, vehicles, armour, weapons, typography, tattoos, charms, and recurring motifs.
 
-![Example banner](example-banner.webp)
+![[example-banner.webp]]
 
 ## Relationships
 
