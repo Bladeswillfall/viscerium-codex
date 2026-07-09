@@ -84,6 +84,7 @@ export const collections = {
         map: looseRecord.optional(),
         timeline: looseRecord.optional(),
         relationships: looseRecord.optional(),
+        sidebar: looseRecord.optional(),
         related: z.array(z.string()).optional(),
       }),
     }),
