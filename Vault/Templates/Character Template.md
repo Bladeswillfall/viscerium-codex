@@ -27,22 +27,6 @@ relationships:
 %% Use `imageTitle` and `artist` to show the artwork name and artist beneath the sidebar image. %%
 %% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
 
-```dataviewjs
-await dv.view('Views/viscerium-sidebar', {
-  accent: 'crimson',
-  sections: [
-    { label: 'Faction', field: 'faction' },
-    { label: 'Location', field: 'location' },
-    { label: 'Era', field: 'era' },
-    { label: 'Species', field: 'species' },
-    { label: 'Occupation', field: 'occupation' },
-    { label: 'Alignment', field: 'alignment' },
-    { label: 'Allies', field: 'relationships.allies' },
-    { label: 'Rivals', field: 'relationships.rivals' }
-  ]
-});
-```
-
 ## Summary
 
 ## Appearance

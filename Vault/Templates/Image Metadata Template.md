@@ -24,28 +24,6 @@ related:
 %% Image asset: set `asset` to the image filename stored in `Vault/Assets/Images/`, e.g. `portrait.webp`. Published image pages automatically render the asset and copy it to `/assets/images/...`. %%
 %% Link articles back to this metadata note with `imagePage: /path/to/this/image-page/`. %%
 
-
-```dataviewjs
-await dv.view('Views/viscerium-sidebar', {
-  accent: 'violet',
-  sections: [
-    { label: 'Asset', field: 'asset' },
-    { label: 'Artist', field: 'artist' },
-    { label: 'Editor', field: 'editor' },
-    { label: 'Source', field: 'source' },
-    { label: 'Source URL', field: 'sourceUrl' },
-    { label: 'Credit', field: 'credit' },
-    { label: 'License', field: 'license' },
-    { label: 'Rights', field: 'rights' },
-    { label: 'Usage', field: 'usage' },
-    { label: 'Width', field: 'width' },
-    { label: 'Height', field: 'height' },
-    { label: 'Related', field: 'related' }
-  ]
-});
-```
-
-
 ## Description
 
 ## Provenance

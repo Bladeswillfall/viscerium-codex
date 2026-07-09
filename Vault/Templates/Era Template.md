@@ -16,18 +16,6 @@ tags:
 
 %% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
 
-```dataviewjs
-await dv.view('Views/viscerium-sidebar', {
-  accent: 'gold',
-  sections: [
-    { label: 'Start', field: 'start' },
-    { label: 'End', field: 'end' },
-    { label: 'Timeline', field: 'timeline.id' },
-    { label: 'Anchor Year', field: 'timeline.year' }
-  ]
-});
-```
-
 ## Overview
 
 ## Defining Features

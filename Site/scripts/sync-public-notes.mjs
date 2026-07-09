@@ -196,6 +196,10 @@ function hasCalendarShortcodes(content) {
   return /^\s*\[Calendar:[^\]]+\]\s*$/im.test(content);
 }
 
+function stripDataviewBlocks(content) {
+  return String(content).replace(/```dataviewjs[\s\S]*?```\s*/gi, '');
+}
+
 function normaliseEventLinks(links) {
   if (!links || typeof links !== 'object' || Array.isArray(links)) return undefined;
   const normalised = {};
@@ -299,7 +303,7 @@ function transformCalendarShortcodes(content, parsed, currentFile, outFile) {
 }
 
 async function convertContent(content, currentFile, parsed, outFile, outputRequiresMdx) {
-  let converted = content.replace(/^%%[\s\S]*?%%\s*/gm, '');
+  let converted = stripDataviewBlocks(content).replace(/^%%[\s\S]*?%%\s*/gm, '');
   const embeds = [...converted.matchAll(/!\[\[([^\]]+)\]\]/g)];
   for (const match of embeds) {
     const rawTarget = match[1].split('|')[0].trim();
@@ -314,6 +318,7 @@ async function convertContent(content, currentFile, parsed, outFile, outputRequi
   }
 
   converted = converted.replace(new RegExp(`^#\\s+${escapeRegExp(parsed.data.title)}\\s*$`, 'im'), '').trimStart();
+  converted = converted.replace(/^#\s+\{\{title\}\}\s*$/im, '').trimStart();
 
   converted = converted.replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, (match, target, alias) => {
     const label = alias?.trim() || target.trim();
