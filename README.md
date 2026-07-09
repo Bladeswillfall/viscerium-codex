@@ -164,10 +164,12 @@ Use `npm run dev:sync` when you want to sync notes and start the local site in o
 ```text
 Root directory: Site
 Build command: npm run build
-Deploy command: npx wrangler deploy
+Deploy command: npm run deploy
 Node version: 24
 Environment variable: SITE_URL=https://codex.viscerium.co.uk
 ```
+
+`npm run deploy` uses `Site/wrangler.deploy.jsonc`. The deploy config is intentionally not named `wrangler.jsonc`, because Astro reads default Wrangler config files during `astro build` before the generated Worker entry exists.
 
 Set `SITE_URL` in Cloudflare to the real canonical URL before production launch. The build falls back to `https://codex.viscerium.co.uk` if it is unset.
 
