@@ -1,8 +1,9 @@
 ---
 const { starlightRoute } = Astro.locals;
+const eraStyle = starlightRoute.entry.data.eraStyle;
 ---
 
-<div class="codex-two-column-content lg:sl-flex">
+<div class:list={["codex-two-column-content lg:sl-flex", eraStyle && `era-style-${eraStyle}`]} data-era-style={eraStyle}>
   <div class="main-pane codex-main-pane">
     {starlightRoute.toc && (
       <aside class="right-sidebar-container">
