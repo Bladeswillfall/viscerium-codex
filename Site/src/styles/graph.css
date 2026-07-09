@@ -111,10 +111,7 @@
 
   .right-sidebar nav,
   starlight-toc nav {
-    border: 1px solid var(--codex-border);
-    border-radius: 0 !important;
     padding: .8rem;
-    background: rgba(255, 255, 255, .02);
   }
 
   .right-sidebar nav h2,

@@ -1,6 +1,16 @@
 {
   "nodes": [
     {
+      "id": "calendar",
+      "title": "Okse Calendar",
+      "type": "calendar"
+    },
+    {
+      "id": "calendar/okse",
+      "title": "Okse Calendar Detail",
+      "type": "calendar"
+    },
+    {
       "id": "degel-system/crucibus",
       "title": "Crucibus",
       "type": "article"
@@ -78,6 +88,26 @@
   ],
   "edges": [
     {
+      "source": "calendar/okse",
+      "target": "calendar",
+      "type": "link"
+    },
+    {
+      "source": "demo/starlight/components/starlight-feature-demo",
+      "target": "calendar",
+      "type": "link"
+    },
+    {
+      "source": "demo/starlight/components/starlight-feature-demo",
+      "target": "calendar",
+      "type": "link"
+    },
+    {
+      "source": "demo/starlight/components/starlight-feature-demo",
+      "target": "calendar",
+      "type": "link"
+    },
+    {
       "source": "eras/citadel/characters/example-character",
       "target": "eras/citadel/locations/example-city",
       "type": "link"
@@ -109,6 +139,11 @@
     },
     {
       "source": "eras/citadel/factions/example-faction",
+      "target": "eras/citadel/images/example-banner",
+      "type": "link"
+    },
+    {
+      "source": "eras/citadel/factions/example-faction",
       "target": "eras/citadel/events/example-battle",
       "type": "link"
     },
@@ -116,6 +151,11 @@
       "source": "eras/citadel/factions/example-faction",
       "target": "eras/citadel/characters/example-character",
       "type": "relationship"
+    },
+    {
+      "source": "eras/citadel/images/example-banner",
+      "target": "eras/citadel/factions/example-faction",
+      "type": "link"
     },
     {
       "source": "eras/citadel/locations/example-city",

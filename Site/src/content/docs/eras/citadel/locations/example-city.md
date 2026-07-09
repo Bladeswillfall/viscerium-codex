@@ -13,6 +13,7 @@ map:
   marker: city
   layer:
     - cities
+era: CITADEL
 sourcePath: "Eras/CITADEL/Locations/Example City.md"
 ---
 

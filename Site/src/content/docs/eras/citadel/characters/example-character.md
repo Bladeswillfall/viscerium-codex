@@ -9,6 +9,7 @@ faction: Example Faction
 location: Example City
 tags:
   - example
+era: CITADEL
 sourcePath: "Eras/CITADEL/Characters/Example Character.md"
 ---
 
@@ -17,23 +18,6 @@ Example Character is a template-friendly protagonist, antagonist, witness, or sc
 They live in [Example City](/eras/citadel/locations/example-city/) and study the history of [Example Battle](/eras/citadel/events/example-battle/).
 
 
-# {{title}}
-
-```dataviewjs
-await dv.view('Views/viscerium-sidebar', {
-  accent: 'crimson',
-  sections: [
-    { label: 'Faction', field: 'faction' },
-    { label: 'Location', field: 'location' },
-    { label: 'Era', field: 'era' },
-    { label: 'Species', field: 'species' },
-    { label: 'Occupation', field: 'occupation' },
-    { label: 'Alignment', field: 'alignment' },
-    { label: 'Allies', field: 'relationships.allies' },
-    { label: 'Rivals', field: 'relationships.rivals' }
-  ]
-});
-```
 
 ## Summary
 

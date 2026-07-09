@@ -3,8 +3,6 @@ title:
 description:
 publish: false
 status: draft
-slug: events/
-type: event
 headerImage:
 location:
 participants:
@@ -20,20 +18,6 @@ tags:
 # {{title}}
 
 %% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
-%% Page breadcrumbs: Home / {{type}} / {{title}}. Keep these as wiki links when parent pages exist. %%
-
-```dataviewjs
-await dv.view('Views/viscerium-sidebar', {
-  accent: 'crimson',
-  sections: [
-    { label: 'Location', field: 'location' },
-    { label: 'Participants', field: 'participants' },
-    { label: 'Outcome', field: 'outcome' },
-    { label: 'Timeline', field: 'timeline.id' },
-    { label: 'Year', field: 'timeline.year' }
-  ]
-});
-```
 
 ## Summary
 
@@ -50,6 +34,8 @@ await dv.view('Views/viscerium-sidebar', {
 ## Outcome
 
 ## Related
+
+---
 
 ## Comments
 

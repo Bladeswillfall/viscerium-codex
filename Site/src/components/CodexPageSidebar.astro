@@ -35,6 +35,76 @@ function formatValue(value) {
   return Array.isArray(value) ? value.join(', ') : String(value).replace(/-/g, ' ');
 }
 
+function getFieldValue(source, field) {
+  return String(field).split('.').reduce((value, key) => value?.[key], source);
+}
+
+const sidebarFieldsByType = {
+  character: [
+    ['Faction', 'faction'],
+    ['Location', 'location'],
+    ['Era', 'era'],
+    ['Species', 'species'],
+    ['Occupation', 'occupation'],
+    ['Alignment', 'alignment'],
+    ['Allies', 'relationships.allies'],
+    ['Rivals', 'relationships.rivals'],
+  ],
+  faction: [
+    ['Era', 'era'],
+    ['Capital', 'capital'],
+    ['Territory', 'territory'],
+    ['Leader', 'leader'],
+    ['Government', 'government'],
+    ['Founded', 'founding'],
+    ['Allies', 'relationships.allies'],
+    ['Enemies', 'relationships.enemies'],
+  ],
+  location: [
+    ['Region', 'region'],
+    ['Faction', 'faction'],
+    ['Population', 'population'],
+    ['Climate', 'climate'],
+    ['Map', 'map.id'],
+  ],
+  event: [
+    ['Location', 'location'],
+    ['Participants', 'participants'],
+    ['Outcome', 'outcome'],
+    ['Timeline', 'timeline.id'],
+    ['Year', 'timeline.year'],
+  ],
+  map: [
+    ['Map ID', 'mapId'],
+    ['Image', 'image'],
+    ['Width', 'width'],
+    ['Height', 'height'],
+  ],
+  image: [
+    ['Asset', 'asset'],
+    ['Artist', 'artist'],
+    ['Editor', 'editor'],
+    ['Source', 'source'],
+    ['Source URL', 'sourceUrl'],
+    ['Credit', 'credit'],
+    ['License', 'license'],
+    ['Rights', 'rights'],
+    ['Usage', 'usage'],
+    ['Width', 'width'],
+    ['Height', 'height'],
+    ['Related', 'related'],
+  ],
+  era: [
+    ['Start', 'start'],
+    ['End', 'end'],
+    ['Timeline', 'timeline.id'],
+    ['Anchor Year', 'timeline.year'],
+  ],
+  timeline: [
+    ['Timeline ID', 'timelineId'],
+  ],
+};
+
 const rawImageSource = entry.image ?? (entry.type === 'image' ? entry.asset : undefined);
 const sidebarImage = normaliseAssetPath(rawImageSource);
 const imageDetailHref = normaliseRoute(entry.imagePage);
@@ -42,6 +112,8 @@ const imageAlt = entry.alt ?? `${entry.title} image`;
 const artworkTitle = entry.imageTitle ?? (entry.type === 'image' ? entry.title : undefined);
 const artworkArtist = entry.artist ?? entry.credit;
 const resolution = entry.width && entry.height ? `${entry.width} × ${entry.height}` : undefined;
+const typeSpecificFields = (sidebarFieldsByType[entry.type] ?? [])
+  .map(([label, field]) => [label, getFieldValue(entry, field)]);
 const sidebarFields = [
   ['Type', entry.type],
   ['Status', entry.status],

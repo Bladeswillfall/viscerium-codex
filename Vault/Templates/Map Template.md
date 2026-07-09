@@ -3,8 +3,6 @@ title:
 description:
 publish: false
 status: draft
-slug: maps/
-type: map
 mapId:
 image:
 headerImage:
@@ -15,19 +13,6 @@ height:
 # {{title}}
 
 %% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
-%% Page breadcrumbs: Home / {{type}} / {{title}}. Keep these as wiki links when parent pages exist. %%
-
-```dataviewjs
-await dv.view('Views/viscerium-sidebar', {
-  accent: 'violet',
-  sections: [
-    { label: 'Map ID', field: 'mapId' },
-    { label: 'Image', field: 'image' },
-    { label: 'Width', field: 'width' },
-    { label: 'Height', field: 'height' }
-  ]
-});
-```
 
 ## Overview
 
@@ -38,6 +23,8 @@ await dv.view('Views/viscerium-sidebar', {
 ## Related Locations
 
 ## Map Notes
+
+---
 
 ## Comments
 

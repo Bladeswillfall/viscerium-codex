@@ -12,7 +12,19 @@ const assetRoot = path.resolve(siteRoot, siteConfig.vaultAssetDir);
 const outDir = path.resolve(siteRoot, 'src/content/docs');
 const publicAssetDir = path.resolve(siteRoot, 'public/assets');
 const calendarComponentPath = path.resolve(siteRoot, 'src/components/calendar/CalendarYear.astro');
-const requiredFields = ['title', 'description', 'type'];
+const requiredFields = ['title', 'description'];
+const typeByFolder = new Map([
+  ['characters', 'character'],
+  ['factions', 'faction'],
+  ['locations', 'location'],
+  ['events', 'event'],
+  ['maps', 'map'],
+  ['images', 'image'],
+  ['eras', 'era'],
+  ['timelines', 'timeline'],
+  ['calendar', 'calendar'],
+  ['demo', 'system'],
+]);
 
 function cleanSlug(slug) {
   return String(slug).trim().replace(/^\/+|\/+$/g, '').toLowerCase();
@@ -21,6 +33,26 @@ function cleanSlug(slug) {
 function slugFromFile(file) {
   const rel = path.relative(sourceDir, file).replace(/\\/g, '/').replace(/\.(md|mdx)$/i, '');
   return rel.split('/').map((segment) => cleanSlug(segment).replace(/\s+/g, '-')).join('/');
+}
+
+function sourceSegments(file) {
+  const rel = path.relative(sourceDir, file).replace(/\\/g, '/').replace(/\.(md|mdx)$/i, '');
+  return rel.split('/').filter(Boolean);
+}
+
+function inferType(file) {
+  const segments = sourceSegments(file).map((segment) => segment.toLowerCase());
+  for (let index = segments.length - 2; index >= 0; index -= 1) {
+    const type = typeByFolder.get(segments[index]);
+    if (type) return type;
+  }
+  return typeByFolder.get(segments[0]) ?? 'article';
+}
+
+function inferEra(file) {
+  const segments = sourceSegments(file);
+  const eraIndex = segments.findIndex((segment) => segment.toLowerCase() === 'eras');
+  return eraIndex >= 0 && segments[eraIndex + 1] ? segments[eraIndex + 1] : undefined;
 }
 
 function route(slug) {
@@ -56,18 +88,21 @@ function parseFrontmatter(raw, file) {
   };
 }
 
-function stringifyFrontmatter(frontmatter, slug, sourcePath) {
+function stringifyFrontmatter(frontmatter, generated) {
   const lines = frontmatter.split(/\r?\n/);
 
   function setField(key, value) {
+    if (value === undefined || value === null || value === '') return;
     const line = `${key}: ${value}`;
     const index = lines.findIndex((entry) => entry.startsWith(`${key}:`));
     if (index === -1) lines.push(line);
     else lines[index] = line;
   }
 
-  setField('slug', slug);
-  setField('sourcePath', JSON.stringify(sourcePath));
+  setField('slug', generated.slug);
+  setField('type', generated.type);
+  setField('era', generated.era);
+  setField('sourcePath', JSON.stringify(generated.sourcePath));
 
   return `---\n${lines.join('\n')}\n---\n\n`;
 }
@@ -105,10 +140,13 @@ for (const file of files) {
   const raw = await fs.readFile(file, 'utf8');
   const parsed = parseFrontmatter(raw, file);
   if (parsed.data.publish !== true || parsed.data.status !== 'canon') continue;
+  const slug = parsed.data.slug === 'index' ? 'index' : slugFromFile(file);
+  parsed.data.slug = slug;
+  parsed.data.type ||= inferType(file);
+  parsed.data.era ||= inferEra(file);
   for (const field of requiredFields) {
     if (!parsed.data[field]) throw new Error(`Public note is missing required frontmatter "${field}": ${path.relative(siteRoot, file)}`);
   }
-  const slug = parsed.data.slug === 'index' ? 'index' : slugFromFile(file);
   if (publicNotes.some((note) => note.slug === slug)) throw new Error(`Duplicate published route "${slug}" in ${path.relative(siteRoot, file)}`);
   const note = { file, parsed, slug };
   publicNotes.push(note);
@@ -156,6 +194,10 @@ function escapeRegExp(value) {
 
 function hasCalendarShortcodes(content) {
   return /^\s*\[Calendar:[^\]]+\]\s*$/im.test(content);
+}
+
+function stripDataviewBlocks(content) {
+  return String(content).replace(/```dataviewjs[\s\S]*?```\s*/gi, '');
 }
 
 function normaliseEventLinks(links) {
@@ -261,7 +303,7 @@ function transformCalendarShortcodes(content, parsed, currentFile, outFile) {
 }
 
 async function convertContent(content, currentFile, parsed, outFile, outputRequiresMdx) {
-  let converted = content.replace(/^%%[\s\S]*?%%\s*/gm, '');
+  let converted = stripDataviewBlocks(content).replace(/^%%[\s\S]*?%%\s*/gm, '');
   const embeds = [...converted.matchAll(/!\[\[([^\]]+)\]\]/g)];
   for (const match of embeds) {
     const rawTarget = match[1].split('|')[0].trim();
@@ -276,6 +318,7 @@ async function convertContent(content, currentFile, parsed, outFile, outputRequi
   }
 
   converted = converted.replace(new RegExp(`^#\\s+${escapeRegExp(parsed.data.title)}\\s*$`, 'im'), '').trimStart();
+  converted = converted.replace(/^#\s+\{\{title\}\}\s*$/im, '').trimStart();
 
   converted = converted.replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, (match, target, alias) => {
     const label = alias?.trim() || target.trim();
@@ -306,7 +349,12 @@ for (const { file, parsed, slug } of publicNotes) {
   }
   if (parsed.data.asset && parsed.data.type === 'image') await copyAsset('Images', parsed.data.asset);
   const result = await convertContent(parsed.content, file, parsed, outFile, extension === '.mdx');
-  await fs.writeFile(outFile, `${stringifyFrontmatter(parsed.frontmatter, slug, sourcePath)}${result.content}`);
+  await fs.writeFile(outFile, `${stringifyFrontmatter(parsed.frontmatter, {
+    slug,
+    type: parsed.data.type,
+    era: parsed.data.era,
+    sourcePath,
+  })}${result.content}`);
   console.log(`Published ${path.relative(sourceDir, file)} -> ${path.relative(outDir, outFile)}`);
 }
 
