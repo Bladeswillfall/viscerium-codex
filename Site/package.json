@@ -13,7 +13,6 @@
     "generate:timelines": "node scripts/generate-timeline-data.mjs",
     "prebuild": "npm run sync && npm run validate && npm run generate:graph && npm run generate:maps && npm run generate:timelines",
     "build": "astro build",
-    "deploy": "wrangler deploy --config wrangler.deploy.jsonc",
     "preview": "astro preview",
     "astro": "astro",
     "test": "npm run build"
