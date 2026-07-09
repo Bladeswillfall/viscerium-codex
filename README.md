@@ -165,7 +165,7 @@ Use `npm run dev:sync` when you want to sync notes and start the local site in o
 Root directory: Site
 Build command: npm run build
 Deploy command: npx wrangler deploy
-Node version: 22.12.0
+Node version: 24
 Environment variable: SITE_URL=https://codex.viscerium.co.uk
 ```
 
