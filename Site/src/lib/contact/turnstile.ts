@@ -50,7 +50,7 @@ export async function verifyTurnstileToken(token: string | undefined, request: R
     });
   }
 
-  const result = await response.json<TurnstileResponse>();
+  const result = (await response.json()) as TurnstileResponse;
 
   if (!result.success) {
     throw new ActionError({
