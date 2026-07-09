@@ -93,7 +93,8 @@
   }
 
   .codex-two-column-content[data-era-style] .sl-markdown-content h2 {
-    border-block-end: 1px solid color-mix(in oklch, var(--era-heading-accent) 38%, transparent);
+    border-block-end: 1px solid var(--era-heading-accent);
+    border-block-end-color: color-mix(in oklch, var(--era-heading-accent) 38%, transparent);
     padding-block-end: .2rem;
   }
 
