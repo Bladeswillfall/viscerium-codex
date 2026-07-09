@@ -43,7 +43,7 @@
     "unocss": "66.7.4"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=22.16.0"
   },
   "allowScripts": {
     "sharp@0.34.5": true,
