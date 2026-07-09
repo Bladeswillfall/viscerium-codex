@@ -10,7 +10,6 @@ import starlightHeadingBadges from 'starlight-heading-badges';
 import { starlightIconsPlugin } from 'starlight-plugin-icons';
 import starlightScrollToTop from 'starlight-scroll-to-top';
 import starlightSidebarSwipe from 'starlight-sidebar-swipe';
-import starlightSiteGraph from 'starlight-site-graph';
 import starlightTags from 'starlight-tags';
 import starlightTelescope from 'starlight-telescope';
 import starlightUiTweaks from 'starlight-ui-tweaks';
@@ -189,6 +188,7 @@ export default defineConfig({
         './src/styles/calendar.css',
         './src/styles/layout-overrides.css',
         './src/styles/support.css',
+        './src/styles/sharp-ui.css',
       ],
       components: {
         Sidebar: './src/components/IonSidebar.astro',
@@ -207,7 +207,6 @@ export default defineConfig({
         starlightBasePath(),
         starlightAutoSidebar(),
         starlightUiTweaks(),
-        starlightSiteGraph(),
         starlightIconsPlugin(),
         starlightScrollToTop(),
         starlightSidebarSwipe(),
