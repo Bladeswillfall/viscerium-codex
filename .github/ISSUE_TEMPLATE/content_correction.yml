@@ -13,7 +13,7 @@ body:
     attributes:
       label: Page or article
       description: Which article or page does this affect?
-      placeholder: https://www.viscerium.com/...
+      placeholder: https://codex.viscerium.co.uk/...
     validations:
       required: true
   - type: textarea
