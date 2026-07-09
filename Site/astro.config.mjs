@@ -1,5 +1,4 @@
 import { defineConfig } from 'astro/config';
-import cloudflare from '@astrojs/cloudflare';
 import mdx from '@astrojs/mdx';
 import partytown from '@astrojs/partytown';
 import sitemap from '@astrojs/sitemap';
@@ -171,66 +170,54 @@ const sidebar = [
 
 export default defineConfig({
   site: siteConfig.site,
-  adapter: cloudflare({
-    imageService: 'compile',
-    prerenderEnvironment: 'node',
-  }),
   integrations: [
     starlight({
       title: siteConfig.title,
       description: siteConfig.description,
-      favicon: faviconPath,
-      head: [...feedHead, ...webmentionHead, ...faviconHead, ...ga4Head],
       customCss: [
-        './vendor/starlight-ion-theme/styles/layers.css',
-        './vendor/starlight-ion-theme/styles/theme.css',
-        './vendor/starlight-ion-theme/styles/ec-theme.css',
         './src/styles/typography.css',
-        './src/styles/codex-ui.css',
-        './src/styles/content-media.css',
-        './src/styles/custom.css',
+        './src/styles/starlight-theme.css',
+        './src/styles/sidebar-icons.css',
+        './src/styles/sidebar-overlay.css',
+        './src/styles/graph.css',
+        './src/styles/timelines.css',
+        './src/styles/maps.css',
         './src/styles/calendar.css',
         './src/styles/support.css',
-        './src/styles/layout-overrides.css',
-        './src/styles/sidebar-overlay.css',
       ],
+      components: {
+        Head: './src/components/StarlightHead.astro',
+        PageFrame: './src/components/PageFrame.astro',
+        PageTitle: './src/components/PageTitle.astro',
+        TableOfContents: './src/components/RightSidebar.astro',
+        Footer: './src/components/StarlightFooter.astro',
+        LastUpdated: './src/components/LastUpdated.astro',
+      },
+      editLink: {
+        baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
+      },
       plugins: [
-        starlightBasePath(),
-        starlightTags({
-          sidebar: {
-            position: 'bottom',
-            collapsed: true,
-          },
-        }),
-        starlightTelescope(),
-        starlightChangelogs(),
-        starlightSidebarSwipe(),
-        starlightIconsPlugin({
-          codeblock: true,
-          sidebar: true,
-        }),
         starlightHeadingBadges(),
-        starlightUiTweaks(),
-        starlightScrollToTop(),
+        starlightTags(),
+        starlightChangelogs(),
+        starlightBasePath(),
         starlightAutoSidebar(),
+        starlightUiTweaks(),
         starlightSiteGraph(),
+        starlightIconsPlugin(),
+        starlightScrollToTop(),
+        starlightSidebarSwipe(),
+        starlightTelescope(),
       ],
       sidebar,
-      components: {
-        Sidebar: './src/components/IonSidebar.astro',
-        Footer: './src/components/StarlightFooter.astro',
-        PageSidebar: './src/components/CodexPageSidebar.astro',
-        PageTitle: './src/components/CodexPageTitle.astro',
-        TwoColumnContent: './src/components/CodexTwoColumnContent.astro',
-      },
-      social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
+      head: [...feedHead, ...webmentionHead, ...faviconHead, ...ga4Head],
     }),
+    sitemap(),
     mdx(),
     partytown({
       config: {
         forward: ['dataLayer.push'],
       },
     }),
-    sitemap(),
   ],
 });
