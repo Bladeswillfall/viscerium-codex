@@ -191,6 +191,7 @@ export default defineConfig({
         './src/styles/sharp-ui.css',
         './src/styles/color-tokens.css',
         './src/styles/a11y.css',
+        './src/styles/era-styles.css',
       ],
       components: {
         Sidebar: './src/components/IonSidebar.astro',
