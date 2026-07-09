@@ -100,8 +100,8 @@
 
   .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2 {
     position: relative;
-    padding-block-start: .85rem;
-    padding-inline-start: clamp(2rem, 3.5vw, 3rem);
+    padding-block-start: 21.6px;
+    padding-inline-start: 0;
   }
 
   .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2::before {
@@ -127,16 +127,12 @@
 
   @media (max-width: 42rem) {
     .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2 {
-      padding-block-start: .75rem;
-      padding-inline-start: 1.75rem;
+      padding-block-start: 0;
+      padding-inline-start: 0;
     }
 
     .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2::before {
-      inset-block-start: .4rem;
-      inset-inline-start: -.85rem;
-      inline-size: min(100vw - 2rem, 28rem);
-      block-size: 2.4rem;
-      opacity: .62;
+      display: none;
     }
   }
 
