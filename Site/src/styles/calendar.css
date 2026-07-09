@@ -93,13 +93,14 @@
 
   .calendar-year-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(16.25rem, 100%), 1fr));
-    gap: clamp(.9rem, 1.8vw, 1.35rem);
+    grid-template-columns: repeat(auto-fit, minmax(min(18.75rem, 100%), 1fr));
+    gap: clamp(.7rem, 1.25vw, 1rem);
     align-items: start;
   }
 
   .calendar-month {
     min-width: 0;
+    overflow: visible;
     padding: .62rem;
     border: 1px solid var(--calendar-border);
     border-radius: 1.05rem;
@@ -128,14 +129,25 @@
   }
 
   .calendar-days {
+    display: table;
     width: 100%;
     max-width: 100%;
+    min-width: 0;
     margin: 0;
+    overflow: visible;
     border: 0;
     border-collapse: separate;
-    border-spacing: .26rem;
+    border-spacing: .22rem;
     table-layout: fixed;
     background: transparent;
+  }
+
+  .calendar-days tbody {
+    display: table-row-group;
+  }
+
+  .calendar-days tr {
+    display: table-row;
   }
 
   .calendar-days tbody,
@@ -146,6 +158,7 @@
 
   .calendar-days td,
   .calendar-days th {
+    display: table-cell;
     padding: 0;
     border: 0;
     background: transparent;
