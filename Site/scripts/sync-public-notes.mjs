@@ -28,6 +28,12 @@ const typeByFolder = new Map([
   ['calendar', 'calendar'],
   ['demo', 'system'],
 ]);
+const eraStyleByEra = new Map([
+  ['citadel', 'e1'],
+  ['smog', 'e2'],
+  ['nearsight', 'e3'],
+  ['entropy', 'e4'],
+]);
 
 function cleanSlug(slug) {
   return String(slug).trim().replace(/^\/+|\/+$/g, '').toLowerCase();
@@ -56,6 +62,19 @@ function inferEra(file) {
   const segments = sourceSegments(file);
   const eraIndex = segments.findIndex((segment) => segment.toLowerCase() === 'eras');
   return eraIndex >= 0 && segments[eraIndex + 1] ? segments[eraIndex + 1] : undefined;
+}
+
+function normaliseEraKey(value) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (typeof raw !== 'string') return undefined;
+  return raw.trim().toLowerCase().replace(/[\s_-]+/g, '');
+}
+
+function inferEraStyle(file, data = {}) {
+  const segments = sourceSegments(file).map((segment) => segment.toLowerCase());
+  const eraIndex = segments.findIndex((segment) => segment === 'eras');
+  const eraFromFolder = eraIndex >= 0 ? normaliseEraKey(segments[eraIndex + 1]) : undefined;
+  return eraStyleByEra.get(eraFromFolder) ?? eraStyleByEra.get(normaliseEraKey(data.era));
 }
 
 function route(slug) {
@@ -122,6 +141,7 @@ function stringifyFrontmatter(frontmatter, generated) {
   setField('slug', generated.slug);
   setField('type', generated.type);
   setField('era', generated.era);
+  setField('eraStyle', generated.eraStyle);
   for (const [key, value] of Object.entries(generated.assets ?? {})) setField(key, value);
   setField('sourcePath', JSON.stringify(generated.sourcePath));
 
@@ -165,6 +185,7 @@ for (const file of files) {
   parsed.data.slug = slug;
   parsed.data.type ||= inferType(file);
   parsed.data.era ||= inferEra(file);
+  parsed.data.eraStyle ||= inferEraStyle(file, parsed.data);
   for (const field of requiredFields) {
     if (!parsed.data[field]) throw new Error(`Public note is missing required frontmatter "${field}": ${path.relative(siteRoot, file)}`);
   }
@@ -436,6 +457,7 @@ for (const { file, parsed, slug } of publicNotes) {
     slug,
     type: parsed.data.type,
     era: parsed.data.era,
+    eraStyle: parsed.data.eraStyle,
     sourcePath,
     assets: frontmatterAssets,
   })}${result.content}`);
