@@ -100,14 +100,15 @@
 
   .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2 {
     position: relative;
-    padding-block-start: clamp(2rem, 4vw, 3rem);
+    padding-block-start: .85rem;
+    padding-inline-start: clamp(2rem, 3.5vw, 3rem);
   }
 
   .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2::before {
     content: '';
     position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: clamp(-1.5rem, -2vw, -.75rem);
+    inset-block-start: .45rem;
+    inset-inline-start: clamp(-2.4rem, -3.5vw, -1.4rem);
     display: block;
     inline-size: min(42rem, calc(100vw - 4rem));
     block-size: clamp(2.75rem, 5.25vw, 4.5rem);
@@ -126,11 +127,13 @@
 
   @media (max-width: 42rem) {
     .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2 {
-      padding-block-start: 1.85rem;
+      padding-block-start: .75rem;
+      padding-inline-start: 1.75rem;
     }
 
     .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2::before {
-      inset-inline-start: 0;
+      inset-block-start: .4rem;
+      inset-inline-start: -.85rem;
       inline-size: min(100vw - 2rem, 28rem);
       block-size: 2.4rem;
       opacity: .62;
