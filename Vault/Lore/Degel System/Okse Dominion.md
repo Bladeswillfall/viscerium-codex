@@ -36,6 +36,51 @@ related:
   - Oksmun
   - Juggernauts
   - Resonance
+sidebar:
+  replaceMeta: true
+  meta:
+    - label: Type
+      value: Geopolitical dominion / empire
+    - label: Demonym
+      value: Oksmun
+    - label: Era
+      value: CITADEL
+    - label: Category
+      value: Nation / Faction
+    - label: Territory
+      value: Halvmane Mountains and surrounding highlands
+    - label: Capital
+      value: Valenheim
+  sections:
+    - title: Leadership
+      fields:
+        - label: Kónungsson
+          value: Erlend Nautleif
+        - label: Kónungsdóttir
+          value: Signy Gunnvidottir
+        - label: Kóngr Eilífr
+          value: Torrad Uxifadir
+    - title: Key holdings
+      items:
+        - Valenheim — capital city
+        - Rauthrbak Min — capital prison
+        - Hjalliberg — city
+        - Aldaness — city
+        - Vagrvik — city
+        - Strondverdir — city
+    - title: Major exports
+      items:
+        - Ore and ingots
+        - Arms and armour
+        - Structural engineers
+        - Oil and slave-supported industry
+    - title: Related
+      items:
+        - Krass Dominion
+        - Oksmun
+        - Juggernauts
+        - Resonants
+      note: All artwork that is not an original creation by Fall will be replaced with either original pieces or commissioned art.
 tags:
   - okse
   - dominion
@@ -48,8 +93,6 @@ tags:
 This article contains references to slavery, coercion, brutality, and systemic exploitation.
 [/note]
 
-[cols:2-1 gap=lg]
-[col]
 This article is a work in progress.
 
 #### Iron roots, blood fruit.
@@ -106,77 +149,6 @@ A shadowy legacy of Muld sorcerers, the architects of a bygone era, has bestowed
 
 In contrast, Svar sorcery weaves its fiery threads with more liberty, its wielders labouring in the blistering crucibles of industry or amongst the royal blacksmiths, their powers less regulated, but no less potent.
 
-[/col]
-
-[col]
-[card:accent compact]
-![Okse Heraldry](640faf5b8cd2814de13871ff58c900b6.webp "Okse Heraldry_1.png")
-
-**Type**  
-Geopolitical dominion / empire
-
-**Demonym**  
-Oksmun
-
-**Era**  
-CITADEL
-
-**Category**  
-Nation / Faction
-
-**Territory**  
-Halvmane Mountains and surrounding highlands
-
-**Capital**  
-Valenheim
-[/card]
-
-[card:muted compact]
-**Leadership**
-
-**Kónungsson**  
-Erlend Nautleif
-
-**Kónungsdóttir**  
-Signy Gunnvidottir
-
-**Kóngr Eilífr**  
-Torrad Uxifadir
-[/card]
-
-[card:muted compact]
-**Key holdings**
-
-- Valenheim — capital city
-- Rauthrbak Min — capital prison
-- Hjalliberg — city
-- Aldaness — city
-- Vagrvik — city
-- Strondverdir — city
-[/card]
-
-[card:muted compact]
-**Major exports**
-
-- Ore and ingots
-- Arms and armour
-- Structural engineers
-- Oil and slave-supported industry
-[/card]
-
-[card:plain compact]
-**Related**
-
-- Krass Dominion
-- Oksmun
-- Juggernauts
-- Resonants
-
-_All artwork that is not an original creation by Fall will be replaced with either original pieces or commissioned art._
-[/card]
-[/col]
-[/cols]
-
 ## Economy
 
 Though predominantly an isolationist nation, the Oksmun rely on an import of slaves to fuel their economy.
@@ -222,8 +194,6 @@ Within the Dominion's tundra and coniferous realms, the tapestry of life is wove
 In the skies above, Sigdfugl rule the aerial realm, their predatory instincts honed to perfection as they hunt small prey. Amidst the shadows of coniferous forests and wooded enclaves, where slightly milder climes provide respite, the land teems with life. Berries and fungi thrive in these realms, offering sustenance to creatures as resolute as the land itself. Here, amidst towering trees, deer, wolves, bears, and cunning foxes roam.
 
 Venturing to the shimmering waters, a kingdom beneath the surface stirs. Countless rivers, both fresh and salt, converge with the unyielding sea, harbouring a vast realm of sealife. Whales, seals, voracious pike, and the elusive Elvormr all carve their domains in the waters of the Okse Dominion, where survival is as ruthless as the land itself.
-
-![Okse Dominion flag](1d6a04547df953b36f4d6f8ce73e91f2.webp "Okse_flag-1.png")
 
 ## Armed forces
 
