@@ -1,7 +1,7 @@
 @layer starlight.core {
   :root {
-    --codex-radius: 0;
-    --codex-radius-lg: 0;
+    --codex-radius: 0 !important;
+    --codex-radius-lg: 0 !important;
   }
 
   .content-panel,
