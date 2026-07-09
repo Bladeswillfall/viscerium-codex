@@ -9,7 +9,7 @@ body:
     attributes:
       label: Page or URL
       description: Where is the typo or broken link?
-      placeholder: https://www.viscerium.com/...
+      placeholder: https://codex.viscerium.co.uk/...
     validations:
       required: true
   - type: textarea
