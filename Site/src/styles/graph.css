@@ -168,6 +168,12 @@
     stroke-dasharray: 4 4;
   }
 
+  .codex-mini-graph__node {
+    display: inline !important;
+    font-size: initial !important;
+    overflow-wrap: normal !important;
+  }
+
   .codex-mini-graph__node polygon {
     fill: rgba(184, 135, 70, .64);
     stroke: rgba(241, 210, 155, .7);
