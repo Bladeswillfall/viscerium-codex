@@ -39,9 +39,11 @@ const hasTurnstile = Boolean(turnstileSiteKey && !turnstileSiteKey.includes('pla
   <script>
     import { actions, isInputError } from 'astro:actions';
 
+    const getTurnstile = () => window.turnstile;
+
     const setStatus = (form, state, message) => {
       const status = form.querySelector('[data-contact-status]');
-      if (!status) return;
+      if (!(status instanceof HTMLElement)) return;
       status.hidden = false;
       status.dataset.state = state;
       status.textContent = message;
@@ -62,16 +64,18 @@ const hasTurnstile = Boolean(turnstileSiteKey && !turnstileSiteKey.includes('pla
 
     const setBusy = (form, busy) => {
       const button = form.querySelector('[data-contact-submit]');
-      if (!button) return;
+      if (!(button instanceof HTMLButtonElement)) return;
       button.toggleAttribute('disabled', busy);
       button.textContent = busy ? 'Sending…' : 'Send message';
     };
 
     const renderTurnstileWidgets = () => {
-      if (!window.turnstile) return;
+      const turnstile = getTurnstile();
+      if (!turnstile) return;
       document.querySelectorAll('.cf-turnstile[data-sitekey]:not([data-turnstile-rendered])').forEach((node) => {
-        const widgetId = window.turnstile.render(node);
-        node.dataset.turnstileRendered = widgetId;
+        if (!(node instanceof HTMLElement)) return;
+        const widgetId = turnstile.render(node);
+        node.dataset.turnstileRendered = String(widgetId);
       });
     };
 
@@ -97,13 +101,13 @@ const hasTurnstile = Boolean(turnstileSiteKey && !turnstileSiteKey.includes('pla
       if (error) {
         if (isInputError(error)) setFieldErrors(form, error.fields);
         setStatus(form, 'error', error.message ?? 'Unable to send the message. Please check the form and try again.');
-        window.turnstile?.reset();
+        getTurnstile()?.reset();
         return;
       }
 
       setStatus(form, 'success', data?.message ?? 'Thanks, your message has been sent.');
       form.reset();
-      window.turnstile?.reset();
+      getTurnstile()?.reset();
     });
   </script>
 </StarlightPage>
