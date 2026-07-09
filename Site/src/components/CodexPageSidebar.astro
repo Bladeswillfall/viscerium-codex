@@ -1,7 +1,8 @@
 ---
 import MobileTableOfContents from 'virtual:starlight/components/MobileTableOfContents';
 import TableOfContents from 'virtual:starlight/components/TableOfContents';
-import { PageBacklinks, PageGraph } from 'starlight-site-graph/components';
+import CodexBacklinks from './CodexBacklinks.astro';
+import CodexMiniGraph from './CodexMiniGraph.astro';
 
 const { starlightRoute } = Astro.locals;
 const entry = starlightRoute.entry.data;
@@ -107,11 +108,11 @@ const sidebarFields = [
           <TableOfContents />
           <section class="codex-sidebar-section" aria-labelledby="codex-sidebar-graph-title">
             <h2 id="codex-sidebar-graph-title">Graph View</h2>
-            <PageGraph />
+            <CodexMiniGraph />
           </section>
           <section class="codex-sidebar-section" aria-labelledby="codex-sidebar-backlinks-title">
             <h2 id="codex-sidebar-backlinks-title">Backlinks</h2>
-            <PageBacklinks />
+            <CodexBacklinks />
           </section>
         </div>
       </aside>
