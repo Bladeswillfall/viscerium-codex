@@ -118,11 +118,7 @@
     transition: all 0.1s ease;
   }
 
-  /* Change widths of content */
-  .main-pane {
-    width: calc(100% - (var(--sl-sidebar-width))) !important;
-  }
-
+  /* Keep the right sidebar predictable without forcing main content to shrink. */
   .right-sidebar-panel {
     width: var(--sl-sidebar-width);
   }
