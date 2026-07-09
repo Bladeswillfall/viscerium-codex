@@ -1,6 +1,6 @@
 # Cloudflare Pages setup
 
-This project is currently connected through Cloudflare's **Pages configuration** UI. That UI does not expose a separate deploy command; it builds from the configured Git commit using the build command and output directory.
+This project is currently connected through Cloudflare's **Pages configuration** UI. The deployment should use Cloudflare dashboard build settings and dashboard environment variables, not a committed Wrangler config.
 
 ## Current deployment settings
 
@@ -12,17 +12,6 @@ Build command: npm run build
 Build output directory: dist
 Node version: 24
 ```
-
-The repository also includes `Site/wrangler.toml` with a Pages-safe configuration:
-
-```toml
-name = "viscerium-codex"
-compatibility_date = "2026-07-09"
-compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = "dist"
-```
-
-This is intentionally separate from `Site/wrangler.deploy.jsonc`. The TOML file is for Cloudflare Pages' build scanner; the JSONC file is for explicit Wrangler deploys if the project is later moved to a Worker-style deployment flow.
 
 The build still runs the Obsidian sync and generated-data scripts during `npm run build`, so `Site/src/content/docs/` is regenerated from `Vault/Lore/` before Astro builds.
 
