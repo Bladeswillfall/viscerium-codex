@@ -1,34 +1,59 @@
-# Cloudflare Pages setup
+# Cloudflare Workers setup
+
+The Codex now uses `@astrojs/cloudflare` because the contact form depends on Astro Actions and a server island. Cloudflare Pages-only deployment is no longer the preferred target for this branch; use a Cloudflare Worker project instead.
+
+## Recommended deployment
 
 1. Push this repository to GitHub.
-2. In Cloudflare, choose **Workers & Pages → Create application → Pages → Connect to Git**.
-3. Select your repository.
+2. In Cloudflare, choose **Workers & Pages → Create application → Workers → Import a repository**.
+3. Select this repository.
 4. Use these build settings:
 
 ```text
 Root directory: Site
 Build command: npm run build
-Build output directory: dist
+Deploy command: npx wrangler deploy
 Node version: 22.12.0
-Environment variable: SITE_URL=https://your-production-domain.example (also committed in `.node-version`, `.nvmrc`, `Site/.node-version`, and `Site/.nvmrc`)
 ```
 
-5. Deploy. Cloudflare runs the sync script during `npm run build`, so `Site/src/content/docs/` is regenerated from `Vault/Lore/`.
+5. Set the canonical site URL:
 
-No secrets are required for the default template. Set `SITE_URL` to your Cloudflare Pages or custom domain so the sitemap and generated robots.txt use the correct canonical URL.
+```text
+SITE_URL=https://codex.viscerium.co.uk
+```
+
+6. Add the contact form runtime values described in `Site/CONTACT_FORM_SETUP.md`.
+7. Attach the custom domain `codex.viscerium.co.uk` to the Worker once the nameservers and DNS zone are active in Cloudflare.
+
+The build still runs the Obsidian sync and generated-data scripts during `npm run build`, so `Site/src/content/docs/` is regenerated from `Vault/Lore/` before Astro builds.
+
+## Contact form secrets
+
+At minimum, the Worker needs these values before the contact form can send mail:
+
+```text
+RESEND_API_KEY
+CONTACT_TO_EMAIL
+CONTACT_FROM_EMAIL
+CONTACT_VERIFICATION_PROVIDER
+PUBLIC_TURNSTILE_SITE_KEY
+TURNSTILE_SECRET_KEY
+```
+
+Use Cloudflare secrets for `RESEND_API_KEY` and `TURNSTILE_SECRET_KEY`.
 
 ## Optional giscus comments environment variables
 
 The comments component renders on every Starlight page. It will show a setup warning until giscus is configured.
 
-After enabling GitHub Discussions, installing the giscus GitHub app, and choosing the repository/category at `https://giscus.app/`, add these Cloudflare Pages environment variables:
+After enabling GitHub Discussions, installing the giscus GitHub app, and choosing the repository/category at `https://giscus.app/`, add these Worker environment variables:
 
 ```text
 PUBLIC_GISCUS_REPO_ID
 PUBLIC_GISCUS_CATEGORY_ID
 ```
 
-The project defaults to `PUBLIC_GISCUS_REPO=Bladeswillfall/viscerium-codex`, `PUBLIC_GISCUS_CATEGORY=General`, and `PUBLIC_GISCUS_MAPPING=pathname`. You can override any of them in Cloudflare Pages if needed:
+The project defaults to `PUBLIC_GISCUS_REPO=Bladeswillfall/viscerium-codex`, `PUBLIC_GISCUS_CATEGORY=General`, and `PUBLIC_GISCUS_MAPPING=pathname`. You can override any of them if needed:
 
 ```text
 PUBLIC_GISCUS_REPO
