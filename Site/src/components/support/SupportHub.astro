@@ -1,0 +1,65 @@
+---
+import { githubSupportLinks, monetarySupportLinks, socialLinks, supportRoutes } from '../../config/supportLinks.mjs';
+import SupportCard from './SupportCard.astro';
+import SocialIconLink from './SocialIconLink.astro';
+---
+
+<section class="support-page support-page--hub">
+  <header class="support-hero codex-frame">
+    <p class="codex-kicker">Support and contact</p>
+    <h1>Support the VISCERIUM Codex</h1>
+    <p>
+      Report issues, suggest corrections, support continued development, or find official channels as they come online.
+    </p>
+  </header>
+
+  <section class="support-section" aria-labelledby="improve-codex-title">
+    <div class="support-section__header">
+      <p class="codex-kicker">GitHub support</p>
+      <h2 id="improve-codex-title">Help improve the Codex</h2>
+      <p>
+        GitHub is the best place for public, trackable improvements: bugs, typos, broken links, content corrections, and feature requests.
+      </p>
+    </div>
+    <div class="support-card-grid support-card-grid--issues">
+      {githubSupportLinks.map((link) => <SupportCard {...link} />)}
+    </div>
+  </section>
+
+  <section class="support-section" aria-labelledby="support-project-title">
+    <div class="support-section__header">
+      <p class="codex-kicker">Monetary support</p>
+      <h2 id="support-project-title">Support the project</h2>
+      <p>
+        Ko-fi and Patreon links are placeholders for now. When enabled, support will help cover hosting, tooling, references, artwork, and continued Codex development.
+      </p>
+    </div>
+    <div class="support-card-grid support-card-grid--money">
+      {monetarySupportLinks.map((link) => <SupportCard {...link} />)}
+    </div>
+  </section>
+
+  <section class="support-section" aria-labelledby="socials-title">
+    <div class="support-section__header">
+      <p class="codex-kicker">Socials</p>
+      <h2 id="socials-title">Official socials</h2>
+      <p>
+        These are visible placeholders so the icons and layout are ready once the accounts are set up.
+      </p>
+    </div>
+    <div class="social-icon-grid" aria-label="Social links coming soon">
+      {socialLinks.map((link) => <SocialIconLink {...link} />)}
+    </div>
+  </section>
+
+  <section class="support-section support-section--contact codex-frame" aria-labelledby="private-contact-title">
+    <div>
+      <p class="codex-kicker">Private messages</p>
+      <h2 id="private-contact-title">Need to contact privately?</h2>
+      <p>
+        Use the contact page for collaboration, rights or credit concerns, private questions, or anything that should not be a public GitHub issue.
+      </p>
+    </div>
+    <a class="support-button" href={supportRoutes.contact}>Contact us</a>
+  </section>
+</section>
