@@ -176,7 +176,13 @@ export default defineConfig({
       description: siteConfig.description,
       customCss: [
         './src/styles/typography.css',
+        './src/styles/starlight-theme.css',
+        './src/styles/codex-ui.css',
+        './src/styles/sidebar-icons.css',
         './src/styles/sidebar-overlay.css',
+        './src/styles/graph.css',
+        './src/styles/timelines.css',
+        './src/styles/maps.css',
         './src/styles/calendar.css',
         './src/styles/support.css',
       ],
