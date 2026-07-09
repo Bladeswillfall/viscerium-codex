@@ -47,6 +47,7 @@ export const collections = {
         slug: optionalString,
         sourcePath: optionalString,
         type: optionalString,
+        eraStyle: optionalString,
         calendarDate: calendarDateSchema.optional(),
         calendarShowcase: calendarShowcaseSchema.optional(),
         calendarBlocks: z.record(calendarShowcaseSchema).optional(),
