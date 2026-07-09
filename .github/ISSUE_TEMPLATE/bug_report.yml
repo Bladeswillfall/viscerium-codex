@@ -13,7 +13,7 @@ body:
     attributes:
       label: Page or URL
       description: Where did you see the issue?
-      placeholder: https://www.viscerium.com/...
+      placeholder: https://codex.viscerium.co.uk/...
     validations:
       required: false
   - type: textarea
