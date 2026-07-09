@@ -57,13 +57,12 @@ function getCellMeta(resolved: ResolvedCalendarDate) {
   const primaryLinkedObservance = linkedObservances[0];
   const observanceNames = resolved.observances.map((observance) => observance.name);
   const targetLabel = primaryLinkedObservance?.link.label ?? primaryLinkedObservance?.observance.name;
-  const title = [resolved.label, ...observanceNames].join(' — ');
+  const label = [resolved.label, ...observanceNames].join(' — ');
 
   return {
     href: primaryLinkedObservance?.link.href ?? `#${resolved.anchor}`,
     hasLinkedEvent: Boolean(primaryLinkedObservance?.link.href),
-    title: targetLabel ? `${title} — open ${targetLabel}` : title,
-    ariaLabel: targetLabel ? `${resolved.label}; open ${targetLabel}` : resolved.label,
+    ariaLabel: targetLabel ? `${label}; open ${targetLabel}` : label,
     eventNames: observanceNames,
   };
 }
@@ -122,7 +121,7 @@ function getCellMeta(resolved: ResolvedCalendarDate) {
                         meta.hasLinkedEvent && 'calendar-day--linked-event',
                       ]}
                     >
-                      <a href={meta.href} aria-label={meta.ariaLabel} title={meta.title}>
+                      <a href={meta.href} aria-label={meta.ariaLabel}>
                         <span class="calendar-day__number">{day}</span>
                         <span class="calendar-day__weekday">{resolved.weekday}</span>
                         {meta.eventNames.length > 0 && (
@@ -169,7 +168,7 @@ function getCellMeta(resolved: ResolvedCalendarDate) {
                     ]}
                   >
                     {resolved && meta ? (
-                      <a href={meta.href} aria-label={meta.ariaLabel} title={meta.title}>
+                      <a href={meta.href} aria-label={meta.ariaLabel}>
                         <span class="calendar-day__number">{String(intercalaryDay.day).padStart(2, '0')}</span>
                         <span class="calendar-day__weekday">{resolved.weekday}</span>
                         {meta.eventNames.length > 0 && (
