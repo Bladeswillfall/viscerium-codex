@@ -20,6 +20,11 @@ const optionalUrl = z.preprocess((value) => {
   return trimmed.length > 0 ? trimmed : undefined;
 }, z.string().url('Enter a valid URL, including https://').max(500).optional());
 
+const requiredConsent = z.preprocess((value) => {
+  if (typeof value !== 'string') return false;
+  return value === 'on' || value === 'true' || value === '1';
+}, z.boolean().refine((value) => value, 'Confirm that you are happy to receive a reply by email.'));
+
 export const server = {
   contact: defineAction({
     accept: 'form',
@@ -30,7 +35,7 @@ export const server = {
       reason: z.enum(contactReasonValues),
       pageUrl: optionalUrl,
       message: z.string().trim().min(10, 'Enter a message.').max(5000, 'Message is too long.'),
-      consent: z.boolean().refine((value) => value, 'Confirm that you are happy to receive a reply by email.'),
+      consent: requiredConsent,
       companyWebsite: optionalTrimmedString(250),
       'cf-turnstile-response': optionalTrimmedString(4096),
     }),
