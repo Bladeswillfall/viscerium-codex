@@ -186,11 +186,7 @@ export default defineConfig({
         './src/styles/support.css',
       ],
       components: {
-        PageFrame: './src/components/PageFrame.astro',
-        PageTitle: './src/components/PageTitle.astro',
-        TableOfContents: './src/components/RightSidebar.astro',
         Footer: './src/components/StarlightFooter.astro',
-        LastUpdated: './src/components/LastUpdated.astro',
       },
       editLink: {
         baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
