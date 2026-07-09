@@ -1,10 +1,10 @@
 ---
-title:
-description:
+title: Okse Dominion
+description: "A harsh mountain dominion of the Oksmun, built on endurance, fortification, oil, slave labour, and old Vetruxi blood."
 publish: true
-status: cannon
-faction:
-region:
+status: canon
+faction: Okse Dominion
+region: Degel System
 population:
 climate:
 image:
@@ -18,6 +18,9 @@ map:
   layer:
     - locations
 tags:
+  - okse
+  - dominion
+  - citadel
 ---
 
 [VISCERIUM](/w/viscerium)    [Eras](/w/viscerium/a/eras-article)    [CITADEL](/w/viscerium/a/citadel-article)    [Nations](/w/viscerium/c/locations-category-1)      Okse Dominion
