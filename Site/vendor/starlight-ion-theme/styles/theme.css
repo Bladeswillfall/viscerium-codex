@@ -39,6 +39,8 @@
 
     --sl-icon-size: 1.25rem;
 
+    --sl-text-body: .875rem;
+    --sl-text-body-sm: .8125rem;
     --sl-text-4xl: 2rem;
     --sl-text-3xl: 1.75rem;
     --sl-text-2xl: 1.5rem;
@@ -170,6 +172,8 @@
   /* ... and instead add it to the content itself to allow for proper full-width borders */
   .sl-markdown-content {
     padding: 1.5rem var(--sl-content-pad-x);
+    padding-top: 0;
+    font-size: var(--sl-text-body);
   }
 
   /* Link styles */
