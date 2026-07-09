@@ -1,0 +1,139 @@
+@layer starlight.core {
+  .codex-two-column-content[data-era-style] {
+    --era-link: var(--sl-color-accent-high);
+    --era-link-hover: var(--sl-color-white);
+    --era-heading-accent: var(--sl-color-accent-high);
+    --era-heading-ornament-color: var(--era-heading-accent);
+  }
+
+  .codex-two-column-content[data-era-style='e1'] {
+    --era-link: #b88746;
+    --era-link-hover: #f1d29b;
+    --era-heading-accent: #702938;
+    --era-heading-ornament-color: #702938;
+    --era-heading-ornament: url('/assets/ui/era/e1-heading.svg');
+  }
+
+  .codex-two-column-content[data-era-style='e2'] {
+    --era-link: #c18a43;
+    --era-link-hover: #f2c87b;
+    --era-heading-accent: #8d642d;
+  }
+
+  .codex-two-column-content[data-era-style='e3'] {
+    --era-link: #7fb4c6;
+    --era-link-hover: #b8e4ef;
+    --era-heading-accent: #4b8296;
+  }
+
+  .codex-two-column-content[data-era-style='e4'] {
+    --era-link: #b49be8;
+    --era-link-hover: #d9c8ff;
+    --era-heading-accent: #7e68b6;
+  }
+
+  @supports (color: oklch(50% 0.1 120)) {
+    .codex-two-column-content[data-era-style='e1'] {
+      --era-link: oklch(65.8% 0.102 72.2);
+      --era-link-hover: oklch(87.7% 0.079 81.6);
+      --era-heading-accent: oklch(36.3% 0.092 11.4);
+      --era-heading-ornament-color: oklch(36.3% 0.092 11.4);
+    }
+
+    .codex-two-column-content[data-era-style='e2'] {
+      --era-link: oklch(66.9% 0.108 70.5);
+      --era-link-hover: oklch(83.3% 0.106 77.5);
+      --era-heading-accent: oklch(50.9% 0.088 70.5);
+    }
+
+    .codex-two-column-content[data-era-style='e3'] {
+      --era-link: oklch(73.7% 0.067 217.4);
+      --era-link-hover: oklch(87.0% 0.049 209.9);
+      --era-heading-accent: oklch(57.5% 0.073 218.6);
+    }
+
+    .codex-two-column-content[data-era-style='e4'] {
+      --era-link: oklch(74.6% 0.108 300.0);
+      --era-link-hover: oklch(87.7% 0.079 300.0);
+      --era-heading-accent: oklch(55.8% 0.121 300.0);
+    }
+  }
+
+  .codex-two-column-content[data-era-style] :where(
+    .sl-markdown-content a,
+    .codex-breadcrumbs a,
+    .codex-sidebar-meta a,
+    .codex-sidebar-list a,
+    .calendar-date-badge a,
+    starlight-toc a
+  ) {
+    color: var(--era-link);
+  }
+
+  .codex-two-column-content[data-era-style] :where(
+    .sl-markdown-content a:hover,
+    .sl-markdown-content a:focus-visible,
+    .codex-breadcrumbs a:hover,
+    .codex-breadcrumbs a:focus-visible,
+    .codex-sidebar-meta a:hover,
+    .codex-sidebar-meta a:focus-visible,
+    .codex-sidebar-list a:hover,
+    .codex-sidebar-list a:focus-visible,
+    .calendar-date-badge a:hover,
+    .calendar-date-badge a:focus-visible,
+    starlight-toc a:hover,
+    starlight-toc a:focus-visible
+  ) {
+    color: var(--era-link-hover);
+  }
+
+  .codex-two-column-content[data-era-style] .codex-kicker,
+  .codex-two-column-content[data-era-style] .cx-callout-title {
+    color: var(--era-heading-accent);
+  }
+
+  .codex-two-column-content[data-era-style] .sl-markdown-content h2 {
+    border-block-end: 1px solid color-mix(in oklch, var(--era-heading-accent) 38%, transparent);
+    padding-block-end: .2rem;
+  }
+
+  .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2::before {
+    content: '';
+    display: block;
+    inline-size: min(100%, 42rem);
+    block-size: clamp(3.25rem, 7vw, 5.75rem);
+    margin-block: clamp(-2.4rem, -3.5vw, -1.25rem) clamp(-2.2rem, -3vw, -1rem);
+    margin-inline-start: clamp(-3rem, -5vw, -1rem);
+    background: var(--era-heading-ornament-color);
+    pointer-events: none;
+    opacity: .78;
+    -webkit-mask-image: var(--era-heading-ornament);
+    mask-image: var(--era-heading-ornament);
+    -webkit-mask-position: left center;
+    mask-position: left center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
+  @media (max-width: 42rem) {
+    .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2::before {
+      inline-size: 100%;
+      block-size: 3rem;
+      margin-block: -1.15rem -.85rem;
+      margin-inline-start: 0;
+      opacity: .62;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .codex-two-column-content[data-era-style] .sl-markdown-content h2 {
+      border-block-end-color: CanvasText;
+    }
+
+    .codex-two-column-content[data-era-style='e1'] .sl-markdown-content h2::before {
+      display: none;
+    }
+  }
+}
