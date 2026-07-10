@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import partytown from '@astrojs/partytown';
+import preact from '@astrojs/preact';
 import sitemap from '@astrojs/sitemap';
 import starlight from '@astrojs/starlight';
 import starlightAutoSidebar from 'starlight-auto-sidebar';
@@ -190,6 +191,7 @@ const sidebar = [
 export default defineConfig({
   site: siteConfig.site,
   integrations: [
+    preact(),
     starlight({
       title: siteConfig.title,
       description: siteConfig.description,
