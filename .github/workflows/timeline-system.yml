@@ -44,7 +44,7 @@ jobs:
           exit 0
 
       - name: Report unit-test failure
-        if: steps.unit-tests.outputs.status != '0' && github.event_name == 'pull_request'
+        if: steps.unit-tests.outputs.status != '0' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -81,7 +81,7 @@ jobs:
         run: npm run build
 
       - name: Report verified performance
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -92,7 +92,7 @@ jobs:
             echo "$marker"
             echo '## Timeline verification passed'
             echo
-            echo 'Unit tests, static Astro build and standalone Obsidian plugin build passed on Node 24 with npm ci.'
+            echo 'Unit tests, static Astro build and Chronos-backed Obsidian plugin build passed on Node 24 with npm ci.'
             echo
             echo '### Synthetic compiler benchmark'
             echo
