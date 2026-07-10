@@ -1,0 +1,200 @@
+/*
+ * Preserve Chronos as the primary timeline UI.
+ * VISCERIUM contributes theme tokens and metadata states without replacing
+ * Chronos item geometry, range treatment, group layout or refit control.
+ */
+
+.vc-chronos-core.chronos-timeline-container,
+.vc-timeline-app .chronos-timeline-container,
+.vc-chronos-embed .chronos-timeline-container {
+  --chronos-bg-primary: var(--codex-bg, #0d0e0f);
+  --chronos-bg-secondary: var(--codex-surface-raised, #171819);
+  --chronos-text-normal: var(--sl-color-white, #f3efe7);
+  --chronos-text-muted: var(--sl-color-gray-3, #aaa49b);
+  --chronos-text-on-accent: #fff;
+  --chronos-accent: var(--sl-color-accent-high, #c59a5c);
+  --chronos-accent-hover: color-mix(in srgb, var(--sl-color-accent-high, #c59a5c) 82%, white);
+  --chronos-accent-alpha: color-mix(in srgb, var(--sl-color-accent-high, #c59a5c) 20%, transparent);
+  --chronos-border: var(--codex-border, #34373a);
+  --chronos-border-active: color-mix(in srgb, var(--sl-color-accent-high, #c59a5c) 52%, transparent);
+  --chronos-interactive: var(--sl-color-accent-high, #c59a5c);
+  --chronos-interactive-hover: color-mix(in srgb, var(--sl-color-accent-high, #c59a5c) 82%, white);
+  --chronos-icon-color: var(--sl-color-gray-3, #aaa49b);
+  --chronos-bg-text: var(--sl-color-white, #f3efe7);
+  --chronos-radius: 6px;
+  --chronos-radius-small: 3px;
+}
+
+/* Native Markdown embeds should look like Chronos, not a second Codex card. */
+.vc-chronos-embed {
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: var(--chronos-radius, 6px);
+  background: transparent;
+  box-shadow: none;
+}
+
+.vc-chronos-embed-canvas {
+  min-height: 20rem;
+  border: 0;
+  background: transparent;
+}
+
+/* Undo the earlier host replacement of Chronos's refit control. */
+.vc-chronos-core .chronos-timeline-refit-button,
+.vc-chronos-host .chronos-timeline-refit-button,
+.vc-chronos-embed .chronos-timeline-refit-button {
+  top: auto;
+  right: 5px;
+  bottom: 2px;
+  width: auto;
+  height: auto;
+  padding: 2px 5px;
+  border: 0;
+  border-radius: 5px;
+  color: var(--chronos-icon-color);
+  background: transparent;
+  box-shadow: none;
+}
+
+.vc-chronos-core .chronos-timeline-refit-button:hover,
+.vc-chronos-core .chronos-timeline-refit-button:focus-visible,
+.vc-chronos-embed .chronos-timeline-refit-button:hover,
+.vc-chronos-embed .chronos-timeline-refit-button:focus-visible {
+  background: var(--chronos-semi-gray, hsla(0, 0%, 50%, .15));
+}
+
+.vc-chronos-core .chronos-timeline-refit-button svg,
+.vc-chronos-host .chronos-timeline-refit-button svg,
+.vc-chronos-embed .chronos-timeline-refit-button svg {
+  width: 16px;
+  height: auto;
+}
+
+/* Let Chronos own item shapes and parser-assigned colours. */
+.vc-timeline-app .vc-timeline-canvas .vis-item.vc-timeline-item,
+.vc-chronos-embed .vis-item {
+  border-radius: var(--chronos-radius-small, 3px);
+  border-color: var(--chronos-accent);
+  color: var(--chronos-text-on-accent);
+  box-shadow: none;
+  font-family: inherit;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.vis-box.vc-timeline-item,
+.vc-timeline-app .vc-timeline-canvas .vis-item.vis-range.vc-timeline-item,
+.vc-chronos-embed .vis-item.vis-box,
+.vc-chronos-embed .vis-item.vis-range {
+  border-color: transparent;
+  color: var(--chronos-text-on-accent);
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.vis-point.vc-timeline-item,
+.vc-chronos-embed .vis-item.vis-point {
+  border: 0;
+  color: var(--chronos-text-normal);
+  background: transparent;
+  box-shadow: none;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.vc-timeline-item .vis-item-content,
+.vc-chronos-embed .vis-item .vis-item-content {
+  display: block;
+  padding: 5px;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.vis-point.vc-timeline-item .vis-item-content,
+.vc-chronos-embed .vis-item.vis-point .vis-item-content {
+  padding: 0 5px;
+}
+
+/* Importance remains semantic hierarchy, not replacement geometry. */
+.vc-timeline-app .vc-timeline-canvas .vis-item.importance-landmark,
+.vc-timeline-app .vc-timeline-canvas .vis-item.importance-major {
+  border-width: 1px;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.importance-landmark {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.importance-major {
+  font-size: .92rem;
+  font-weight: 700;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.importance-minor,
+.vc-timeline-app .vc-timeline-canvas .vis-item.importance-incidental {
+  color: var(--chronos-text-on-accent);
+  font-size: .78rem;
+  opacity: .82;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.vis-point.importance-minor,
+.vc-timeline-app .vc-timeline-canvas .vis-item.vis-point.importance-incidental {
+  color: var(--chronos-text-muted);
+}
+
+/* Certainty remains visible without replacing Chronos's colour language. */
+.vc-timeline-app .vc-timeline-canvas .vis-item.certainty-approximate {
+  outline: 1px dashed color-mix(in srgb, currentColor 68%, transparent);
+  outline-offset: 1px;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.certainty-disputed {
+  outline: 2px double color-mix(in srgb, currentColor 72%, transparent);
+  outline-offset: 1px;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.certainty-legendary {
+  outline: 1px dotted color-mix(in srgb, currentColor 72%, transparent);
+  outline-offset: 2px;
+  font-style: italic;
+}
+
+/* Parser colour styles supersede the old category text-colour overrides. */
+.vc-timeline-app .vc-timeline-canvas .vis-item.vc-timeline-item:not(.vis-point) {
+  color: var(--chronos-text-on-accent);
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-item.vis-point.vc-timeline-item {
+  color: var(--chronos-text-normal);
+}
+
+/* Keep the fictional calendar strip, but visually seat it inside Chronos. */
+.vc-timeline-app .vc-timeline-axis {
+  height: 2.5rem;
+  border-color: var(--chronos-border);
+  background: var(--chronos-bg-secondary);
+}
+
+.vc-timeline-app .vc-timeline-axis span {
+  color: var(--chronos-text-muted);
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.vc-timeline-app .vc-timeline-stage,
+.vc-timeline-app .vc-timeline-minimap-wrap {
+  border-color: var(--chronos-border);
+  background: var(--chronos-bg-secondary);
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-label {
+  color: var(--chronos-text-muted);
+  background: var(--chronos-bg-secondary);
+  font-family: inherit;
+  font-size: .8rem;
+  font-weight: 400;
+  text-transform: none;
+}
+
+@media (max-width: 40rem) {
+  .vc-chronos-embed {
+    margin-inline: calc(var(--sl-content-pad-x, 1rem) * -.35);
+  }
+}
