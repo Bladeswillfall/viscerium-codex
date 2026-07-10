@@ -1,4 +1,4 @@
-import { parseChronos } from 'chronos-timeline-md';
+import { attachChronosStyles, parseChronos } from 'chronos-timeline-md';
 import { absoluteDayToSyntheticDate, capTimelineGroups, KNOWN_CATEGORY_TOKENS } from './core.mjs';
 
 const CATEGORY_COLORS = {
@@ -167,6 +167,8 @@ export function createChronosTimelineModel({
   if (typeof formatEventDate !== 'function') {
     throw new Error('Chronos timeline adapter requires a date formatter.');
   }
+
+  if (typeof document !== 'undefined') attachChronosStyles(document);
 
   const { groups, groupFor } = buildGroups(events, laneMode);
   const startDay = Number.isSafeInteger(visibleStartDay) ? visibleStartDay : dataset.absoluteStartDay;
