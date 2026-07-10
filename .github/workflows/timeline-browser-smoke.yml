@@ -8,6 +8,7 @@ on:
     paths:
       - 'Site/src/components/timeline/**'
       - 'Site/src/lib/timeline/**'
+      - 'Site/src/data/timelines/**'
       - 'Site/package.json'
       - 'Site/package-lock.json'
       - 'Site/astro.config.mjs'
@@ -54,69 +55,71 @@ jobs:
         run: |
           mkdir -p tests/browser
           cat > tests/browser/timeline-smoke.spec.mjs <<'TEST'
-          import { writeFileSync } from 'node:fs';
+          import { mkdirSync, writeFileSync } from 'node:fs';
           import { test, expect } from '@playwright/test';
 
-          test('Astro hydrates the Chronos timeline island', async ({ page }) => {
-            const browserMessages = [];
-            page.on('console', (message) => {
-              const entry = `console:${message.type()}: ${message.text()}`;
-              browserMessages.push(entry);
-              console.log(entry);
-            });
-            page.on('pageerror', (error) => {
-              const entry = `pageerror: ${error.stack || error.message}`;
-              browserMessages.push(entry);
-              console.log(entry);
-            });
-            page.on('requestfailed', (request) => {
-              const entry = `requestfailed: ${request.url()} — ${request.failure()?.errorText}`;
-              browserMessages.push(entry);
-              console.log(entry);
-            });
+          const eras = ['citadel', 'smog', 'nearsight', 'entropy'];
+          mkdirSync('timeline-browser-diagnostics', { recursive: true });
 
-            await page.goto(
-              'http://127.0.0.1:4321/eras/citadel/?calendar=okse&start=3360244&end=3433405',
-              { waitUntil: 'networkidle' },
-            );
-            await page.waitForTimeout(5_000);
+          for (const era of eras) {
+            test(`${era} hydrates the Chronos timeline island`, async ({ page }) => {
+              const browserMessages = [];
+              page.on('console', (message) => {
+                const entry = `console:${message.type()}: ${message.text()}`;
+                browserMessages.push(entry);
+                console.log(`[${era}] ${entry}`);
+              });
+              page.on('pageerror', (error) => {
+                const entry = `pageerror: ${error.stack || error.message}`;
+                browserMessages.push(entry);
+                console.log(`[${era}] ${entry}`);
+              });
+              page.on('requestfailed', (request) => {
+                const entry = `requestfailed: ${request.url()} — ${request.failure()?.errorText}`;
+                browserMessages.push(entry);
+                console.log(`[${era}] ${entry}`);
+              });
 
-            const diagnostics = await page.evaluate(() => {
-              const islands = [...document.querySelectorAll('astro-island')].map((island) => ({
-                ssr: island.getAttribute('ssr'),
-                componentUrl: island.getAttribute('component-url'),
-                rendererUrl: island.getAttribute('renderer-url'),
-                client: island.getAttribute('client'),
-                propsLength: island.getAttribute('props')?.length ?? 0,
-                hasTimeline: Boolean(island.querySelector('[data-vc-timeline-island]')),
-                innerHtmlStart: island.innerHTML.slice(0, 1_500),
-              }));
-              const mount = document.querySelector('[data-vc-timeline-mount]');
-              const fallback = document.querySelector('[data-vc-fallback]');
-              return {
-                href: window.location.href,
-                readyState: document.readyState,
-                islands,
-                mountedCount: document.querySelectorAll('[data-vc-island-mounted="true"]').length,
-                canvasCount: document.querySelectorAll('[data-vc-canvas]').length,
-                mountHtml: mount?.innerHTML.slice(0, 2_000) ?? null,
-                fallbackHidden: fallback?.hidden ?? null,
-              };
+              await page.goto(`http://127.0.0.1:4321/eras/${era}/`, { waitUntil: 'networkidle' });
+              await page.waitForTimeout(3_000);
+
+              const diagnostics = await page.evaluate(() => {
+                const islands = [...document.querySelectorAll('astro-island')].map((island) => ({
+                  ssr: island.getAttribute('ssr'),
+                  componentUrl: island.getAttribute('component-url'),
+                  rendererUrl: island.getAttribute('renderer-url'),
+                  client: island.getAttribute('client'),
+                  propsLength: island.getAttribute('props')?.length ?? 0,
+                  hasTimeline: Boolean(island.querySelector('[data-vc-timeline-island]')),
+                  innerHtmlStart: island.innerHTML.slice(0, 1_500),
+                }));
+                const mount = document.querySelector('[data-vc-timeline-mount]');
+                const fallback = document.querySelector('[data-vc-fallback]');
+                return {
+                  href: window.location.href,
+                  readyState: document.readyState,
+                  islands,
+                  mountedCount: document.querySelectorAll('[data-vc-island-mounted="true"]').length,
+                  canvasCount: document.querySelectorAll('[data-vc-canvas]').length,
+                  mountHtml: mount?.innerHTML.slice(0, 2_000) ?? null,
+                  fallbackHidden: fallback?.hidden ?? null,
+                };
+              });
+
+              writeFileSync(
+                `timeline-browser-diagnostics/${era}.json`,
+                JSON.stringify({ browserMessages, diagnostics }, null, 2),
+              );
+              await page.screenshot({ path: `timeline-browser-diagnostics/${era}.png`, fullPage: true });
+
+              await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
+              await expect(page.locator('[data-vc-canvas]')).toBeVisible();
+              await expect(page.locator('[data-vc-fallback]')).toBeHidden();
+              await expect(page.locator('[data-vc-timeline-mount]')).not.toBeEmpty();
+              expect(browserMessages.filter((entry) => entry.startsWith('pageerror:'))).toEqual([]);
+              expect(browserMessages.filter((entry) => entry.includes('failed to mount'))).toEqual([]);
             });
-
-            writeFileSync(
-              'timeline-browser-diagnostics.json',
-              JSON.stringify({ browserMessages, diagnostics }, null, 2),
-            );
-            console.log(JSON.stringify({ browserMessages, diagnostics }, null, 2));
-            await page.screenshot({ path: 'timeline-browser-smoke.png', fullPage: true });
-
-            await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
-            await expect(page.locator('[data-vc-canvas]')).toBeVisible();
-            await expect(page.locator('[data-vc-fallback]')).toBeHidden();
-            await expect(page.locator('[data-vc-timeline-mount]')).not.toBeEmpty();
-            expect(browserMessages.filter((entry) => entry.startsWith('pageerror:'))).toEqual([]);
-          });
+          }
           TEST
           npx playwright test tests/browser/timeline-smoke.spec.mjs --reporter=line --workers=1
       - name: Show Astro preview log
@@ -128,7 +131,6 @@ jobs:
         with:
           name: timeline-browser-smoke
           path: |
-            Site/timeline-browser-diagnostics.json
-            Site/timeline-browser-smoke.png
+            Site/timeline-browser-diagnostics
             Site/test-results
           if-no-files-found: ignore
