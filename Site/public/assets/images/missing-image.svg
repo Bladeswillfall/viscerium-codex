@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Missing image placeholder</title>
+  <desc id="desc">A placeholder shown when a referenced codex image is missing from the vault assets.</desc>
+  <rect width="1200" height="675" fill="#161819"/>
+  <rect x="36" y="36" width="1128" height="603" fill="none" stroke="#7f8a8d" stroke-width="6" stroke-dasharray="24 18"/>
+  <path d="M312 457l146-155 104 112 68-72 258 115H312z" fill="#343a3d"/>
+  <circle cx="782" cy="218" r="54" fill="#4b5558"/>
+  <text x="600" y="550" fill="#d8dedf" font-family="Arial, Helvetica, sans-serif" font-size="56" text-anchor="middle">Missing image</text>
+</svg>
