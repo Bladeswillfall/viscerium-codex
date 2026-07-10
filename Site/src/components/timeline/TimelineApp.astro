@@ -1,0 +1,59 @@
+---
+import { formatAbsoluteDay } from '../../lib/calendar/runtime.mjs';
+
+const {
+  dataset,
+  defaultCalendar = dataset?.defaultCalendar,
+  laneMode = 'unified',
+  showFilters = true,
+  showMinimap = true,
+  showLegend = true,
+  compact = false,
+} = Astro.props;
+
+const options = { defaultCalendar, laneMode, showFilters, showMinimap, showLegend, compact };
+const serializedDataset = JSON.stringify(dataset).replace(/</g, '\\u003c');
+const serializedOptions = JSON.stringify(options).replace(/</g, '\\u003c');
+---
+
+{dataset ? (
+  <div class="vc-timeline-shell" data-vc-timeline-root>
+    <div data-vc-timeline-mount></div>
+    <section class="vc-timeline-fallback" data-vc-fallback aria-labelledby={`fallback-${dataset.id}`}>
+      <h2 id={`fallback-${dataset.id}`}>Chronological list</h2>
+      <p>This list remains available when the interactive timeline cannot run.</p>
+      <ol>
+        {dataset.events.map((event) => (
+          <li>
+            <p class="timeline-date">
+              {formatAbsoluteDay(event.absoluteStartDay, defaultCalendar, event.precision)}
+              {event.absoluteEndDay !== undefined && ` — ${formatAbsoluteDay(event.absoluteEndDay, defaultCalendar, event.endPrecision ?? event.precision)}`}
+            </p>
+            <h3><a href={event.href}>{event.title}</a></h3>
+            <p>{event.description}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+    <script type="application/json" data-vc-dataset set:html={serializedDataset}></script>
+    <script type="application/json" data-vc-options set:html={serializedOptions}></script>
+  </div>
+) : <p class="codex-warning">Timeline data is unavailable.</p>}
+
+<script>
+  import 'vis-timeline/styles/vis-timeline-graph2d.min.css';
+  import { mountTimeline } from '../../lib/timeline/renderer.mjs';
+
+  for (const root of document.querySelectorAll('[data-vc-timeline-root]:not([data-vc-mounted])')) {
+    root.setAttribute('data-vc-mounted', 'true');
+    try {
+      const dataset = JSON.parse(root.querySelector('[data-vc-dataset]').textContent || '{}');
+      const options = JSON.parse(root.querySelector('[data-vc-options]').textContent || '{}');
+      mountTimeline(root.querySelector('[data-vc-timeline-mount]'), dataset, options);
+      root.querySelector('[data-vc-fallback]').hidden = true;
+    } catch (error) {
+      console.error('VISCERIUM timeline failed to mount.', error);
+      root.removeAttribute('data-vc-mounted');
+    }
+  }
+</script>
