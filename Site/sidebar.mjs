@@ -20,8 +20,8 @@ function labelFromSegment(segment) {
   return segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function titleFromFrontmatter(raw) {
-  const match = raw.match(/^---\n[\s\S]*?^title:\s*(.+?)\s*$/m);
+function frontmatterValue(raw, key) {
+  const match = raw.match(new RegExp(`^---\\n[\\s\\S]*?^${key}:\\s*(.+?)\\s*$`, 'm'));
   return match?.[1]?.replace(/^['\"]|['\"]$/g, '');
 }
 
@@ -58,14 +58,15 @@ export async function buildSidebar() {
       if (!rel.endsWith('.md') && !rel.endsWith('.mdx')) continue;
       const id = rel.replace(/\.(md|mdx)$/, '');
       const raw = await fs.readFile(file, 'utf8');
-      const title = titleFromFrontmatter(raw) ?? labelFromSegment(path.basename(id));
+      const title = frontmatterValue(raw, 'title') ?? labelFromSegment(path.basename(id));
+      const slug = frontmatterValue(raw, 'slug') ?? id;
+      const link = slug === 'index' ? '/' : `/${slug.replace(/^\/+|\/+$/g, '')}/`;
       if (id === 'index') {
         rootItems.unshift({ label: iconLabel('home', title), link: '/', badge: { text: 'Canon', variant: 'note' } });
         continue;
       }
 
       const segments = id.split('/');
-      const link = `/${id}/`;
       if (segments.length === 1) {
         rootItems.push({ label: title, link });
         continue;
@@ -75,7 +76,7 @@ export async function buildSidebar() {
       for (const segment of segments.slice(1, -1)) {
         group = ensureGroup(group.groups, segment);
       }
-      group.links.push({ label: title, link });
+      group.links.push({ label: segments.at(-1) === 'index' ? 'Overview' : title, link });
     }
 
     return [
