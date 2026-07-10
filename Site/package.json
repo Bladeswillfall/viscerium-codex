@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "dev:sync": "npm run sync && astro dev",
     "validate:vault": "node scripts/validate-vault-notes.mjs",
-    "sync": "npm run validate:vault && node scripts/sync-public-notes.mjs",
+    "sync": "npm run validate:vault && node scripts/sync-public-notes.mjs && node scripts/generate-category-pages.mjs",
     "validate": "node scripts/validate-content.mjs",
     "generate:graph": "node scripts/generate-graph.mjs",
     "generate:maps": "node scripts/generate-map-data.mjs",
