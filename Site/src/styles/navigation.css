@@ -1,6 +1,56 @@
-@import './codex-icons.css';
-
 @layer starlight.core {
+  /* Shared page, heading, and navigation icon rendering. */
+  .codex-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 1em;
+    height: 1em;
+    align-items: center;
+    justify-content: center;
+    color: currentColor;
+    line-height: 1;
+    vertical-align: -0.06em;
+  }
+
+  .codex-icon > i {
+    display: block;
+    width: 1em;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .codex-local-icon {
+    background-color: currentColor;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+  }
+
+  .codex-page-title {
+    display: flex;
+    align-items: center;
+    gap: .42em;
+  }
+
+  .codex-title-icon {
+    color: var(--sl-color-accent-high);
+    font-size: .78em;
+  }
+
+  .sl-markdown-content :is(h1, h2, h3, h4, h5, h6) > .codex-heading-icon,
+  .content-panel :is(h1, h2, h3, h4, h5, h6) > .codex-heading-icon {
+    margin-inline-end: .42em;
+    color: var(--sl-color-accent-high);
+    font-size: .8em;
+    vertical-align: .02em;
+  }
+
+  .sl-markdown-content :is(h3, h4, h5, h6) > .codex-heading-icon,
+  .content-panel :is(h3, h4, h5, h6) > .codex-heading-icon {
+    color: var(--sl-color-gray-3);
+    font-size: .82em;
+  }
+
+  /* Left navigation presentation. */
   .sidebar {
     border-inline-end-color: var(--codex-border);
     background: var(--sl-color-bg-sidebar);
@@ -138,5 +188,63 @@
   :root[data-theme='dark'] .theme-toggle .dark-icon,
   :root[data-theme='light'] .theme-toggle .light-icon {
     display: none;
+  }
+
+  /* Desktop overlay behaviour for the left navigation. */
+  @media (min-width: 50rem) {
+    :root {
+      --codex-sidebar-overlay-width: 18rem;
+    }
+
+    html:not(.codex-sidebar-collapsed) {
+      --sl-sidebar-width: 0rem;
+    }
+
+    html:not(.codex-sidebar-collapsed) :is(nav.sidebar-print-hide, .sidebar-pane) {
+      --sl-sidebar-width: var(--codex-sidebar-overlay-width);
+    }
+
+    :is(nav.sidebar-print-hide, .sidebar-pane) {
+      position: fixed;
+      z-index: 60;
+      inset-block-start: var(--sl-nav-height, 3.5rem);
+      inset-block-end: 0;
+      inset-inline-start: 0;
+      inline-size: var(--codex-sidebar-overlay-width);
+      max-inline-size: calc(100vw - 3.75rem);
+      overflow-y: auto;
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+      box-shadow: 1rem 0 2.5rem rgba(0, 0, 0, .32);
+      transition:
+        transform .2s ease,
+        opacity .2s ease,
+        box-shadow .2s ease;
+    }
+
+    html.codex-sidebar-collapsed :is(nav.sidebar-print-hide, .sidebar-pane) {
+      transform: translateX(-110%);
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: none;
+    }
+
+    html:not(.codex-sidebar-collapsed) .codex-sidebar-toggle {
+      inset-inline-start: calc(var(--codex-sidebar-overlay-width) + .75rem);
+    }
+
+    .right-sidebar-panel .sl-container,
+    .codex-page-sidebar .sl-container {
+      inline-size: 100% !important;
+      max-inline-size: none !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sidebar-content a:hover .codex-icon,
+    .sidebar-content summary:hover .codex-icon {
+      transform: translateY(-1px);
+    }
   }
 }
