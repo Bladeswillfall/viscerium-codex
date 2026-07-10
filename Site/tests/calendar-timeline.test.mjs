@@ -61,6 +61,14 @@ test('synthetic UTC dates preserve one world day without timezone drift', () => 
   assert.throws(() => absoluteDayToSyntheticDate(Number.MAX_SAFE_INTEGER), /safe synthetic JavaScript date range/);
 });
 
+test('timeline-local synthetic origins keep distant world dates inside four-digit years', () => {
+  const origin = 3_360_000;
+  const absolute = origin + 73_000;
+  const date = absoluteDayToSyntheticDate(absolute, origin);
+  assert.ok(date.getUTCFullYear() >= 2000 && date.getUTCFullYear() < 9999);
+  assert.equal(syntheticDateToAbsoluteDay(date, origin), absolute);
+});
+
 test('era membership includes boundaries and overlapping periods', () => {
   const eras = [
     { id: 'a', order: 1, absoluteStartDay: 0, absoluteEndDay: 9 },
@@ -103,6 +111,29 @@ test('URL state rejects invalid calendars and remains shareable', () => {
   const updated = updateTimelineUrl('https://example.test/timelines/super/', { calendar: 'okse', selected: 'e-1' });
   assert.equal(updated.searchParams.get('calendar'), 'okse');
   assert.equal(updated.searchParams.get('event'), 'e-1');
+});
+
+test('missing timeline ranges remain undefined while explicit zero remains valid', () => {
+  const absent = parseTimelineUrlState('https://example.test/eras/smog/', {
+    calendarIds: ['okse'],
+    fallbackCalendar: 'okse',
+  });
+  assert.equal(absent.visibleStartDay, undefined);
+  assert.equal(absent.visibleEndDay, undefined);
+
+  const explicitZero = parseTimelineUrlState('https://example.test/eras/smog/?start=0&end=0', {
+    calendarIds: ['okse'],
+    fallbackCalendar: 'okse',
+  });
+  assert.equal(explicitZero.visibleStartDay, 0);
+  assert.equal(explicitZero.visibleEndDay, 0);
+
+  const invalid = parseTimelineUrlState('https://example.test/eras/smog/?start=&end=not-a-number', {
+    calendarIds: ['okse'],
+    fallbackCalendar: 'okse',
+  });
+  assert.equal(invalid.visibleStartDay, undefined);
+  assert.equal(invalid.visibleEndDay, undefined);
 });
 
 test('calendar selection priority is query, storage, timeline, global', () => {

@@ -82,24 +82,32 @@ export function compareTimelineEvents(left, right) {
   return title || left.id.localeCompare(right.id);
 }
 
-export function assertSyntheticDateRange(absoluteDay) {
+export function assertSyntheticDateRange(absoluteDay, originAbsoluteDay = 0) {
   if (!Number.isSafeInteger(absoluteDay)) throw new Error(`Absolute world-day must be a safe integer: ${absoluteDay}`);
-  const milliseconds = SYNTHETIC_EPOCH_MS + absoluteDay * DAY_MS;
+  if (!Number.isSafeInteger(originAbsoluteDay)) throw new Error(`Synthetic origin must be a safe integer: ${originAbsoluteDay}`);
+  const relativeDay = absoluteDay - originAbsoluteDay;
+  if (!Number.isSafeInteger(relativeDay)) {
+    throw new Error(`Absolute world-day ${absoluteDay} cannot be represented relative to ${originAbsoluteDay}`);
+  }
+  const milliseconds = SYNTHETIC_EPOCH_MS + relativeDay * DAY_MS;
   if (!Number.isFinite(milliseconds) || Math.abs(milliseconds) > JS_DATE_LIMIT_MS) {
-    throw new Error(`Absolute world-day ${absoluteDay} exceeds the safe synthetic JavaScript date range`);
+    throw new Error(`Absolute world-day ${absoluteDay} exceeds the safe synthetic JavaScript date range relative to ${originAbsoluteDay}`);
   }
   return milliseconds;
 }
 
-export function absoluteDayToSyntheticDate(absoluteDay) {
-  return new Date(assertSyntheticDateRange(absoluteDay));
+export function absoluteDayToSyntheticDate(absoluteDay, originAbsoluteDay = 0) {
+  return new Date(assertSyntheticDateRange(absoluteDay, originAbsoluteDay));
 }
 
-export function syntheticDateToAbsoluteDay(date) {
+export function syntheticDateToAbsoluteDay(date, originAbsoluteDay = 0) {
+  if (!Number.isSafeInteger(originAbsoluteDay)) throw new Error(`Synthetic origin must be a safe integer: ${originAbsoluteDay}`);
   const value = date instanceof Date ? date : new Date(date);
   if (Number.isNaN(value.getTime())) throw new Error(`Invalid synthetic date: ${date}`);
-  const day = Math.round((value.getTime() - SYNTHETIC_EPOCH_MS) / DAY_MS);
-  assertSyntheticDateRange(day);
+  const relativeDay = Math.round((value.getTime() - SYNTHETIC_EPOCH_MS) / DAY_MS);
+  const day = originAbsoluteDay + relativeDay;
+  if (!Number.isSafeInteger(day)) throw new Error(`Synthetic date ${date} exceeds the safe absolute world-day range`);
+  assertSyntheticDateRange(day, originAbsoluteDay);
   return day;
 }
 
@@ -159,9 +167,13 @@ export function parseTimelineUrlState(urlLike, options = {}) {
   const lane = url.searchParams.get('lane');
   const laneMode = LANE_MODES.includes(lane) ? lane : options.fallbackLaneMode ?? 'unified';
   const split = (key) => [...new Set((url.searchParams.get(key) ?? '').split(',').map((item) => normalizeId(item)).filter(Boolean))];
+  const parseInteger = (key) => {
+    const raw = url.searchParams.get(key);
+    if (raw === null || raw.trim() === '') return undefined;
+    const value = Number(raw);
+    return Number.isSafeInteger(value) ? value : undefined;
+  };
   const importance = split('importance').filter((value) => IMPORTANCE_LEVELS.includes(value));
-  const start = Number(url.searchParams.get('start'));
-  const end = Number(url.searchParams.get('end'));
   return {
     calendar,
     selected: url.searchParams.get('event') || undefined,
@@ -170,8 +182,8 @@ export function parseTimelineUrlState(urlLike, options = {}) {
     categories: split('categories'),
     eras: split('eras'),
     laneMode,
-    visibleStartDay: Number.isSafeInteger(start) ? start : undefined,
-    visibleEndDay: Number.isSafeInteger(end) ? end : undefined,
+    visibleStartDay: parseInteger('start'),
+    visibleEndDay: parseInteger('end'),
   };
 }
 

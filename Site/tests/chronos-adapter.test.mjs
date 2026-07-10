@@ -147,6 +147,32 @@ test('sanitizes parser delimiters while retaining canonical metadata', () => {
   assert.equal(item.cLink, '/first/');
 });
 
+
+test('maps distant VISCERIUM dates into Chronos four-digit parser years', () => {
+  const dataset = fixture();
+  const shift = 3_360_000;
+  dataset.absoluteStartDay += shift;
+  dataset.absoluteEndDay += shift;
+  for (const era of dataset.eras) {
+    era.absoluteStartDay += shift;
+    era.absoluteEndDay += shift;
+  }
+  for (const event of dataset.events) {
+    event.absoluteStartDay += shift;
+    if (event.absoluteEndDay !== undefined) event.absoluteEndDay += shift;
+  }
+
+  const model = createChronosTimelineModel({
+    dataset,
+    formatEventDate: (event) => String(event.absoluteStartDay),
+  });
+
+  assert.doesNotMatch(model.source, /[+-]\d{6}/);
+  assert.match(model.source, /> DEFAULTVIEW 2000-01-01\|2000-04-10/);
+  const first = model.items.find((item) => item.id === 'event-a');
+  assert.equal(syntheticDateToAbsoluteDay(first.start, model.syntheticOriginDay), shift + 10);
+});
+
 test('requires a VISCERIUM date formatter rather than exposing synthetic dates', () => {
   assert.throws(
     () => createChronosTimelineModel({ dataset: fixture() }),
