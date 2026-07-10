@@ -60,6 +60,26 @@ const webmentionHead = siteConfig.webmentions?.enabled
     ].filter(Boolean)
   : [];
 
+const fontAwesomeHead = [
+  {
+    tag: 'link',
+    attrs: {
+      rel: 'preconnect',
+      href: 'https://cdnjs.cloudflare.com',
+      crossorigin: 'anonymous',
+    },
+  },
+  {
+    tag: 'link',
+    attrs: {
+      rel: 'stylesheet',
+      href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css',
+      crossorigin: 'anonymous',
+      referrerpolicy: 'no-referrer',
+    },
+  },
+];
+
 const faviconPath = '/favicons/viscerium-favicon.svg';
 
 const faviconHead = [
@@ -216,7 +236,7 @@ export default defineConfig({
         starlightTelescope(),
       ],
       sidebar,
-      head: [...feedHead, ...webmentionHead, ...faviconHead, ...ga4Head],
+      head: [...feedHead, ...webmentionHead, ...fontAwesomeHead, ...faviconHead, ...ga4Head],
       social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
     }),
     sitemap(),

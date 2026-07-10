@@ -7,6 +7,7 @@
     "dev": "astro dev",
     "dev:sync": "npm run sync && astro dev",
     "validate:vault": "node scripts/validate-vault-notes.mjs",
+    "validate:icons": "node scripts/validate-icon-output.mjs",
     "sync:avatars": "node scripts/sync-contributor-avatars.mjs",
     "sync": "npm run validate:vault && node scripts/sync-public-notes.mjs && node scripts/generate-category-pages.mjs && npm run sync:avatars",
     "validate": "node scripts/validate-content.mjs",
@@ -15,6 +16,7 @@
     "generate:timelines": "node scripts/generate-timeline-data.mjs",
     "prebuild": "npm run sync && npm run validate && npm run generate:graph && npm run generate:maps && npm run generate:timelines",
     "build": "astro build",
+    "postbuild": "npm run validate:icons",
     "preview": "astro preview",
     "astro": "astro",
     "test": "npm run build"
