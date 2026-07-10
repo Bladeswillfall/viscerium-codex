@@ -4,11 +4,18 @@
  * Chronos item geometry, range treatment, group layout or refit control.
  */
 
+.vc-timeline-app,
+.vc-chronos-embed,
 .vc-chronos-core.chronos-timeline-container,
 .vc-timeline-app .chronos-timeline-container,
 .vc-chronos-embed .chronos-timeline-container {
   --chronos-bg-primary: var(--codex-bg, #0d0e0f);
   --chronos-bg-secondary: var(--codex-surface-raised, #171819);
+  --chronos-canvas: color-mix(in srgb, var(--chronos-bg-primary) 90%, black);
+  --chronos-canvas-raised: color-mix(in srgb, var(--chronos-bg-secondary) 92%, black);
+  --chronos-canvas-muted: color-mix(in srgb, var(--chronos-bg-secondary) 76%, var(--chronos-bg-primary));
+  --chronos-grid-minor: color-mix(in srgb, var(--codex-border, #34373a) 52%, transparent);
+  --chronos-grid-major: color-mix(in srgb, var(--codex-border-strong, #666057) 68%, transparent);
   --chronos-text-normal: var(--sl-color-white, #f3efe7);
   --chronos-text-muted: var(--sl-color-gray-3, #aaa49b);
   --chronos-text-on-accent: #fff;
@@ -23,6 +30,89 @@
   --chronos-bg-text: var(--sl-color-white, #f3efe7);
   --chronos-radius: 6px;
   --chronos-radius-small: 3px;
+  color-scheme: dark;
+}
+
+/*
+ * vis-timeline ships several pale panel surfaces that sit below Chronos's
+ * theme variables. Keep Chronos geometry, but explicitly seat those panels in
+ * the Codex dark palette so the canvas does not appear as an embedded light UI.
+ */
+.vc-timeline-app .chronos-timeline-container,
+.vc-chronos-embed .chronos-timeline-container,
+.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-timeline,
+.vc-chronos-embed .vis-timeline {
+  color: var(--chronos-text-normal);
+  background-color: var(--chronos-canvas) !important;
+}
+
+.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) :is(
+  .vis-panel.vis-center,
+  .vis-panel.vis-background,
+  .vis-panel.vis-foreground,
+  .vis-content
+),
+.vc-chronos-embed :is(
+  .vis-panel.vis-center,
+  .vis-panel.vis-background,
+  .vis-panel.vis-foreground,
+  .vis-content
+) {
+  background-color: var(--chronos-canvas) !important;
+}
+
+.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) :is(
+  .vis-panel.vis-left,
+  .vis-panel.vis-right,
+  .vis-panel.vis-top,
+  .vis-panel.vis-bottom,
+  .vis-labelset,
+  .vis-time-axis
+),
+.vc-chronos-embed :is(
+  .vis-panel.vis-left,
+  .vis-panel.vis-right,
+  .vis-panel.vis-top,
+  .vis-panel.vis-bottom,
+  .vis-labelset,
+  .vis-time-axis
+) {
+  color: var(--chronos-text-muted);
+  background-color: var(--chronos-canvas-raised) !important;
+}
+
+.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-label,
+.vc-chronos-embed .vis-label {
+  color: var(--chronos-text-muted);
+  border-color: var(--chronos-border) !important;
+  background-color: var(--chronos-canvas-muted) !important;
+}
+
+.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-label .vis-inner,
+.vc-chronos-embed .vis-label .vis-inner,
+.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-time-axis .vis-text,
+.vc-chronos-embed .vis-time-axis .vis-text {
+  color: var(--chronos-text-muted) !important;
+}
+
+.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-grid.vis-minor,
+.vc-chronos-embed .vis-grid.vis-minor {
+  border-color: var(--chronos-grid-minor) !important;
+}
+
+.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-grid.vis-major,
+.vc-chronos-embed .vis-grid.vis-major {
+  border-color: var(--chronos-grid-major) !important;
+}
+
+.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) :is(.vis-panel, .vis-timeline),
+.vc-chronos-embed :is(.vis-panel, .vis-timeline) {
+  border-color: var(--chronos-border) !important;
+}
+
+.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-shadow,
+.vc-chronos-embed .vis-shadow {
+  box-shadow: 0 0 1rem color-mix(in srgb, black 72%, transparent) !important;
 }
 
 /* Native Markdown embeds should look like Chronos, not a second Codex card. */
@@ -38,7 +128,7 @@
 .vc-chronos-embed-canvas {
   min-height: 20rem;
   border: 0;
-  background: transparent;
+  background: var(--chronos-canvas);
 }
 
 /* Undo the earlier host replacement of Chronos's refit control. */
@@ -167,7 +257,7 @@
 .vc-timeline-app .vc-timeline-axis {
   height: 2.5rem;
   border-color: var(--chronos-border);
-  background: var(--chronos-bg-secondary);
+  background: var(--chronos-canvas-raised);
 }
 
 .vc-timeline-app .vc-timeline-axis span {
@@ -181,16 +271,20 @@
 .vc-timeline-app .vc-timeline-stage,
 .vc-timeline-app .vc-timeline-minimap-wrap {
   border-color: var(--chronos-border);
-  background: var(--chronos-bg-secondary);
+  background: var(--chronos-canvas);
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-label {
   color: var(--chronos-text-muted);
-  background: var(--chronos-bg-secondary);
+  background: var(--chronos-canvas-muted);
   font-family: inherit;
   font-size: .8rem;
   font-weight: 400;
   text-transform: none;
+}
+
+.vc-timeline-app .vc-timeline-minimap {
+  background: var(--chronos-canvas);
 }
 
 @media (max-width: 40rem) {
