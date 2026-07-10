@@ -226,7 +226,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
   const timeline = chronos.timeline;
   if (!timeline) throw new Error('Chronos did not create a timeline instance.');
   timeline.setOptions({
-    height: options.compact ? '28rem' : '34rem',
+    maxHeight: options.compact ? '28rem' : '34rem',
     minHeight: '20rem',
     stack: true,
     stackSubgroups: true,
