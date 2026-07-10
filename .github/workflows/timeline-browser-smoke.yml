@@ -92,13 +92,27 @@ jobs:
                 const lane = page.locator('[data-vc-lane]');
                 await lane.selectOption('lane');
                 await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
+                await page.waitForTimeout(500);
 
-                const scrollPanel = page.locator('[data-vc-canvas] .vis-panel.vis-left.vis-vertical-scroll');
+                const scrollPanel = page.locator('[data-vc-canvas] .vis-panel.vis-left');
                 await expect(scrollPanel).toBeVisible();
-                const scrollMetrics = await scrollPanel.evaluate((element) => ({
-                  clientHeight: element.clientHeight,
-                  scrollHeight: element.scrollHeight,
-                }));
+                const scrollMetrics = await scrollPanel.evaluate((element) => {
+                  const style = getComputedStyle(element);
+                  return {
+                    className: element.className,
+                    clientHeight: element.clientHeight,
+                    scrollHeight: element.scrollHeight,
+                    overflowY: style.overflowY,
+                  };
+                });
+                writeFileSync(
+                  'timeline-browser-diagnostics/citadel-scroll.json',
+                  JSON.stringify(scrollMetrics, null, 2),
+                );
+                await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-scroll.png', fullPage: true });
+
+                expect(scrollMetrics.className).toContain('vis-vertical-scroll');
+                expect(scrollMetrics.overflowY).toBe('scroll');
                 expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
               }
 
