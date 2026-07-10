@@ -95,6 +95,7 @@ jobs:
                 await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe('Black Furnace');
                 await lane.selectOption('category');
                 await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('category');
+                await page.locator('[data-vc-filters] summary').click();
                 await page.locator('[data-vc-clear]').click();
                 await expect(search).toHaveValue('');
                 await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBeNull();
