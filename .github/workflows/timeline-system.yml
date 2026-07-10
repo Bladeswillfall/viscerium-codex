@@ -67,7 +67,8 @@ jobs:
 
       - name: Run timeline performance checks
         working-directory: Site
-        run: npm run benchmark:timelines
+        shell: bash
+        run: npm run benchmark:timelines | tee "$RUNNER_TEMP/timeline-benchmark.txt"
 
       - name: Build static Codex
         working-directory: Site
@@ -80,3 +81,34 @@ jobs:
       - name: Build Obsidian plugin
         working-directory: Tools/obsidian-viscerium-timelines
         run: npm run build
+
+      - name: Report verified performance
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          marker='<!-- timeline-performance -->'
+          {
+            echo "$marker"
+            echo '## Timeline verification passed'
+            echo
+            echo 'Unit tests, static Astro build and standalone Obsidian plugin build passed.'
+            echo
+            echo '### Synthetic compiler benchmark'
+            echo
+            echo '```json'
+            grep '^{' "$RUNNER_TEMP/timeline-benchmark.txt"
+            echo '```'
+            echo
+            echo "Verified commit: \`${GITHUB_SHA}\`"
+          } > "$RUNNER_TEMP/timeline-performance-comment.md"
+
+          existing_id="$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" --paginate --jq ".[] | select(.body | contains(\"$marker\")) | .id" | head -n 1)"
+          if [ -n "$existing_id" ]; then
+            jq -Rs '{body: .}' "$RUNNER_TEMP/timeline-performance-comment.md" > "$RUNNER_TEMP/timeline-performance-comment.json"
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing_id" --input "$RUNNER_TEMP/timeline-performance-comment.json" >/dev/null
+          else
+            gh pr comment "$PR_NUMBER" --body-file "$RUNNER_TEMP/timeline-performance-comment.md"
+          fi
