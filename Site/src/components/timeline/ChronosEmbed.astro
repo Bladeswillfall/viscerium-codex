@@ -24,13 +24,15 @@ const serializedOptions = JSON.stringify({ compact, label }).replace(/</g, '\\u0
   import '../../styles/chronos.css';
   import { ChronosTimeline } from 'chronos-timeline-md';
 
+  const chronosInstances = new WeakMap<Element, ChronosTimeline>();
+
   function mountChronosEmbeds() {
     for (const root of document.querySelectorAll('[data-vc-chronos-root]:not([data-vc-chronos-mounted])')) {
       root.setAttribute('data-vc-chronos-mounted', 'true');
       try {
         const source = JSON.parse(root.querySelector('[data-vc-chronos-source]')?.textContent || '""');
         const options = JSON.parse(root.querySelector('[data-vc-chronos-options]')?.textContent || '{}');
-        const mount = root.querySelector('[data-vc-chronos-mount]');
+        const mount = root.querySelector<HTMLElement>('[data-vc-chronos-mount]');
         if (!mount) throw new Error('Chronos mount element is missing.');
 
         const chronos = new ChronosTimeline({
@@ -65,7 +67,7 @@ const serializedOptions = JSON.stringify({ compact, label }).replace(/</g, '\\u0
           tooltip: { followMouse: true, overflowMethod: 'cap' },
         });
         root.querySelector('[data-vc-chronos-fallback]')?.setAttribute('hidden', '');
-        root.__visceriumChronos = chronos;
+        chronosInstances.set(root, chronos);
       } catch (error) {
         console.error('Chronos Markdown timeline failed to mount.', error);
         root.removeAttribute('data-vc-chronos-mounted');
@@ -77,7 +79,8 @@ const serializedOptions = JSON.stringify({ compact, label }).replace(/</g, '\\u0
   document.addEventListener('astro:page-load', mountChronosEmbeds);
   document.addEventListener('astro:before-swap', () => {
     for (const root of document.querySelectorAll('[data-vc-chronos-root]')) {
-      root.__visceriumChronos?.destroy?.();
+      chronosInstances.get(root)?.destroy();
+      chronosInstances.delete(root);
     }
   });
 </script>
