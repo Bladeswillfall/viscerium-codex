@@ -14,18 +14,21 @@ Thanks for helping improve this codex.
 - Use wikilinks like `[[Example City]]` so backlinks and the graph view stay useful.
 - Use Codex layout tags such as `[cols]`, `[card]`, `[note]`, `[warning]`, and `[lore]` instead of blank Markdown tables for layout.
 - Use Obsidian embeds like `![[example-banner.webp]]` for vault assets copied during sync.
-- Do not put raw `dataviewjs` or hand-written Chronos blocks into public canon notes.
+- Do not publish raw `dataviewjs`.
+- Native fenced `chronos` blocks are supported for note-local editorial timelines and are transformed into Starlight Chronos embeds during sync.
 
 ## Timeline authoring
 
-- `calendarDate` is the sole event start date.
-- Use `calendarEndDate` for a range.
+- `calendarDate` is the sole start date for a canonical event note.
+- Use `calendarEndDate` for a canonical range.
 - Never add `timeline.id`, `timeline.year` or `timeline.date`; validation rejects them.
 - Use importance for hierarchy, categories for subject matter and lanes for factions, regions, organisations or story threads.
 - Declare the expected top-level era. The compiler verifies membership against canonical era boundaries.
-- Use `[Timeline:super]` or a configured `timelineBlocks` shortcode rather than generated syntax.
+- Use `[Timeline:super]` or a configured `timelineBlocks` shortcode to embed a generated canonical dataset.
+- Use a fenced `chronos` block for a quick comparison, research, scene or editorial timeline that does not need to join generated era timelines.
+- Do not duplicate canonical event dates in a hand-written Chronos block as a substitute for event metadata.
 
-See `Site/TIMELINES.md` for the complete event and era schemas, calendar integration, Obsidian plugin setup and troubleshooting.
+See `Site/TIMELINES.md` for the complete event and era schemas, Chronos integration, calendar behaviour, Obsidian setup and troubleshooting.
 
 ## Validation
 
