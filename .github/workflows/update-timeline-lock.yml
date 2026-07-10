@@ -1,0 +1,39 @@
+name: Update timeline lockfile
+
+on:
+  push:
+    branches:
+      - codex/viscerium-timeline-system
+
+permissions:
+  contents: write
+
+jobs:
+  update-lock:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/viscerium-timeline-system
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+          cache: npm
+          cache-dependency-path: Site/package-lock.json
+      - name: Regenerate site package lock
+        working-directory: Site
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit site package lock
+        shell: bash
+        run: |
+          if git diff --quiet -- Site/package-lock.json; then
+            echo 'Lockfile already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Site/package-lock.json
+          git commit -m 'Lock explicit timeline renderer dependencies'
+          git push origin HEAD:codex/viscerium-timeline-system
