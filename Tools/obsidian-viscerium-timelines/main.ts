@@ -62,8 +62,12 @@ function cleanSegment(segment: string): string {
   return segment.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+function sourcePathFromVaultFile(file: TFile): string {
+  return file.path.replace(/^Lore\//i, '');
+}
+
 function routeFromVaultPath(file: TFile): string {
-  const withoutExtension = file.path.replace(/^Lore\//i, '').replace(/\.md$/i, '');
+  const withoutExtension = sourcePathFromVaultFile(file).replace(/\.md$/i, '');
   const slug = withoutExtension.split('/').map(cleanSegment).filter(Boolean).join('/');
   return slug === 'introduction/start-here' ? '/' : `/${slug}/`;
 }
@@ -184,7 +188,7 @@ export default class VisceriumTimelinesPlugin extends Plugin {
       data.type ||= inferType(file);
       records.push({
         data,
-        sourcePath: file.path,
+        sourcePath: sourcePathFromVaultFile(file),
         href: routeFromVaultPath(file),
       });
     }
@@ -193,8 +197,9 @@ export default class VisceriumTimelinesPlugin extends Plugin {
 
   private async openSourceArticle(sourcePath?: string): Promise<void> {
     if (!sourcePath) return;
-    const file = this.app.vault.getAbstractFileByPath(sourcePath);
+    const vaultPath = sourcePath.startsWith('Lore/') ? sourcePath : `Lore/${sourcePath}`;
+    const file = this.app.vault.getAbstractFileByPath(vaultPath);
     if (file instanceof TFile) await this.app.workspace.getLeaf(false).openFile(file);
-    else new Notice(`Timeline source note not found: ${sourcePath}`);
+    else new Notice(`Timeline source note not found: ${vaultPath}`);
   }
 }
