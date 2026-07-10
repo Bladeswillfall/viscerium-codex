@@ -1,17 +1,9 @@
 ---
+import CodexIcon from './CodexIcon.astro';
+
 const { name } = Astro.props;
-const iconPath = `/icons/${name}.svg`;
+const rawName = typeof name === 'string' ? name.trim() : '';
+const spec = /^icon:/i.test(rawName) ? rawName.replace(/^icon:/i, '').trim() : `local ${rawName}`;
 ---
 
-<span class="local-icon" aria-hidden="true" style={`--icon: url('${iconPath}')`}></span>
-
-<style>
-  .local-icon {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    flex: 0 0 auto;
-    background-color: currentColor;
-    mask: var(--icon) center / contain no-repeat;
-  }
-</style>
+<CodexIcon spec={spec} />
