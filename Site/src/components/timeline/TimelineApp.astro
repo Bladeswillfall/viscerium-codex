@@ -1,5 +1,8 @@
 ---
+import 'vis-timeline/styles/vis-timeline-graph2d.min.css';
+import '../../styles/chronos.css';
 import { formatAbsoluteDay } from '../../lib/calendar/runtime.mjs';
+import TimelineIsland from './TimelineIsland';
 
 const {
   dataset,
@@ -12,92 +15,22 @@ const {
 } = Astro.props;
 
 const options = { defaultCalendar, laneMode, showFilters, showMinimap, showLegend, compact };
-const serializedDataset = JSON.stringify(dataset).replace(/</g, '\\u003c');
-const serializedOptions = JSON.stringify(options).replace(/</g, '\\u003c');
+const fallbackEvents = dataset?.events.map((event) => ({
+  id: event.id,
+  date: event.absoluteEndDay === undefined
+    ? formatAbsoluteDay(event.absoluteStartDay, defaultCalendar, event.precision)
+    : `${formatAbsoluteDay(event.absoluteStartDay, defaultCalendar, event.precision)} — ${formatAbsoluteDay(event.absoluteEndDay, defaultCalendar, event.endPrecision ?? event.precision)}`,
+  title: event.title,
+  description: event.description,
+  href: event.href,
+})) ?? [];
 ---
 
 {dataset ? (
-  <div class="vc-timeline-shell" data-vc-timeline-root>
-    <div data-vc-timeline-mount></div>
-    <section class="vc-timeline-fallback" data-vc-fallback aria-labelledby={`fallback-${dataset.id}`}>
-      <h2 id={`fallback-${dataset.id}`}>Chronological list</h2>
-      <p>This list remains available when the interactive timeline cannot run.</p>
-      <ol>
-        {dataset.events.map((event) => (
-          <li>
-            <p class="timeline-date">
-              {formatAbsoluteDay(event.absoluteStartDay, defaultCalendar, event.precision)}
-              {event.absoluteEndDay !== undefined && ` — ${formatAbsoluteDay(event.absoluteEndDay, defaultCalendar, event.endPrecision ?? event.precision)}`}
-            </p>
-            <h3><a href={event.href}>{event.title}</a></h3>
-            <p>{event.description}</p>
-          </li>
-        ))}
-      </ol>
-    </section>
-    <script type="application/json" data-vc-dataset set:html={serializedDataset}></script>
-    <script type="application/json" data-vc-options set:html={serializedOptions}></script>
-  </div>
+  <TimelineIsland
+    client:load
+    dataset={dataset}
+    options={options}
+    fallbackEvents={fallbackEvents}
+  />
 ) : <p class="codex-warning">Timeline data is unavailable.</p>}
-
-<script>
-  import 'vis-timeline/styles/vis-timeline-graph2d.min.css';
-  import '../../styles/chronos.css';
-  import { createTimelinePageRuntime } from '../../lib/timeline/page-runtime.mjs';
-  import { mountTimeline } from '../../lib/timeline/renderer.mjs';
-
-  type TimelinePageRuntime = ReturnType<typeof createTimelinePageRuntime>;
-  type TimelineWindow = typeof window & {
-    __visceriumTimelineRuntime?: TimelinePageRuntime;
-  };
-
-  const timelineWindow = window as TimelineWindow;
-
-  function mountRoot(root: Element) {
-    const mount = root.querySelector<HTMLElement>('[data-vc-timeline-mount]');
-    const fallback = root.querySelector<HTMLElement>('[data-vc-fallback]');
-    const datasetNode = root.querySelector<HTMLElement>('[data-vc-dataset]');
-    const optionsNode = root.querySelector<HTMLElement>('[data-vc-options]');
-
-    if (!mount || !fallback || !datasetNode || !optionsNode) {
-      throw new Error('Timeline Astro shell is missing required mount data.');
-    }
-
-    mount.replaceChildren();
-    root.removeAttribute('data-vc-mounted');
-
-    try {
-      const dataset = JSON.parse(datasetNode.textContent || '{}');
-      const options = JSON.parse(optionsNode.textContent || '{}');
-      const cleanup = mountTimeline(mount, dataset, options);
-
-      root.setAttribute('data-vc-mounted', 'true');
-      fallback.hidden = true;
-
-      return () => {
-        cleanup?.();
-        root.removeAttribute('data-vc-mounted');
-        if (root.isConnected) fallback.hidden = false;
-      };
-    } catch (error) {
-      mount.replaceChildren();
-      root.removeAttribute('data-vc-mounted');
-      fallback.hidden = false;
-      throw error;
-    }
-  }
-
-  if (!timelineWindow.__visceriumTimelineRuntime) {
-    timelineWindow.__visceriumTimelineRuntime = createTimelinePageRuntime({
-      getRoots: () => document.querySelectorAll('[data-vc-timeline-root]'),
-      mountRoot,
-      onError: (error) => console.error('VISCERIUM Chronos timeline failed to mount.', error),
-    });
-
-    document.addEventListener('astro:page-load', () => {
-      timelineWindow.__visceriumTimelineRuntime?.mountAll();
-    });
-  }
-
-  timelineWindow.__visceriumTimelineRuntime.mountAll();
-</script>
