@@ -17,18 +17,19 @@ timelineBlocks:
 
 # {{title}}
 
-%% Timeline pages embed generated datasets. Event chronology remains in each event's calendarDate/calendarEndDate frontmatter. %%
+%% Generated VISCERIUM timelines compile canonical event notes from calendarDate/calendarEndDate. Native Chronos blocks are available for quick note-local timelines and pass through to Starlight. %%
 
-## Overview
+## Canonical Timeline
 
 [Timeline:ID-0001]
 
-## Event Guidelines
+## Authoring Guidelines
 
-- Use `calendarDate` as the sole chronology source.
-- Use `calendarEndDate` for periods.
+- Use `calendarDate` as the sole chronology source for canonical event notes.
+- Use `calendarEndDate` for canonical periods.
 - Use importance for hierarchy, categories for subject matter and lanes for factions, regions or story threads.
-- Do not hand-write Chronos blocks or generated event lists.
+- Use a fenced `chronos` block for a quick editorial, comparison or scratch timeline that does not need to enter the generated era and super timelines.
+- Do not duplicate a canonical event's date in a Chronos block merely to make it appear in `[Timeline:...]`; the compiler handles that automatically.
 
 ## Timeline Notes
 
