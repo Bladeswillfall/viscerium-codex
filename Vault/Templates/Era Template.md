@@ -3,24 +3,50 @@ title:
 description:
 publish: false
 status: draft
+slug:
+type: era
+eraId:
 headerImage:
-start:
-end:
-timeline:
-  id:
+
+calendarDate:
+  calendar: okse
   year:
+  month:
+  day:
+  precision: year
+  certainty: exact
+
+calendarEndDate:
+  calendar: okse
+  year:
+  month:
+  day:
+  precision: year
+  certainty: exact
+
+timeline:
+  kind: era
+  order:
+  visualToken:
+  allowGapAfter: false
+  defaultViewport:
+    paddingDays: 56
+
 tags:
+  - era
 ---
 
 # {{title}}
 
-%% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
+%% Era boundaries use the same canonical calendar engine as events. Set `allowGapAfter: true` only when the historical gap before the next era is intentional. %%
 
 ## Overview
 
 ## Defining Features
 
 ## Major Events
+
+[Timeline:{{eraId}}]
 
 ## Important People and Factions
 

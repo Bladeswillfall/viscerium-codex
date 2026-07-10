@@ -1,8 +1,10 @@
 # Calendar engine
 
-The codex calendar system is built around hidden absolute world-time.
+The Codex calendar system is built around hidden absolute world-time. Articles and canonical generated timelines share this engine; there is no separate timeline chronology.
 
-Article frontmatter stores a structured source date in one calendar:
+## Canonical dates
+
+An event stores one structured source date:
 
 ```yaml
 calendarDate:
@@ -10,11 +12,38 @@ calendarDate:
   year: 20001
   month: niewmonath
   day: 1
-  displayCalendars:
-    - okse
+  precision: day
+  certainty: exact
 ```
 
-The engine converts that source date into an absolute day number, then renders it through each requested display calendar. This allows later calendars to show equivalent dates without rewriting event articles.
+Optional range end:
+
+```yaml
+calendarEndDate:
+  calendar: okse
+  year: 20003
+  month: solmanuthur
+  day: 12
+  precision: day
+```
+
+The start and end may use different registered calendars. Each is converted independently to an absolute world-day. That absolute day controls sorting, timeline position, era membership, overlap validation and conversion into display calendars.
+
+Do not duplicate chronology in `timeline.year`, `timeline.date` or `timeline.id`. Those legacy fields fail timeline validation.
+
+`precision` (`day`, `month`, `year`) affects only public labels. `certainty` (`exact`, `approximate`, `disputed`, `legendary`) affects only visual treatment. Neither changes the absolute position.
+
+Native fenced `chronos` blocks are separate, note-local presentation timelines. Their Chronos date syntax is self-contained and is not converted by this calendar engine.
+
+## Runtime files
+
+- `src/data/calendars/okse.mjs` — canonical Okse definition available to Node, Astro and the Obsidian bundle.
+- `src/data/calendars/okse.ts` — typed re-export.
+- `src/lib/calendar/runtime.mjs` — registry, conversion, validation and formatting.
+- `src/lib/calendar/types.ts` — TypeScript contracts.
+- `src/lib/calendar/convert.ts` and `registry.ts` — typed wrappers for existing Astro components.
+
+This layout prevents the generator and client renderer from implementing their own calendar arithmetic.
 
 ## Current calendar
 
@@ -32,7 +61,7 @@ Okse weekday order:
 6. Laugdag
 7. Degeldag
 
-Epoch assumption:
+Epoch:
 
 ```ts
 absoluteDay: 0
@@ -42,7 +71,7 @@ day: 1
 weekday: Modirdag
 ```
 
-Leap-year rule:
+Leap rule:
 
 ```ts
 year % 4 === 0
@@ -59,17 +88,11 @@ calendarDate:
   intercalaryDay: engimanutur-02
 ```
 
-`engimanutur-02` only exists in leap years; invalid use will fail the build.
+`engimanutur-02` exists only in leap years. Invalid use fails validation with the source note and field.
 
-## Placing full calendars in pages
+## Calendar blocks
 
-Full calendar grids are placed with an Obsidian-friendly shortcode in the note body:
-
-```md
-[Calendar:ID-0001]
-```
-
-Define the block in the page frontmatter:
+Full calendar grids remain available through the existing shortcode:
 
 ```yaml
 calendarBlocks:
@@ -78,42 +101,28 @@ calendarBlocks:
     year: 4
 ```
 
-The source note can stay as Markdown. During sync, any page that uses a `[Calendar:...]` shortcode is emitted as generated MDX so Astro can render the real `CalendarYear` component at that exact position.
+```md
+[Calendar:ID-0001]
+```
 
-For quick tests, the shortcode can also use an inline calendar id and year:
+Quick form:
 
 ```md
 [Calendar:okse year=4]
 ```
 
-Prefer the `calendarBlocks` form for real articles because it keeps configuration in frontmatter and placement in the body.
+## Timeline labels
 
-## Files
+For canonical generated timelines, the adapter gives Chronos synthetic UTC dates only as coordinates. One absolute world-day maps to one synthetic UTC day from a fixed epoch. Gregorian axis labels are hidden. The visible axis, event cards, hover text, details, era boundaries and list view are all formatted at render time through `formatAbsoluteDay()`.
 
-- `src/data/calendars/okse.ts` — Okse calendar definition.
-- `src/lib/calendar/types.ts` — shared calendar types.
-- `src/lib/calendar/registry.ts` — registered calendars.
-- `src/lib/calendar/convert.ts` — absolute-day conversion, validation, weekdays, formatting, and equivalence helpers.
-- `src/components/calendar/CalendarYear.astro` — full calendar rendering.
-- `src/components/calendar/CalendarDateBadge.astro` — article date badge.
-- `src/styles/calendar.css` — calendar visuals.
-- `scripts/sync-public-notes.mjs` — expands `[Calendar:...]` shortcodes into placed Astro components during the Obsidian sync.
-- `Vault/Lore/Calendar.md` — Obsidian-source public calendar overview.
-- `Vault/Lore/Calendar/Okse.md` — Obsidian-source detailed Okse calendar route used by date-badge anchors.
+Changing the selected calendar therefore reformats labels without moving Chronos items.
 
-## Adding future calendars
+## Adding a future calendar
 
-Add another calendar definition, register it in `registry.ts`, then include it in article frontmatter:
+1. Create `src/data/calendars/<id>.mjs` with a stable ID, epoch, weekdays, months, intercalary days and leap rule.
+2. Register it in `src/lib/calendar/runtime.mjs`.
+3. Add a typed re-export if TypeScript components import it directly.
+4. Add tests for source-to-absolute conversion, absolute-to-source conversion, leap/intercalary rules and negative days where supported.
+5. Use the new ID as an event source calendar or display calendar.
 
-```yaml
-calendarDate:
-  calendar: okse
-  year: 20001
-  month: niewmonath
-  day: 1
-  displayCalendars:
-    - okse
-    - askalian-civic
-```
-
-The source calendar can be any registered calendar. The engine resolves it to absolute world-time first, then converts it into each display calendar.
+No timeline compiler or Chronos adapter changes should be necessary. See `TIMELINES.md` for authoring, validation and embedding instructions.

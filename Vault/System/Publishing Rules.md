@@ -1,6 +1,6 @@
 # Publishing Rules
 
-Only notes in `Vault/Lore/` can publish. Draft, private, template, and system notes are ignored.
+Only notes in `Vault/Lore/` can publish. Draft, private, template and system notes are ignored.
 
 A public note must have:
 
@@ -15,25 +15,23 @@ type: article
 ---
 ```
 
-The sync script rewrites `slug` from the note path, except for the root `index` page, so keep the frontmatter slug readable but treat the file location as the real route source.
+The sync script derives the public route from the note path, except for the root `index` page. Treat `Vault/Lore/` as the source of truth; never manually maintain generated files in `Site/src/content/docs/`.
 
 ## Recommended frontmatter
 
-Use the extra fields when they help the page sidebar, graph, maps, timelines, feeds, or future social cards.
+Use fields that support sidebars, the graph, maps, timelines, feeds and social cards:
 
 ```yaml
 icon: "fa-solid fa-book-skull"
 sidebarIcon: "fa-solid fa-book"
 titleIcon: "fa-solid fa-book-skull"
 era: CITADEL
-faction: Example Faction
-location: Example City
-character: Example Character
-species: Human
-occupation: Pathfinder
-alignment: Unaligned
-capital: Example City
-territory: Example Valley
+faction:
+  - Example Faction
+location:
+  - Example City
+participants:
+  - Example Character
 tags:
   - citadel
   - faction
@@ -42,9 +40,7 @@ related:
   - Example Battle
 image: example-banner.webp
 imagePage: /eras/citadel/images/example-banner/
-imageTitle: Example Banner
 alt: "Describe the image for screen readers."
-artist: Artist Name
 credit: Artist Name / Rights Holder
 ```
 
@@ -57,50 +53,30 @@ Use Obsidian wikilinks in source notes:
 [[Example Character|a named witness]]
 ```
 
-During sync, published wikilinks become site links. Missing or unpublished wikilinks fall back to plain text and produce a sync warning. The same links feed the site graph and backlink panels, so use them generously but deliberately.
+Published wikilinks become site links. Missing or unpublished wikilinks fall back to plain text and produce a sync warning. The same links feed graph and backlink data.
 
 ## Icons
 
-Use Font Awesome's own class format in Obsidian. The sync step converts heading shortcodes into decorative site markup while keeping the visible heading text clean for anchors, search, and the table of contents.
+Use Font Awesome classes or the local icon library:
 
 ```md
 ## [Icon:fa-solid fa-people-group] People
-## [Icon:fa-solid fa-landmark] Government
-### [Icon:fa-regular fa-clock] Early History
-```
-
-Use the same specification in frontmatter:
-
-```yaml
-icon: "fa-solid fa-flag"
-sidebarIcon: "fa-solid fa-shield-halved"
-titleIcon: "fa-solid fa-flag"
-```
-
-`icon` is the shared default for the page title and sidebar entry. `sidebarIcon` and `titleIcon` override it where required.
-
-The existing local SVG library is also available:
-
-```md
 ## [Icon:local faction] Faction Identity
 ```
 
 ```yaml
-icon: "local faction"
+icon: "fa-solid fa-flag"
 ```
-
-A single icon name such as `icon: faction` is retained as shorthand for `local faction`. Multi-token specifications are treated as CSS icon classes, which allows more class-based libraries to be added later without changing the Markdown grammar.
 
 ## Layout tags
 
-The public site supports controlled BBCode-style layout tags. Tags must sit on their own lines.
+Controlled layout tags must sit on their own lines:
 
 ```md
 [cols:2-1 gap=lg]
 [col]
 Main article body.
 [/col]
-
 [col]
 [card:accent compact]
 Sidebar material.
@@ -109,7 +85,7 @@ Sidebar material.
 [/cols]
 
 [note:title="Archivist note"]
-A public note or clarification.
+A public clarification.
 [/note]
 
 [warning:title="Content warning"]
@@ -121,11 +97,11 @@ In-world quoted text.
 [/lore]
 ```
 
-Use normal Markdown tables only for actual tabular data. Do not use blank tables as layout scaffolding; use `[cols]`, `[row]`, `[col]`, and `[card]` instead.
+Use Markdown tables only for real tabular data.
 
-## Assets and image pages
+## Assets
 
-Store source images in `Vault/Assets/Images/` and maps in `Vault/Assets/Maps/`. Reference plain filenames in frontmatter where possible:
+Store source images in `Vault/Assets/Images/` and maps in `Vault/Assets/Maps/`. Reference plain filenames in frontmatter where practical:
 
 ```yaml
 image: example-banner.webp
@@ -133,45 +109,143 @@ headerImage: example-banner.webp
 asset: example-banner.webp
 ```
 
-Create a dedicated `type: image` note for any artwork that needs provenance, rights, usage notes, or a sidebar image detail link.
+Create a `type: image` note when artwork needs provenance, rights or usage notes.
 
-## Calendars, maps, and timelines
+## Event chronology
 
-Event pages can use structured calendar dates:
+Every published event must use `calendarDate` as its single start date:
 
 ```yaml
 calendarDate:
   calendar: okse
-  year: 4
+  year: 9250
   month: solmanuthur
   day: 16
-  displayCalendars:
-    - okse
+  precision: day
+  certainty: exact
 ```
 
-Full calendar grids use a shortcode in the note body:
+An event may have a structured end date:
+
+```yaml
+calendarEndDate:
+  calendar: okse
+  year: 9251
+  month: niewmonath
+  day: 4
+  precision: day
+```
+
+The calendar engine converts both dates to absolute world-days. That hidden value controls timeline position, sorting, range overlap, era membership and alternative-calendar labels.
+
+Never use:
+
+```yaml
+timeline:
+  id: example-history
+  year: 1200
+  date: "1200-01-01"
+```
+
+Legacy `timeline.id`, `timeline.year` and `timeline.date` fail validation. Generated timeline IDs are fixed: `super`, `citadel`, `smog`, `nearsight` and `entropy`.
+
+## Timeline event metadata
+
+```yaml
+timeline:
+  kind: event
+  importance: standard
+  categories:
+    - military
+    - political
+  lanes:
+    - okse-dominion
+  global: auto
+  era: auto
+  order: 10
+```
+
+Kinds:
+
+- `milestone` — singular high-visibility point.
+- `event` — normal point event and the default.
+- `period` — requires `calendarEndDate`; a ranged note defaults to this kind.
+- `era` — reserved for structured era records.
+
+Importance:
+
+- `landmark`
+- `major`
+- `standard`
+- `minor`
+- `incidental`
+
+`landmark` and `major` enter the super timeline automatically. `timeline.global` may be `auto`, `include` or `exclude`.
+
+Categories are open-ended and may be multiple. Lanes identify optional factions, nations, regions, organisations or story threads. `timeline.order` only breaks ties on the same absolute day.
+
+The top-level `era` field is editorially declared but chronologically verified. Point events belong to the era containing their absolute day. Periods belong to every era they overlap. A mismatch fails the build.
+
+## Era records
+
+The four canonical era notes live directly beneath `Vault/Lore/Eras/` and use:
+
+```yaml
+type: era
+eraId: citadel
+calendarDate:
+  calendar: okse
+  year: 9201
+  month: niewmonath
+  day: 1
+  precision: year
+calendarEndDate:
+  calendar: okse
+  year: 9400
+  intercalaryDay: engimanutur-02
+  precision: year
+timeline:
+  kind: era
+  order: 1
+  visualToken: e1
+  allowGapAfter: true
+  defaultViewport:
+    paddingDays: 56
+```
+
+Era overlap is invalid. Gaps are invalid unless the preceding era explicitly sets `allowGapAfter: true`.
+
+## Calendar and timeline shortcodes
+
+Full calendar:
 
 ```md
 [Calendar:okse year=4]
 ```
 
-Map markers and timeline entries are frontmatter-driven:
+Timeline:
+
+```md
+[Timeline:super]
+```
+
+Configured timeline:
 
 ```yaml
-map:
-  id: example-world
-  x: 52
-  y: 41
-  marker: city
-  layer:
-    - cities
-
-timeline:
-  id: example-history
-  year: 1200
-  precision: exact
-  order: 1
+timelineBlocks:
+  ID-0001:
+    timeline: super
+    defaultCalendar: okse
+    laneMode: unified
+    showFilters: true
+    showMinimap: true
 ```
+
+```md
+[Timeline:ID-0001]
+```
+
+During sync, shortcode pages are emitted as generated MDX. The local Obsidian plugin renders the same shortcode from the same compiler and renderer without needing the website server.
 
 ## Obsidian-only helpers
 
@@ -181,4 +255,6 @@ Obsidian comments are removed during sync:
 %% Private drafting note. %%
 ```
 
-Do not put raw `dataviewjs` blocks into public canon examples. They will publish as code blocks unless the site renderer explicitly handles them. Keep Dataview views in non-published templates, draft notes, or `Vault/System/` guidance instead.
+Do not publish raw `dataviewjs`. Native fenced `chronos` blocks are supported for note-local editorial timelines and pass through to Starlight. Use canonical event notes and `[Timeline:...]` shortcodes when entries must participate in registered calendars, era validation and generated datasets.
+
+See `Site/TIMELINES.md`, `Site/CALENDAR.md` and `Tools/obsidian-viscerium-timelines/README.md` for implementation and troubleshooting details.

@@ -1,14 +1,7 @@
-import { okseCalendar } from '../../data/calendars/okse';
+import * as runtime from './runtime.mjs';
 import type { CalendarDefinition } from './types';
 
-export const calendars: CalendarDefinition[] = [okseCalendar];
-
-export const defaultCalendarId = okseCalendar.id;
-
-export function getCalendar(calendarId = defaultCalendarId): CalendarDefinition {
-  const calendar = calendars.find((item) => item.id === calendarId);
-  if (!calendar) {
-    throw new Error(`Unknown calendar: ${calendarId}`);
-  }
-  return calendar;
-}
+export const calendars = runtime.calendars as CalendarDefinition[];
+export const defaultCalendarId: string = runtime.defaultCalendarId;
+export const getCalendar: (calendarId?: string) => CalendarDefinition = runtime.getCalendar;
+export const isRegisteredCalendar: (calendarId: string) => boolean = runtime.isRegisteredCalendar;

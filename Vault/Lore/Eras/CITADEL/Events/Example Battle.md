@@ -6,31 +6,41 @@ status: canon
 slug: eras/citadel/events/example-battle
 type: event
 era: CITADEL
-location: Example City
-faction: Example Faction
+calendarDate:
+  calendar: okse
+  year: 9250
+  month: solmanuthur
+  day: 16
+  precision: day
+  certainty: exact
+timeline:
+  kind: event
+  importance: major
+  categories:
+    - military
+    - political
+  lanes:
+    - example-faction
+  global: auto
+  era: auto
+  order: 1
+location:
+  - Example City
+faction:
+  - Example Faction
+participants:
+  - Example Character
 tags:
   - example
   - event-template
   - citadel
-timeline:
-  id: example-history
-  year: 1200
-  precision: exact
-  order: 1
-calendarDate:
-  calendar: okse
-  year: 4
-  month: solmanuthur
-  day: 16
-  displayCalendars:
-    - okse
 related:
   - Example Faction
   - Example City
   - Example Character
 ---
 
-Example Battle is a public event note that appears on the generated example timeline. It involved [[Example Faction]] near [[Example City]] and left [[Example Character]] with a reason to keep digging.
+Example Battle is a public event note that appears on the generated CITADEL and super timelines. It involved [[Example Faction]] near [[Example City]] and left [[Example Character]] with a reason to keep digging.
 
 [warning:title="Content warning"]
 Replace this with specific warnings where needed: violence, body horror, slavery, self-harm, abuse, child death, sexual violence, or other material a reader should know before continuing.
@@ -53,7 +63,7 @@ Break the event into readable phases. Avoid turning the article into a battle re
 
 [col]
 [note:title="Timeline data"]
-The `timeline` frontmatter places this event into generated timeline JSON. Use `order` when multiple events share a year.
+`calendarDate` is the sole chronology source. The compiler converts it to absolute world-time, calculates CITADEL membership and includes this major event in the super timeline. `timeline.order` only breaks ties between events on the same day.
 [/note]
 
 [card:accent compact]

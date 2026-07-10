@@ -15,10 +15,10 @@ jobs:
           show-progress: false
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.16.0
+          node-version: 24
           cache: npm
-          cache-dependency-path: Site/package.json
-      - run: npm install --silent
+          cache-dependency-path: Site/package-lock.json
+      - run: npm ci --silent
         working-directory: Site
       - name: Build site
         id: build
