@@ -17,6 +17,9 @@ await esbuild.build({
   platform: 'browser',
   outfile: path.join(outDir, 'main.js'),
   nodePaths: [path.join(root, 'node_modules')],
+  define: {
+    'process.env.SOURCE_DATE_EPOCH': '"0"',
+  },
   sourcemap: production ? false : 'inline',
   minify: production,
   treeShaking: true,
