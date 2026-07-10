@@ -6,6 +6,7 @@ import matter from 'gray-matter';
 import siteConfig from '../site.config.mjs';
 import { compileTimelineRecords, TimelineCompilationError } from '../src/lib/timeline/compiler.mjs';
 import { TIMELINE_IDS } from '../src/lib/timeline/core.mjs';
+import { inferNoteType } from './note-inference.mjs';
 
 const siteRoot = process.cwd();
 const sourceDir = path.resolve(siteRoot, siteConfig.loreSourceDir);
@@ -31,6 +32,7 @@ for (const file of files) {
   const raw = await fs.readFile(file, 'utf8');
   const { data } = matter(raw);
   if (data.publish !== true || data.status !== 'canon') continue;
+  data.type ||= inferNoteType(file, sourceDir);
   const slug = data.slug === 'index' ? 'index' : slugFromFile(file);
   records.push({
     data,
