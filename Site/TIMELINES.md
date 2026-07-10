@@ -33,7 +33,7 @@ Site/src/lib/timeline/chronos-renderer.mjs
 
 Native Markdown path
 ────────────────────
-```chronos fenced block in a Vault note
+chronos fenced block in a Vault note
           │
           ├── public Chronos plugin → Obsidian Reading view
           └── sync transform → ChronosEmbed.astro → Starlight

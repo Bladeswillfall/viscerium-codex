@@ -255,6 +255,6 @@ Obsidian comments are removed during sync:
 %% Private drafting note. %%
 ```
 
-Do not put raw `dataviewjs` or hand-authored Chronos blocks into public canon examples. Generated datasets and the VISCERIUM shortcode model are the supported timeline path.
+Do not publish raw `dataviewjs`. Native fenced `chronos` blocks are supported for note-local editorial timelines and pass through to Starlight. Use canonical event notes and `[Timeline:...]` shortcodes when entries must participate in registered calendars, era validation and generated datasets.
 
 See `Site/TIMELINES.md`, `Site/CALENDAR.md` and `Tools/obsidian-viscerium-timelines/README.md` for implementation and troubleshooting details.
