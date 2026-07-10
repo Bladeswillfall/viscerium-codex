@@ -30,6 +30,29 @@
     box-shadow: none !important;
   }
 
+  /*
+    The flat page template is global. Cards may retain their surface and shadow
+    for grouping, but the extra outline is removed so utility pages, lore
+    pages, maps, calendars, image pages, and support pages share one treatment.
+  */
+  .codex-sidebar-card,
+  .codex-sidebar-section,
+  .codex-comments-panel {
+    border: 0;
+  }
+
+  .codex-comments details {
+    border: 0;
+    background: transparent;
+  }
+
+  .right-sidebar nav h2,
+  starlight-toc nav h2,
+  .codex-kicker,
+  .cx-callout-title {
+    color: var(--sl-color-white);
+  }
+
   .sidebar,
   #starlight__sidebar,
   .sidebar-pane,
@@ -111,6 +134,22 @@
     margin-inline-start: .55rem !important;
     padding-inline-start: .55rem !important;
     border-inline-start: 1px solid rgba(184, 135, 70, .10);
+  }
+
+  .codex-comments,
+  .codex-site-footer {
+    margin-top: 1.5625rem;
+  }
+
+  @media (min-width: 72rem) {
+    .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .right-sidebar {
+      overflow-y: visible;
+    }
+
+    .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .codex-comments,
+    .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .codex-site-footer {
+      margin-top: 1.5625rem;
+    }
   }
 
   .codex-sidebar-toggle,
