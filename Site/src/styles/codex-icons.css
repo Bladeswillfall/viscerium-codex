@@ -1,0 +1,58 @@
+@layer starlight.core {
+  .codex-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 1em;
+    height: 1em;
+    align-items: center;
+    justify-content: center;
+    color: currentColor;
+    line-height: 1;
+    vertical-align: -0.06em;
+  }
+
+  .codex-icon > i {
+    display: block;
+    width: 1em;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .codex-local-icon {
+    background-color: currentColor;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+  }
+
+  .codex-page-title {
+    display: flex;
+    align-items: center;
+    gap: .42em;
+  }
+
+  .codex-title-icon {
+    color: var(--sl-color-accent-high);
+    font-size: .78em;
+  }
+
+  .sl-markdown-content :is(h1, h2, h3, h4, h5, h6) > .codex-heading-icon,
+  .content-panel :is(h1, h2, h3, h4, h5, h6) > .codex-heading-icon {
+    margin-inline-end: .42em;
+    color: var(--sl-color-accent-high);
+    font-size: .8em;
+    vertical-align: .02em;
+  }
+
+  .sl-markdown-content :is(h3, h4, h5, h6) > .codex-heading-icon,
+  .content-panel :is(h3, h4, h5, h6) > .codex-heading-icon {
+    color: var(--sl-color-gray-3);
+    font-size: .82em;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sidebar-content a:hover .codex-icon,
+    .sidebar-content summary:hover .codex-icon {
+      transform: translateY(-1px);
+    }
+  }
+}
