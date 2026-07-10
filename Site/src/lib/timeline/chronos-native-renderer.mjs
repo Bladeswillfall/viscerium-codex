@@ -230,6 +230,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     minHeight: '20rem',
     stack: true,
     stackSubgroups: true,
+    groupHeightMode: 'fixed',
     showCurrentTime: false,
     horizontalScroll: true,
     verticalScroll: true,
