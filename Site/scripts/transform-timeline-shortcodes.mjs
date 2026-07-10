@@ -6,7 +6,9 @@ import matter from 'gray-matter';
 import { LANE_MODES, TIMELINE_IDS } from '../src/lib/timeline/core.mjs';
 
 const siteRoot = process.cwd();
-const docsDir = path.resolve(siteRoot, 'src/content/docs');
+const docsDir = process.env.VISCERIUM_DOCS_DIR
+  ? path.resolve(process.env.VISCERIUM_DOCS_DIR)
+  : path.resolve(siteRoot, 'src/content/docs');
 const timelineComponentPath = path.resolve(siteRoot, 'src/components/timeline/TimelineEmbed.astro');
 const chronosComponentPath = path.resolve(siteRoot, 'src/components/timeline/ChronosEmbed.astro');
 
