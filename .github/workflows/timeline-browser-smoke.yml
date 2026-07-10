@@ -1,0 +1,111 @@
+name: Timeline browser smoke
+
+on:
+  push:
+    branches:
+      - codex/timeline-controls-lifecycle
+  pull_request:
+    paths:
+      - 'Site/src/components/timeline/**'
+      - 'Site/src/lib/timeline/**'
+      - 'Site/package.json'
+      - 'Site/package-lock.json'
+      - 'Site/astro.config.mjs'
+      - '.github/workflows/timeline-browser-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: Site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: Site/package-lock.json
+      - name: Install project dependencies
+        run: npm ci --silent
+      - name: Build static Codex
+        run: npm run build
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save --legacy-peer-deps @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start Astro preview
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/viscerium-preview.log 2>&1 &
+          echo $! > /tmp/viscerium-preview.pid
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4321/eras/citadel/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/viscerium-preview.log
+          exit 1
+      - name: Run timeline browser smoke test
+        run: |
+          mkdir -p tests/browser
+          cat > tests/browser/timeline-smoke.spec.mjs <<'TEST'
+          import { test, expect } from '@playwright/test';
+
+          test('Astro hydrates the Chronos timeline island', async ({ page }) => {
+            const browserMessages = [];
+            page.on('console', (message) => {
+              const entry = `console:${message.type()}: ${message.text()}`;
+              browserMessages.push(entry);
+              console.log(entry);
+            });
+            page.on('pageerror', (error) => {
+              const entry = `pageerror: ${error.stack || error.message}`;
+              browserMessages.push(entry);
+              console.log(entry);
+            });
+            page.on('requestfailed', (request) => {
+              const entry = `requestfailed: ${request.url()} — ${request.failure()?.errorText}`;
+              browserMessages.push(entry);
+              console.log(entry);
+            });
+
+            await page.goto(
+              'http://127.0.0.1:4321/eras/citadel/?calendar=okse&start=3360244&end=3433405',
+              { waitUntil: 'networkidle' },
+            );
+
+            const island = page.locator('astro-island').filter({ has: page.locator('[data-vc-timeline-island]') });
+            console.log(`astro-island count: ${await island.count()}`);
+            console.log(`island ssr attribute: ${await island.first().getAttribute('ssr')}`);
+            console.log(`island component-url: ${await island.first().getAttribute('component-url')}`);
+            console.log(`island renderer-url: ${await island.first().getAttribute('renderer-url')}`);
+
+            const fallback = page.locator('[data-vc-fallback]');
+            const mount = page.locator('[data-vc-timeline-mount]');
+            await page.screenshot({ path: 'timeline-browser-smoke.png', fullPage: true });
+
+            await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 15_000 });
+            await expect(page.locator('[data-vc-canvas]')).toBeVisible();
+            await expect(fallback).toBeHidden();
+            await expect(mount).not.toBeEmpty();
+            expect(browserMessages.filter((entry) => entry.startsWith('pageerror:'))).toEqual([]);
+          });
+          TEST
+          npx playwright test tests/browser/timeline-smoke.spec.mjs --reporter=line --workers=1
+      - name: Show Astro preview log
+        if: always()
+        run: cat /tmp/viscerium-preview.log || true
+      - name: Upload browser screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: timeline-browser-smoke
+          path: |
+            Site/timeline-browser-smoke.png
+            Site/test-results
+          if-no-files-found: ignore
