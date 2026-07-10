@@ -1,6 +1,9 @@
 name: Patch timeline host scroll
 
 on:
+  push:
+    branches:
+      - codex/timeline-lane-scroll
   pull_request:
     branches:
       - main
