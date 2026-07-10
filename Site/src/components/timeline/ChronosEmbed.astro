@@ -41,11 +41,10 @@ const serializedOptions = JSON.stringify({ compact, label }).replace(/</g, '\\u0
             selectedLocale: 'en',
             align: 'left',
             clickToUse: false,
-            roundRanges: false,
+            roundRanges: true,
             useUtc: true,
             useAI: false,
             theme: {
-              disableDefaultStyles: true,
               customClass: 'vc-chronos-core',
             },
           },
@@ -58,10 +57,7 @@ const serializedOptions = JSON.stringify({ compact, label }).replace(/</g, '\\u0
         chronos.render(source);
         chronos.timeline?.setOptions({
           minHeight: options.compact ? '14rem' : '20rem',
-          height: options.compact ? '18rem' : '26rem',
-          showCurrentTime: false,
           horizontalScroll: true,
-          verticalScroll: true,
           zoomKey: 'ctrlKey',
           selectable: true,
           tooltip: { followMouse: true, overflowMethod: 'cap' },
