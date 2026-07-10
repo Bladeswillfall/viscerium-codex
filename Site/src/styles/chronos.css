@@ -1,43 +1,26 @@
 @import './chronos-native.css';
 
-/* Shared Chronos presentation for native Markdown blocks and compiled VISCERIUM timelines. */
+/* Host-only framing for Chronos. Item, group, period and control styling remains native. */
 
 .vc-chronos-embed,
 .vc-chronos-core {
-  --chronos-bg-primary: var(--codex-bg, #0d0e0f);
-  --chronos-bg-secondary: var(--codex-surface-raised, #171819);
-  --chronos-text-normal: var(--sl-color-white, #f3efe7);
-  --chronos-text-muted: var(--sl-color-gray-3, #aaa49b);
-  --chronos-border: var(--codex-border, #34373a);
-  --chronos-accent: var(--sl-color-accent-high, #c59a5c);
   position: relative;
   min-width: 0;
 }
 
 .vc-chronos-embed {
   margin-block: 1.5rem;
-  padding: .75rem;
-  overflow: clip;
-  border: 1px solid var(--chronos-border);
-  border-radius: var(--codex-radius, .25rem);
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--chronos-accent) 5%, transparent), transparent 34%),
-    repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in srgb, var(--chronos-border) 18%, transparent) 32px),
-    var(--chronos-bg-primary);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 4%, transparent), 0 1rem 3rem color-mix(in srgb, black 22%, transparent);
 }
 
 .vc-chronos-embed-canvas {
   position: relative;
   min-height: 20rem;
-  border: 1px solid var(--chronos-border);
-  background: color-mix(in srgb, var(--chronos-bg-primary) 94%, transparent);
   touch-action: pan-y pinch-zoom;
 }
 
 .vc-chronos-source-fallback {
   padding: .8rem;
-  color: var(--chronos-text-muted);
+  color: var(--chronos-text-muted, var(--sl-color-gray-3, #aaa49b));
 }
 
 .vc-chronos-source-fallback > :first-child {
@@ -47,93 +30,6 @@
 .vc-chronos-source-fallback pre {
   max-height: 20rem;
   overflow: auto;
-}
-
-.vc-chronos-core .chronos-timeline-refit-button,
-.vc-chronos-host .chronos-timeline-refit-button {
-  position: absolute;
-  z-index: 12;
-  top: .55rem;
-  right: .55rem;
-  display: inline-grid;
-  place-items: center;
-  width: 2.6rem;
-  height: 2.6rem;
-  padding: .55rem;
-  border: 1px solid var(--chronos-accent);
-  border-radius: 0;
-  color: var(--chronos-text-normal);
-  background: color-mix(in srgb, var(--chronos-bg-primary) 90%, transparent);
-  cursor: pointer;
-}
-
-.vc-chronos-core .chronos-timeline-refit-button:hover,
-.vc-chronos-core .chronos-timeline-refit-button:focus-visible {
-  background: color-mix(in srgb, var(--chronos-accent) 16%, var(--chronos-bg-primary));
-}
-
-.vc-chronos-core .chronos-timeline-refit-button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--chronos-accent) 72%, white);
-  outline-offset: 3px;
-}
-
-.vc-chronos-core .chronos-timeline-refit-button svg {
-  width: 100%;
-  height: 100%;
-  fill: currentColor;
-}
-
-.vc-chronos-embed .vis-timeline,
-.vc-chronos-embed .vis-panel,
-.vc-chronos-embed .vis-labelset,
-.vc-chronos-embed .vis-foreground {
-  border-color: var(--chronos-border) !important;
-  color: var(--chronos-text-normal);
-  background: transparent;
-}
-
-.vc-chronos-embed .vis-time-axis .vis-text,
-.vc-chronos-embed .vis-label {
-  color: var(--chronos-text-muted);
-  font-family: var(--vc-font-ui, ui-sans-serif, system-ui);
-}
-
-.vc-chronos-embed .vis-time-axis .vis-grid.vis-minor,
-.vc-chronos-embed .vis-time-axis .vis-grid.vis-major,
-.vc-chronos-embed .vis-grid.vis-vertical,
-.vc-chronos-embed .vis-label {
-  border-color: color-mix(in srgb, var(--chronos-border) 62%, transparent) !important;
-}
-
-.vc-chronos-embed .vis-item {
-  border: 1px solid color-mix(in srgb, var(--chronos-accent) 55%, var(--chronos-border));
-  border-radius: 0;
-  color: var(--chronos-text-normal);
-  background: color-mix(in srgb, var(--chronos-bg-secondary) 94%, black);
-  box-shadow: 0 .25rem .7rem color-mix(in srgb, black 26%, transparent);
-  font-family: var(--vc-font-ui, ui-sans-serif, system-ui);
-}
-
-.vc-chronos-embed .vis-item.vis-point {
-  border-color: transparent;
-  background: transparent;
-  box-shadow: none;
-}
-
-.vc-chronos-embed .vis-item.vis-background {
-  border: 0;
-  background: color-mix(in srgb, var(--chronos-accent) 8%, transparent);
-  box-shadow: none;
-}
-
-.vc-chronos-embed .vis-item.vis-selected {
-  border-color: var(--chronos-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--chronos-accent) 24%, transparent);
-}
-
-.vc-chronos-embed :is(button, a):focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--chronos-accent) 72%, white);
-  outline-offset: 3px;
 }
 
 .vc-chronos-credit {
@@ -147,17 +43,10 @@
 @media (max-width: 40rem) {
   .vc-chronos-embed {
     margin-inline: calc(var(--sl-content-pad-x, 1rem) * -.35);
-    padding: .45rem;
   }
 
   .vc-chronos-embed-canvas {
     min-height: 16rem;
-  }
-
-  .vc-chronos-core .chronos-timeline-refit-button,
-  .vc-chronos-host .chronos-timeline-refit-button {
-    width: 2.9rem;
-    height: 2.9rem;
   }
 }
 
