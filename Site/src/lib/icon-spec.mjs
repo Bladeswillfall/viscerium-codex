@@ -1,4 +1,5 @@
 const safeTokenPattern = /^[a-z0-9][a-z0-9-]*$/i;
+const fontAwesomeStylePattern = /^fa-(solid|regular|brands|thin|light|duotone|sharp|sharp-duotone)$/i;
 const iconLabelPattern = /^\[icon:([^\]]+)\]\s*(.*)$/i;
 const legacyIconLabelPattern = /^\[([a-z0-9][a-z0-9-]*)\]\s*(.*)$/i;
 
@@ -29,11 +30,16 @@ export function parseIconSpec(value) {
 
   // A single token is retained as shorthand for the Codex's local SVG library.
   if (tokens.length === 1) {
+    if (fontAwesomeStylePattern.test(tokens[0])) return null;
     return {
       provider: 'local',
       name: tokens[0],
       spec: `local ${tokens[0]}`,
     };
+  }
+
+  if (fontAwesomeStylePattern.test(tokens[0]) && !tokens.slice(1).some((token) => /^fa-/i.test(token))) {
+    return null;
   }
 
   // Multi-token specifications are rendered as CSS classes. This preserves
