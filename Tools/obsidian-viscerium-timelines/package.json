@@ -1,0 +1,19 @@
+{
+  "name": "obsidian-viscerium-timelines",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node esbuild.config.mjs production",
+    "dev": "node esbuild.config.mjs development"
+  },
+  "dependencies": {
+    "vis-timeline": "^7.7.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "esbuild": "^0.25.0",
+    "obsidian": "^1.8.7",
+    "typescript": "^5.7.3"
+  }
+}
