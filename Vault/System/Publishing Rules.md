@@ -22,6 +22,9 @@ The sync script rewrites `slug` from the note path, except for the root `index` 
 Use the extra fields when they help the page sidebar, graph, maps, timelines, feeds, or future social cards.
 
 ```yaml
+icon: "fa-solid fa-book-skull"
+sidebarIcon: "fa-solid fa-book"
+titleIcon: "fa-solid fa-book-skull"
 era: CITADEL
 faction: Example Faction
 location: Example City
@@ -55,6 +58,38 @@ Use Obsidian wikilinks in source notes:
 ```
 
 During sync, published wikilinks become site links. Missing or unpublished wikilinks fall back to plain text and produce a sync warning. The same links feed the site graph and backlink panels, so use them generously but deliberately.
+
+## Icons
+
+Use Font Awesome's own class format in Obsidian. The sync step converts heading shortcodes into decorative site markup while keeping the visible heading text clean for anchors, search, and the table of contents.
+
+```md
+## [Icon:fa-solid fa-people-group] People
+## [Icon:fa-solid fa-landmark] Government
+### [Icon:fa-regular fa-clock] Early History
+```
+
+Use the same specification in frontmatter:
+
+```yaml
+icon: "fa-solid fa-flag"
+sidebarIcon: "fa-solid fa-shield-halved"
+titleIcon: "fa-solid fa-flag"
+```
+
+`icon` is the shared default for the page title and sidebar entry. `sidebarIcon` and `titleIcon` override it where required.
+
+The existing local SVG library is also available:
+
+```md
+## [Icon:local faction] Faction Identity
+```
+
+```yaml
+icon: "local faction"
+```
+
+A single icon name such as `icon: faction` is retained as shorthand for `local faction`. Multi-token specifications are treated as CSS icon classes, which allows more class-based libraries to be added later without changing the Markdown grammar.
 
 ## Layout tags
 
