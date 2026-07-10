@@ -16,4 +16,5 @@ Explore the [[Example Faction]], meet the [[Example Character]], visit [[Example
 
 - [World graph](/graph/)
 - [Example map](/maps/example-world/)
-- [Example timeline](/timelines/example-history/)
+- [VISCERIUM timeline](/timelines/super/)
+- [All timelines](/timelines/)
