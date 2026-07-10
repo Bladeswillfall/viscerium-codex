@@ -6,6 +6,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GIT_PROGRESS_DELAY: 999999
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,7 +18,12 @@ jobs:
           node-version: 22.16.0
           cache: npm
           cache-dependency-path: Site/package.json
-      - run: npm install
+      - run: npm install --silent
         working-directory: Site
-      - run: npm run build
+      - name: Build site
+        run: |
+          npm run build > build.log 2>&1 || {
+            tail -n 60 build.log
+            exit 1
+          }
         working-directory: Site
