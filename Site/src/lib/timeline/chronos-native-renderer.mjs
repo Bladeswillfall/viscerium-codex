@@ -3,12 +3,12 @@ import { DataSet, Timeline } from 'vis-timeline/standalone';
 import { calendars, defaultCalendarId, formatAbsoluteDay } from '../calendar/runtime.mjs';
 import {
   IMPORTANCE_LEVELS,
-  absoluteDayToSyntheticDate,
+  absoluteDayToSyntheticDate as absoluteDayToSyntheticDateBase,
   chooseCalendar,
   eventMatchesFilter,
   getZoomImportanceThreshold,
   parseTimelineUrlState,
-  syntheticDateToAbsoluteDay,
+  syntheticDateToAbsoluteDay as syntheticDateToAbsoluteDayBase,
   updateTimelineUrl,
 } from './core.mjs';
 import { createChronosTimelineModel } from './chronos-adapter.mjs';
@@ -124,6 +124,9 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     compact: suppliedOptions.compact === true,
     articleHandler: suppliedOptions.articleHandler,
   };
+  const syntheticOriginDay = dataset.absoluteStartDay;
+  const toSyntheticDate = (absoluteDay) => absoluteDayToSyntheticDateBase(absoluteDay, syntheticOriginDay);
+  const fromSyntheticDate = (date) => syntheticDateToAbsoluteDayBase(date, syntheticOriginDay);
   const instanceId = Math.random().toString(36).slice(2, 10);
   root.innerHTML = renderTemplate(dataset, options, instanceId);
   root.dataset.enhanced = 'true';
@@ -264,7 +267,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
 
   function refreshItems(force = false) {
     const windowRange = timeline.getWindow();
-    const span = Math.max(1, syntheticDateToAbsoluteDay(windowRange.end) - syntheticDateToAbsoluteDay(windowRange.start));
+    const span = Math.max(1, fromSyntheticDate(windowRange.end) - fromSyntheticDate(windowRange.start));
     const threshold = getZoomImportanceThreshold(span);
     if (!force && threshold === currentThreshold) return;
     currentThreshold = threshold;
@@ -274,8 +277,8 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
       events: filteredEvents,
       laneMode: state.laneMode,
       formatEventDate,
-      visibleStartDay: syntheticDateToAbsoluteDay(windowRange.start),
-      visibleEndDay: syntheticDateToAbsoluteDay(windowRange.end),
+      visibleStartDay: fromSyntheticDate(windowRange.start),
+      visibleEndDay: fromSyntheticDate(windowRange.end),
     });
     timeline.setGroups(model.groups);
     timeline.setItems(model.items);
@@ -285,8 +288,8 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
 
   function renderAxis() {
     const range = timeline.getWindow();
-    const startDay = syntheticDateToAbsoluteDay(range.start);
-    const endDay = syntheticDateToAbsoluteDay(range.end);
+    const startDay = fromSyntheticDate(range.start);
+    const endDay = fromSyntheticDate(range.end);
     const span = Math.max(1, endDay - startDay);
     const ticks = axisTicks(startDay, endDay, window.innerWidth < 640 ? 3 : 6);
     axis.innerHTML = ticks.map((day) => {
@@ -318,7 +321,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     const padding = era?.defaultViewport?.paddingDays ?? 30;
     const start = era?.defaultViewport?.startDay ?? dataset.absoluteStartDay - padding;
     const end = era?.defaultViewport?.endDay ?? dataset.absoluteEndDay + padding;
-    timeline.setWindow(absoluteDayToSyntheticDate(start), absoluteDayToSyntheticDate(end), { animation: false });
+    timeline.setWindow(toSyntheticDate(start), toSyntheticDate(end), { animation: false });
   }
 
   function zoomEra(id) {
@@ -326,8 +329,8 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     if (!era) return;
     const padding = era.defaultViewport?.paddingDays ?? 30;
     timeline.setWindow(
-      absoluteDayToSyntheticDate(era.absoluteStartDay - padding),
-      absoluteDayToSyntheticDate(era.absoluteEndDay + padding),
+      toSyntheticDate(era.absoluteStartDay - padding),
+      toSyntheticDate(era.absoluteEndDay + padding),
     );
   }
 
@@ -454,31 +457,31 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     minimapItems.add([
       ...dataset.eras.map((era) => ({
         id: `mini-era:${era.id}`,
-        start: absoluteDayToSyntheticDate(era.absoluteStartDay),
-        end: absoluteDayToSyntheticDate(era.absoluteEndDay + 1),
+        start: toSyntheticDate(era.absoluteStartDay),
+        end: toSyntheticDate(era.absoluteEndDay + 1),
         type: 'background',
         content: '',
         className: `vc-era-band era-${cssToken(era.id)}`,
       })),
       ...dataset.events.map((event) => ({
         id: `mini:${event.id}`,
-        start: absoluteDayToSyntheticDate(event.absoluteStartDay),
+        start: toSyntheticDate(event.absoluteStartDay),
         type: 'point',
         content: '',
         className: `vc-mini-event importance-${event.importance}`,
       })),
       {
         id: 'viewport',
-        start: absoluteDayToSyntheticDate(dataset.absoluteStartDay),
-        end: absoluteDayToSyntheticDate(dataset.absoluteEndDay),
+        start: toSyntheticDate(dataset.absoluteStartDay),
+        end: toSyntheticDate(dataset.absoluteEndDay),
         type: 'range',
         content: '',
         className: 'vc-minimap-viewport',
       },
     ]);
     minimap.setWindow(
-      absoluteDayToSyntheticDate(dataset.absoluteStartDay),
-      absoluteDayToSyntheticDate(dataset.absoluteEndDay),
+      toSyntheticDate(dataset.absoluteStartDay),
+      toSyntheticDate(dataset.absoluteEndDay),
       { animation: false },
     );
   }
@@ -489,8 +492,8 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     && state.visibleStartDay < state.visibleEndDay
   ) {
     timeline.setWindow(
-      absoluteDayToSyntheticDate(state.visibleStartDay),
-      absoluteDayToSyntheticDate(state.visibleEndDay),
+      toSyntheticDate(state.visibleStartDay),
+      toSyntheticDate(state.visibleEndDay),
       { animation: false },
     );
   } else {

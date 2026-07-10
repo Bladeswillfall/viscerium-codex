@@ -61,6 +61,15 @@ test('synthetic UTC dates preserve one world day without timezone drift', () => 
   assert.throws(() => absoluteDayToSyntheticDate(Number.MAX_SAFE_INTEGER), /safe synthetic JavaScript date range/);
 });
 
+
+test('timeline-local synthetic origins keep distant world dates inside four-digit years', () => {
+  const origin = 3_360_000;
+  const absolute = origin + 73_000;
+  const date = absoluteDayToSyntheticDate(absolute, origin);
+  assert.ok(date.getUTCFullYear() >= 2000 && date.getUTCFullYear() < 9999);
+  assert.equal(syntheticDateToAbsoluteDay(date, origin), absolute);
+});
+
 test('era membership includes boundaries and overlapping periods', () => {
   const eras = [
     { id: 'a', order: 1, absoluteStartDay: 0, absoluteEndDay: 9 },

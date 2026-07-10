@@ -54,12 +54,13 @@ function titleCase(value) {
     .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
-function chronosDate(absoluteDay) {
-  const date = absoluteDayToSyntheticDate(absoluteDay);
+function chronosDate(absoluteDay, syntheticOriginDay) {
+  const date = absoluteDayToSyntheticDate(absoluteDay, syntheticOriginDay);
   const yearValue = date.getUTCFullYear();
-  const year = yearValue < 0
-    ? `-${String(Math.abs(yearValue)).padStart(4, '0')}`
-    : String(yearValue).padStart(4, '0');
+  if (yearValue < 0 || yearValue > 9999) {
+    throw new Error(`Chronos requires a four-digit synthetic year; received ${yearValue} for world-day ${absoluteDay}`);
+  }
+  const year = String(yearValue).padStart(4, '0');
   const month = String(date.getUTCMonth() + 1).padStart(2, '0');
   const day = String(date.getUTCDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
@@ -104,12 +105,12 @@ function eventColor(event) {
   };
 }
 
-function eventLine(event, laneMode, groupFor) {
+function eventLine(event, laneMode, groupFor, syntheticOriginDay) {
   const values = laneMode === 'category' ? event.categories : event.lanes;
   const group = groupFor(values[0] ?? 'other');
   const { color } = eventColor(event);
-  const start = chronosDate(event.absoluteStartDay);
-  const end = event.absoluteEndDay === undefined ? undefined : chronosDate(event.absoluteEndDay + 1);
+  const start = chronosDate(event.absoluteStartDay, syntheticOriginDay);
+  const end = event.absoluteEndDay === undefined ? undefined : chronosDate(event.absoluteEndDay + 1, syntheticOriginDay);
   const prefix = event.kind === 'milestone' ? '*' : '-';
   const range = end ? `${start}~${end}` : start;
   const title = cleanChronosText(event.title) || 'Untitled event';
@@ -120,9 +121,9 @@ function eventLine(event, laneMode, groupFor) {
   };
 }
 
-function eraLines(dataset, groups) {
+function eraLines(dataset, groups, syntheticOriginDay) {
   return dataset.eras.flatMap((era) => groups.map((group, index) => ({
-    line: `@ [${chronosDate(era.absoluteStartDay)}~${chronosDate(era.absoluteEndDay + 1)}] #${ERA_COLORS[era.id] ?? 'blue'} {${cleanChronosText(group.label).replace(/}/g, '')}} ${index === 0 ? cleanChronosText(era.title) : '&nbsp;'}`,
+    line: `@ [${chronosDate(era.absoluteStartDay, syntheticOriginDay)}~${chronosDate(era.absoluteEndDay + 1, syntheticOriginDay)}] #${ERA_COLORS[era.id] ?? 'blue'} {${cleanChronosText(group.label).replace(/}/g, '')}} ${index === 0 ? cleanChronosText(era.title) : '&nbsp;'}`,
     metadata: { kind: 'era', era, group, showLabel: index === 0 },
   })));
 }
@@ -175,17 +176,18 @@ export function createChronosTimelineModel({
 
   if (typeof document !== 'undefined') attachChronosStyles(document);
 
+  const syntheticOriginDay = dataset.absoluteStartDay;
   const { groups, groupFor } = buildGroups(events, laneMode);
   const startDay = Number.isSafeInteger(visibleStartDay) ? visibleStartDay : dataset.absoluteStartDay;
   const endDay = Number.isSafeInteger(visibleEndDay) ? visibleEndDay : dataset.absoluteEndDay;
   const records = [
-    ...eraLines(dataset, groups),
-    ...events.map((event) => eventLine(event, laneMode, groupFor)),
+    ...eraLines(dataset, groups, syntheticOriginDay),
+    ...events.map((event) => eventLine(event, laneMode, groupFor, syntheticOriginDay)),
   ];
   const source = [
     '> NOTODAY',
     '> ORDERBY start',
-    `> DEFAULTVIEW ${chronosDate(startDay)}|${chronosDate(Math.max(startDay + 1, endDay))}`,
+    `> DEFAULTVIEW ${chronosDate(startDay, syntheticOriginDay)}|${chronosDate(Math.max(startDay + 1, endDay), syntheticOriginDay)}`,
     '',
     ...records.map((record) => record.line),
   ].join('\n');
@@ -206,5 +208,6 @@ export function createChronosTimelineModel({
     parsed,
     items: parsed.items,
     groups: parsed.groups,
+    syntheticOriginDay,
   };
 }
