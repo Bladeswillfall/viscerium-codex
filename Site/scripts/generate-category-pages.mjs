@@ -12,8 +12,6 @@ const repoRoot = path.resolve(siteRoot, '..');
 const docsDir = path.resolve(siteRoot, 'src/content/docs');
 const loreRoot = 'Vault/Lore/';
 const markdownExtensions = /\.(md|mdx)$/i;
-const generatedSectionMarker = '<!-- generated-category-index -->';
-const generatedSectionEndMarker = '<!-- /generated-category-index -->';
 
 function cleanSlug(value) {
   return String(value ?? '').trim().replace(/^\/+|\/+$/g, '').toLowerCase();
@@ -57,7 +55,7 @@ function escapeMarkdown(value) {
 }
 
 function generatedCategorySection(descendants, childCategories) {
-  const lines = [generatedSectionMarker];
+  const lines = [];
 
   if (childCategories.length > 0) {
     lines.push('## Subcategories', '');
@@ -75,16 +73,8 @@ function generatedCategorySection(descendants, childCategories) {
   }
 
   if (descendants.length === 0) lines.push('_No public pages are currently available in this category._');
-  lines.push('', generatedSectionEndMarker, '');
+  lines.push('');
   return lines.join('\n');
-}
-
-function removeGeneratedCategorySection(content) {
-  const start = content.indexOf(generatedSectionMarker);
-  if (start === -1) return content.trimEnd();
-  const end = content.indexOf(generatedSectionEndMarker, start);
-  if (end === -1) return content.slice(0, start).trimEnd();
-  return `${content.slice(0, start)}${content.slice(end + generatedSectionEndMarker.length)}`.trimEnd();
 }
 
 function addFrontmatterField(raw, key, value) {
@@ -179,7 +169,7 @@ for (const category of categoryList) {
   if (existingEntry) {
     const raw = await fs.readFile(existingEntry.file, 'utf8');
     const parsed = matter(raw);
-    const content = removeGeneratedCategorySection(parsed.content);
+    const content = parsed.content.trimEnd();
     await fs.writeFile(existingEntry.file, matter.stringify(`${content}\n\n${section}`, parsed.data), 'utf8');
     console.log(`Extended ${path.relative(docsDir, existingEntry.file)} with a generated category index.`);
     continue;
