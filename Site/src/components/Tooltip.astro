@@ -5,6 +5,7 @@ interface Props {
   label?: string;
   external?: boolean;
   class?: string;
+  wrapperClass?: string;
   id?: string;
 }
 
@@ -14,13 +15,14 @@ const {
   label,
   external = Boolean(href && /^https?:\/\//i.test(href)),
   class: className,
+  wrapperClass,
   id,
 } = Astro.props;
 const tooltipId = id ?? `codex-tooltip-${crypto.randomUUID().replace(/-/g, '')}`;
 const Trigger = href ? 'a' : 'span';
 ---
 
-<span class="codex-tooltip">
+<span class:list={['codex-tooltip', wrapperClass]}>
   <Trigger
     class:list={['codex-tooltip__trigger', className]}
     href={href}
