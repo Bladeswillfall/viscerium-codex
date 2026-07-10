@@ -4,9 +4,15 @@
     --codex-radius-lg: 0 !important;
   }
 
+  /*
+    Global surface geometry. This deliberately reaches beyond lore articles so
+    calendars, maps, images, support, search, comments, and changelogs inherit
+    the same flat visual language in both themes.
+  */
   .content-panel,
   .codex-surface,
   .codex-card,
+  .codex-frame,
   .codex-sidebar-card,
   .codex-sidebar-section,
   .codex-comments details,
@@ -14,6 +20,37 @@
   .image-figure img,
   .codex-header-image,
   .world-map,
+  .codex-map,
+  .map-panel,
+  .map-frame,
+  .codex-image-panel,
+  .map-card,
+  .codex-map-card,
+  .image-card,
+  .codex-gallery-card,
+  .calendar-module,
+  .calendar-module__facts,
+  .calendar-month,
+  .calendar-day,
+  .calendar-day__number,
+  .calendar-day--holiday::after,
+  .calendar-legend,
+  .calendar-date-badge,
+  .calendar-season,
+  .calendar-observance,
+  .support-hero,
+  .support-section,
+  .support-note,
+  .support-card,
+  .support-card__icon,
+  .social-icon-link,
+  .support-button,
+  .contact-form,
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea,
+  .contact-form__notice,
+  .contact-form__status,
   .sl-markdown-content blockquote,
   .sl-markdown-content table,
   .starlight-aside,
@@ -21,19 +58,42 @@
   .sl-link-card,
   .expressive-code figure.frame,
   .cx-card,
-  .cx-callout {
+  .cx-callout,
+  .codex-link-button,
+  .codex-sidebar-toggle,
+  .theme-toggle,
+  .social-icons a,
+  .social-icons-extended a,
+  .telescope__modal,
+  .telescope__close-button,
+  .telescope__tab,
+  .telescope__search-input,
+  .telescope__pin-button,
+  .telescope__tag,
+  .telescope__clear-btn,
+  .telescope__modal kbd,
+  dialog,
+  button[data-open-modal],
+  button[data-open-modal] > kbd,
+  .pagefind-ui__search-input,
+  .pagefind-ui__search-clear,
+  .pagefind-ui__button,
+  .pagefind-ui__result-title,
+  .pagefind-ui__result-nested,
+  .pagefind-ui__result-tag,
+  .pagefind-ui__filter-checkbox {
     border-radius: 0 !important;
   }
 
-  .sl-badge {
+  .sl-badge,
+  span[data-shb-badge] {
     border-radius: 0 !important;
     box-shadow: none !important;
   }
 
   /*
-    The flat page template is global. Cards may retain their surface and shadow
-    for grouping, but the extra outline is removed so utility pages, lore
-    pages, maps, calendars, image pages, and support pages share one treatment.
+    Cards retain their surface and shadow for grouping, but redundant outlines
+    are removed to match the approved reference page.
   */
   .codex-sidebar-card,
   .codex-sidebar-section,
@@ -150,16 +210,5 @@
     .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .codex-site-footer {
       margin-top: 1.5625rem;
     }
-  }
-
-  .codex-sidebar-toggle,
-  .theme-toggle,
-  button,
-  input,
-  select,
-  textarea,
-  .codex-link-button,
-  .support-button {
-    /* Interactive controls are allowed to keep shape language distinct. */
   }
 }
