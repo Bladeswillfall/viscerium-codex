@@ -122,6 +122,12 @@ function getAnchor(input) {
   return `${input.month}-${padDay(input.day)}`;
 }
 
+function getWeekday(calendar, absoluteDay) {
+  const epochWeekday = calendar.weekdays.indexOf(calendar.epoch.weekday);
+  const weekdayIndex = mod(epochWeekday + absoluteDay - calendar.epoch.absoluteDay, calendar.weekdays.length);
+  return calendar.weekdays[weekdayIndex] ?? calendar.weekdays[0];
+}
+
 export function fromAbsoluteDay(absoluteDay, calendarId = defaultCalendarId) {
   if (!Number.isSafeInteger(absoluteDay)) throw new Error(`Absolute day must be a safe integer: ${absoluteDay}`);
   const calendar = getCalendar(calendarId);
@@ -148,13 +154,15 @@ export function formatCalendarDate(input, precision = input.precision ?? 'day', 
   if (precision === 'year') return year;
   if (input.intercalaryDay) {
     const intercalary = getIntercalaryDay(calendar, input.intercalaryDay, input.year);
-    return precision === 'month' ? `${intercalary.name}, ${year}` : `${intercalary.name} ${padDay(intercalary.day)}, ${year}`;
+    const short = precision === 'month' ? `${intercalary.name}, ${year}` : `${intercalary.name} ${padDay(intercalary.day)}, ${year}`;
+    if (!options.includeWeekday || precision !== 'day') return short;
+    return `${getWeekday(calendar, toAbsoluteDay(input))}, ${short}`;
   }
   const month = getMonth(calendar, input.month);
   if (precision === 'month') return `${month.name}, ${year}`;
-  const resolved = resolveCalendarDate(input);
   const short = `${input.day} ${month.name}, ${year}`;
-  return options.includeWeekday ? `${resolved.weekday}, ${short}` : short;
+  if (!options.includeWeekday) return short;
+  return `${getWeekday(calendar, toAbsoluteDay(input))}, ${short}`;
 }
 
 export function formatAbsoluteDay(absoluteDay, calendarId = defaultCalendarId, precision = 'day', options = {}) {
@@ -165,8 +173,7 @@ export function resolveCalendarDate(input) {
   const calendar = getCalendar(input.calendar);
   const absoluteDay = toAbsoluteDay(input);
   const dayOfYear = getDayOfYear(calendar, input);
-  const weekdayIndex = mod(calendar.weekdays.indexOf(calendar.epoch.weekday) + absoluteDay - calendar.epoch.absoluteDay, calendar.weekdays.length);
-  const weekday = calendar.weekdays[weekdayIndex] ?? calendar.weekdays[0];
+  const weekday = getWeekday(calendar, absoluteDay);
   const month = input.month ? getMonth(calendar, input.month) : undefined;
   const intercalaryDay = input.intercalaryDay ? getIntercalaryDay(calendar, input.intercalaryDay, input.year) : undefined;
   const anchor = getAnchor(input);
