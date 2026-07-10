@@ -2,6 +2,18 @@
 import Tooltip from './Tooltip.astro';
 import contributorRegistry from '../data/contributors.json';
 
+type ContributorProfile = {
+  name: string;
+  github: string;
+  avatar: string;
+};
+
+type ResolvedContributor = ContributorProfile & {
+  id: string;
+  roles: string[];
+};
+
+const profiles = contributorRegistry.profiles as Record<string, ContributorProfile>;
 const { starlightRoute } = Astro.locals;
 const entry = starlightRoute?.entry?.data ?? {};
 const routeId = String(entry.slug ?? starlightRoute?.entry?.id ?? '')
@@ -28,18 +40,18 @@ const requestedContributors = [
   ...(shouldUseDefaults ? contributorRegistry.defaultContributors : []),
   ...explicitContributors,
 ];
-const mergedContributors = new Map();
+const mergedContributors = new Map<string, ResolvedContributor>();
 
 for (const item of requestedContributors) {
   const normalised = typeof item === 'string' ? { id: item } : item;
   if (!normalised || typeof normalised.id !== 'string') continue;
   const id = normalised.id.trim().toLowerCase();
-  const profile = contributorRegistry.profiles[id];
+  const profile = profiles[id];
   if (!profile) continue;
 
-  const incomingRoles = Array.isArray(normalised.roles)
+  const incomingRoles = Array.isArray('roles' in normalised ? normalised.roles : undefined)
     ? normalised.roles
-    : normalised.role
+    : 'role' in normalised && normalised.role
       ? [normalised.role]
       : ['Contributor'];
   const existing = mergedContributors.get(id) ?? {
@@ -47,7 +59,7 @@ for (const item of requestedContributors) {
     ...profile,
     roles: [],
   };
-  for (const role of incomingRoles) {
+  for (const role of incomingRoles ?? []) {
     const value = String(role).trim();
     if (value && !existing.roles.some((current) => current.toLowerCase() === value.toLowerCase())) {
       existing.roles.push(value);
@@ -95,7 +107,7 @@ const panelId = `codex-contributors-${crypto.randomUUID().replace(/-/g, '')}`;
             href={profileUrl}
             label={accessibleLabel}
             external={true}
-            class:list={['codex-contributor-coin', contributor.isAuthor && 'is-author']}
+            class={`codex-contributor-coin${contributor.isAuthor ? ' is-author' : ''}`}
             wrapperClass={`codex-contributor-tooltip${index >= collapsedLimit ? ' is-overflow' : ''}`}
           >
             <img
@@ -150,7 +162,7 @@ const panelId = `codex-contributors-${crypto.randomUUID().replace(/-/g, '')}`;
         toggle.addEventListener('click', toggleExpanded);
         more?.addEventListener('click', toggleExpanded);
         list.addEventListener('click', (event) => {
-          if (event.target.closest('a, button')) return;
+          if (event.target instanceof Element && event.target.closest('a, button')) return;
           toggleExpanded();
         });
       });
