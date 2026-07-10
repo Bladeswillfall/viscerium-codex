@@ -167,9 +167,13 @@ export function parseTimelineUrlState(urlLike, options = {}) {
   const lane = url.searchParams.get('lane');
   const laneMode = LANE_MODES.includes(lane) ? lane : options.fallbackLaneMode ?? 'unified';
   const split = (key) => [...new Set((url.searchParams.get(key) ?? '').split(',').map((item) => normalizeId(item)).filter(Boolean))];
+  const parseInteger = (key) => {
+    const raw = url.searchParams.get(key);
+    if (raw === null || raw.trim() === '') return undefined;
+    const value = Number(raw);
+    return Number.isSafeInteger(value) ? value : undefined;
+  };
   const importance = split('importance').filter((value) => IMPORTANCE_LEVELS.includes(value));
-  const start = Number(url.searchParams.get('start'));
-  const end = Number(url.searchParams.get('end'));
   return {
     calendar,
     selected: url.searchParams.get('event') || undefined,
@@ -178,8 +182,8 @@ export function parseTimelineUrlState(urlLike, options = {}) {
     categories: split('categories'),
     eras: split('eras'),
     laneMode,
-    visibleStartDay: Number.isSafeInteger(start) ? start : undefined,
-    visibleEndDay: Number.isSafeInteger(end) ? end : undefined,
+    visibleStartDay: parseInteger('start'),
+    visibleEndDay: parseInteger('end'),
   };
 }
 
