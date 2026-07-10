@@ -88,6 +88,20 @@ jobs:
               await expect(page.locator('[data-vc-fallback]')).toBeHidden();
               await expect(page.locator('[data-vc-timeline-mount]')).not.toBeEmpty();
 
+              if (era === 'citadel') {
+                const lane = page.locator('[data-vc-lane]');
+                await lane.selectOption('lane');
+                await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
+
+                const scrollPanel = page.locator('[data-vc-canvas] .vis-panel.vis-left.vis-vertical-scroll');
+                await expect(scrollPanel).toBeVisible();
+                const scrollMetrics = await scrollPanel.evaluate((element) => ({
+                  clientHeight: element.clientHeight,
+                  scrollHeight: element.scrollHeight,
+                }));
+                expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
+              }
+
               if (era === 'smog') {
                 const search = page.locator('[data-vc-search]');
                 const lane = page.locator('[data-vc-lane]');
