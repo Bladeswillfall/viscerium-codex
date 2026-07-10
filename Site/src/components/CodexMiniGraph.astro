@@ -3,7 +3,9 @@ import graph from '../data/graph.json';
 
 const { starlightRoute } = Astro.locals;
 const entry = starlightRoute.entry.data;
-const currentId = starlightRoute.entry.id.replace(/\.(md|mdx)$/, '');
+const currentId = String(entry.slug ?? starlightRoute.entry.id)
+  .replace(/\.(md|mdx)$/, '')
+  .replace(/^\/+|\/+$/g, '');
 const nodeById = new Map(graph.nodes.map((node) => [node.id, node]));
 const currentNode = nodeById.get(currentId) ?? {
   id: currentId,
