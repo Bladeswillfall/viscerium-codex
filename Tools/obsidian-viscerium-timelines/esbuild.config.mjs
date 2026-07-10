@@ -1,0 +1,28 @@
+import path from 'node:path';
+import process from 'node:process';
+import fs from 'fs-extra';
+import esbuild from 'esbuild';
+
+const production = process.argv[2] === 'production';
+const root = process.cwd();
+const outDir = path.join(root, 'dist');
+await fs.emptyDir(outDir);
+
+await esbuild.build({
+  entryPoints: [path.join(root, 'main.ts')],
+  bundle: true,
+  external: ['obsidian', 'electron', '@codemirror/state', '@codemirror/view', '@codemirror/language', '@lezer/common'],
+  format: 'cjs',
+  target: 'es2022',
+  platform: 'browser',
+  outfile: path.join(outDir, 'main.js'),
+  nodePaths: [path.join(root, 'node_modules')],
+  sourcemap: production ? false : 'inline',
+  minify: production,
+  treeShaking: true,
+  logLevel: 'info',
+});
+
+const generatedCss = path.join(outDir, 'main.css');
+if (await fs.pathExists(generatedCss)) await fs.move(generatedCss, path.join(outDir, 'styles.css'), { overwrite: true });
+await fs.copy(path.join(root, 'manifest.json'), path.join(outDir, 'manifest.json'));
