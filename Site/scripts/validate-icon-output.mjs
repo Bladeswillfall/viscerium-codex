@@ -33,11 +33,11 @@ const checks = [
   },
   {
     label: 'page-title icon wrapper',
-    pattern: /<h1[^>]*id=["']_top["'][^>]*>[\s\S]*?codex-title-icon[\s\S]*?fa-solid[\s\S]*?fa-flag[\s\S]*?<\/h1>/i,
+    pattern: /<h1[^>]*id=["']_top["'][^>]*>[\s\S]*?codex-title-icon[\s\S]*?fa-solid[\s\S]*?fa-flag[\s\S]*?fa-fw[\s\S]*?<\/h1>/i,
   },
   {
     label: 'article heading icon wrapper',
-    pattern: /<h2[^>]*>[\s\S]*?codex-heading-icon[\s\S]*?fa-solid[\s\S]*?fa-id-card[\s\S]*?Identity[\s\S]*?<\/h2>/i,
+    pattern: /<h2[^>]*>[\s\S]*?codex-heading-icon[\s\S]*?fa-solid[\s\S]*?fa-id-card[\s\S]*?fa-fw[\s\S]*?Identity[\s\S]*?<\/h2>/i,
   },
 ];
 
@@ -45,8 +45,15 @@ for (const check of checks) {
   if (!check.pattern.test(html)) fail(`${check.label} is missing from the built Example Faction page`);
 }
 
+const fontAwesomeClassAttributes = [...html.matchAll(/class=["']([^"']*\bfa-(?:solid|regular|brands|thin|light|duotone|sharp|sharp-duotone)\b[^"']*)["']/gi)];
+for (const match of fontAwesomeClassAttributes) {
+  if (!/\bfa-fw\b/i.test(match[1])) {
+    fail(`Font Awesome icon is missing fa-fw: ${match[1]}`);
+  }
+}
+
 if (/\[Icon:/i.test(html)) {
   fail('raw [Icon:...] authoring syntax leaked into the built HTML');
 }
 
-console.log('Validated rendered page-title and article-heading icons.');
+console.log(`Validated ${fontAwesomeClassAttributes.length} fixed-width Font Awesome icon(s).`);
