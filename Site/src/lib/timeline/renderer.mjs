@@ -13,6 +13,7 @@ import {
   updateTimelineUrl,
 } from './core.mjs';
 
+const UNIFIED_GROUP_ID = '__unified';
 const importanceLabels = {
   landmark: 'Landmark',
   major: 'Major',
@@ -34,13 +35,6 @@ function cssToken(value) {
   return String(value ?? '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
 }
 
-function formatDate(event, calendarId) {
-  const start = formatAbsoluteDay(event.absoluteStartDay, calendarId, event.precision);
-  if (event.absoluteEndDay === undefined) return start;
-  const end = formatAbsoluteDay(event.absoluteEndDay, calendarId, event.endPrecision ?? event.precision);
-  return `${start} — ${end}`;
-}
-
 function certaintyLabel(certainty) {
   if (certainty === 'approximate') return 'Approximate';
   if (certainty === 'disputed') return 'Disputed';
@@ -49,12 +43,15 @@ function certaintyLabel(certainty) {
 }
 
 function checkboxList(name, values, labels = {}) {
-  return values.map((value) => `<label class="vc-timeline-check"><input type="checkbox" name="${name}" value="${escapeHtml(value)}"> <span>${escapeHtml(labels[value] ?? value)}</span></label>`).join('');
+  return values
+    .map((value) => `<label class="vc-timeline-check"><input type="checkbox" name="${name}" value="${escapeHtml(value)}"> <span>${escapeHtml(labels[value] ?? value)}</span></label>`)
+    .join('');
 }
 
-function template(dataset, options) {
+function renderTemplate(dataset, options, instanceId) {
   const categories = [...new Set(dataset.events.flatMap((event) => event.categories))].sort();
   const eraOptions = dataset.id === 'super' ? dataset.eras.map((era) => era.id) : [];
+  const detailsTitleId = `vc-timeline-detail-title-${instanceId}`;
   return `
     <section class="vc-timeline-app${options.compact ? ' is-compact' : ''}" aria-label="${escapeHtml(dataset.title)}">
       <div class="vc-timeline-toolbar" role="toolbar" aria-label="Timeline controls">
@@ -75,12 +72,12 @@ function template(dataset, options) {
       <div class="vc-era-strip" aria-label="Era ranges">${dataset.eras.map((era) => `<span class="vc-era-action era-${cssToken(era.id)}"><button type="button" data-vc-era="${escapeHtml(era.id)}">${escapeHtml(era.title)}</button><a href="${escapeHtml(era.href)}" aria-label="Open ${escapeHtml(era.title)} article">Article</a></span>`).join('')}</div>
       <div class="vc-timeline-stage">
         <div class="vc-timeline-axis" data-vc-axis aria-hidden="true"></div>
-        <div class="vc-timeline-canvas" data-vc-canvas tabindex="0" aria-label="Interactive timeline. Use the list view for full keyboard navigation."></div>
+        <div class="vc-timeline-canvas" data-vc-canvas tabindex="0" aria-label="Interactive timeline. Use the list view for complete keyboard navigation."></div>
       </div>
       ${options.showMinimap ? `<details class="vc-timeline-minimap-wrap" data-vc-minimap-wrap open><summary>Overview</summary><div class="vc-timeline-minimap" data-vc-minimap aria-label="Timeline overview"></div></details>` : ''}
       <div class="vc-timeline-status" data-vc-status role="status" aria-live="polite"></div>
       <div class="vc-timeline-list" data-vc-list-panel hidden></div>
-      <aside class="vc-timeline-details" data-vc-details hidden aria-labelledby="vc-timeline-detail-title">
+      <aside class="vc-timeline-details" data-vc-details hidden aria-labelledby="${detailsTitleId}">
         <button type="button" class="vc-timeline-detail-close" data-vc-close aria-label="Close event details">×</button>
         <div data-vc-detail-body></div>
       </aside>
@@ -102,6 +99,10 @@ function axisTicks(startDay, endDay, count = 6) {
 
 export function mountTimeline(root, dataset, suppliedOptions = {}) {
   if (!root) throw new Error('Timeline mount root is required.');
+  if (!dataset?.id || !Array.isArray(dataset.events) || !Array.isArray(dataset.eras)) {
+    throw new Error('Timeline dataset is malformed.');
+  }
+
   const options = {
     defaultCalendar: suppliedOptions.defaultCalendar ?? dataset.defaultCalendar ?? defaultCalendarId,
     laneMode: suppliedOptions.laneMode ?? 'unified',
@@ -111,10 +112,10 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     compact: suppliedOptions.compact === true,
     articleHandler: suppliedOptions.articleHandler,
   };
-  root.innerHTML = template(dataset, options);
+  const instanceId = Math.random().toString(36).slice(2, 10);
+  root.innerHTML = renderTemplate(dataset, options, instanceId);
   root.dataset.enhanced = 'true';
 
-  const app = root.querySelector('.vc-timeline-app');
   const canvas = root.querySelector('[data-vc-canvas]');
   const axis = root.querySelector('[data-vc-axis]');
   const status = root.querySelector('[data-vc-status]');
@@ -125,15 +126,30 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
   const searchInput = root.querySelector('[data-vc-search]');
   const laneSelect = root.querySelector('[data-vc-lane]');
   const minimapElement = root.querySelector('[data-vc-minimap]');
+  const detailsTitleId = `vc-timeline-detail-title-${instanceId}`;
   const storageKey = 'viscerium.timeline.calendar';
   const calendarIds = calendars.map((calendar) => calendar.id);
-  const urlState = typeof window !== 'undefined'
-    ? parseTimelineUrlState(window.location.href, { calendarIds, fallbackCalendar: options.defaultCalendar, fallbackLaneMode: options.laneMode })
-    : { calendar: options.defaultCalendar, laneMode: options.laneMode, search: '', importance: [], categories: [], eras: [] };
+  const currentUrl = new URL(window.location.href);
+  const rawQueryCalendar = currentUrl.searchParams.get('calendar');
+  const urlState = parseTimelineUrlState(currentUrl, {
+    calendarIds,
+    fallbackCalendar: options.defaultCalendar,
+    fallbackLaneMode: options.laneMode,
+  });
   let storedCalendar;
-  try { storedCalendar = window.localStorage.getItem(storageKey); } catch { storedCalendar = undefined; }
+  try {
+    storedCalendar = window.localStorage.getItem(storageKey);
+  } catch {
+    storedCalendar = undefined;
+  }
   const state = {
-    calendar: chooseCalendar({ queryCalendar: urlState.calendar, storedCalendar, timelineDefault: options.defaultCalendar, globalDefault: defaultCalendarId, calendarIds }),
+    calendar: chooseCalendar({
+      queryCalendar: rawQueryCalendar && calendarIds.includes(rawQueryCalendar) ? rawQueryCalendar : undefined,
+      storedCalendar,
+      timelineDefault: options.defaultCalendar,
+      globalDefault: defaultCalendarId,
+      calendarIds,
+    }),
     selected: urlState.selected,
     search: urlState.search ?? '',
     importance: urlState.importance ?? [],
@@ -143,13 +159,27 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     visibleStartDay: urlState.visibleStartDay,
     visibleEndDay: urlState.visibleEndDay,
   };
+
   calendarSelect.value = state.calendar;
   searchInput.value = state.search;
   laneSelect.value = state.laneMode;
-
   for (const name of ['importance', 'categories', 'eras']) {
-    for (const input of root.querySelectorAll(`input[name="${name}"]`)) input.checked = state[name].includes(input.value);
+    for (const input of root.querySelectorAll(`input[name="${name}"]`)) {
+      input.checked = state[name].includes(input.value);
+    }
   }
+
+  const dateCache = new Map();
+  const formatEventDate = (event) => {
+    const key = `${state.calendar}:${event.id}:${event.precision}:${event.endPrecision ?? ''}`;
+    if (dateCache.has(key)) return dateCache.get(key);
+    const start = formatAbsoluteDay(event.absoluteStartDay, state.calendar, event.precision);
+    const value = event.absoluteEndDay === undefined
+      ? start
+      : `${start} — ${formatAbsoluteDay(event.absoluteEndDay, state.calendar, event.endPrecision ?? event.precision)}`;
+    dateCache.set(key, value);
+    return value;
+  };
 
   const itemData = new DataSet();
   const groupData = new DataSet();
@@ -194,33 +224,37 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     });
   }
 
-  function eventGroup(event, groupCap) {
-    if (state.laneMode === 'unified') return undefined;
-    const values = state.laneMode === 'category' ? event.categories : event.lanes;
-    return groupCap.groupFor(values[0] ?? 'other');
-  }
-
   function buildGroups(events) {
     groupData.clear();
-    if (state.laneMode === 'unified') return { groupFor: () => undefined, visible: new Set(), hasOther: false };
+    if (state.laneMode === 'unified') {
+      groupData.add({ id: UNIFIED_GROUP_ID, content: 'Chronology', className: 'vc-group-unified' });
+      return { groupFor: () => UNIFIED_GROUP_ID, visible: new Set([UNIFIED_GROUP_ID]), hasOther: false };
+    }
     const values = events.map((event) => state.laneMode === 'category' ? event.categories : event.lanes);
     const cap = capTimelineGroups(values.map((entry) => entry.length ? entry : ['other']), 12);
     const ids = [...cap.visible];
     if (cap.hasOther || ids.includes('other')) ids.push('other');
-    groupData.add([...new Set(ids)].map((id) => ({ id, content: id === 'other' ? 'Other / unassigned' : escapeHtml(id.replace(/-/g, ' ')), className: `vc-group-${cssToken(id)}` })));
+    groupData.add([...new Set(ids)].map((id) => ({
+      id,
+      content: id === 'other' ? 'Other / unassigned' : escapeHtml(id.replace(/-/g, ' ')),
+      className: `vc-group-${cssToken(id)}`,
+    })));
     return cap;
   }
 
   function eventItem(event, groupCap) {
     const category = event.categories.find((value) => KNOWN_CATEGORY_TOKENS[value]) ?? 'unknown';
-    const content = `<span class="vc-marker" aria-hidden="true"></span><span class="vc-item-title">${escapeHtml(event.title)}</span>`;
+    const values = state.laneMode === 'category' ? event.categories : event.lanes;
+    const group = state.laneMode === 'unified'
+      ? UNIFIED_GROUP_ID
+      : groupCap.groupFor(values[0] ?? 'other');
     const item = {
       id: event.id,
       start: absoluteDayToSyntheticDate(event.absoluteStartDay),
-      content,
-      title: `${escapeHtml(formatDate(event, state.calendar))} — ${escapeHtml(event.description)}`,
+      content: `<span class="vc-marker" aria-hidden="true"></span><span class="vc-item-title">${escapeHtml(event.title)}</span>`,
+      title: `${escapeHtml(formatEventDate(event))} — ${escapeHtml(event.description)}`,
       className: `vc-timeline-item importance-${event.importance} certainty-${event.certainty} category-${cssToken(category)}`,
-      group: eventGroup(event, groupCap),
+      group,
       data: event,
     };
     if (event.absoluteEndDay !== undefined) {
@@ -239,14 +273,16 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
       end: absoluteDayToSyntheticDate(era.absoluteEndDay + 1),
       type: 'background',
       className: `vc-era-band era-${cssToken(era.id)} ${cssToken(era.visualToken)}`,
-      title: `${escapeHtml(era.title)} — click to zoom`,
+      title: `${escapeHtml(era.title)} — use the era control to zoom`,
       content: '',
     }));
   }
 
   function refreshList() {
-    listPanel.innerHTML = `<ol>${filteredEvents.map((event) => `<li><button type="button" data-vc-select-event="${escapeHtml(event.id)}"><span>${escapeHtml(formatDate(event, state.calendar))}</span><strong>${escapeHtml(event.title)}</strong><small>${escapeHtml(event.description)}</small></button></li>`).join('')}</ol>`;
-    for (const button of listPanel.querySelectorAll('[data-vc-select-event]')) button.addEventListener('click', () => selectEvent(button.dataset.vcSelectEvent, true));
+    listPanel.innerHTML = `<ol>${filteredEvents.map((event) => `<li><button type="button" data-vc-select-event="${escapeHtml(event.id)}"><span>${escapeHtml(formatEventDate(event))}</span><strong>${escapeHtml(event.title)}</strong><small>${escapeHtml(event.description)}</small></button></li>`).join('')}</ol>`;
+    for (const button of listPanel.querySelectorAll('[data-vc-select-event]')) {
+      button.addEventListener('click', () => selectEvent(button.dataset.vcSelectEvent, true));
+    }
   }
 
   function refreshItems(force = false) {
@@ -277,12 +313,18 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     state.visibleStartDay = startDay;
     state.visibleEndDay = endDay;
     if (minimapItems) {
-      minimapItems.update({ id: 'viewport', start: range.start, end: range.end, type: 'range', content: '', className: 'vc-minimap-viewport' });
+      minimapItems.update({
+        id: 'viewport',
+        start: range.start,
+        end: range.end,
+        type: 'range',
+        content: '',
+        className: 'vc-minimap-viewport',
+      });
     }
   }
 
   function syncUrl() {
-    if (typeof window === 'undefined') return;
     const updated = updateTimelineUrl(window.location.href, state);
     window.history.replaceState({}, '', `${updated.pathname}${updated.search}${updated.hash}`);
   }
@@ -299,13 +341,17 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     const era = dataset.eras.find((item) => item.id === id);
     if (!era) return;
     const padding = era.defaultViewport?.paddingDays ?? 30;
-    timeline.setWindow(absoluteDayToSyntheticDate(era.absoluteStartDay - padding), absoluteDayToSyntheticDate(era.absoluteEndDay + padding));
+    timeline.setWindow(
+      absoluteDayToSyntheticDate(era.absoluteStartDay - padding),
+      absoluteDayToSyntheticDate(era.absoluteEndDay + padding),
+    );
   }
 
   function renderDetails(event) {
+    if (!event) return;
     detailBody.innerHTML = `
-      <p class="vc-detail-kicker">${escapeHtml(formatDate(event, state.calendar))}</p>
-      <h2 id="vc-timeline-detail-title">${escapeHtml(event.title)}</h2>
+      <p class="vc-detail-kicker">${escapeHtml(formatEventDate(event))}</p>
+      <h2 id="${detailsTitleId}">${escapeHtml(event.title)}</h2>
       <p>${escapeHtml(event.description)}</p>
       <dl>
         <div><dt>Precision</dt><dd>${escapeHtml(event.precision)}</dd></div>
@@ -319,10 +365,12 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
       </dl>
       <a class="vc-detail-link" href="${escapeHtml(event.href)}" data-vc-article data-source-path="${escapeHtml(event.sourcePath ?? '')}">Open full article</a>`;
     const article = detailBody.querySelector('[data-vc-article]');
-    if (options.articleHandler) article.addEventListener('click', (eventObject) => {
-      eventObject.preventDefault();
-      options.articleHandler(event);
-    });
+    if (options.articleHandler) {
+      article.addEventListener('click', (eventObject) => {
+        eventObject.preventDefault();
+        options.articleHandler(event);
+      });
+    }
     details.hidden = false;
   }
 
@@ -339,7 +387,9 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
 
   function stepEvent(delta) {
     if (!filteredEvents.length) return;
-    selectedIndex = selectedIndex < 0 ? (delta > 0 ? 0 : filteredEvents.length - 1) : (selectedIndex + delta + filteredEvents.length) % filteredEvents.length;
+    selectedIndex = selectedIndex < 0
+      ? (delta > 0 ? 0 : filteredEvents.length - 1)
+      : (selectedIndex + delta + filteredEvents.length) % filteredEvents.length;
     selectEvent(filteredEvents[selectedIndex].id, false);
   }
 
@@ -368,7 +418,12 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
 
   calendarSelect.addEventListener('change', () => {
     state.calendar = calendarSelect.value;
-    try { window.localStorage.setItem(storageKey, state.calendar); } catch { /* storage is optional */ }
+    dateCache.clear();
+    try {
+      window.localStorage.setItem(storageKey, state.calendar);
+    } catch {
+      // Local persistence is optional; URL state still works.
+    }
     const windowRange = timeline.getWindow();
     refreshItems(true);
     renderAxis();
@@ -377,7 +432,11 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     syncUrl();
   });
   searchInput.addEventListener('input', applyFilters);
-  laneSelect.addEventListener('change', () => { state.laneMode = laneSelect.value; refreshItems(true); syncUrl(); });
+  laneSelect.addEventListener('change', () => {
+    state.laneMode = laneSelect.value;
+    refreshItems(true);
+    syncUrl();
+  });
   for (const input of root.querySelectorAll('.vc-timeline-filters input')) input.addEventListener('change', applyFilters);
   root.querySelector('[data-vc-clear]')?.addEventListener('click', () => {
     searchInput.value = '';
@@ -398,24 +457,67 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     event.currentTarget.setAttribute('aria-pressed', String(visible));
     event.currentTarget.textContent = visible ? 'Graph view' : 'List view';
   });
-  root.querySelector('[data-vc-close]').addEventListener('click', () => { details.hidden = true; state.selected = undefined; timeline.setSelection([]); syncUrl(); });
-  for (const button of root.querySelectorAll('[data-vc-era]')) button.addEventListener('click', () => zoomEra(button.dataset.vcEra));
+  root.querySelector('[data-vc-close]').addEventListener('click', () => {
+    details.hidden = true;
+    state.selected = undefined;
+    timeline.setSelection([]);
+    syncUrl();
+  });
+  for (const button of root.querySelectorAll('[data-vc-era]')) {
+    button.addEventListener('click', () => zoomEra(button.dataset.vcEra));
+  }
 
   if (minimapItems) {
     minimapItems.add([
-      ...dataset.eras.map((era) => ({ id: `mini-era:${era.id}`, start: absoluteDayToSyntheticDate(era.absoluteStartDay), end: absoluteDayToSyntheticDate(era.absoluteEndDay + 1), type: 'background', content: '', className: `vc-era-band era-${cssToken(era.id)}` })),
-      ...dataset.events.map((event) => ({ id: `mini:${event.id}`, start: absoluteDayToSyntheticDate(event.absoluteStartDay), type: 'point', content: '', className: `vc-mini-event importance-${event.importance}` })),
-      { id: 'viewport', start: absoluteDayToSyntheticDate(dataset.absoluteStartDay), end: absoluteDayToSyntheticDate(dataset.absoluteEndDay), type: 'range', content: '', className: 'vc-minimap-viewport' },
+      ...dataset.eras.map((era) => ({
+        id: `mini-era:${era.id}`,
+        start: absoluteDayToSyntheticDate(era.absoluteStartDay),
+        end: absoluteDayToSyntheticDate(era.absoluteEndDay + 1),
+        type: 'background',
+        content: '',
+        className: `vc-era-band era-${cssToken(era.id)}`,
+      })),
+      ...dataset.events.map((event) => ({
+        id: `mini:${event.id}`,
+        start: absoluteDayToSyntheticDate(event.absoluteStartDay),
+        type: 'point',
+        content: '',
+        className: `vc-mini-event importance-${event.importance}`,
+      })),
+      {
+        id: 'viewport',
+        start: absoluteDayToSyntheticDate(dataset.absoluteStartDay),
+        end: absoluteDayToSyntheticDate(dataset.absoluteEndDay),
+        type: 'range',
+        content: '',
+        className: 'vc-minimap-viewport',
+      },
     ]);
-    minimap.setWindow(absoluteDayToSyntheticDate(dataset.absoluteStartDay), absoluteDayToSyntheticDate(dataset.absoluteEndDay), { animation: false });
+    minimap.setWindow(
+      absoluteDayToSyntheticDate(dataset.absoluteStartDay),
+      absoluteDayToSyntheticDate(dataset.absoluteEndDay),
+      { animation: false },
+    );
   }
 
-  if (Number.isSafeInteger(state.visibleStartDay) && Number.isSafeInteger(state.visibleEndDay) && state.visibleStartDay < state.visibleEndDay) {
-    timeline.setWindow(absoluteDayToSyntheticDate(state.visibleStartDay), absoluteDayToSyntheticDate(state.visibleEndDay), { animation: false });
-  } else resetWindow();
+  if (
+    Number.isSafeInteger(state.visibleStartDay)
+    && Number.isSafeInteger(state.visibleEndDay)
+    && state.visibleStartDay < state.visibleEndDay
+  ) {
+    timeline.setWindow(
+      absoluteDayToSyntheticDate(state.visibleStartDay),
+      absoluteDayToSyntheticDate(state.visibleEndDay),
+      { animation: false },
+    );
+  } else {
+    resetWindow();
+  }
   refreshItems(true);
   renderAxis();
-  if (state.selected && dataset.events.some((event) => event.id === state.selected)) selectEvent(state.selected, false);
+  if (state.selected && dataset.events.some((event) => event.id === state.selected)) {
+    selectEvent(state.selected, false);
+  }
 
   return () => {
     timeline.destroy();
