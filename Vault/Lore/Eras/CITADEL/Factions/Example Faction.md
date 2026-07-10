@@ -5,6 +5,7 @@ publish: true
 status: canon
 slug: eras/citadel/factions/example-faction
 type: faction
+icon: "fa-solid fa-flag"
 era: CITADEL
 capital: Example City
 territory: Example Valley
@@ -38,15 +39,15 @@ The Example Faction is a placeholder society for testing navigation, wikilinks, 
 
 [cols:2-1 gap=lg]
 [col]
-## Identity
+## [Icon:fa-solid fa-id-card] Identity
 
 Explain the faction's role in the setting. Lead with the story it tells about itself, not a dry government-type label.
 
-## Culture
+## [Icon:fa-solid fa-masks-theater] Culture
 
 Describe values, taboos, public rituals, clothing, food, architecture, class pressure, religious habits, and the lies citizens are expected to repeat.
 
-## Power Structure
+## [Icon:fa-solid fa-landmark] Power Structure
 
 Name who holds power, how authority is transferred, who gets excluded, and what happens when someone refuses the system.
 [/col]
@@ -70,27 +71,27 @@ Use `capital`, `territory`, `era`, `relationships`, `tags`, and `related` in fro
 [/col]
 [/cols]
 
-## Economy and Resources
+## [Icon:fa-solid fa-coins] Economy and Resources
 
 List what the faction exports, hoards, taxes, steals, sanctifies, or refuses to trade.
 
-## Armed Forces
+## [Icon:fa-solid fa-shield-halved] Armed Forces
 
 Describe doctrine in plain language first. Then add units, equipment, recruitment, logistics, fortifications, and weak points.
 
-## Visual Language
+## [Icon:fa-solid fa-palette] Visual Language
 
 Use this for banners, colours, shapes, materials, vehicles, armour, weapons, typography, tattoos, charms, and recurring motifs.
 
 ![[example-banner.webp]]
 
-## Relationships
+## [Icon:fa-solid fa-link] Relationships
 
 - [[Example Character]] — public ally, internal critic, hostage, founder, or propaganda symbol.
 - [[Example City]] — capital, stronghold, market, holy site, or administrative centre.
 - [[Example Battle]] — victory, atrocity, defeat, myth, or unresolved grievance.
 
-## Related
+## [Icon:fa-solid fa-diagram-project] Related
 
 - [[Example City]]
 - [[Example Character]]
