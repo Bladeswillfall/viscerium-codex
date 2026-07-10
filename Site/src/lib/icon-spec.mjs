@@ -38,16 +38,21 @@ export function parseIconSpec(value) {
     };
   }
 
-  if (fontAwesomeStylePattern.test(tokens[0]) && !tokens.slice(1).some((token) => /^fa-/i.test(token))) {
+  const isFontAwesome = fontAwesomeStylePattern.test(tokens[0]);
+  if (isFontAwesome && !tokens.slice(1).some((token) => /^fa-(?!fw$)/i.test(token))) {
     return null;
   }
 
-  // Multi-token specifications are rendered as CSS classes. This preserves
-  // Font Awesome's native authoring format, e.g. "fa-solid fa-people-group",
-  // and leaves room for future class-based icon libraries.
+  const classes = isFontAwesome && !tokens.some((token) => token.toLowerCase() === 'fa-fw')
+    ? [...tokens, 'fa-fw']
+    : tokens;
+
+  // Multi-token specifications are rendered as CSS classes. Font Awesome
+  // icons always receive fa-fw so mixed glyph widths align consistently in
+  // navigation, page titles, and article headings.
   return {
     provider: 'classes',
-    classes: tokens,
+    classes,
     spec: tokens.join(' '),
   };
 }
