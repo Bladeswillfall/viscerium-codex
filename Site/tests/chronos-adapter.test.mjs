@@ -33,6 +33,19 @@ function fixture() {
       categories: ['unmapped-category'],
       lanes: [],
     },
+    {
+      id: 'event-c',
+      title: 'Landmark point',
+      description: 'A Chronos point item.',
+      href: '/landmark/',
+      absoluteStartDay: 30,
+      precision: 'month',
+      certainty: 'legendary',
+      kind: 'milestone',
+      importance: 'landmark',
+      categories: ['resonance'],
+      lanes: ['okse-dominion'],
+    },
   ];
 
   return {
@@ -54,12 +67,18 @@ function fixture() {
   };
 }
 
-test('adapts canonical events and era bands to a Chronos ParseResult', () => {
+test('serializes canonical records through native Chronos syntax and parsing', () => {
   const dataset = fixture();
   const model = createChronosTimelineModel({
     dataset,
     formatEventDate: (event) => `day ${event.absoluteStartDay}`,
   });
+
+  assert.match(model.source, /> NOTODAY/);
+  assert.match(model.source, /> ORDERBY start/);
+  assert.match(model.source, /@ \[[^\]]+\] #orange \{Chronology\} CITADEL/);
+  assert.match(model.source, /- \[[^\]]+\] #orange \{Chronology\} First event \| A point event\./);
+  assert.match(model.source, /\* \[[^\]]+\] #purple \{Chronology\} Landmark point/);
 
   assert.equal(model.groups.length, 1);
   assert.equal(model.groups[0].content, 'Chronology');
@@ -68,17 +87,25 @@ test('adapts canonical events and era bands to a Chronos ParseResult', () => {
   assert.equal(model.parsed.flags.noToday, true);
 
   const first = model.items.find((item) => item.id === 'event-a');
-  assert.equal(first.type, 'point');
+  assert.equal(first.type, undefined);
   assert.equal(first.group, model.groups[0].id);
   assert.equal(syntheticDateToAbsoluteDay(first.start), 10);
+  assert.match(first.className, /is-link/);
   assert.match(first.className, /importance-major/);
   assert.match(first.title, /day 10/);
+  assert.match(first.style, /chronos-color-orange/);
 
   const period = model.items.find((item) => item.id === 'event-b');
-  assert.equal(period.type, 'range');
+  assert.equal(period.type, undefined);
   assert.equal(syntheticDateToAbsoluteDay(period.start), 20);
   assert.equal(syntheticDateToAbsoluteDay(period.end), 26);
+  assert.match(period.className, /with-caps/);
   assert.match(period.className, /category-unknown/);
+
+  const milestone = model.items.find((item) => item.id === 'event-c');
+  assert.equal(milestone.type, 'point');
+  assert.equal(syntheticDateToAbsoluteDay(milestone.start), 30);
+  assert.match(milestone.className, /certainty-legendary/);
 
   const era = model.items.find((item) => item.id.startsWith('era:citadel:'));
   assert.equal(era.type, 'background');
@@ -86,22 +113,38 @@ test('adapts canonical events and era bands to a Chronos ParseResult', () => {
   assert.equal(syntheticDateToAbsoluteDay(era.end), 51);
 });
 
-test('creates Chronos groups from declared lanes without changing chronology', () => {
+test('lets Chronos create native groups from declared lanes without changing chronology', () => {
   const dataset = fixture();
   const model = createChronosTimelineModel({
     dataset,
     laneMode: 'lane',
     formatEventDate: (event) => String(event.absoluteStartDay),
     visibleStartDay: 5,
-    visibleEndDay: 30,
+    visibleEndDay: 40,
   });
 
-  assert.deepEqual(model.groups.map((group) => group.content), ['okse dominion', 'Other / unassigned']);
+  assert.deepEqual(model.groups.map((group) => group.content), ['Okse Dominion', 'Other / unassigned']);
   assert.equal(model.items.find((item) => item.id === 'event-a').group, model.groups[0].id);
   assert.equal(model.items.find((item) => item.id === 'event-b').group, model.groups[1].id);
   assert.equal(syntheticDateToAbsoluteDay(new Date(model.parsed.flags.defaultView.start)), 5);
-  assert.equal(syntheticDateToAbsoluteDay(new Date(model.parsed.flags.defaultView.end)), 30);
+  assert.equal(syntheticDateToAbsoluteDay(new Date(model.parsed.flags.defaultView.end)), 40);
   assert.equal(model.items.filter((item) => item.id.startsWith('era:citadel:')).length, 2);
+});
+
+test('sanitizes parser delimiters while retaining canonical metadata', () => {
+  const dataset = fixture();
+  dataset.events[0].title = 'First | event';
+  dataset.events[0].description = '<unsafe> | detail';
+  const model = createChronosTimelineModel({
+    dataset,
+    formatEventDate: (event) => String(event.absoluteStartDay),
+  });
+  const item = model.items.find((entry) => entry.id === 'event-a');
+
+  assert.match(model.source, /First — event/);
+  assert.match(model.source, /&lt;unsafe&gt; — detail/);
+  assert.equal(item.data, dataset.events[0]);
+  assert.equal(item.cLink, '/first/');
 });
 
 test('requires a VISCERIUM date formatter rather than exposing synthetic dates', () => {
