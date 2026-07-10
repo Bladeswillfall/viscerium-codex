@@ -1,8 +1,13 @@
 # VISCERIUM Timelines for Obsidian
 
-This small local plugin renders the same generated chronology model used by the Astro/Starlight Codex. It does not call the website, require a development server, or interpret a second timeline format.
+This maintained local plugin renders canonical VISCERIUM timeline shortcodes through Chronos. It imports the shared calendar runtime, compiler, Chronos adapter and renderer from `Site/src/lib/`, compiles canon notes directly from the open vault, and does not require the Astro development server.
 
-The plugin imports the shared calendar runtime, timeline compiler rules and `vis-timeline` adapter from `Site/src/lib/`. It compiles canon notes directly from the open vault, then replaces timeline shortcodes in Reading view.
+It is designed to coexist with the public **Chronos Timeline** community plugin:
+
+- The public Chronos plugin owns fenced `chronos` blocks, templates, note links and quick Markdown timelines.
+- VISCERIUM Timelines owns `[Timeline:...]` shortcodes, registered fictional calendars, canonical era membership and generated super/era datasets.
+
+The local plugin deliberately does not register a second `chronos` code-block processor.
 
 ## Build
 
@@ -32,9 +37,11 @@ Vault/.obsidian/plugins/viscerium-timelines/
 
 Copy the three files from `dist/` into that directory, reload Obsidian, then enable **VISCERIUM Timelines** under Community plugins.
 
-For development, run `npm run dev`, copy the resulting files, and use Obsidian's **Reload app without saving** command. The plugin also provides **VISCERIUM Timelines: Refresh compiled timelines** in the command palette.
+Also install and enable **Chronos Timeline** from the Obsidian community directory when you want native fenced blocks. The two plugins have separate processors and can be enabled together.
 
-## Shortcodes
+For development, run `npm run dev`, copy the resulting files, and use Obsidian's **Reload app without saving** command. The plugin provides **VISCERIUM Timelines: Refresh compiled timelines** in the command palette.
+
+## Canonical shortcodes
 
 Direct timeline:
 
@@ -67,13 +74,32 @@ timelineBlocks:
 
 Supported timeline IDs are `super`, `citadel`, `smog`, `nearsight` and `entropy`.
 
+## Native Chronos blocks
+
+Use the public Chronos plugin for quick note-local timelines:
+
+````md
+```chronos
+> NOTODAY
+> ORDERBY start
+
+- [9201] Example event | Hover detail
+@ [9201~9400] #gray CITADEL
+* [9210] Example point
+= [9220] Example milestone
+```
+````
+
+The site sync process converts the same block to `ChronosEmbed.astro`, so the core Chronos UI and syntax pass into Starlight. Native blocks are not imported into canonical generated timelines; use an event note with `calendarDate` when the entry must use registered calendars and era validation.
+
 ## Source-of-truth behaviour
 
-- Only Markdown notes beneath `Lore/` with `publish: true` and `status: canon` are compiled.
-- `calendarDate` is the sole event start date.
+- Only Markdown notes beneath `Lore/` with `publish: true` and `status: canon` are compiled into generated datasets.
+- `calendarDate` is the sole canonical event start date.
 - `calendarEndDate` is optional and creates a period by default.
-- Era membership is calculated from the canonical era records.
+- Era membership is calculated from canonical era records.
 - Legacy `timeline.id`, `timeline.year` and `timeline.date` fail compilation.
+- The normalized dataset is adapted to Chronos with `renderParsed`; authors do not maintain generated Chronos syntax.
 - Selecting **Open full article** opens the source note in Obsidian.
 
 ## Files to commit
@@ -85,4 +111,4 @@ Commit the plugin source, manifest, build configuration and documentation. Do no
 - machine-specific `.obsidian/workspace*.json`
 - Obsidian cache or hot-reload state
 
-The published plugin bundle is a local build artifact, not a manually maintained source.
+The plugin bundle is a local build artifact, not a manually maintained source.
