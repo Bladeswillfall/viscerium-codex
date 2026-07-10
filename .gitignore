@@ -2,10 +2,16 @@
 Site/node_modules/
 Site/dist/
 Site/.astro/
+Site/src/data/timelines/*.json
+
+# Obsidian timeline plugin build artifacts
+Tools/obsidian-viscerium-timelines/node_modules/
+Tools/obsidian-viscerium-timelines/dist/
 
 # Obsidian workspace state
 Vault/.obsidian/workspace.json
 Vault/.obsidian/workspace-mobile.json
+Vault/.obsidian/workspace*.json
 
 # OS junk
 .DS_Store
