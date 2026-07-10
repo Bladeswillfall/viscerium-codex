@@ -1,6 +1,30 @@
+import { attachChronosStyles, parseChronos } from 'chronos-timeline-md';
 import { absoluteDayToSyntheticDate, capTimelineGroups, KNOWN_CATEGORY_TOKENS } from './core.mjs';
 
-const UNIFIED_GROUP_ID = 1;
+const CATEGORY_COLORS = {
+  technology: 'cyan',
+  military: 'orange',
+  political: 'yellow',
+  cultural: 'purple',
+  religious: 'purple',
+  economic: 'green',
+  scientific: 'blue',
+  disaster: 'red',
+  resonance: 'purple',
+  myrkild: 'green',
+  naranor: 'pink',
+  exploration: 'cyan',
+  social: 'pink',
+  environmental: 'green',
+  unknown: 'orange',
+};
+
+const ERA_COLORS = {
+  citadel: 'orange',
+  smog: 'green',
+  nearsight: 'cyan',
+  entropy: 'purple',
+};
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -11,19 +35,42 @@ function escapeHtml(value) {
     .replace(/'/g, '&#039;');
 }
 
+function cleanChronosText(value) {
+  const normalized = String(value ?? '')
+    .replace(/[\r\n]+/g, ' ')
+    .replace(/\|/g, ' — ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return escapeHtml(normalized);
+}
+
 function cssToken(value) {
   return String(value ?? '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
 }
 
-function groupLabel(value) {
-  return value === 'other' ? 'Other / unassigned' : value.replace(/-/g, ' ');
+function titleCase(value) {
+  return String(value ?? '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
+function chronosDate(absoluteDay) {
+  const date = absoluteDayToSyntheticDate(absoluteDay);
+  const yearValue = date.getUTCFullYear();
+  const year = yearValue < 0
+    ? `-${String(Math.abs(yearValue)).padStart(4, '0')}`
+    : String(yearValue).padStart(4, '0');
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function buildGroups(events, laneMode) {
   if (laneMode === 'unified') {
+    const chronology = { key: 'chronology', label: 'Chronology' };
     return {
-      groups: [{ id: UNIFIED_GROUP_ID, content: 'Chronology' }],
-      groupFor: () => UNIFIED_GROUP_ID,
+      groups: [chronology],
+      groupFor: () => chronology,
     };
   }
 
@@ -32,60 +79,83 @@ function buildGroups(events, laneMode) {
   const visible = [...cap.visible].filter((value) => value !== 'other');
   if (cap.hasOther || cap.visible.has('other')) visible.push('other');
 
-  const ids = new Map([...new Set(visible)].map((value, index) => [value, index + 1]));
-  const groups = [...ids].map(([value, id]) => ({
-    id,
-    content: escapeHtml(groupLabel(value)),
+  const groups = [...new Set(visible)].map((value) => ({
+    key: value,
+    label: value === 'other' ? 'Other / unassigned' : titleCase(value),
   }));
 
   if (!groups.length) {
-    groups.push({ id: UNIFIED_GROUP_ID, content: 'Chronology' });
-    return { groups, groupFor: () => UNIFIED_GROUP_ID };
+    const chronology = { key: 'chronology', label: 'Chronology' };
+    return { groups: [chronology], groupFor: () => chronology };
   }
 
+  const byKey = new Map(groups.map((group) => [group.key, group]));
   return {
     groups,
-    groupFor: (entry) => ids.get(cap.groupFor(entry)) ?? ids.get('other') ?? groups[0].id,
+    groupFor: (entry) => byKey.get(cap.groupFor(entry)) ?? byKey.get('other') ?? groups[0],
   };
 }
 
-function eventItem(event, laneMode, groupFor, formatEventDate) {
+function eventColor(event) {
   const category = event.categories.find((value) => KNOWN_CATEGORY_TOKENS[value]) ?? 'unknown';
-  const values = laneMode === 'category' ? event.categories : event.lanes;
-  const item = {
-    id: event.id,
-    start: absoluteDayToSyntheticDate(event.absoluteStartDay),
-    content: `<span class="vc-marker" aria-hidden="true"></span><span class="vc-item-title">${escapeHtml(event.title)}</span>`,
-    cDescription: event.description,
-    cLink: event.href,
-    title: `${escapeHtml(formatEventDate(event))} — ${escapeHtml(event.description)}`,
-    className: `vc-timeline-item importance-${event.importance} certainty-${event.certainty} category-${cssToken(category)}`,
-    group: groupFor(values[0] ?? 'other'),
-    data: event,
+  return {
+    category,
+    color: CATEGORY_COLORS[category] ?? CATEGORY_COLORS.unknown,
   };
+}
 
-  if (event.absoluteEndDay !== undefined) {
-    item.end = absoluteDayToSyntheticDate(event.absoluteEndDay + 1);
-    item.type = 'range';
-  } else {
-    item.type = event.kind === 'milestone' ? 'box' : 'point';
+function eventLine(event, laneMode, groupFor) {
+  const values = laneMode === 'category' ? event.categories : event.lanes;
+  const group = groupFor(values[0] ?? 'other');
+  const { color } = eventColor(event);
+  const start = chronosDate(event.absoluteStartDay);
+  const end = event.absoluteEndDay === undefined ? undefined : chronosDate(event.absoluteEndDay + 1);
+  const prefix = event.kind === 'milestone' ? '*' : '-';
+  const range = end ? `${start}~${end}` : start;
+  const title = cleanChronosText(event.title) || 'Untitled event';
+  const description = cleanChronosText(event.description);
+  return {
+    line: `${prefix} [${range}] #${color} {${cleanChronosText(group.label).replace(/}/g, '')}} ${title}${description ? ` | ${description}` : ''}`,
+    metadata: { kind: 'event', event, group },
+  };
+}
+
+function eraLines(dataset, groups) {
+  return dataset.eras.flatMap((era) => groups.map((group, index) => ({
+    line: `@ [${chronosDate(era.absoluteStartDay)}~${chronosDate(era.absoluteEndDay + 1)}] #${ERA_COLORS[era.id] ?? 'blue'} {${cleanChronosText(group.label).replace(/}/g, '')}} ${index === 0 ? cleanChronosText(era.title) : '&nbsp;'}`,
+    metadata: { kind: 'era', era, group, showLabel: index === 0 },
+  })));
+}
+
+function enrichParsedItem(item, metadata, formatEventDate) {
+  if (metadata.kind === 'era') {
+    const { era, group, showLabel } = metadata;
+    item.id = `era:${era.id}:${cssToken(group.key)}`;
+    item.content = showLabel ? era.title : '';
+    item.className = [item.className, 'vc-era-band', `era-${cssToken(era.id)}`, cssToken(era.visualToken)]
+      .filter(Boolean)
+      .join(' ');
+    item.title = `${escapeHtml(era.title)} — use the era control to zoom`;
+    item.data = { eraId: era.id };
+    return item;
   }
 
+  const event = metadata.event;
+  const { category } = eventColor(event);
+  item.id = event.id;
+  item.cDescription = event.description;
+  item.cLink = event.href;
+  item.title = `${escapeHtml(formatEventDate(event))} — ${escapeHtml(event.description)}`;
+  item.className = [
+    item.className,
+    'vc-timeline-item',
+    'is-link',
+    `importance-${event.importance}`,
+    `certainty-${event.certainty}`,
+    `category-${cssToken(category)}`,
+  ].filter(Boolean).join(' ');
+  item.data = event;
   return item;
-}
-
-function eraItems(dataset, groups) {
-  return dataset.eras.flatMap((era) => groups.map((group) => ({
-    id: `era:${era.id}:${group.id}`,
-    start: absoluteDayToSyntheticDate(era.absoluteStartDay),
-    end: absoluteDayToSyntheticDate(era.absoluteEndDay + 1),
-    type: 'background',
-    group: group.id,
-    className: `vc-era-band era-${cssToken(era.id)} ${cssToken(era.visualToken)}`,
-    title: `${escapeHtml(era.title)} — use the era control to zoom`,
-    content: '',
-    data: { eraId: era.id },
-  })));
 }
 
 export function createChronosTimelineModel({
@@ -103,31 +173,38 @@ export function createChronosTimelineModel({
     throw new Error('Chronos timeline adapter requires a date formatter.');
   }
 
+  if (typeof document !== 'undefined') attachChronosStyles(document);
+
   const { groups, groupFor } = buildGroups(events, laneMode);
   const startDay = Number.isSafeInteger(visibleStartDay) ? visibleStartDay : dataset.absoluteStartDay;
   const endDay = Number.isSafeInteger(visibleEndDay) ? visibleEndDay : dataset.absoluteEndDay;
-  const start = absoluteDayToSyntheticDate(startDay);
-  const end = absoluteDayToSyntheticDate(Math.max(startDay + 1, endDay));
-
-  const items = [
-    ...eraItems(dataset, groups),
-    ...events.map((event) => eventItem(event, laneMode, groupFor, formatEventDate)),
+  const records = [
+    ...eraLines(dataset, groups),
+    ...events.map((event) => eventLine(event, laneMode, groupFor)),
   ];
+  const source = [
+    '> NOTODAY',
+    '> ORDERBY start',
+    `> DEFAULTVIEW ${chronosDate(startDay)}|${chronosDate(Math.max(startDay + 1, endDay))}`,
+    '',
+    ...records.map((record) => record.line),
+  ].join('\n');
+
+  const parsed = parseChronos(source, {
+    selectedLocale: 'en',
+    roundRanges: true,
+  });
+
+  if (parsed.items.length !== records.length) {
+    throw new Error(`Chronos parsed ${parsed.items.length} items from ${records.length} canonical records.`);
+  }
+
+  parsed.items = parsed.items.map((item, index) => enrichParsedItem(item, records[index].metadata, formatEventDate));
 
   return {
-    items,
-    groups,
-    parsed: {
-      items,
-      markers: [],
-      groups,
-      flags: {
-        noToday: true,
-        defaultView: {
-          start: start.toISOString(),
-          end: end.toISOString(),
-        },
-      },
-    },
+    source,
+    parsed,
+    items: parsed.items,
+    groups: parsed.groups,
   };
 }

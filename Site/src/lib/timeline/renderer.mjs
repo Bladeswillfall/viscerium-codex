@@ -1,1 +1,1 @@
-export { mountTimeline } from './chronos-renderer.mjs';
+export { mountTimeline } from './chronos-native-renderer.mjs';

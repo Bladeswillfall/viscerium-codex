@@ -52,11 +52,11 @@ function renderTemplate(dataset, options, instanceId) {
   const eraOptions = dataset.id === 'super' ? dataset.eras.map((era) => era.id) : [];
   const detailsTitleId = `vc-timeline-detail-title-${instanceId}`;
   return `
-    <section class="vc-timeline-app vc-chronos-powered${options.compact ? ' is-compact' : ''}" aria-label="${escapeHtml(dataset.title)}">
-      <div class="vc-timeline-toolbar" role="toolbar" aria-label="Timeline controls">
+    <section class="vc-timeline-app vc-chronos-powered vc-chronos-native${options.compact ? ' is-compact' : ''}" aria-label="${escapeHtml(dataset.title)}">
+      <div class="vc-timeline-toolbar" role="toolbar" aria-label="VISCERIUM timeline controls">
         <label class="vc-timeline-field"><span>Calendar</span><select data-vc-calendar>${calendars.map((calendar) => `<option value="${calendar.id}">${escapeHtml(calendar.shortName ?? calendar.name)}</option>`).join('')}</select></label>
         <label class="vc-timeline-field vc-timeline-search"><span>Search</span><input data-vc-search type="search" autocomplete="off" placeholder="Search events"></label>
-        <label class="vc-timeline-field"><span>Lane view</span><select data-vc-lane><option value="unified">Unified</option><option value="lane">Declared lane</option><option value="category">Category</option></select></label>
+        <label class="vc-timeline-field"><span>Group view</span><select data-vc-lane><option value="unified">Unified</option><option value="lane">Declared lane</option><option value="category">Category</option></select></label>
         <div class="vc-timeline-actions">
           <button type="button" data-vc-prev aria-label="Previous event">← Event</button>
           <button type="button" data-vc-next aria-label="Next event">Event →</button>
@@ -79,7 +79,7 @@ function renderTemplate(dataset, options, instanceId) {
         <button type="button" class="vc-timeline-detail-close" data-vc-close aria-label="Close event details">×</button>
         <div data-vc-detail-body></div>
       </aside>
-      ${options.showLegend ? `<div class="vc-timeline-legend" aria-label="Timeline legend"><span class="importance-landmark">Landmark</span><span class="importance-major">Major</span><span class="importance-standard">Standard</span><span class="certainty-approximate">Approximate</span><span class="certainty-disputed">Disputed</span><span class="certainty-legendary">Legendary</span><span class="vc-chronos-credit">Rendered with Chronos</span></div>` : ''}
+      ${options.showLegend ? `<div class="vc-timeline-legend" aria-label="Timeline legend"><span class="importance-landmark">Landmark</span><span class="importance-major">Major</span><span class="importance-standard">Standard</span><span class="certainty-approximate">Approximate</span><span class="certainty-disputed">Disputed</span><span class="certainty-legendary">Legendary</span><span class="vc-chronos-credit">Native Chronos UI</span></div>` : ''}
     </section>`;
 }
 
@@ -100,11 +100,10 @@ function chronosSettings() {
     selectedLocale: 'en',
     align: 'left',
     clickToUse: false,
-    roundRanges: false,
+    roundRanges: true,
     useUtc: true,
     useAI: false,
     theme: {
-      disableDefaultStyles: true,
       customClass: 'vc-chronos-core',
     },
   };
@@ -197,7 +196,6 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
   let currentThreshold = 'incidental';
   let filteredEvents = [...dataset.events];
   let selectedIndex = -1;
-  let timeline;
 
   const chronos = new ChronosTimeline({
     container: canvas,
@@ -222,29 +220,23 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     visibleEndDay: state.visibleEndDay,
   });
   chronos.renderParsed(initialModel.parsed);
-  timeline = chronos.timeline;
+  const timeline = chronos.timeline;
   if (!timeline) throw new Error('Chronos did not create a timeline instance.');
   timeline.setOptions({
     height: options.compact ? '28rem' : '34rem',
     minHeight: '20rem',
-    orientation: { axis: 'top', item: 'top' },
     stack: true,
     stackSubgroups: true,
     showCurrentTime: false,
-    showMajorLabels: false,
-    showMinorLabels: false,
     horizontalScroll: true,
     verticalScroll: true,
     zoomKey: 'ctrlKey',
     zoomMin: 86_400_000,
     zoomMax: Math.max(86_400_000, (dataset.absoluteEndDay - dataset.absoluteStartDay + 365) * 86_400_000),
-    margin: { axis: 18, item: { horizontal: 8, vertical: 10 } },
     selectable: true,
     multiselect: false,
     tooltip: { followMouse: true, overflowMethod: 'cap' },
   });
-  timeline.setGroups(initialModel.groups);
-  timeline.setItems(initialModel.items);
 
   let minimap;
   let minimapItems;
@@ -414,7 +406,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     try {
       window.localStorage.setItem(storageKey, state.calendar);
     } catch {
-      // Local persistence is optional; URL state still works.
+      // URL state remains available when storage is blocked.
     }
     const windowRange = timeline.getWindow();
     refreshItems(true);
