@@ -1,0 +1,20 @@
+.vc-timeline-canvas {
+  max-height: 34rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.vc-timeline-app.is-compact .vc-timeline-canvas {
+  max-height: 28rem;
+}
+
+/*
+ * Chronos configures vis-timeline with an internal maximum height. The Astro
+ * island owns the viewport instead, allowing the complete lane table to set
+ * its natural height while labels and events scroll together.
+ */
+.vc-timeline-canvas .vis-timeline {
+  max-height: none !important;
+}
