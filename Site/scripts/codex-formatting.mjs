@@ -1,3 +1,5 @@
+import { renderIconMarkup } from '../src/lib/icon-spec.mjs';
+
 const TAGS = new Set(['cols', 'row', 'col', 'card', 'note', 'warning', 'lore', 'equation']);
 const VOIDLESS_TAG_OUTPUT = new Map([
   ['cols', 'div'],
@@ -192,6 +194,19 @@ function transformCodexTagLine(line, stack, options) {
   return closeTag(parsed.tag);
 }
 
+function transformIconHeadingLine(line, options) {
+  const match = line.match(/^(\s{0,3}#{1,6}\s+)\[icon:([^\]]+)\]\s+(.+)$/i);
+  if (!match) return null;
+
+  const icon = renderIconMarkup(match[2], {
+    jsx: options?.jsx,
+    className: 'codex-heading-icon',
+  });
+  if (!icon) return null;
+
+  return `${match[1]}${icon} ${match[3]}`;
+}
+
 function isFenceStart(line) {
   const match = line.match(/^\s*(`{3,}|~{3,})/);
   if (!match) return null;
@@ -225,7 +240,7 @@ export function transformCodexFormatting(markdown, options = {}) {
       continue;
     }
 
-    out.push(transformCodexTagLine(line, stack, options) ?? line);
+    out.push(transformIconHeadingLine(line, options) ?? transformCodexTagLine(line, stack, options) ?? line);
   }
 
   return out.join('\n');

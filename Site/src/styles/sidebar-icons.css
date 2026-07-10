@@ -1,3 +1,5 @@
+@import './codex-icons.css';
+
 @layer starlight.core {
   .sidebar {
     border-inline-end-color: var(--codex-border);
@@ -76,17 +78,23 @@
     transition: transform .16s ease, color .16s ease;
   }
 
+  .sidebar-content .codex-icon,
   .local-icon {
-    display: inline-block;
+    display: inline-flex;
     flex: 0 0 auto;
     width: 1rem;
     height: 1rem;
-    background-color: currentColor;
     opacity: .72;
+  }
+
+  .local-icon {
+    background-color: currentColor;
     -webkit-mask: var(--icon) center / contain no-repeat;
     mask: var(--icon) center / contain no-repeat;
   }
 
+  .has-icon > a .codex-icon,
+  .has-icon > details > summary .codex-icon,
   .has-icon > a .local-icon,
   .has-icon > details > summary .local-icon {
     color: var(--sl-color-accent-high);

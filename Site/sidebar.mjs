@@ -1,20 +1,25 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { iconLabel, parseIconLabel } from './src/lib/icon-spec.mjs';
 
 const docsDir = new URL('./src/content/docs/', import.meta.url);
 
 const groupIcons = {
-  characters: 'character',
-  events: 'event',
-  factions: 'faction',
-  images: 'image',
-  locations: 'location',
-  maps: 'map',
+  calendar: 'fa-solid fa-calendar-days',
+  characters: 'fa-solid fa-people-group',
+  citadel: 'fa-solid fa-shield-halved',
+  'degel-system': 'fa-solid fa-sun',
+  demo: 'fa-solid fa-flask',
+  entropy: 'fa-solid fa-atom',
+  eras: 'fa-solid fa-hourglass-half',
+  events: 'fa-solid fa-calendar-days',
+  factions: 'fa-solid fa-flag',
+  images: 'fa-regular fa-image',
+  locations: 'fa-solid fa-location-dot',
+  maps: 'fa-solid fa-map',
+  nearsight: 'fa-solid fa-tower-broadcast',
+  smog: 'fa-solid fa-industry',
 };
-
-function iconLabel(icon, label) {
-  return icon ? `[${icon}] ${label}` : label;
-}
 
 function labelFromSegment(segment) {
   return segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
@@ -26,7 +31,7 @@ function frontmatterValue(raw, key) {
 }
 
 function sortSidebarEntries(entries) {
-  return entries.sort((a, b) => a.label.localeCompare(b.label));
+  return entries.sort((a, b) => parseIconLabel(a.label).label.localeCompare(parseIconLabel(b.label).label));
 }
 
 function ensureGroup(groups, segment) {
@@ -60,15 +65,20 @@ export async function buildSidebar() {
       const raw = await fs.readFile(file, 'utf8');
       const title = frontmatterValue(raw, 'title') ?? labelFromSegment(path.basename(id));
       const slug = frontmatterValue(raw, 'slug') ?? id;
+      const articleIcon = frontmatterValue(raw, 'sidebarIcon') ?? frontmatterValue(raw, 'icon');
       const link = slug === 'index' ? '/' : `/${slug.replace(/^\/+|\/+$/g, '')}/`;
       if (id === 'index') {
-        rootItems.unshift({ label: iconLabel('home', title), link: '/', badge: { text: 'Canon', variant: 'note' } });
+        rootItems.unshift({
+          label: iconLabel(articleIcon ?? 'fa-solid fa-house', title),
+          link: '/',
+          badge: { text: 'Canon', variant: 'note' },
+        });
         continue;
       }
 
       const segments = id.split('/');
       if (segments.length === 1) {
-        rootItems.push({ label: title, link });
+        rootItems.push({ label: iconLabel(articleIcon, title), link });
         continue;
       }
 
@@ -76,7 +86,10 @@ export async function buildSidebar() {
       for (const segment of segments.slice(1, -1)) {
         group = ensureGroup(group.groups, segment);
       }
-      group.links.push({ label: segments.at(-1) === 'index' ? 'Overview' : title, link });
+      group.links.push({
+        label: iconLabel(articleIcon, segments.at(-1) === 'index' ? 'Overview' : title),
+        link,
+      });
     }
 
     return [
