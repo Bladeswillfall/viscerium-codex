@@ -1,6 +1,7 @@
 import { MarkdownRenderChild, Notice, Plugin, TFile } from 'obsidian';
 import 'vis-timeline/styles/vis-timeline-graph2d.min.css';
 import '../../Site/src/styles/timelines.css';
+import '../../Site/src/styles/chronos.css';
 import { compileTimelineRecords, TimelineCompilationError } from '../../Site/src/lib/timeline/compiler.mjs';
 import { LANE_MODES, TIMELINE_IDS } from '../../Site/src/lib/timeline/core.mjs';
 import { mountTimeline } from '../../Site/src/lib/timeline/renderer.mjs';
