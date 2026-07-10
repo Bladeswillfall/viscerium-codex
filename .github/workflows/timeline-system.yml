@@ -1,0 +1,49 @@
+name: Timeline system
+
+on:
+  push:
+    branches:
+      - main
+      - codex/viscerium-timeline-system
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+          cache: npm
+          cache-dependency-path: |
+            Site/package.json
+            Tools/obsidian-viscerium-timelines/package.json
+
+      - name: Install site dependencies
+        working-directory: Site
+        run: npm install --no-audit --no-fund
+
+      - name: Run unit tests
+        working-directory: Site
+        run: npm run test:unit
+
+      - name: Run timeline performance checks
+        working-directory: Site
+        run: npm run benchmark:timelines
+
+      - name: Build static Codex
+        working-directory: Site
+        run: npm run build
+
+      - name: Install Obsidian plugin dependencies
+        working-directory: Tools/obsidian-viscerium-timelines
+        run: npm install --no-audit --no-fund
+
+      - name: Build Obsidian plugin
+        working-directory: Tools/obsidian-viscerium-timelines
+        run: npm run build
