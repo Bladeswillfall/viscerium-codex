@@ -42,6 +42,7 @@ const serializedOptions = JSON.stringify(options).replace(/</g, '\\u003c');
 
 <script>
   import 'vis-timeline/styles/vis-timeline-graph2d.min.css';
+  import '../../styles/chronos.css';
   import { mountTimeline } from '../../lib/timeline/renderer.mjs';
 
   for (const root of document.querySelectorAll('[data-vc-timeline-root]:not([data-vc-mounted])')) {
@@ -52,7 +53,7 @@ const serializedOptions = JSON.stringify(options).replace(/</g, '\\u003c');
       mountTimeline(root.querySelector('[data-vc-timeline-mount]'), dataset, options);
       root.querySelector('[data-vc-fallback]').hidden = true;
     } catch (error) {
-      console.error('VISCERIUM timeline failed to mount.', error);
+      console.error('VISCERIUM Chronos timeline failed to mount.', error);
       root.removeAttribute('data-vc-mounted');
     }
   }
