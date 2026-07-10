@@ -36,6 +36,14 @@ const calendarShowcaseSchema = z.object({
   observanceLinks: calendarEventLinksSchema.optional(),
   links: calendarEventLinksSchema.optional(),
 });
+const contributorReferenceSchema = z.union([
+  z.string(),
+  z.object({
+    id: z.string(),
+    role: z.string().optional(),
+    roles: z.array(z.string()).optional(),
+  }),
+]);
 
 export const collections = {
   docs: defineCollection({
@@ -54,6 +62,8 @@ export const collections = {
         date: frontmatterDate.optional(),
         published: frontmatterDate.optional(),
         updated: frontmatterDate.optional(),
+        contributors: z.array(contributorReferenceSchema).optional(),
+        defaultContributors: z.boolean().optional(),
         era: stringOrStrings.optional(),
         faction: stringOrStrings.optional(),
         character: stringOrStrings.optional(),
