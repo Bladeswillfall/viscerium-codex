@@ -1,6 +1,7 @@
 export type CalendarSeason = 'winter' | 'spring' | 'summer' | 'autumn' | string;
 
 export type CalendarDatePrecision = 'day' | 'month' | 'year';
+export type CalendarDateCertainty = 'exact' | 'approximate' | 'disputed' | 'legendary';
 
 export type CalendarLeapRule = {
   every: number;
@@ -47,9 +48,7 @@ export type CalendarObservance = {
   day?: number;
   intercalaryDay?: string;
   description?: string;
-  /** Public route for a full article about this observance/event. */
   href?: string;
-  /** Alias for href, useful when authoring calendar data as event/article metadata. */
   article?: string;
 };
 
@@ -82,6 +81,7 @@ export type CalendarDateInput = {
   day?: number;
   intercalaryDay?: string;
   precision?: CalendarDatePrecision;
+  certainty?: CalendarDateCertainty;
   displayCalendars?: string[];
 };
 
