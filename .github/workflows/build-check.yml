@@ -6,14 +6,34 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GIT_PROGRESS_DELAY: 999999
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 500
+          show-progress: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22.16.0
           cache: npm
           cache-dependency-path: Site/package.json
-      - run: npm install
+      - run: npm install --silent
         working-directory: Site
-      - run: npm run build
+      - name: Build site
+        id: build
+        continue-on-error: true
+        run: npm run build > build.log 2>&1
         working-directory: Site
+      - name: Upload failed build log
+        if: steps.build.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: Site/build.log
+          retention-days: 1
+      - name: Fail failed build
+        if: steps.build.outcome == 'failure'
+        run: |
+          tail -n 60 Site/build.log
+          exit 1

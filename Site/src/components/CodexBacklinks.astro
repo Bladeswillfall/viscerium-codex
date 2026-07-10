@@ -2,7 +2,9 @@
 import graph from '../data/graph.json';
 
 const { starlightRoute } = Astro.locals;
-const currentId = starlightRoute.entry.id.replace(/\.(md|mdx)$/, '');
+const currentId = String(starlightRoute.entry.data.slug ?? starlightRoute.entry.id)
+  .replace(/\.(md|mdx)$/, '')
+  .replace(/^\/+|\/+$/g, '');
 const nodeById = new Map(graph.nodes.map((node) => [node.id, node]));
 const backlinks = [
   ...new Set(graph.edges.filter((edge) => edge.target === currentId).map((edge) => edge.source)),
