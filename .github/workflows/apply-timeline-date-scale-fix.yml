@@ -20,121 +20,114 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          from textwrap import dedent
+          import re
 
-          def replace_once(text, old, new, label):
-              if old not in text:
-                  raise SystemExit(f'Missing expected block: {label}')
-              return text.replace(old, new, 1)
+          def sub_once(text, pattern, replacement, label):
+              updated, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+              if count != 1:
+                  raise SystemExit(f'Expected one replacement for {label}, found {count}')
+              return updated
 
           core_path = Path('Site/src/lib/timeline/core.mjs')
           core = core_path.read_text()
-          core = replace_once(core, '''export function assertSyntheticDateRange(absoluteDay) {
-            if (!Number.isSafeInteger(absoluteDay)) throw new Error(`Absolute world-day must be a safe integer: ${absoluteDay}`);
-            const milliseconds = SYNTHETIC_EPOCH_MS + absoluteDay * DAY_MS;
-            if (!Number.isFinite(milliseconds) || Math.abs(milliseconds) > JS_DATE_LIMIT_MS) {
-              throw new Error(`Absolute world-day ${absoluteDay} exceeds the safe synthetic JavaScript date range`);
-            }
-            return milliseconds;
-          }
+          core = sub_once(
+              core,
+              r'export function assertSyntheticDateRange\(absoluteDay\) \{.*?\n\}\n\nexport function absoluteDayToSyntheticDate\(absoluteDay\) \{.*?\n\}\n\nexport function syntheticDateToAbsoluteDay\(date\) \{.*?\n\}',
+              dedent('''
+              export function assertSyntheticDateRange(absoluteDay, originAbsoluteDay = 0) {
+                if (!Number.isSafeInteger(absoluteDay)) throw new Error(`Absolute world-day must be a safe integer: ${absoluteDay}`);
+                if (!Number.isSafeInteger(originAbsoluteDay)) throw new Error(`Synthetic origin must be a safe integer: ${originAbsoluteDay}`);
+                const relativeDay = absoluteDay - originAbsoluteDay;
+                if (!Number.isSafeInteger(relativeDay)) {
+                  throw new Error(`Absolute world-day ${absoluteDay} cannot be represented relative to ${originAbsoluteDay}`);
+                }
+                const milliseconds = SYNTHETIC_EPOCH_MS + relativeDay * DAY_MS;
+                if (!Number.isFinite(milliseconds) || Math.abs(milliseconds) > JS_DATE_LIMIT_MS) {
+                  throw new Error(`Absolute world-day ${absoluteDay} exceeds the safe synthetic JavaScript date range relative to ${originAbsoluteDay}`);
+                }
+                return milliseconds;
+              }
 
-          export function absoluteDayToSyntheticDate(absoluteDay) {
-            return new Date(assertSyntheticDateRange(absoluteDay));
-          }
+              export function absoluteDayToSyntheticDate(absoluteDay, originAbsoluteDay = 0) {
+                return new Date(assertSyntheticDateRange(absoluteDay, originAbsoluteDay));
+              }
 
-          export function syntheticDateToAbsoluteDay(date) {
-            const value = date instanceof Date ? date : new Date(date);
-            if (Number.isNaN(value.getTime())) throw new Error(`Invalid synthetic date: ${date}`);
-            const day = Math.round((value.getTime() - SYNTHETIC_EPOCH_MS) / DAY_MS);
-            assertSyntheticDateRange(day);
-            return day;
-          }''', '''export function assertSyntheticDateRange(absoluteDay, originAbsoluteDay = 0) {
-            if (!Number.isSafeInteger(absoluteDay)) throw new Error(`Absolute world-day must be a safe integer: ${absoluteDay}`);
-            if (!Number.isSafeInteger(originAbsoluteDay)) throw new Error(`Synthetic origin must be a safe integer: ${originAbsoluteDay}`);
-            const relativeDay = absoluteDay - originAbsoluteDay;
-            if (!Number.isSafeInteger(relativeDay)) {
-              throw new Error(`Absolute world-day ${absoluteDay} cannot be represented relative to ${originAbsoluteDay}`);
-            }
-            const milliseconds = SYNTHETIC_EPOCH_MS + relativeDay * DAY_MS;
-            if (!Number.isFinite(milliseconds) || Math.abs(milliseconds) > JS_DATE_LIMIT_MS) {
-              throw new Error(`Absolute world-day ${absoluteDay} exceeds the safe synthetic JavaScript date range relative to ${originAbsoluteDay}`);
-            }
-            return milliseconds;
-          }
-
-          export function absoluteDayToSyntheticDate(absoluteDay, originAbsoluteDay = 0) {
-            return new Date(assertSyntheticDateRange(absoluteDay, originAbsoluteDay));
-          }
-
-          export function syntheticDateToAbsoluteDay(date, originAbsoluteDay = 0) {
-            if (!Number.isSafeInteger(originAbsoluteDay)) throw new Error(`Synthetic origin must be a safe integer: ${originAbsoluteDay}`);
-            const value = date instanceof Date ? date : new Date(date);
-            if (Number.isNaN(value.getTime())) throw new Error(`Invalid synthetic date: ${date}`);
-            const relativeDay = Math.round((value.getTime() - SYNTHETIC_EPOCH_MS) / DAY_MS);
-            const day = originAbsoluteDay + relativeDay;
-            if (!Number.isSafeInteger(day)) throw new Error(`Synthetic date ${date} exceeds the safe absolute world-day range`);
-            assertSyntheticDateRange(day, originAbsoluteDay);
-            return day;
-          }''', 'core synthetic date functions')
+              export function syntheticDateToAbsoluteDay(date, originAbsoluteDay = 0) {
+                if (!Number.isSafeInteger(originAbsoluteDay)) throw new Error(`Synthetic origin must be a safe integer: ${originAbsoluteDay}`);
+                const value = date instanceof Date ? date : new Date(date);
+                if (Number.isNaN(value.getTime())) throw new Error(`Invalid synthetic date: ${date}`);
+                const relativeDay = Math.round((value.getTime() - SYNTHETIC_EPOCH_MS) / DAY_MS);
+                const day = originAbsoluteDay + relativeDay;
+                if (!Number.isSafeInteger(day)) throw new Error(`Synthetic date ${date} exceeds the safe absolute world-day range`);
+                assertSyntheticDateRange(day, originAbsoluteDay);
+                return day;
+              }''').strip(),
+              'core date conversion',
+          )
           core_path.write_text(core)
 
           adapter_path = Path('Site/src/lib/timeline/chronos-adapter.mjs')
           adapter = adapter_path.read_text()
-          adapter = replace_once(adapter, '''function chronosDate(absoluteDay) {
-            const date = absoluteDayToSyntheticDate(absoluteDay);
-            const yearValue = date.getUTCFullYear();
-            const year = yearValue < 0
-              ? `-${String(Math.abs(yearValue)).padStart(4, '0')}`
-              : String(yearValue).padStart(4, '0');
-            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-            const day = String(date.getUTCDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-          }''', '''function chronosDate(absoluteDay, syntheticOriginDay) {
-            const date = absoluteDayToSyntheticDate(absoluteDay, syntheticOriginDay);
-            const yearValue = date.getUTCFullYear();
-            if (yearValue < 0 || yearValue > 9999) {
-              throw new Error(`Chronos requires a four-digit synthetic year; received ${yearValue} for world-day ${absoluteDay}`);
-            }
-            const year = String(yearValue).padStart(4, '0');
-            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-            const day = String(date.getUTCDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-          }''', 'adapter chronosDate')
-          adapter = adapter.replace('function eventLine(event, laneMode, groupFor) {', 'function eventLine(event, laneMode, groupFor, syntheticOriginDay) {')
-          adapter = adapter.replace('const start = chronosDate(event.absoluteStartDay);', 'const start = chronosDate(event.absoluteStartDay, syntheticOriginDay);')
-          adapter = adapter.replace('const end = event.absoluteEndDay === undefined ? undefined : chronosDate(event.absoluteEndDay + 1);', 'const end = event.absoluteEndDay === undefined ? undefined : chronosDate(event.absoluteEndDay + 1, syntheticOriginDay);')
-          adapter = adapter.replace('function eraLines(dataset, groups) {', 'function eraLines(dataset, groups, syntheticOriginDay) {')
-          adapter = adapter.replace('chronosDate(era.absoluteStartDay)', 'chronosDate(era.absoluteStartDay, syntheticOriginDay)')
-          adapter = adapter.replace('chronosDate(era.absoluteEndDay + 1)', 'chronosDate(era.absoluteEndDay + 1, syntheticOriginDay)')
-          adapter = replace_once(adapter, "  if (typeof document !== 'undefined') attachChronosStyles(document);\n\n  const { groups, groupFor } = buildGroups(events, laneMode);", "  if (typeof document !== 'undefined') attachChronosStyles(document);\n\n  const syntheticOriginDay = dataset.absoluteStartDay;\n  const { groups, groupFor } = buildGroups(events, laneMode);", 'adapter origin insertion')
-          adapter = adapter.replace('...eraLines(dataset, groups),', '...eraLines(dataset, groups, syntheticOriginDay),')
-          adapter = adapter.replace('...events.map((event) => eventLine(event, laneMode, groupFor)),', '...events.map((event) => eventLine(event, laneMode, groupFor, syntheticOriginDay)),')
-          adapter = adapter.replace('`> DEFAULTVIEW ${chronosDate(startDay)}|${chronosDate(Math.max(startDay + 1, endDay))}`', '`> DEFAULTVIEW ${chronosDate(startDay, syntheticOriginDay)}|${chronosDate(Math.max(startDay + 1, endDay), syntheticOriginDay)}`')
-          adapter = replace_once(adapter, '''    items: parsed.items,
-            groups: parsed.groups,
-          };''', '''    items: parsed.items,
-            groups: parsed.groups,
-            syntheticOriginDay,
-          };''', 'adapter return origin')
+          adapter = sub_once(
+              adapter,
+              r'function chronosDate\(absoluteDay\) \{.*?\n\}',
+              dedent('''
+              function chronosDate(absoluteDay, syntheticOriginDay) {
+                const date = absoluteDayToSyntheticDate(absoluteDay, syntheticOriginDay);
+                const yearValue = date.getUTCFullYear();
+                if (yearValue < 0 || yearValue > 9999) {
+                  throw new Error(`Chronos requires a four-digit synthetic year; received ${yearValue} for world-day ${absoluteDay}`);
+                }
+                const year = String(yearValue).padStart(4, '0');
+                const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+                const day = String(date.getUTCDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+              }''').strip(),
+              'adapter date formatting',
+          )
+          replacements = {
+              'function eventLine(event, laneMode, groupFor) {': 'function eventLine(event, laneMode, groupFor, syntheticOriginDay) {',
+              'const start = chronosDate(event.absoluteStartDay);': 'const start = chronosDate(event.absoluteStartDay, syntheticOriginDay);',
+              'const end = event.absoluteEndDay === undefined ? undefined : chronosDate(event.absoluteEndDay + 1);': 'const end = event.absoluteEndDay === undefined ? undefined : chronosDate(event.absoluteEndDay + 1, syntheticOriginDay);',
+              'function eraLines(dataset, groups) {': 'function eraLines(dataset, groups, syntheticOriginDay) {',
+              'chronosDate(era.absoluteStartDay)': 'chronosDate(era.absoluteStartDay, syntheticOriginDay)',
+              'chronosDate(era.absoluteEndDay + 1)': 'chronosDate(era.absoluteEndDay + 1, syntheticOriginDay)',
+              '...eraLines(dataset, groups),': '...eraLines(dataset, groups, syntheticOriginDay),',
+              '...events.map((event) => eventLine(event, laneMode, groupFor)),': '...events.map((event) => eventLine(event, laneMode, groupFor, syntheticOriginDay)),',
+              '`> DEFAULTVIEW ${chronosDate(startDay)}|${chronosDate(Math.max(startDay + 1, endDay))}`': '`> DEFAULTVIEW ${chronosDate(startDay, syntheticOriginDay)}|${chronosDate(Math.max(startDay + 1, endDay), syntheticOriginDay)}`',
+          }
+          for old, new in replacements.items():
+              if old not in adapter:
+                  raise SystemExit(f'Missing adapter text: {old}')
+              adapter = adapter.replace(old, new, 1)
+          anchor = "  if (typeof document !== 'undefined') attachChronosStyles(document);\n\n  const { groups, groupFor } = buildGroups(events, laneMode);"
+          if anchor not in adapter:
+              raise SystemExit('Missing adapter origin anchor')
+          adapter = adapter.replace(anchor, "  if (typeof document !== 'undefined') attachChronosStyles(document);\n\n  const syntheticOriginDay = dataset.absoluteStartDay;\n  const { groups, groupFor } = buildGroups(events, laneMode);", 1)
+          adapter = adapter.replace('    groups: parsed.groups,\n  };', '    groups: parsed.groups,\n    syntheticOriginDay,\n  };', 1)
           adapter_path.write_text(adapter)
 
           renderer_path = Path('Site/src/lib/timeline/chronos-native-renderer.mjs')
           renderer = renderer_path.read_text()
-          renderer = renderer.replace('  absoluteDayToSyntheticDate,', '  absoluteDayToSyntheticDate as absoluteDayToSyntheticDateBase,')
-          renderer = renderer.replace('  syntheticDateToAbsoluteDay,', '  syntheticDateToAbsoluteDay as syntheticDateToAbsoluteDayBase,')
+          renderer = renderer.replace('  absoluteDayToSyntheticDate,', '  absoluteDayToSyntheticDate as absoluteDayToSyntheticDateBase,', 1)
+          renderer = renderer.replace('  syntheticDateToAbsoluteDay,', '  syntheticDateToAbsoluteDay as syntheticDateToAbsoluteDayBase,', 1)
           renderer = renderer.replace('absoluteDayToSyntheticDate(', 'toSyntheticDate(')
           renderer = renderer.replace('syntheticDateToAbsoluteDay(', 'fromSyntheticDate(')
-          renderer = replace_once(renderer, '''  };
-            const instanceId = Math.random().toString(36).slice(2, 10);''', '''  };
-            const syntheticOriginDay = dataset.absoluteStartDay;
-            const toSyntheticDate = (absoluteDay) => absoluteDayToSyntheticDateBase(absoluteDay, syntheticOriginDay);
-            const fromSyntheticDate = (date) => syntheticDateToAbsoluteDayBase(date, syntheticOriginDay);
-            const instanceId = Math.random().toString(36).slice(2, 10);''', 'renderer local date scale')
+          anchor = '  };\n  const instanceId = Math.random().toString(36).slice(2, 10);'
+          if anchor not in renderer:
+              raise SystemExit('Missing renderer options anchor')
+          renderer = renderer.replace(
+              anchor,
+              "  };\n  const syntheticOriginDay = dataset.absoluteStartDay;\n  const toSyntheticDate = (absoluteDay) => absoluteDayToSyntheticDateBase(absoluteDay, syntheticOriginDay);\n  const fromSyntheticDate = (date) => syntheticDateToAbsoluteDayBase(date, syntheticOriginDay);\n  const instanceId = Math.random().toString(36).slice(2, 10);",
+              1,
+          )
           renderer_path.write_text(renderer)
 
           calendar_test_path = Path('Site/tests/calendar-timeline.test.mjs')
           calendar_test = calendar_test_path.read_text()
-          marker = "test('era membership includes boundaries and overlapping periods', () => {"
-          addition = '''test('timeline-local synthetic origins keep distant world dates inside four-digit years', () => {
+          calendar_addition = dedent('''
+          test('timeline-local synthetic origins keep distant world dates inside four-digit years', () => {
             const origin = 3_360_000;
             const absolute = origin + 73_000;
             const date = absoluteDayToSyntheticDate(absolute, origin);
@@ -142,15 +135,16 @@ jobs:
             assert.equal(syntheticDateToAbsoluteDay(date, origin), absolute);
           });
 
-          '''
-          if addition not in calendar_test:
-              calendar_test = replace_once(calendar_test, marker, addition + marker, 'calendar local-origin test')
+          ''')
+          marker = "test('era membership includes boundaries and overlapping periods', () => {"
+          if calendar_addition not in calendar_test:
+              calendar_test = calendar_test.replace(marker, calendar_addition + marker, 1)
           calendar_test_path.write_text(calendar_test)
 
           adapter_test_path = Path('Site/tests/chronos-adapter.test.mjs')
           adapter_test = adapter_test_path.read_text()
-          marker = "test('requires a VISCERIUM date formatter rather than exposing synthetic dates', () => {"
-          addition = '''test('maps distant VISCERIUM dates into Chronos four-digit parser years', () => {
+          adapter_addition = dedent('''
+          test('maps distant VISCERIUM dates into Chronos four-digit parser years', () => {
             const dataset = fixture();
             const shift = 3_360_000;
             dataset.absoluteStartDay += shift;
@@ -175,9 +169,10 @@ jobs:
             assert.equal(syntheticDateToAbsoluteDay(first.start, model.syntheticOriginDay), shift + 10);
           });
 
-          '''
-          if addition not in adapter_test:
-              adapter_test = replace_once(adapter_test, marker, addition + marker, 'adapter distant-date test')
+          ''')
+          marker = "test('requires a VISCERIUM date formatter rather than exposing synthetic dates', () => {"
+          if adapter_addition not in adapter_test:
+              adapter_test = adapter_test.replace(marker, adapter_addition + marker, 1)
           adapter_test_path.write_text(adapter_test)
           PY
       - name: Commit fix
