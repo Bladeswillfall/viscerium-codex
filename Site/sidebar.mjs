@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { iconLabel } from './src/lib/icon-spec.mjs';
+import { iconLabel, parseIconLabel } from './src/lib/icon-spec.mjs';
 
 const docsDir = new URL('./src/content/docs/', import.meta.url);
 
@@ -31,7 +31,7 @@ function frontmatterValue(raw, key) {
 }
 
 function sortSidebarEntries(entries) {
-  return entries.sort((a, b) => a.label.localeCompare(b.label));
+  return entries.sort((a, b) => parseIconLabel(a.label).label.localeCompare(parseIconLabel(b.label).label));
 }
 
 function ensureGroup(groups, segment) {
