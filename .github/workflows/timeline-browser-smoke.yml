@@ -83,6 +83,23 @@ jobs:
               await page.goto(`http://127.0.0.1:4321/eras/${era}/`, { waitUntil: 'networkidle' });
               await page.waitForTimeout(3_000);
 
+              await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
+              await expect(page.locator('[data-vc-canvas]')).toBeVisible();
+              await expect(page.locator('[data-vc-fallback]')).toBeHidden();
+              await expect(page.locator('[data-vc-timeline-mount]')).not.toBeEmpty();
+
+              if (era === 'smog') {
+                const search = page.locator('[data-vc-search]');
+                const lane = page.locator('[data-vc-lane]');
+                await search.fill('Black Furnace');
+                await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBe('Black Furnace');
+                await lane.selectOption('category');
+                await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('category');
+                await page.locator('[data-vc-clear]').click();
+                await expect(search).toHaveValue('');
+                await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBeNull();
+              }
+
               const diagnostics = await page.evaluate(() => {
                 const islands = [...document.querySelectorAll('astro-island')].map((island) => ({
                   ssr: island.getAttribute('ssr'),
@@ -112,10 +129,6 @@ jobs:
               );
               await page.screenshot({ path: `timeline-browser-diagnostics/${era}.png`, fullPage: true });
 
-              await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
-              await expect(page.locator('[data-vc-canvas]')).toBeVisible();
-              await expect(page.locator('[data-vc-fallback]')).toBeHidden();
-              await expect(page.locator('[data-vc-timeline-mount]')).not.toBeEmpty();
               expect(browserMessages.filter((entry) => entry.startsWith('pageerror:'))).toEqual([]);
               expect(browserMessages.filter((entry) => entry.includes('failed to mount'))).toEqual([]);
             });
