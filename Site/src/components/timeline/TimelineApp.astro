@@ -43,18 +43,61 @@ const serializedOptions = JSON.stringify(options).replace(/</g, '\\u003c');
 <script>
   import 'vis-timeline/styles/vis-timeline-graph2d.min.css';
   import '../../styles/chronos.css';
+  import { createTimelinePageRuntime } from '../../lib/timeline/page-runtime.mjs';
   import { mountTimeline } from '../../lib/timeline/renderer.mjs';
 
-  for (const root of document.querySelectorAll('[data-vc-timeline-root]:not([data-vc-mounted])')) {
-    root.setAttribute('data-vc-mounted', 'true');
+  type TimelinePageRuntime = ReturnType<typeof createTimelinePageRuntime>;
+  type TimelineWindow = typeof window & {
+    __visceriumTimelineRuntime?: TimelinePageRuntime;
+  };
+
+  const timelineWindow = window as TimelineWindow;
+
+  function mountRoot(root: Element) {
+    const mount = root.querySelector<HTMLElement>('[data-vc-timeline-mount]');
+    const fallback = root.querySelector<HTMLElement>('[data-vc-fallback]');
+    const datasetNode = root.querySelector<HTMLElement>('[data-vc-dataset]');
+    const optionsNode = root.querySelector<HTMLElement>('[data-vc-options]');
+
+    if (!mount || !fallback || !datasetNode || !optionsNode) {
+      throw new Error('Timeline Astro shell is missing required mount data.');
+    }
+
+    mount.replaceChildren();
+    root.removeAttribute('data-vc-mounted');
+
     try {
-      const dataset = JSON.parse(root.querySelector('[data-vc-dataset]').textContent || '{}');
-      const options = JSON.parse(root.querySelector('[data-vc-options]').textContent || '{}');
-      mountTimeline(root.querySelector('[data-vc-timeline-mount]'), dataset, options);
-      root.querySelector('[data-vc-fallback]').hidden = true;
+      const dataset = JSON.parse(datasetNode.textContent || '{}');
+      const options = JSON.parse(optionsNode.textContent || '{}');
+      const cleanup = mountTimeline(mount, dataset, options);
+
+      root.setAttribute('data-vc-mounted', 'true');
+      fallback.hidden = true;
+
+      return () => {
+        cleanup?.();
+        root.removeAttribute('data-vc-mounted');
+        if (root.isConnected) fallback.hidden = false;
+      };
     } catch (error) {
-      console.error('VISCERIUM Chronos timeline failed to mount.', error);
+      mount.replaceChildren();
       root.removeAttribute('data-vc-mounted');
+      fallback.hidden = false;
+      throw error;
     }
   }
+
+  if (!timelineWindow.__visceriumTimelineRuntime) {
+    timelineWindow.__visceriumTimelineRuntime = createTimelinePageRuntime({
+      getRoots: () => document.querySelectorAll('[data-vc-timeline-root]'),
+      mountRoot,
+      onError: (error) => console.error('VISCERIUM Chronos timeline failed to mount.', error),
+    });
+
+    document.addEventListener('astro:page-load', () => {
+      timelineWindow.__visceriumTimelineRuntime?.mountAll();
+    });
+  }
+
+  timelineWindow.__visceriumTimelineRuntime.mountAll();
 </script>
