@@ -36,7 +36,12 @@ function escapeHtml(value) {
 }
 
 function cleanChronosText(value) {
-  return escapeHtml(String(value ?? '').replace(/[\r\n]+/g, ' ').replace(/\|/g, ' — ').trim());
+  const normalized = String(value ?? '')
+    .replace(/[\r\n]+/g, ' ')
+    .replace(/\|/g, ' — ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return escapeHtml(normalized);
 }
 
 function cssToken(value) {
