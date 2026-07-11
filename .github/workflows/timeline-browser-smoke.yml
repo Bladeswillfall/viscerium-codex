@@ -88,6 +88,36 @@ jobs:
               await expect(page.locator('[data-vc-fallback]')).toBeHidden();
               await expect(page.locator('[data-vc-timeline-mount]')).not.toBeEmpty();
 
+              if (era === 'citadel') {
+                const lane = page.locator('[data-vc-lane]');
+                await lane.selectOption('lane');
+                await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
+                await page.waitForTimeout(500);
+
+                const scrollViewport = page.locator('[data-vc-canvas]');
+                const scrollMetrics = await scrollViewport.evaluate((element) => {
+                  const style = getComputedStyle(element);
+                  return {
+                    clientHeight: element.clientHeight,
+                    scrollHeight: element.scrollHeight,
+                    overflowY: style.overflowY,
+                    maxHeight: style.maxHeight,
+                  };
+                });
+                writeFileSync(
+                  'timeline-browser-diagnostics/citadel-scroll.json',
+                  JSON.stringify(scrollMetrics, null, 2),
+                );
+
+                expect(scrollMetrics.overflowY).toBe('auto');
+                expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
+                await scrollViewport.evaluate((element) => {
+                  element.scrollTop = element.scrollHeight;
+                });
+                await expect.poll(() => scrollViewport.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+                await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-scroll.png', fullPage: true });
+              }
+
               if (era === 'smog') {
                 const search = page.locator('[data-vc-search]');
                 const lane = page.locator('[data-vc-lane]');
