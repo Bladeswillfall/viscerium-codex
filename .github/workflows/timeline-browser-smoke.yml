@@ -177,6 +177,74 @@ jobs:
                 await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBeNull();
               }
 
+              if (era === 'entropy') {
+                const lane = page.locator('[data-vc-lane]');
+                await lane.selectOption('lane');
+                await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
+                await page.waitForTimeout(750);
+
+                const axisMetrics = await page.evaluate(() => {
+                  const axis = document.querySelector('[data-vc-axis]');
+                  const center = document.querySelector('[data-vc-canvas] .vis-panel.vis-center');
+                  const axisRect = axis?.getBoundingClientRect();
+                  const centerRect = center?.getBoundingClientRect();
+                  const ticks = [...(axis?.querySelectorAll(':scope > span') ?? [])].map((tick) => {
+                    const rect = tick.getBoundingClientRect();
+                    const percent = Number(tick.dataset.vcAxisPercent);
+                    const expected = (centerRect?.left ?? 0) + ((centerRect?.width ?? 0) * percent) / 100;
+                    return {
+                      text: tick.textContent?.trim() ?? '',
+                      percent,
+                      actual: rect.left + rect.width / 2,
+                      expected,
+                      error: Math.abs(rect.left + rect.width / 2 - expected),
+                    };
+                  });
+                  return {
+                    axisLeft: axisRect?.left ?? 0,
+                    centerLeft: centerRect?.left ?? 0,
+                    centerWidth: centerRect?.width ?? 0,
+                    ticks,
+                  };
+                });
+
+                expect(axisMetrics.centerLeft).toBeGreaterThan(axisMetrics.axisLeft);
+                expect(axisMetrics.ticks.length).toBeGreaterThan(2);
+                expect(axisMetrics.ticks.every(({ percent, error }) => Number.isFinite(percent) && error <= 2)).toBe(true);
+
+                const pathfinder = page.locator('.vis-item.vc-timeline-item', { hasText: 'The Pathfinder Exodus' }).first();
+                await expect(pathfinder).toBeVisible();
+                await pathfinder.hover();
+                await page.waitForTimeout(800);
+
+                const tooltipMetrics = await page.evaluate(() => {
+                  const item = [...document.querySelectorAll('.vis-item.vc-timeline-item')]
+                    .find((element) => element.textContent?.includes('The Pathfinder Exodus'));
+                  const visibleTooltips = [...document.querySelectorAll('.vis-tooltip')]
+                    .filter((element) => {
+                      const style = getComputedStyle(element);
+                      const rect = element.getBoundingClientRect();
+                      return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+                    });
+                  return {
+                    itemTitle: item?.getAttribute('title') ?? null,
+                    tooltipCount: visibleTooltips.length,
+                    tooltipText: visibleTooltips.map((element) => element.textContent ?? '').join(' '),
+                  };
+                });
+
+                writeFileSync(
+                  'timeline-browser-diagnostics/entropy-axis-tooltip.json',
+                  JSON.stringify({ axisMetrics, tooltipMetrics }, null, 2),
+                );
+                await page.screenshot({ path: 'timeline-browser-diagnostics/entropy-axis-tooltip.png', fullPage: true });
+
+                expect(tooltipMetrics.itemTitle).toBeNull();
+                expect(tooltipMetrics.tooltipCount).toBe(1);
+                expect(tooltipMetrics.tooltipText).toContain('11,431');
+                expect(tooltipMetrics.tooltipText).not.toMatch(/2030|2036/);
+              }
+
               const diagnostics = await page.evaluate(() => {
                 const islands = [...document.querySelectorAll('astro-island')].map((island) => ({
                   ssr: island.getAttribute('ssr'),
