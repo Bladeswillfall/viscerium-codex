@@ -14,6 +14,7 @@ const docsDir = process.env.VISCERIUM_DOCS_DIR
   : path.resolve(siteRoot, 'src/content/docs');
 const loreRoot = 'Vault/Lore/';
 const markdownExtensions = /\.(md|mdx)$/i;
+const leadingArticlePattern = /^(?:the|an|a)\s+/i;
 
 function cleanSlug(value) {
   return String(value ?? '').trim().replace(/^\/+|\/+$/g, '').toLowerCase();
@@ -61,9 +62,22 @@ function escapeHtml(value) {
     .replace(/'/g, '&#039;');
 }
 
+function sortableTitle(value) {
+  const title = String(value ?? '').trim();
+  const withoutArticle = title.replace(leadingArticlePattern, '').trim();
+  return withoutArticle || title;
+}
+
+function compareIndexTitles(left, right) {
+  const leftTitle = sortableTitle(left.title);
+  const rightTitle = sortableTitle(right.title);
+  const primary = leftTitle.localeCompare(rightTitle, 'en', { sensitivity: 'base' });
+  if (primary !== 0) return primary;
+  return String(left.title ?? '').localeCompare(String(right.title ?? ''), 'en', { sensitivity: 'base' });
+}
+
 function alphaKey(value) {
-  const normalized = String(value ?? '')
-    .trim()
+  const normalized = sortableTitle(value)
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '');
   const match = normalized.match(/[a-z0-9]/i);
@@ -91,7 +105,7 @@ function groupedAlphabetically(items) {
     })
     .map(([letter, groupItems]) => ({
       letter,
-      items: groupItems.sort((left, right) => left.title.localeCompare(right.title, 'en', { sensitivity: 'base' })),
+      items: groupItems.sort(compareIndexTitles),
     }));
 }
 
@@ -244,16 +258,14 @@ const categoryList = [...categories.values()].sort((a, b) => a.slug.localeCompar
 for (const category of categoryList) {
   const prefix = `${category.slug}/`;
   const descendants = entries
-    .filter((entry) => entry.slug.startsWith(prefix))
-    .sort((a, b) => a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }));
+    .filter((entry) => entry.slug.startsWith(prefix));
   const childDepth = category.slug.split('/').length + 1;
   const childCategories = categoryList
     .filter((candidate) => candidate.slug.startsWith(prefix) && candidate.slug.split('/').length === childDepth)
     .map((candidate) => ({
       ...candidate,
       count: descendants.filter((entry) => entry.slug.startsWith(`${candidate.slug}/`)).length,
-    }))
-    .sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
+    }));
   const section = generatedCategorySection(descendants, childCategories);
   const existingEntry = entryBySlug.get(category.slug);
 
