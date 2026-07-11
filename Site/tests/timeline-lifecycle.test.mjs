@@ -113,3 +113,21 @@ test('the site ruler follows Chronos centre geometry and item hover has one cano
   assert.match(entry, /const cleanupDomGuards = installTimelineDomGuards\(root\)/);
   assert.match(entry, /cleanupDomGuards\(\)/);
 });
+
+test('canonical timeline pages explicitly omit the right sidebar and release content width constraints', () => {
+  const twoColumn = read('../src/components/CodexTwoColumnContent.astro');
+  const performanceStyles = read('../src/styles/timeline-performance.css');
+  const contentSchema = read('../src/content.config.ts');
+  const transform = read('../scripts/transform-timeline-shortcodes.mjs');
+
+  assert.match(contentSchema, /timelinePage: z\.boolean\(\)\.optional\(\)/);
+  assert.match(transform, /if \(usedTimeline\) parsed\.data\.timelinePage = true/);
+  assert.match(twoColumn, /const timelinePage = starlightRoute\.entry\.data\.timelinePage === true/);
+  assert.match(twoColumn, /timelinePage && "codex-timeline-page"/);
+  assert.match(twoColumn, /!timelinePage && starlightRoute\.toc/);
+  assert.match(twoColumn, /data-timeline-page=\{timelinePage \|\| undefined\}/);
+  assert.match(performanceStyles, /\.codex-two-column-content\.codex-timeline-page/);
+  assert.match(performanceStyles, /--sl-content-width: 100%/);
+  assert.match(performanceStyles, /grid-template-columns: minmax\(0, 1fr\)/);
+  assert.doesNotMatch(performanceStyles, /right-sidebar[^\n]*display:\s*none/);
+});
