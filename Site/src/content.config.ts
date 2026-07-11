@@ -92,6 +92,7 @@ export const collections = {
         calendarBlocks: z.record(calendarShowcaseSchema).optional(),
         timeline: timelineSchema.optional(),
         timelineBlocks: z.record(timelineBlockSchema).optional(),
+        timelinePage: z.boolean().optional(),
         date: frontmatterDate.optional(),
         published: frontmatterDate.optional(),
         updated: frontmatterDate.optional(),

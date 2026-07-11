@@ -64,6 +64,93 @@ export function eventOverlapsRange(event, startDay, endDay) {
   return event.absoluteStartDay <= endDay && eventEnd >= startDay;
 }
 
+function upperBoundStart(events, day) {
+  let low = 0;
+  let high = events.length;
+  while (low < high) {
+    const middle = (low + high) >>> 1;
+    if (events[middle].absoluteStartDay <= day) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+}
+
+function lowerBoundEnd(events, day) {
+  let low = 0;
+  let high = events.length;
+  while (low < high) {
+    const middle = (low + high) >>> 1;
+    const eventEnd = events[middle].absoluteEndDay ?? events[middle].absoluteStartDay;
+    if (eventEnd < day) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+}
+
+export function createTimelineRangeIndex(events = []) {
+  const byStart = [...events].sort(compareTimelineEvents);
+  const byEnd = [...events].sort((left, right) => {
+    const leftEnd = left.absoluteEndDay ?? left.absoluteStartDay;
+    const rightEnd = right.absoluteEndDay ?? right.absoluteStartDay;
+    return leftEnd - rightEnd || compareTimelineEvents(left, right);
+  });
+  return { byStart, byEnd };
+}
+
+export function queryTimelineRange(index, startDay, endDay) {
+  if (!Number.isFinite(startDay) || !Number.isFinite(endDay) || startDay > endDay) return [];
+  const byStart = index?.byStart ?? [];
+  const byEnd = index?.byEnd ?? [];
+  if (!byStart.length) return [];
+
+  const prefixEnd = upperBoundStart(byStart, endDay);
+  const suffixStart = lowerBoundEnd(byEnd, startDay);
+  const prefixCount = prefixEnd;
+  const suffixCount = byEnd.length - suffixStart;
+  const candidates = prefixCount <= suffixCount
+    ? byStart.slice(0, prefixEnd)
+    : byEnd.slice(suffixStart);
+
+  return candidates
+    .filter((event) => eventOverlapsRange(event, startDay, endDay))
+    .sort(compareTimelineEvents);
+}
+
+export function bucketTimelineEvents(events, startDay, endDay, maxBuckets = 256) {
+  if (!Array.isArray(events) || !events.length || !Number.isFinite(startDay) || !Number.isFinite(endDay) || startDay > endDay) return [];
+  const span = Math.max(1, endDay - startDay + 1);
+  const bucketCount = Math.max(1, Math.min(Math.floor(maxBuckets) || 1, Math.ceil(span)));
+  const counts = new Array(bucketCount).fill(0);
+
+  for (const event of events) {
+    if (event.absoluteStartDay < startDay || event.absoluteStartDay > endDay) continue;
+    const ratio = (event.absoluteStartDay - startDay) / span;
+    const index = Math.min(bucketCount - 1, Math.max(0, Math.floor(ratio * bucketCount)));
+    counts[index] += 1;
+  }
+
+  const bucketWidth = span / bucketCount;
+  return counts.flatMap((count, index) => count > 0 ? [{
+    index,
+    count,
+    absoluteDay: Math.round(startDay + (index + 0.5) * bucketWidth),
+  }] : []);
+}
+
+export function timelineEventSearchText(event) {
+  return [
+    event.title,
+    event.description,
+    ...(event.categories ?? []),
+    ...(event.lanes ?? []),
+    ...(event.eras ?? []),
+    ...(event.factions ?? []),
+    ...(event.locations ?? []),
+    ...(event.participants ?? []),
+    ...(event.tags ?? []),
+  ].join(' ').toLowerCase();
+}
+
 export function resolveEraMembership(absoluteStartDay, absoluteEndDay, eras) {
   const end = absoluteEndDay ?? absoluteStartDay;
   return eras

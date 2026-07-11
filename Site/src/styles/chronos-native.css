@@ -34,6 +34,29 @@
 }
 
 /*
+ * Starlight's article rhythm applies sibling spacing inside markdown content.
+ * Native vis-timeline groups are also sibling block elements, so that prose
+ * rule inserts a 1rem gap between every label and group. vis-timeline measures
+ * its centre and label panels before those host margins are reconciled, which
+ * bottom-aligns the centre by the accumulated gap and clips the final rows.
+ * Chronos and vis-timeline both assume zero external margins on these nodes.
+ */
+.vc-timeline-app .chronos-timeline-container :is(
+  .vis-labelset > .vis-label,
+  .vis-foreground > .vis-group,
+  .vis-background > .vis-group,
+  .vis-axis > .vis-group
+),
+.vc-chronos-embed .chronos-timeline-container :is(
+  .vis-labelset > .vis-label,
+  .vis-foreground > .vis-group,
+  .vis-background > .vis-group,
+  .vis-axis > .vis-group
+) {
+  margin: 0 !important;
+}
+
+/*
  * vis-timeline ships several pale panel surfaces that sit below Chronos's
  * theme variables. Keep Chronos geometry, but explicitly seat those panels in
  * the Codex dark palette so the canvas does not appear as an embedded light UI.
@@ -178,117 +201,4 @@
 .vc-chronos-embed .vis-item.vis-range {
   border-color: transparent;
   color: var(--chronos-text-on-accent);
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-item.vis-point.vc-timeline-item,
-.vc-chronos-embed .vis-item.vis-point {
-  border: 0;
-  color: var(--chronos-text-normal);
-  background: transparent;
-  box-shadow: none;
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-item.vc-timeline-item .vis-item-content,
-.vc-chronos-embed .vis-item .vis-item-content {
-  display: block;
-  padding: 5px;
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-item.vis-point.vc-timeline-item .vis-item-content,
-.vc-chronos-embed .vis-item.vis-point .vis-item-content {
-  padding: 0 5px;
-}
-
-/* Importance remains semantic hierarchy, not replacement geometry. */
-.vc-timeline-app .vc-timeline-canvas .vis-item.importance-landmark,
-.vc-timeline-app .vc-timeline-canvas .vis-item.importance-major {
-  border-width: 1px;
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-item.importance-landmark {
-  font-size: 1rem;
-  font-weight: 800;
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-item.importance-major {
-  font-size: .92rem;
-  font-weight: 700;
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-item.importance-minor,
-.vc-timeline-app .vc-timeline-canvas .vis-item.importance-incidental {
-  color: var(--chronos-text-on-accent);
-  font-size: .78rem;
-  opacity: .82;
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-item.vis-point.importance-minor,
-.vc-timeline-app .vc-timeline-canvas .vis-item.vis-point.importance-incidental {
-  color: var(--chronos-text-muted);
-}
-
-/* Certainty remains visible without replacing Chronos's colour language. */
-.vc-timeline-app .vc-timeline-canvas .vis-item.certainty-approximate {
-  outline: 1px dashed color-mix(in srgb, currentColor 68%, transparent);
-  outline-offset: 1px;
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-item.certainty-disputed {
-  outline: 2px double color-mix(in srgb, currentColor 72%, transparent);
-  outline-offset: 1px;
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-item.certainty-legendary {
-  outline: 1px dotted color-mix(in srgb, currentColor 72%, transparent);
-  outline-offset: 2px;
-  font-style: italic;
-}
-
-/* Parser colour styles supersede the old category text-colour overrides. */
-.vc-timeline-app .vc-timeline-canvas .vis-item.vc-timeline-item:not(.vis-point) {
-  color: var(--chronos-text-on-accent);
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-item.vis-point.vc-timeline-item {
-  color: var(--chronos-text-normal);
-}
-
-/* Keep the fictional calendar strip, but visually seat it inside Chronos. */
-.vc-timeline-app .vc-timeline-axis {
-  height: 2.5rem;
-  border-color: var(--chronos-border);
-  background: var(--chronos-canvas-raised);
-}
-
-.vc-timeline-app .vc-timeline-axis span {
-  color: var(--chronos-text-muted);
-  font-size: .7rem;
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.vc-timeline-app .vc-timeline-stage,
-.vc-timeline-app .vc-timeline-minimap-wrap {
-  border-color: var(--chronos-border);
-  background: var(--chronos-canvas);
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-label {
-  color: var(--chronos-text-muted);
-  background: var(--chronos-canvas-muted);
-  font-family: inherit;
-  font-size: .8rem;
-  font-weight: 400;
-  text-transform: none;
-}
-
-.vc-timeline-app .vc-timeline-minimap {
-  background: var(--chronos-canvas);
-}
-
-@media (max-width: 40rem) {
-  .vc-chronos-embed {
-    margin-inline: calc(var(--sl-content-pad-x, 1rem) * -.35);
-  }
 }

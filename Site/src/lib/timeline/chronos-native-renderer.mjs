@@ -4,14 +4,25 @@ import { calendars, defaultCalendarId, formatAbsoluteDay } from '../calendar/run
 import {
   IMPORTANCE_LEVELS,
   absoluteDayToSyntheticDate as absoluteDayToSyntheticDateBase,
+  bucketTimelineEvents,
   chooseCalendar,
-  eventMatchesFilter,
+  compareTimelineEvents,
+  createTimelineRangeIndex,
+  eventOverlapsRange,
   getZoomImportanceThreshold,
+  importanceIsVisible,
   parseTimelineUrlState,
+  queryTimelineRange,
   syntheticDateToAbsoluteDay as syntheticDateToAbsoluteDayBase,
+  timelineEventSearchText,
   updateTimelineUrl,
 } from './core.mjs';
 import { createChronosTimelineModel } from './chronos-adapter.mjs';
+
+const VIEWPORT_BUFFER_FACTOR = 1.25;
+const SEARCH_DEBOUNCE_MS = 140;
+const LIST_PAGE_SIZE = 100;
+const MINIMAP_BUCKET_COUNT = 320;
 
 const importanceLabels = {
   landmark: 'Landmark',
@@ -184,6 +195,9 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     }
   }
 
+  const eventById = new Map(dataset.events.map((event) => [event.id, event]));
+  const searchTextById = new Map(dataset.events.map((event) => [event.id, timelineEventSearchText(event)]));
+  const rangeIndex = createTimelineRangeIndex(dataset.events);
   const dateCache = new Map();
   const formatEventDate = (event) => {
     const key = `${state.calendar}:${event.id}:${event.precision}:${event.endPrecision ?? ''}`;
@@ -196,9 +210,55 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     return value;
   };
 
-  let currentThreshold = 'incidental';
-  let filteredEvents = [...dataset.events];
+  function resolveInitialWindow() {
+    if (
+      Number.isSafeInteger(state.visibleStartDay)
+      && Number.isSafeInteger(state.visibleEndDay)
+      && state.visibleStartDay < state.visibleEndDay
+    ) {
+      return { startDay: state.visibleStartDay, endDay: state.visibleEndDay };
+    }
+
+    const era = dataset.id === 'super' ? null : dataset.eras[0];
+    const padding = era?.defaultViewport?.paddingDays ?? 30;
+    return {
+      startDay: era?.defaultViewport?.startDay ?? dataset.absoluteStartDay - padding,
+      endDay: era?.defaultViewport?.endDay ?? dataset.absoluteEndDay + padding,
+    };
+  }
+
+  function bufferedRange(startDay, endDay) {
+    const span = Math.max(1, endDay - startDay);
+    const padding = Math.max(30, Math.ceil(span * VIEWPORT_BUFFER_FACTOR));
+    return {
+      startDay: Math.max(dataset.absoluteStartDay, Math.floor(startDay - padding)),
+      endDay: Math.min(dataset.absoluteEndDay, Math.ceil(endDay + padding)),
+    };
+  }
+
+  function eventMatchesActiveFilters(event, threshold) {
+    if (!importanceIsVisible(event.importance, threshold)) return false;
+    if (state.importance.length && !state.importance.includes(event.importance)) return false;
+    if (state.categories.length && !state.categories.some((category) => event.categories.includes(category))) return false;
+    if (state.eras.length && !state.eras.some((era) => event.eras.includes(era))) return false;
+    const search = state.search.trim().toLowerCase();
+    return !search || searchTextById.get(event.id)?.includes(search);
+  }
+
+  const initialWindow = resolveInitialWindow();
+  const initialLoadedRange = bufferedRange(initialWindow.startDay, initialWindow.endDay);
+  let loadedStartDay = initialLoadedRange.startDay;
+  let loadedEndDay = initialLoadedRange.endDay;
+  let currentThreshold = getZoomImportanceThreshold(Math.max(1, initialWindow.endDay - initialWindow.startDay));
+  let matchingEvents = rangeIndex.byStart.filter((event) => eventMatchesActiveFilters(event, currentThreshold));
+  let matchingEventIds = new Set(matchingEvents.map((event) => event.id));
+  let renderedEvents = queryTimelineRange(rangeIndex, loadedStartDay, loadedEndDay)
+    .filter((event) => matchingEventIds.has(event.id));
+  let renderedEventIds = new Set(renderedEvents.map((event) => event.id));
   let selectedIndex = -1;
+  let listRenderLimit = LIST_PAGE_SIZE;
+  let listDirty = true;
+  let searchDebounceHandle;
 
   const chronos = new ChronosTimeline({
     container: canvas,
@@ -207,7 +267,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
       setTooltip: (element, fallbackText) => {
         const itemElement = element.closest?.('[data-id]') ?? element;
         const id = itemElement?.getAttribute?.('data-id');
-        const event = id ? dataset.events.find((entry) => entry.id === id) : undefined;
+        const event = id ? eventById.get(id) : undefined;
         element.setAttribute('title', event ? `${formatEventDate(event)} — ${event.description}` : fallbackText);
       },
     },
@@ -216,11 +276,11 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
 
   const initialModel = createChronosTimelineModel({
     dataset,
-    events: filteredEvents,
+    events: renderedEvents,
     laneMode: state.laneMode,
     formatEventDate,
-    visibleStartDay: state.visibleStartDay,
-    visibleEndDay: state.visibleEndDay,
+    visibleStartDay: initialWindow.startDay,
+    visibleEndDay: initialWindow.endDay,
   });
   chronos.renderParsed(initialModel.parsed);
   const timeline = chronos.timeline;
@@ -243,47 +303,78 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
 
   let minimap;
   let minimapItems;
-  if (minimapElement) {
-    minimapItems = new DataSet();
-    minimap = new Timeline(minimapElement, minimapItems, {
-      height: '8rem',
-      stack: false,
-      showCurrentTime: false,
-      showMajorLabels: false,
-      showMinorLabels: false,
-      selectable: false,
-      moveable: false,
-      zoomable: false,
-      margin: { item: 2, axis: 0 },
-    });
-  }
+  let minimapIdleHandle;
+  let minimapTimeoutHandle;
+  let destroyed = false;
 
-  function refreshList() {
-    listPanel.innerHTML = `<ol>${filteredEvents.map((event) => `<li><button type="button" data-vc-select-event="${escapeHtml(event.id)}"><span>${escapeHtml(formatEventDate(event))}</span><strong>${escapeHtml(event.title)}</strong><small>${escapeHtml(event.description)}</small></button></li>`).join('')}</ol>`;
-    for (const button of listPanel.querySelectorAll('[data-vc-select-event]')) {
-      button.addEventListener('click', () => selectEvent(button.dataset.vcSelectEvent, true));
+  function renderList(reset = false) {
+    if (listPanel.hidden) {
+      listDirty = true;
+      return;
     }
+    if (reset) listRenderLimit = LIST_PAGE_SIZE;
+
+    const visibleEvents = matchingEvents.slice(0, listRenderLimit);
+    const remaining = Math.max(0, matchingEvents.length - visibleEvents.length);
+    listPanel.innerHTML = `
+      <ol>${visibleEvents.map((event) => `<li><button type="button" data-vc-select-event="${escapeHtml(event.id)}"><span>${escapeHtml(formatEventDate(event))}</span><strong>${escapeHtml(event.title)}</strong><small>${escapeHtml(event.description)}</small></button></li>`).join('')}</ol>
+      ${remaining > 0 ? `<button type="button" class="vc-timeline-list-more" data-vc-list-more>Show ${Math.min(LIST_PAGE_SIZE, remaining)} more <span>(${remaining} remaining)</span></button>` : ''}`;
+    listDirty = false;
   }
 
-  function refreshItems(force = false) {
-    const windowRange = timeline.getWindow();
-    const span = Math.max(1, fromSyntheticDate(windowRange.end) - fromSyntheticDate(windowRange.start));
-    const threshold = getZoomImportanceThreshold(span);
-    if (!force && threshold === currentThreshold) return;
+  function refreshMatchingEvents(threshold) {
     currentThreshold = threshold;
-    filteredEvents = dataset.events.filter((event) => eventMatchesFilter(event, state, threshold));
+    matchingEvents = rangeIndex.byStart.filter((event) => eventMatchesActiveFilters(event, threshold));
+    matchingEventIds = new Set(matchingEvents.map((event) => event.id));
+    selectedIndex = state.selected ? matchingEvents.findIndex((event) => event.id === state.selected) : -1;
+    listDirty = true;
+  }
+
+  function addSelectedEventIfNeeded(events) {
+    const selectedEvent = state.selected ? eventById.get(state.selected) : undefined;
+    if (
+      !selectedEvent
+      || !eventOverlapsRange(selectedEvent, loadedStartDay, loadedEndDay)
+      || events.some((event) => event.id === selectedEvent.id)
+    ) return events;
+    return [...events, selectedEvent].sort(compareTimelineEvents);
+  }
+
+  function refreshItems({ force = false, filtersChanged = false } = {}) {
+    const windowRange = timeline.getWindow();
+    const visibleStartDay = fromSyntheticDate(windowRange.start);
+    const visibleEndDay = fromSyntheticDate(windowRange.end);
+    const span = Math.max(1, visibleEndDay - visibleStartDay);
+    const threshold = getZoomImportanceThreshold(span);
+    const thresholdChanged = threshold !== currentThreshold;
+    const outsideLoadedRange = visibleStartDay < loadedStartDay || visibleEndDay > loadedEndDay;
+
+    if (filtersChanged || thresholdChanged) refreshMatchingEvents(threshold);
+    if (!force && !filtersChanged && !thresholdChanged && !outsideLoadedRange) return;
+
+    if (outsideLoadedRange || force) {
+      const nextRange = bufferedRange(visibleStartDay, visibleEndDay);
+      loadedStartDay = nextRange.startDay;
+      loadedEndDay = nextRange.endDay;
+    }
+
+    renderedEvents = queryTimelineRange(rangeIndex, loadedStartDay, loadedEndDay)
+      .filter((event) => matchingEventIds.has(event.id));
+    renderedEvents = addSelectedEventIfNeeded(renderedEvents);
+    renderedEventIds = new Set(renderedEvents.map((event) => event.id));
+
     const model = createChronosTimelineModel({
       dataset,
-      events: filteredEvents,
+      events: renderedEvents,
       laneMode: state.laneMode,
       formatEventDate,
-      visibleStartDay: fromSyntheticDate(windowRange.start),
-      visibleEndDay: fromSyntheticDate(windowRange.end),
+      visibleStartDay,
+      visibleEndDay,
     });
     timeline.setGroups(model.groups);
     timeline.setItems(model.items);
-    status.textContent = `${filteredEvents.length} of ${dataset.events.length} events visible. Chronos hides lower-importance events at distant zoom levels.`;
-    refreshList();
+    status.textContent = `${renderedEvents.length} nearby events rendered; ${matchingEvents.length} match the current view rules out of ${dataset.events.length}.`;
+    if (filtersChanged || thresholdChanged) renderList(true);
   }
 
   function renderAxis() {
@@ -361,11 +452,26 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     details.hidden = false;
   }
 
+  function ensureEventRendered(event) {
+    if (renderedEventIds.has(event.id)) return;
+    const currentRange = timeline.getWindow();
+    const currentSpan = Math.max(30, fromSyntheticDate(currentRange.end) - fromSyntheticDate(currentRange.start));
+    const eventEnd = event.absoluteEndDay ?? event.absoluteStartDay;
+    const eventSpan = Math.max(1, eventEnd - event.absoluteStartDay);
+    const targetSpan = Math.max(currentSpan, eventSpan + 60);
+    const centre = event.absoluteStartDay + eventSpan / 2;
+    const start = Math.floor(centre - targetSpan / 2);
+    const end = Math.ceil(centre + targetSpan / 2);
+    timeline.setWindow(toSyntheticDate(start), toSyntheticDate(end), { animation: false });
+    refreshItems({ force: true });
+  }
+
   function selectEvent(id, focusDetails = false) {
-    const event = dataset.events.find((item) => item.id === id);
+    const event = eventById.get(id);
     if (!event) return;
     state.selected = event.id;
-    selectedIndex = filteredEvents.findIndex((item) => item.id === event.id);
+    ensureEventRendered(event);
+    selectedIndex = matchingEvents.findIndex((item) => item.id === event.id);
     timeline.setSelection([event.id], { focus: true, animation: true });
     renderDetails(event);
     syncUrl();
@@ -373,11 +479,11 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
   }
 
   function stepEvent(delta) {
-    if (!filteredEvents.length) return;
+    if (!matchingEvents.length) return;
     selectedIndex = selectedIndex < 0
-      ? (delta > 0 ? 0 : filteredEvents.length - 1)
-      : (selectedIndex + delta + filteredEvents.length) % filteredEvents.length;
-    selectEvent(filteredEvents[selectedIndex].id, false);
+      ? (delta > 0 ? 0 : matchingEvents.length - 1)
+      : (selectedIndex + delta + matchingEvents.length) % matchingEvents.length;
+    selectEvent(matchingEvents[selectedIndex].id, false);
   }
 
   function applyFilters() {
@@ -385,13 +491,85 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     for (const name of ['importance', 'categories', 'eras']) {
       state[name] = [...root.querySelectorAll(`input[name="${name}"]:checked`)].map((input) => input.value);
     }
-    refreshItems(true);
+    refreshItems({ force: true, filtersChanged: true });
     syncUrl();
+  }
+
+  function scheduleSearch() {
+    window.clearTimeout(searchDebounceHandle);
+    searchDebounceHandle = window.setTimeout(applyFilters, SEARCH_DEBOUNCE_MS);
+  }
+
+  function mountMinimap() {
+    if (destroyed || !minimapElement || minimap) return;
+
+    minimapItems = new DataSet();
+    minimap = new Timeline(minimapElement, minimapItems, {
+      height: '8rem',
+      stack: false,
+      showCurrentTime: false,
+      showMajorLabels: false,
+      showMinorLabels: false,
+      selectable: false,
+      moveable: false,
+      zoomable: false,
+      margin: { item: 2, axis: 0 },
+    });
+    minimap.on('click', ({ time }) => timeline.moveTo(time, { animation: true }));
+
+    const buckets = bucketTimelineEvents(
+      dataset.events,
+      dataset.absoluteStartDay,
+      dataset.absoluteEndDay,
+      MINIMAP_BUCKET_COUNT,
+    );
+    const maximumDensity = Math.max(1, ...buckets.map((bucket) => bucket.count));
+    minimapItems.add([
+      ...dataset.eras.map((era) => ({
+        id: `mini-era:${era.id}`,
+        start: toSyntheticDate(era.absoluteStartDay),
+        end: toSyntheticDate(era.absoluteEndDay + 1),
+        type: 'background',
+        content: '',
+        className: `vc-era-band era-${cssToken(era.id)}`,
+      })),
+      ...buckets.map((bucket) => ({
+        id: `mini-density:${bucket.index}`,
+        start: toSyntheticDate(bucket.absoluteDay),
+        type: 'point',
+        content: '',
+        title: `${bucket.count} event${bucket.count === 1 ? '' : 's'}`,
+        className: `vc-mini-event density-${Math.max(1, Math.ceil((bucket.count / maximumDensity) * 4))}`,
+      })),
+      {
+        id: 'viewport',
+        start: toSyntheticDate(initialWindow.startDay),
+        end: toSyntheticDate(initialWindow.endDay),
+        type: 'range',
+        content: '',
+        className: 'vc-minimap-viewport',
+      },
+    ]);
+    minimap.setWindow(
+      toSyntheticDate(dataset.absoluteStartDay),
+      toSyntheticDate(dataset.absoluteEndDay),
+      { animation: false },
+    );
+    renderAxis();
+  }
+
+  function scheduleMinimap() {
+    if (!minimapElement) return;
+    if (typeof window.requestIdleCallback === 'function') {
+      minimapIdleHandle = window.requestIdleCallback(mountMinimap, { timeout: 1_500 });
+    } else {
+      minimapTimeoutHandle = window.setTimeout(mountMinimap, 250);
+    }
   }
 
   timeline.on('rangechanged', () => {
     renderAxis();
-    refreshItems(false);
+    refreshItems();
     syncUrl();
   });
   timeline.on('select', ({ items }) => {
@@ -401,7 +579,6 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
   timeline.on('click', ({ item }) => {
     if (typeof item === 'string' && item.startsWith('era:')) zoomEra(item.split(':')[1]);
   });
-  if (minimap) minimap.on('click', ({ time }) => timeline.moveTo(time, { animation: true }));
 
   calendarSelect.addEventListener('change', () => {
     state.calendar = calendarSelect.value;
@@ -412,20 +589,22 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
       // URL state remains available when storage is blocked.
     }
     const windowRange = timeline.getWindow();
-    refreshItems(true);
+    refreshItems({ force: true });
     renderAxis();
-    if (state.selected) renderDetails(dataset.events.find((event) => event.id === state.selected));
+    renderList(true);
+    if (state.selected) renderDetails(eventById.get(state.selected));
     timeline.setWindow(windowRange.start, windowRange.end, { animation: false });
     syncUrl();
   });
-  searchInput.addEventListener('input', applyFilters);
+  searchInput.addEventListener('input', scheduleSearch);
   laneSelect.addEventListener('change', () => {
     state.laneMode = laneSelect.value;
-    refreshItems(true);
+    refreshItems({ force: true });
     syncUrl();
   });
   for (const input of root.querySelectorAll('.vc-timeline-filters input')) input.addEventListener('change', applyFilters);
   root.querySelector('[data-vc-clear]')?.addEventListener('click', () => {
+    window.clearTimeout(searchDebounceHandle);
     searchInput.value = '';
     for (const input of root.querySelectorAll('.vc-timeline-filters input')) input.checked = false;
     applyFilters();
@@ -442,6 +621,19 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     axis.hidden = visible;
     event.currentTarget.setAttribute('aria-pressed', String(visible));
     event.currentTarget.textContent = visible ? 'Graph view' : 'List view';
+    if (visible && listDirty) renderList(true);
+  });
+  listPanel.addEventListener('click', (event) => {
+    const selectButton = event.target.closest?.('[data-vc-select-event]');
+    if (selectButton) {
+      selectEvent(selectButton.dataset.vcSelectEvent, true);
+      return;
+    }
+    const moreButton = event.target.closest?.('[data-vc-list-more]');
+    if (moreButton) {
+      listRenderLimit += LIST_PAGE_SIZE;
+      renderList(false);
+    }
   });
   root.querySelector('[data-vc-close]').addEventListener('click', () => {
     details.hidden = true;
@@ -453,59 +645,25 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     button.addEventListener('click', () => zoomEra(button.dataset.vcEra));
   }
 
-  if (minimapItems) {
-    minimapItems.add([
-      ...dataset.eras.map((era) => ({
-        id: `mini-era:${era.id}`,
-        start: toSyntheticDate(era.absoluteStartDay),
-        end: toSyntheticDate(era.absoluteEndDay + 1),
-        type: 'background',
-        content: '',
-        className: `vc-era-band era-${cssToken(era.id)}`,
-      })),
-      ...dataset.events.map((event) => ({
-        id: `mini:${event.id}`,
-        start: toSyntheticDate(event.absoluteStartDay),
-        type: 'point',
-        content: '',
-        className: `vc-mini-event importance-${event.importance}`,
-      })),
-      {
-        id: 'viewport',
-        start: toSyntheticDate(dataset.absoluteStartDay),
-        end: toSyntheticDate(dataset.absoluteEndDay),
-        type: 'range',
-        content: '',
-        className: 'vc-minimap-viewport',
-      },
-    ]);
-    minimap.setWindow(
-      toSyntheticDate(dataset.absoluteStartDay),
-      toSyntheticDate(dataset.absoluteEndDay),
-      { animation: false },
-    );
-  }
-
-  if (
-    Number.isSafeInteger(state.visibleStartDay)
-    && Number.isSafeInteger(state.visibleEndDay)
-    && state.visibleStartDay < state.visibleEndDay
-  ) {
-    timeline.setWindow(
-      toSyntheticDate(state.visibleStartDay),
-      toSyntheticDate(state.visibleEndDay),
-      { animation: false },
-    );
-  } else {
-    resetWindow();
-  }
-  refreshItems(true);
+  timeline.setWindow(
+    toSyntheticDate(initialWindow.startDay),
+    toSyntheticDate(initialWindow.endDay),
+    { animation: false },
+  );
+  status.textContent = `${renderedEvents.length} nearby events rendered; ${matchingEvents.length} match the current view rules out of ${dataset.events.length}.`;
   renderAxis();
-  if (state.selected && dataset.events.some((event) => event.id === state.selected)) {
+  scheduleMinimap();
+  if (state.selected && eventById.has(state.selected)) {
     selectEvent(state.selected, false);
   }
 
   return () => {
+    destroyed = true;
+    window.clearTimeout(searchDebounceHandle);
+    if (minimapIdleHandle !== undefined && typeof window.cancelIdleCallback === 'function') {
+      window.cancelIdleCallback(minimapIdleHandle);
+    }
+    if (minimapTimeoutHandle !== undefined) window.clearTimeout(minimapTimeoutHandle);
     chronos.destroy();
     minimap?.destroy();
     root.innerHTML = '';

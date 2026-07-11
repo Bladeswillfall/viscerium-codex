@@ -1,11 +1,20 @@
 ---
 const { starlightRoute } = Astro.locals;
 const eraStyle = starlightRoute.entry.data.eraStyle;
+const timelinePage = starlightRoute.entry.data.timelinePage === true;
 ---
 
-<div class:list={["codex-two-column-content lg:sl-flex", eraStyle && `era-style-${eraStyle}`]} data-era-style={eraStyle}>
+<div
+  class:list={[
+    "codex-two-column-content lg:sl-flex",
+    eraStyle && `era-style-${eraStyle}`,
+    timelinePage && "codex-timeline-page",
+  ]}
+  data-era-style={eraStyle}
+  data-timeline-page={timelinePage || undefined}
+>
   <div class="main-pane codex-main-pane">
-    {starlightRoute.toc && (
+    {!timelinePage && starlightRoute.toc && (
       <aside class="right-sidebar-container">
         <div class="right-sidebar">
           <slot name="right-sidebar" />

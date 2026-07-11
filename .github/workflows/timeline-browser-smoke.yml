@@ -8,6 +8,7 @@ on:
     paths:
       - 'Site/src/components/timeline/**'
       - 'Site/src/lib/timeline/**'
+      - 'Site/src/styles/**'
       - 'Site/src/data/timelines/**'
       - 'Site/package.json'
       - 'Site/package-lock.json'
@@ -88,6 +89,81 @@ jobs:
               await expect(page.locator('[data-vc-fallback]')).toBeHidden();
               await expect(page.locator('[data-vc-timeline-mount]')).not.toBeEmpty();
 
+              if (era === 'citadel') {
+                const lane = page.locator('[data-vc-lane]');
+                await lane.selectOption('lane');
+                await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
+                await page.waitForTimeout(750);
+
+                const layoutMetrics = await page.locator('[data-vc-canvas]').evaluate((canvas) => {
+                  const timeline = canvas.querySelector('.vis-timeline');
+                  const content = canvas.querySelector('.vis-panel.vis-center > .vis-content');
+                  const labels = [...canvas.querySelectorAll('.vis-labelset > .vis-label')]
+                    .filter((element) => element.getClientRects().length > 0);
+                  const namedLabels = labels.filter((element) => element.textContent?.trim());
+                  const visibleEventItems = [...canvas.querySelectorAll(
+                    '.vis-item.vis-box:not(.vis-background), .vis-item.vis-range:not(.vis-background), .vis-item.vis-point:not(.vis-background)',
+                  )].filter((element) => element.getClientRects().length > 0);
+                  const timelineRect = timeline?.getBoundingClientRect();
+                  const margins = labels.map((element) => {
+                    const style = getComputedStyle(element);
+                    return {
+                      top: style.marginTop,
+                      bottom: style.marginBottom,
+                    };
+                  });
+                  const namedLabelBounds = namedLabels.map((element) => {
+                    const rect = element.getBoundingClientRect();
+                    return {
+                      text: element.textContent?.trim() ?? '',
+                      top: rect.top,
+                      bottom: rect.bottom,
+                    };
+                  });
+                  const eventBounds = visibleEventItems.map((element) => {
+                    const rect = element.getBoundingClientRect();
+                    return {
+                      id: element.getAttribute('data-id'),
+                      text: element.textContent?.trim() ?? '',
+                      className: element.className,
+                      top: rect.top,
+                      bottom: rect.bottom,
+                    };
+                  });
+
+                  return {
+                    labelCount: labels.length,
+                    namedLabelCount: namedLabels.length,
+                    eventItemCount: visibleEventItems.length,
+                    timelineHeight: timelineRect?.height ?? 0,
+                    timelineTop: timelineRect?.top ?? 0,
+                    timelineBottom: timelineRect?.bottom ?? 0,
+                    contentTransform: content ? getComputedStyle(content).transform : null,
+                    margins,
+                    namedLabelBounds,
+                    eventBounds,
+                  };
+                });
+                writeFileSync(
+                  'timeline-browser-diagnostics/citadel-chronos-layout.json',
+                  JSON.stringify(layoutMetrics, null, 2),
+                );
+                await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-chronos-layout.png', fullPage: true });
+
+                expect(layoutMetrics.namedLabelCount).toBeGreaterThan(1);
+                expect(layoutMetrics.eventItemCount).toBeGreaterThan(1);
+                expect(layoutMetrics.timelineHeight).toBeGreaterThan(320);
+                expect(layoutMetrics.margins.every(({ top, bottom }) => top === '0px' && bottom === '0px')).toBe(true);
+                expect(layoutMetrics.namedLabelBounds.some(({ text }) => text === 'Veyr Court')).toBe(true);
+                expect(layoutMetrics.eventBounds.some(({ text }) => text.includes('The Hollow Feast of Veyr'))).toBe(true);
+                expect(layoutMetrics.namedLabelBounds.every(({ top, bottom }) => (
+                  top >= layoutMetrics.timelineTop - 1 && bottom <= layoutMetrics.timelineBottom + 1
+                ))).toBe(true);
+                expect(layoutMetrics.eventBounds.every(({ top, bottom }) => (
+                  top >= layoutMetrics.timelineTop - 2 && bottom <= layoutMetrics.timelineBottom + 2
+                ))).toBe(true);
+              }
+
               if (era === 'smog') {
                 const search = page.locator('[data-vc-search]');
                 const lane = page.locator('[data-vc-lane]');
@@ -99,6 +175,74 @@ jobs:
                 await page.locator('[data-vc-clear]').click();
                 await expect(search).toHaveValue('');
                 await expect.poll(() => new URL(page.url()).searchParams.get('q')).toBeNull();
+              }
+
+              if (era === 'entropy') {
+                const lane = page.locator('[data-vc-lane]');
+                await lane.selectOption('lane');
+                await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
+                await page.waitForTimeout(750);
+
+                const axisMetrics = await page.evaluate(() => {
+                  const axis = document.querySelector('[data-vc-axis]');
+                  const center = document.querySelector('[data-vc-canvas] .vis-panel.vis-center');
+                  const axisRect = axis?.getBoundingClientRect();
+                  const centerRect = center?.getBoundingClientRect();
+                  const ticks = [...(axis?.querySelectorAll(':scope > span') ?? [])].map((tick) => {
+                    const rect = tick.getBoundingClientRect();
+                    const percent = Number(tick.dataset.vcAxisPercent);
+                    const expected = (centerRect?.left ?? 0) + ((centerRect?.width ?? 0) * percent) / 100;
+                    return {
+                      text: tick.textContent?.trim() ?? '',
+                      percent,
+                      actual: rect.left + rect.width / 2,
+                      expected,
+                      error: Math.abs(rect.left + rect.width / 2 - expected),
+                    };
+                  });
+                  return {
+                    axisLeft: axisRect?.left ?? 0,
+                    centerLeft: centerRect?.left ?? 0,
+                    centerWidth: centerRect?.width ?? 0,
+                    ticks,
+                  };
+                });
+
+                expect(axisMetrics.centerLeft).toBeGreaterThan(axisMetrics.axisLeft);
+                expect(axisMetrics.ticks.length).toBeGreaterThan(2);
+                expect(axisMetrics.ticks.every(({ percent, error }) => Number.isFinite(percent) && error <= 2)).toBe(true);
+
+                const pathfinder = page.locator('.vis-item.vc-timeline-item', { hasText: 'The Pathfinder Exodus' }).first();
+                await expect(pathfinder).toBeVisible();
+                await pathfinder.hover();
+                await page.waitForTimeout(800);
+
+                const tooltipMetrics = await page.evaluate(() => {
+                  const item = [...document.querySelectorAll('.vis-item.vc-timeline-item')]
+                    .find((element) => element.textContent?.includes('The Pathfinder Exodus'));
+                  const visibleTooltips = [...document.querySelectorAll('.vis-tooltip')]
+                    .filter((element) => {
+                      const style = getComputedStyle(element);
+                      const rect = element.getBoundingClientRect();
+                      return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+                    });
+                  return {
+                    itemTitle: item?.getAttribute('title') ?? null,
+                    tooltipCount: visibleTooltips.length,
+                    tooltipText: visibleTooltips.map((element) => element.textContent ?? '').join(' '),
+                  };
+                });
+
+                writeFileSync(
+                  'timeline-browser-diagnostics/entropy-axis-tooltip.json',
+                  JSON.stringify({ axisMetrics, tooltipMetrics }, null, 2),
+                );
+                await page.screenshot({ path: 'timeline-browser-diagnostics/entropy-axis-tooltip.png', fullPage: true });
+
+                expect(tooltipMetrics.itemTitle).toBeNull();
+                expect(tooltipMetrics.tooltipCount).toBe(1);
+                expect(tooltipMetrics.tooltipText).toContain('11,431');
+                expect(tooltipMetrics.tooltipText).not.toMatch(/2030|2036/);
               }
 
               const diagnostics = await page.evaluate(() => {

@@ -21,6 +21,9 @@ test('TimelineApp delegates browser behaviour to a client-loaded island', () => 
   const app = read('../src/components/timeline/TimelineApp.astro');
 
   assert.match(app, /import TimelineIsland from '\.\/TimelineIsland'/);
+  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-loading\.css'/);
+  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-performance\.css'/);
+  assert.doesNotMatch(app, /timeline-scroll\.css/);
   assert.match(app, /<TimelineIsland[\s\S]*client:load/);
   assert.match(app, /fallbackEvents=\{fallbackEvents\}/);
   assert.doesNotMatch(app, /<script>|astro:page-load|__visceriumTimelineRuntime|application\/json/);
@@ -35,6 +38,96 @@ test('the Preact island owns Chronos mount and cleanup while retaining fallback 
   assert.match(island, /cleanup = mountTimeline\(root, dataset, options\)/);
   assert.match(island, /return \(\) => \{[\s\S]*cleanup\?\.\(\)/);
   assert.match(island, /class="vc-timeline-fallback"/);
+  assert.match(island, /data-vc-timeline-skeleton/);
+  assert.match(island, /root\.setAttribute\('aria-busy', 'true'\)/);
   assert.match(island, /fallbackRef\.current\.hidden = true/);
+  assert.match(island, /skeletonRef\.current\.hidden = false/);
   assert.doesNotMatch(island, /astro:page-load|astro:before-swap|customElements|MutationObserver/);
+});
+
+test('timeline startup uses the resolved viewport once and defers the minimap', () => {
+  const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+
+  assert.match(renderer, /function resolveInitialWindow\(\)/);
+  assert.match(renderer, /getZoomImportanceThreshold\(Math\.max\(1, initialWindow\.endDay - initialWindow\.startDay\)\)/);
+  assert.match(renderer, /events: renderedEvents,[\s\S]*visibleStartDay: initialWindow\.startDay,[\s\S]*visibleEndDay: initialWindow\.endDay/);
+  assert.match(renderer, /function scheduleMinimap\(\)/);
+  assert.match(renderer, /window\.requestIdleCallback\(mountMinimap, \{ timeout: 1_500 \}\)/);
+  assert.match(renderer, /timeline\.setWindow\([\s\S]*initialWindow\.startDay[\s\S]*initialWindow\.endDay/);
+  assert.doesNotMatch(renderer, /\}\s*else\s*\{\s*resetWindow\(\);\s*\}\s*refreshItems\(true\)/);
+});
+
+test('large timeline runtime bounds graph, list, search and minimap work', () => {
+  const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+
+  assert.match(renderer, /createTimelineRangeIndex\(dataset\.events\)/);
+  assert.match(renderer, /queryTimelineRange\(rangeIndex, loadedStartDay, loadedEndDay\)/);
+  assert.match(renderer, /const VIEWPORT_BUFFER_FACTOR = 1\.25/);
+  assert.match(renderer, /const LIST_PAGE_SIZE = 100/);
+  assert.match(renderer, /listPanel\.hidden[\s\S]*listDirty = true/);
+  assert.match(renderer, /data-vc-list-more/);
+  assert.match(renderer, /window\.setTimeout\(applyFilters, SEARCH_DEBOUNCE_MS\)/);
+  assert.match(renderer, /bucketTimelineEvents\([\s\S]*MINIMAP_BUCKET_COUNT/);
+  assert.doesNotMatch(renderer, /\.\.\.dataset\.events\.map\(\(event\) => \(\{[\s\S]*id: `mini:/);
+});
+
+test('group changes remount through Chronos behind a stable site-facing timeline handle', () => {
+  const entry = read('../src/lib/timeline/renderer.mjs');
+  const performanceStyles = read('../src/styles/timeline-performance.css');
+
+  assert.match(entry, /function installChronosTimelineProxy\(chronos, initialResult, originalRenderParsed\)/);
+  assert.match(entry, /proxy = new Proxy\(/);
+  assert.match(entry, /const listeners = new Map\(\)/);
+  assert.match(entry, /function groupSignature\(groups\)/);
+  assert.match(entry, /pendingGroups = groups/);
+  assert.match(entry, /remountWithChronos\(items, pendingGroups\)/);
+  assert.match(entry, /renderParsedWithoutChronosTooltip\(chronos/);
+  assert.match(entry, /const visibleWindow = target\?\.getWindow\?\.\(\)/);
+  assert.match(entry, /target\.setWindow\(visibleWindow\.start, visibleWindow\.end/);
+  assert.match(entry, /attachExternalListeners\(\)/);
+  assert.match(entry, /chronos\.timeline = proxy/);
+  assert.match(entry, /const result = target\.setItems\(items\)/);
+  assert.match(entry, /installChronosTimelineProxy\(this, result, originalRenderParsed\)/);
+  assert.match(entry, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
+  assert.doesNotMatch(entry, /maxHeight:|groupHeightMode:/);
+  assert.doesNotMatch(performanceStyles, /:has\(|min-height: 58rem/);
+});
+
+test('the site ruler follows Chronos centre geometry and item hover has one canonical tooltip owner', () => {
+  const entry = read('../src/lib/timeline/renderer.mjs');
+
+  assert.match(entry, /function renderParsedWithoutChronosTooltip\(chronos, result, originalRenderParsed\)/);
+  assert.match(entry, /chronos\._setupTooltip = \(\) => \{\}/);
+  assert.match(entry, /originalRenderParsed\.call\(chronos, result\)/);
+  assert.match(entry, /delete chronos\._setupTooltip/);
+  assert.match(entry, /function installTimelineDomGuards\(root\)/);
+  assert.match(entry, /querySelector\('\[data-vc-canvas\] \.vis-panel\.vis-center'\)/);
+  assert.match(entry, /const startOffset = Math\.max\(0, centerRect\.left - axisRect\.left\)/);
+  assert.match(entry, /tick\.dataset\.vcAxisPercent/);
+  assert.match(entry, /usableWidth \* percent/);
+  assert.match(entry, /querySelectorAll\('\.vis-item\[title\], \.vis-item \[title\]'\)/);
+  assert.match(entry, /item\.querySelectorAll\?\.\('\[title\]'\)/);
+  assert.match(entry, /attributeFilter: \['title'\]/);
+  assert.match(entry, /root\.addEventListener\('pointerover', handlePointerOver, true\)/);
+  assert.match(entry, /new ResizeObserver\(scheduleAlignment\)/);
+  assert.match(entry, /const cleanupDomGuards = installTimelineDomGuards\(root\)/);
+  assert.match(entry, /cleanupDomGuards\(\)/);
+});
+
+test('canonical timeline pages explicitly omit the right sidebar and release content width constraints', () => {
+  const twoColumn = read('../src/components/CodexTwoColumnContent.astro');
+  const performanceStyles = read('../src/styles/timeline-performance.css');
+  const contentSchema = read('../src/content.config.ts');
+  const transform = read('../scripts/transform-timeline-shortcodes.mjs');
+
+  assert.match(contentSchema, /timelinePage: z\.boolean\(\)\.optional\(\)/);
+  assert.match(transform, /if \(usedTimeline\) parsed\.data\.timelinePage = true/);
+  assert.match(twoColumn, /const timelinePage = starlightRoute\.entry\.data\.timelinePage === true/);
+  assert.match(twoColumn, /timelinePage && "codex-timeline-page"/);
+  assert.match(twoColumn, /!timelinePage && starlightRoute\.toc/);
+  assert.match(twoColumn, /data-timeline-page=\{timelinePage \|\| undefined\}/);
+  assert.match(performanceStyles, /\.codex-two-column-content\.codex-timeline-page/);
+  assert.match(performanceStyles, /--sl-content-width: 100%/);
+  assert.match(performanceStyles, /grid-template-columns: minmax\(0, 1fr\)/);
+  assert.doesNotMatch(performanceStyles, /right-sidebar[^\n]*display:\s*none/);
 });
