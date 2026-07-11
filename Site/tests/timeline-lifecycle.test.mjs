@@ -21,6 +21,7 @@ test('TimelineApp delegates browser behaviour to a client-loaded island', () => 
   const app = read('../src/components/timeline/TimelineApp.astro');
 
   assert.match(app, /import TimelineIsland from '\.\/TimelineIsland'/);
+  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-loading\.css'/);
   assert.match(app, /<TimelineIsland[\s\S]*client:load/);
   assert.match(app, /fallbackEvents=\{fallbackEvents\}/);
   assert.doesNotMatch(app, /<script>|astro:page-load|__visceriumTimelineRuntime|application\/json/);
@@ -35,6 +36,21 @@ test('the Preact island owns Chronos mount and cleanup while retaining fallback 
   assert.match(island, /cleanup = mountTimeline\(root, dataset, options\)/);
   assert.match(island, /return \(\) => \{[\s\S]*cleanup\?\.\(\)/);
   assert.match(island, /class="vc-timeline-fallback"/);
+  assert.match(island, /data-vc-timeline-skeleton/);
+  assert.match(island, /root\.setAttribute\('aria-busy', 'true'\)/);
   assert.match(island, /fallbackRef\.current\.hidden = true/);
+  assert.match(island, /skeletonRef\.current\.hidden = false/);
   assert.doesNotMatch(island, /astro:page-load|astro:before-swap|customElements|MutationObserver/);
+});
+
+test('timeline startup uses the resolved viewport once and defers the minimap', () => {
+  const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+
+  assert.match(renderer, /function resolveInitialWindow\(\)/);
+  assert.match(renderer, /getZoomImportanceThreshold\(Math\.max\(1, initialWindow\.endDay - initialWindow\.startDay\)\)/);
+  assert.match(renderer, /events: filteredEvents,[\s\S]*visibleStartDay: initialWindow\.startDay,[\s\S]*visibleEndDay: initialWindow\.endDay/);
+  assert.match(renderer, /function scheduleMinimap\(\)/);
+  assert.match(renderer, /window\.requestIdleCallback\(mountMinimap, \{ timeout: 1_500 \}\)/);
+  assert.match(renderer, /timeline\.setWindow\([\s\S]*initialWindow\.startDay[\s\S]*initialWindow\.endDay/);
+  assert.doesNotMatch(renderer, /\}\s*else\s*\{\s*resetWindow\(\);\s*\}\s*refreshItems\(true\)/);
 });
