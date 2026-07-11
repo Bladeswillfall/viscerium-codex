@@ -55,6 +55,7 @@ console.log('ordinary fences remain untouched');
     assert.equal(await pathExists(outputFile), true);
 
     const output = await readFile(outputFile, 'utf8');
+    assert.match(output, /timelinePage: true/);
     assert.match(output, /import TimelineEmbed from/);
     assert.match(output, /import ChronosEmbed from/);
     assert.match(output, /<TimelineEmbed timelineId="citadel" laneMode="category" showFilters=\{false\}/);
