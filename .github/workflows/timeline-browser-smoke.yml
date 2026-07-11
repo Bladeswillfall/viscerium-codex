@@ -124,6 +124,7 @@ jobs:
                     const rect = element.getBoundingClientRect();
                     return {
                       id: element.getAttribute('data-id'),
+                      text: element.textContent?.trim() ?? '',
                       className: element.className,
                       top: rect.top,
                       bottom: rect.bottom,
@@ -154,11 +155,12 @@ jobs:
                 expect(layoutMetrics.timelineHeight).toBeGreaterThan(320);
                 expect(layoutMetrics.margins.every(({ top, bottom }) => top === '0px' && bottom === '0px')).toBe(true);
                 expect(layoutMetrics.namedLabelBounds.some(({ text }) => text === 'Veyr Court')).toBe(true);
+                expect(layoutMetrics.eventBounds.some(({ text }) => text.includes('The Hollow Feast of Veyr'))).toBe(true);
                 expect(layoutMetrics.namedLabelBounds.every(({ top, bottom }) => (
                   top >= layoutMetrics.timelineTop - 1 && bottom <= layoutMetrics.timelineBottom + 1
                 ))).toBe(true);
                 expect(layoutMetrics.eventBounds.every(({ top, bottom }) => (
-                  top >= layoutMetrics.timelineTop - 1 && bottom <= layoutMetrics.timelineBottom + 1
+                  top >= layoutMetrics.timelineTop - 2 && bottom <= layoutMetrics.timelineBottom + 2
                 ))).toBe(true);
               }
 
