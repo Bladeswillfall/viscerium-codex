@@ -1,0 +1,185 @@
+name: Apply timeline scroll integration
+
+on:
+  push:
+    branches:
+      - codex/timeline-first-pass-performance
+    paths:
+      - '.github/workflows/apply-timeline-scroll-integration.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/timeline-first-pass-performance
+          fetch-depth: 0
+
+      - name: Apply proven lane-scroll fix
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          renderer_path = Path('Site/src/lib/timeline/chronos-native-renderer.mjs')
+          renderer = renderer_path.read_text()
+          old = """  timeline.setOptions({
+              height: options.compact ? '28rem' : '34rem',
+              minHeight: '20rem',
+              stack: true,
+              stackSubgroups: true,
+              showCurrentTime: false,
+          """
+          new = """  timeline.setOptions({
+              maxHeight: options.compact ? '28rem' : '34rem',
+              minHeight: '20rem',
+              stack: true,
+              stackSubgroups: true,
+              groupHeightMode: 'fixed',
+              showCurrentTime: false,
+          """
+          if old not in renderer:
+              raise SystemExit('Expected timeline options block was not found.')
+          renderer_path.write_text(renderer.replace(old, new, 1))
+
+          app_path = Path('Site/src/components/timeline/TimelineApp.astro')
+          app = app_path.read_text()
+          scroll_import = "import '../../styles/timeline-scroll.css';\n"
+          if scroll_import not in app:
+              anchor = "import '../../styles/timeline-performance.css';\n"
+              if anchor not in app:
+                  raise SystemExit('Timeline performance stylesheet import was not found.')
+              app = app.replace(anchor, anchor + scroll_import, 1)
+              app_path.write_text(app)
+
+          Path('Site/src/styles/timeline-scroll.css').write_text(""".vc-timeline-canvas {
+            max-height: 34rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-gutter: stable;
+          }
+
+          .vc-timeline-app.is-compact .vc-timeline-canvas {
+            max-height: 28rem;
+          }
+
+          /*
+           * Chronos configures vis-timeline with an internal maximum height. The Astro
+           * island owns the viewport instead, allowing the complete lane table to set
+           * its natural height while labels and events scroll together.
+           */
+          .vc-timeline-canvas .vis-timeline {
+            max-height: none !important;
+          }
+          """)
+
+          Path('Site/src/styles/timeline-performance.css').write_text(""".vc-timeline-list-more {
+            display: flex !important;
+            width: 100%;
+            min-height: 3rem !important;
+            align-items: center;
+            justify-content: center;
+            gap: .45rem;
+            margin-block-start: .7rem;
+            border: 1px solid var(--vc-timeline-border-strong) !important;
+            background: color-mix(in srgb, var(--vc-timeline-accent) 8%, var(--vc-timeline-surface-deep)) !important;
+            text-align: center !important;
+          }
+
+          .vc-timeline-list-more span {
+            color: var(--vc-timeline-muted);
+            font-size: .72rem;
+          }
+
+          .vc-timeline-minimap .vis-item.vc-mini-event.density-1 {
+            width: 2px !important;
+            opacity: .38;
+          }
+
+          .vc-timeline-minimap .vis-item.vc-mini-event.density-2 {
+            width: 3px !important;
+            opacity: .56;
+          }
+
+          .vc-timeline-minimap .vis-item.vc-mini-event.density-3 {
+            width: 4px !important;
+            opacity: .76;
+          }
+
+          .vc-timeline-minimap .vis-item.vc-mini-event.density-4 {
+            width: 5px !important;
+            opacity: 1;
+          }
+          """)
+
+          lifecycle_path = Path('Site/tests/timeline-lifecycle.test.mjs')
+          lifecycle = lifecycle_path.read_text()
+          scroll_assert = "  assert.match(app, /import '\\.\\.\\/\\.\\.\\/styles\\/timeline-scroll\\.css'/);\n"
+          if scroll_assert not in lifecycle:
+              anchor = "  assert.match(app, /import '\\.\\.\\/\\.\\.\\/styles\\/timeline-performance\\.css'/);\n"
+              lifecycle = lifecycle.replace(anchor, anchor + scroll_assert, 1)
+          if "groupHeightMode: 'fixed'" not in lifecycle:
+              anchor = "  assert.match(renderer, /const LIST_PAGE_SIZE = 100/);\n"
+              addition = "  assert.match(renderer, /maxHeight: options\\.compact \\? '28rem' : '34rem'/);\n  assert.match(renderer, /groupHeightMode: 'fixed'/);\n"
+              lifecycle = lifecycle.replace(anchor, anchor + addition, 1)
+          lifecycle_path.write_text(lifecycle)
+
+          smoke_path = Path('.github/workflows/timeline-browser-smoke.yml')
+          smoke = smoke_path.read_text()
+          if "citadel-scroll.json" not in smoke:
+              anchor = "              if (era === 'smog') {\n"
+              block = """              if (era === 'citadel') {
+                const lane = page.locator('[data-vc-lane]');
+                await lane.selectOption('lane');
+                await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
+                await page.waitForTimeout(500);
+
+                const scrollViewport = page.locator('[data-vc-canvas]');
+                const scrollMetrics = await scrollViewport.evaluate((element) => {
+                  const style = getComputedStyle(element);
+                  return {
+                    clientHeight: element.clientHeight,
+                    scrollHeight: element.scrollHeight,
+                    overflowY: style.overflowY,
+                    maxHeight: style.maxHeight,
+                  };
+                });
+                writeFileSync(
+                  'timeline-browser-diagnostics/citadel-scroll.json',
+                  JSON.stringify(scrollMetrics, null, 2),
+                );
+
+                expect(scrollMetrics.overflowY).toBe('auto');
+                expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
+                await scrollViewport.evaluate((element) => {
+                  element.scrollTop = element.scrollHeight;
+                });
+                await expect.poll(() => scrollViewport.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+                await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-scroll.png', fullPage: true });
+              }
+
+          """
+              if anchor not in smoke:
+                  raise SystemExit('Browser-smoke insertion point was not found.')
+              smoke_path.write_text(smoke.replace(anchor, block + anchor, 1))
+          PY
+
+      - name: Commit integration
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Site/src/lib/timeline/chronos-native-renderer.mjs \
+                  Site/src/components/timeline/TimelineApp.astro \
+                  Site/src/styles/timeline-scroll.css \
+                  Site/src/styles/timeline-performance.css \
+                  Site/tests/timeline-lifecycle.test.mjs \
+                  .github/workflows/timeline-browser-smoke.yml
+          git commit -m 'Fix timeline lane viewport sizing'
+          git push origin HEAD:codex/timeline-first-pass-performance
