@@ -35,3 +35,36 @@
   width: 5px !important;
   opacity: 1;
 }
+
+/*
+ * Canonical timeline pages opt out of Starlight's right-sidebar layout in the
+ * page component itself. These rules only release the remaining content-width
+ * constraints; they do not hide or reposition sidebar DOM.
+ */
+.codex-two-column-content.codex-timeline-page {
+  --sl-content-width: 100%;
+  max-inline-size: none;
+}
+
+.codex-two-column-content.codex-timeline-page > .codex-main-pane,
+.codex-two-column-content.codex-timeline-page > .codex-main-pane > main,
+.codex-two-column-content.codex-timeline-page > .codex-main-pane > main > .content-panel,
+.codex-two-column-content.codex-timeline-page > .codex-main-pane > main > .content-panel > .sl-container {
+  inline-size: 100%;
+  max-inline-size: none;
+  min-inline-size: 0;
+}
+
+@media (min-width: 72rem) {
+  .main-frame > .codex-two-column-content.codex-timeline-page {
+    max-inline-size: none;
+  }
+
+  .main-frame > .codex-two-column-content.codex-timeline-page > .codex-main-pane {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .main-frame > .codex-two-column-content.codex-timeline-page > .codex-main-pane > main > .content-panel > .sl-container {
+    max-width: none;
+  }
+}
