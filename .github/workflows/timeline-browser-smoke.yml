@@ -92,9 +92,45 @@ jobs:
                 const lane = page.locator('[data-vc-lane]');
                 await lane.selectOption('lane');
                 await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
-                await page.waitForTimeout(500);
+                await page.waitForTimeout(750);
 
                 const layoutMetrics = await page.locator('[data-vc-canvas]').evaluate((canvas) => {
+                  const describe = (element) => {
+                    if (!element) return null;
+                    const rect = element.getBoundingClientRect();
+                    const style = getComputedStyle(element);
+                    return {
+                      tag: element.tagName,
+                      className: element.className,
+                      inlineStyle: element.getAttribute('style'),
+                      rect: {
+                        top: rect.top,
+                        right: rect.right,
+                        bottom: rect.bottom,
+                        left: rect.left,
+                        width: rect.width,
+                        height: rect.height,
+                      },
+                      style: {
+                        display: style.display,
+                        visibility: style.visibility,
+                        position: style.position,
+                        top: style.top,
+                        right: style.right,
+                        bottom: style.bottom,
+                        left: style.left,
+                        width: style.width,
+                        height: style.height,
+                        minHeight: style.minHeight,
+                        maxHeight: style.maxHeight,
+                        overflow: style.overflow,
+                        overflowX: style.overflowX,
+                        overflowY: style.overflowY,
+                        transform: style.transform,
+                      },
+                    };
+                  };
+
                   const timeline = canvas.querySelector('.vis-timeline');
                   const labels = [...canvas.querySelectorAll('.vis-labelset .vis-label')]
                     .filter((element) => element.getClientRects().length > 0);
@@ -118,12 +154,34 @@ jobs:
                     lastLabelBottom: lastLabelRect?.bottom ?? 0,
                     lastGroupBottom: lastGroupRect?.bottom ?? 0,
                     canvasOverflowY: getComputedStyle(canvas).overflowY,
+                    nodes: {
+                      app: describe(canvas.closest('.vc-timeline-app')),
+                      stage: describe(canvas.closest('.vc-timeline-stage')),
+                      canvas: describe(canvas),
+                      timeline: describe(timeline),
+                      leftPanel: describe(canvas.querySelector('.vis-panel.vis-left')),
+                      centerPanel: describe(canvas.querySelector('.vis-panel.vis-center')),
+                      topPanel: describe(canvas.querySelector('.vis-panel.vis-top')),
+                      bottomPanel: describe(canvas.querySelector('.vis-panel.vis-bottom')),
+                      labelset: describe(canvas.querySelector('.vis-labelset')),
+                      foreground: describe(canvas.querySelector('.vis-foreground')),
+                      background: describe(canvas.querySelector('.vis-background')),
+                      content: describe(canvas.querySelector('.vis-content')),
+                      timeAxis: describe(canvas.querySelector('.vis-time-axis')),
+                      firstLabel: describe(labels[0]),
+                      lastLabel: describe(labels.at(-1)),
+                      firstGroup: describe(groups[0]),
+                      lastGroup: describe(groups.at(-1)),
+                    },
+                    labels: labels.map((label) => describe(label)),
+                    groups: groups.map((group) => describe(group)),
                   };
                 });
                 writeFileSync(
                   'timeline-browser-diagnostics/citadel-chronos-layout.json',
                   JSON.stringify(layoutMetrics, null, 2),
                 );
+                await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-chronos-layout.png', fullPage: true });
 
                 expect(layoutMetrics.labelCount).toBeGreaterThan(1);
                 expect(layoutMetrics.groupCount).toBeGreaterThan(1);
@@ -132,7 +190,6 @@ jobs:
                 expect(layoutMetrics.lastLabelBottom).toBeLessThanOrEqual(layoutMetrics.timelineBottom + 1);
                 expect(layoutMetrics.lastGroupBottom).toBeLessThanOrEqual(layoutMetrics.timelineBottom + 1);
                 expect(layoutMetrics.timelineBottom).toBeLessThanOrEqual(layoutMetrics.canvasBottom + 1);
-                await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-chronos-layout.png', fullPage: true });
               }
 
               if (era === 'smog') {
