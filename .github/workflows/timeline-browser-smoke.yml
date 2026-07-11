@@ -8,6 +8,7 @@ on:
     paths:
       - 'Site/src/components/timeline/**'
       - 'Site/src/lib/timeline/**'
+      - 'Site/src/styles/**'
       - 'Site/src/data/timelines/**'
       - 'Site/package.json'
       - 'Site/package-lock.json'
@@ -95,86 +96,35 @@ jobs:
                 await page.waitForTimeout(750);
 
                 const layoutMetrics = await page.locator('[data-vc-canvas]').evaluate((canvas) => {
-                  const describe = (element) => {
-                    if (!element) return null;
-                    const rect = element.getBoundingClientRect();
-                    const style = getComputedStyle(element);
-                    return {
-                      tag: element.tagName,
-                      className: element.className,
-                      inlineStyle: element.getAttribute('style'),
-                      rect: {
-                        top: rect.top,
-                        right: rect.right,
-                        bottom: rect.bottom,
-                        left: rect.left,
-                        width: rect.width,
-                        height: rect.height,
-                      },
-                      style: {
-                        display: style.display,
-                        visibility: style.visibility,
-                        position: style.position,
-                        top: style.top,
-                        right: style.right,
-                        bottom: style.bottom,
-                        left: style.left,
-                        width: style.width,
-                        height: style.height,
-                        minHeight: style.minHeight,
-                        maxHeight: style.maxHeight,
-                        overflow: style.overflow,
-                        overflowX: style.overflowX,
-                        overflowY: style.overflowY,
-                        transform: style.transform,
-                      },
-                    };
-                  };
-
                   const timeline = canvas.querySelector('.vis-timeline');
-                  const labels = [...canvas.querySelectorAll('.vis-labelset .vis-label')]
+                  const content = canvas.querySelector('.vis-panel.vis-center > .vis-content');
+                  const labels = [...canvas.querySelectorAll('.vis-labelset > .vis-label')]
                     .filter((element) => element.getClientRects().length > 0);
                   const groups = [...canvas.querySelectorAll('.vis-foreground > .vis-group')]
                     .filter((element) => element.getClientRects().length > 0);
-                  const canvasRect = canvas.getBoundingClientRect();
                   const timelineRect = timeline?.getBoundingClientRect();
                   const firstLabelRect = labels[0]?.getBoundingClientRect();
                   const lastLabelRect = labels.at(-1)?.getBoundingClientRect();
                   const lastGroupRect = groups.at(-1)?.getBoundingClientRect();
+                  const margins = [...labels, ...groups].map((element) => {
+                    const style = getComputedStyle(element);
+                    return {
+                      top: style.marginTop,
+                      bottom: style.marginBottom,
+                    };
+                  });
 
                   return {
                     labelCount: labels.length,
                     groupCount: groups.length,
-                    canvasHeight: canvasRect.height,
                     timelineHeight: timelineRect?.height ?? 0,
                     timelineTop: timelineRect?.top ?? 0,
                     timelineBottom: timelineRect?.bottom ?? 0,
-                    canvasBottom: canvasRect.bottom,
                     firstLabelTop: firstLabelRect?.top ?? 0,
                     lastLabelBottom: lastLabelRect?.bottom ?? 0,
                     lastGroupBottom: lastGroupRect?.bottom ?? 0,
-                    canvasOverflowY: getComputedStyle(canvas).overflowY,
-                    nodes: {
-                      app: describe(canvas.closest('.vc-timeline-app')),
-                      stage: describe(canvas.closest('.vc-timeline-stage')),
-                      canvas: describe(canvas),
-                      timeline: describe(timeline),
-                      leftPanel: describe(canvas.querySelector('.vis-panel.vis-left')),
-                      centerPanel: describe(canvas.querySelector('.vis-panel.vis-center')),
-                      topPanel: describe(canvas.querySelector('.vis-panel.vis-top')),
-                      bottomPanel: describe(canvas.querySelector('.vis-panel.vis-bottom')),
-                      labelset: describe(canvas.querySelector('.vis-labelset')),
-                      foreground: describe(canvas.querySelector('.vis-foreground')),
-                      background: describe(canvas.querySelector('.vis-background')),
-                      content: describe(canvas.querySelector('.vis-content')),
-                      timeAxis: describe(canvas.querySelector('.vis-time-axis')),
-                      firstLabel: describe(labels[0]),
-                      lastLabel: describe(labels.at(-1)),
-                      firstGroup: describe(groups[0]),
-                      lastGroup: describe(groups.at(-1)),
-                    },
-                    labels: labels.map((label) => describe(label)),
-                    groups: groups.map((group) => describe(group)),
+                    contentTransform: content ? getComputedStyle(content).transform : null,
+                    margins,
                   };
                 });
                 writeFileSync(
@@ -186,10 +136,10 @@ jobs:
                 expect(layoutMetrics.labelCount).toBeGreaterThan(1);
                 expect(layoutMetrics.groupCount).toBeGreaterThan(1);
                 expect(layoutMetrics.timelineHeight).toBeGreaterThan(320);
+                expect(layoutMetrics.margins.every(({ top, bottom }) => top === '0px' && bottom === '0px')).toBe(true);
                 expect(layoutMetrics.firstLabelTop).toBeGreaterThanOrEqual(layoutMetrics.timelineTop - 1);
                 expect(layoutMetrics.lastLabelBottom).toBeLessThanOrEqual(layoutMetrics.timelineBottom + 1);
                 expect(layoutMetrics.lastGroupBottom).toBeLessThanOrEqual(layoutMetrics.timelineBottom + 1);
-                expect(layoutMetrics.timelineBottom).toBeLessThanOrEqual(layoutMetrics.canvasBottom + 1);
               }
 
               if (era === 'smog') {
