@@ -23,7 +23,7 @@ test('TimelineApp delegates browser behaviour to a client-loaded island', () => 
   assert.match(app, /import TimelineIsland from '\.\/TimelineIsland'/);
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-loading\.css'/);
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-performance\.css'/);
-  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-scroll\.css'/);
+  assert.doesNotMatch(app, /timeline-scroll\.css/);
   assert.match(app, /<TimelineIsland[\s\S]*client:load/);
   assert.match(app, /fallbackEvents=\{fallbackEvents\}/);
   assert.doesNotMatch(app, /<script>|astro:page-load|__visceriumTimelineRuntime|application\/json/);
@@ -71,18 +71,18 @@ test('large timeline runtime bounds graph, list, search and minimap work', () =>
   assert.doesNotMatch(renderer, /\.\.\.dataset\.events\.map\(\(event\) => \(\{[\s\S]*id: `mini:/);
 });
 
-test('the renderer entry point gives Chronos a natural-height lane table inside an island scroll viewport', () => {
+test('the renderer entry point preserves Chronos natural group layout', () => {
   const entry = read('../src/lib/timeline/renderer.mjs');
-  const scrollStyles = read('../src/styles/timeline-scroll.css');
   const performanceStyles = read('../src/styles/timeline-performance.css');
 
   assert.match(entry, /ChronosTimeline\.prototype\.renderParsed/);
   assert.match(entry, /const timeline = this\.timeline/);
-  assert.match(entry, /nextOptions\.height === '34rem'/);
-  assert.match(entry, /maxHeight: height/);
-  assert.match(entry, /groupHeightMode: 'fixed'/);
+  assert.match(entry, /isLegacyHostLayoutOverride/);
+  assert.match(entry, /height: _height/);
+  assert.match(entry, /horizontalScroll: _horizontalScroll/);
+  assert.match(entry, /verticalScroll: _verticalScroll/);
+  assert.match(entry, /return originalSetOptions\(chronosOptions\)/);
+  assert.doesNotMatch(entry, /maxHeight:|groupHeightMode:/);
   assert.match(entry, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
-  assert.match(scrollStyles, /\.vc-timeline-canvas \{[\s\S]*max-height: 34rem;[\s\S]*overflow-y: auto/);
-  assert.match(scrollStyles, /\.vc-timeline-canvas \.vis-timeline \{[\s\S]*max-height: none !important/);
   assert.doesNotMatch(performanceStyles, /:has\(|min-height: 58rem/);
 });
