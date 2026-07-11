@@ -16,6 +16,27 @@
   font-size: .72rem;
 }
 
+/*
+ * Chronos starts with a fixed canvas height, but grouped views can need more
+ * vertical room than unified view. Let the rendered label count raise the
+ * minimum height in measured steps; vis-timeline's ResizeObserver then
+ * recalculates its panels, while very large group sets still use its internal
+ * vertical scrolling.
+ */
+@media (min-width: 38.01rem) {
+  .vc-timeline-canvas:has(.vis-labelset .vis-label:nth-child(8)) .vis-timeline {
+    min-height: 42rem;
+  }
+
+  .vc-timeline-canvas:has(.vis-labelset .vis-label:nth-child(10)) .vis-timeline {
+    min-height: 50rem;
+  }
+
+  .vc-timeline-canvas:has(.vis-labelset .vis-label:nth-child(12)) .vis-timeline {
+    min-height: 58rem;
+  }
+}
+
 .vc-timeline-minimap .vis-item.vc-mini-event.density-1 {
   width: 2px !important;
   opacity: .38;
