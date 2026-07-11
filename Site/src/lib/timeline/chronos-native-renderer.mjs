@@ -196,8 +196,26 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     return value;
   };
 
-  let currentThreshold = 'incidental';
-  let filteredEvents = [...dataset.events];
+  function resolveInitialWindow() {
+    if (
+      Number.isSafeInteger(state.visibleStartDay)
+      && Number.isSafeInteger(state.visibleEndDay)
+      && state.visibleStartDay < state.visibleEndDay
+    ) {
+      return { startDay: state.visibleStartDay, endDay: state.visibleEndDay };
+    }
+
+    const era = dataset.id === 'super' ? null : dataset.eras[0];
+    const padding = era?.defaultViewport?.paddingDays ?? 30;
+    return {
+      startDay: era?.defaultViewport?.startDay ?? dataset.absoluteStartDay - padding,
+      endDay: era?.defaultViewport?.endDay ?? dataset.absoluteEndDay + padding,
+    };
+  }
+
+  const initialWindow = resolveInitialWindow();
+  let currentThreshold = getZoomImportanceThreshold(Math.max(1, initialWindow.endDay - initialWindow.startDay));
+  let filteredEvents = dataset.events.filter((event) => eventMatchesFilter(event, state, currentThreshold));
   let selectedIndex = -1;
 
   const chronos = new ChronosTimeline({
@@ -219,8 +237,8 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     events: filteredEvents,
     laneMode: state.laneMode,
     formatEventDate,
-    visibleStartDay: state.visibleStartDay,
-    visibleEndDay: state.visibleEndDay,
+    visibleStartDay: initialWindow.startDay,
+    visibleEndDay: initialWindow.endDay,
   });
   chronos.renderParsed(initialModel.parsed);
   const timeline = chronos.timeline;
@@ -243,20 +261,9 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
 
   let minimap;
   let minimapItems;
-  if (minimapElement) {
-    minimapItems = new DataSet();
-    minimap = new Timeline(minimapElement, minimapItems, {
-      height: '8rem',
-      stack: false,
-      showCurrentTime: false,
-      showMajorLabels: false,
-      showMinorLabels: false,
-      selectable: false,
-      moveable: false,
-      zoomable: false,
-      margin: { item: 2, axis: 0 },
-    });
-  }
+  let minimapIdleHandle;
+  let minimapTimeoutHandle;
+  let destroyed = false;
 
   function refreshList() {
     listPanel.innerHTML = `<ol>${filteredEvents.map((event) => `<li><button type="button" data-vc-select-event="${escapeHtml(event.id)}"><span>${escapeHtml(formatEventDate(event))}</span><strong>${escapeHtml(event.title)}</strong><small>${escapeHtml(event.description)}</small></button></li>`).join('')}</ol>`;
@@ -389,6 +396,64 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     syncUrl();
   }
 
+  function mountMinimap() {
+    if (destroyed || !minimapElement || minimap) return;
+
+    minimapItems = new DataSet();
+    minimap = new Timeline(minimapElement, minimapItems, {
+      height: '8rem',
+      stack: false,
+      showCurrentTime: false,
+      showMajorLabels: false,
+      showMinorLabels: false,
+      selectable: false,
+      moveable: false,
+      zoomable: false,
+      margin: { item: 2, axis: 0 },
+    });
+    minimap.on('click', ({ time }) => timeline.moveTo(time, { animation: true }));
+    minimapItems.add([
+      ...dataset.eras.map((era) => ({
+        id: `mini-era:${era.id}`,
+        start: toSyntheticDate(era.absoluteStartDay),
+        end: toSyntheticDate(era.absoluteEndDay + 1),
+        type: 'background',
+        content: '',
+        className: `vc-era-band era-${cssToken(era.id)}`,
+      })),
+      ...dataset.events.map((event) => ({
+        id: `mini:${event.id}`,
+        start: toSyntheticDate(event.absoluteStartDay),
+        type: 'point',
+        content: '',
+        className: `vc-mini-event importance-${event.importance}`,
+      })),
+      {
+        id: 'viewport',
+        start: toSyntheticDate(initialWindow.startDay),
+        end: toSyntheticDate(initialWindow.endDay),
+        type: 'range',
+        content: '',
+        className: 'vc-minimap-viewport',
+      },
+    ]);
+    minimap.setWindow(
+      toSyntheticDate(dataset.absoluteStartDay),
+      toSyntheticDate(dataset.absoluteEndDay),
+      { animation: false },
+    );
+    renderAxis();
+  }
+
+  function scheduleMinimap() {
+    if (!minimapElement) return;
+    if (typeof window.requestIdleCallback === 'function') {
+      minimapIdleHandle = window.requestIdleCallback(mountMinimap, { timeout: 1_500 });
+    } else {
+      minimapTimeoutHandle = window.setTimeout(mountMinimap, 250);
+    }
+  }
+
   timeline.on('rangechanged', () => {
     renderAxis();
     refreshItems(false);
@@ -401,7 +466,6 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
   timeline.on('click', ({ item }) => {
     if (typeof item === 'string' && item.startsWith('era:')) zoomEra(item.split(':')[1]);
   });
-  if (minimap) minimap.on('click', ({ time }) => timeline.moveTo(time, { animation: true }));
 
   calendarSelect.addEventListener('change', () => {
     state.calendar = calendarSelect.value;
@@ -453,59 +517,25 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     button.addEventListener('click', () => zoomEra(button.dataset.vcEra));
   }
 
-  if (minimapItems) {
-    minimapItems.add([
-      ...dataset.eras.map((era) => ({
-        id: `mini-era:${era.id}`,
-        start: toSyntheticDate(era.absoluteStartDay),
-        end: toSyntheticDate(era.absoluteEndDay + 1),
-        type: 'background',
-        content: '',
-        className: `vc-era-band era-${cssToken(era.id)}`,
-      })),
-      ...dataset.events.map((event) => ({
-        id: `mini:${event.id}`,
-        start: toSyntheticDate(event.absoluteStartDay),
-        type: 'point',
-        content: '',
-        className: `vc-mini-event importance-${event.importance}`,
-      })),
-      {
-        id: 'viewport',
-        start: toSyntheticDate(dataset.absoluteStartDay),
-        end: toSyntheticDate(dataset.absoluteEndDay),
-        type: 'range',
-        content: '',
-        className: 'vc-minimap-viewport',
-      },
-    ]);
-    minimap.setWindow(
-      toSyntheticDate(dataset.absoluteStartDay),
-      toSyntheticDate(dataset.absoluteEndDay),
-      { animation: false },
-    );
-  }
-
-  if (
-    Number.isSafeInteger(state.visibleStartDay)
-    && Number.isSafeInteger(state.visibleEndDay)
-    && state.visibleStartDay < state.visibleEndDay
-  ) {
-    timeline.setWindow(
-      toSyntheticDate(state.visibleStartDay),
-      toSyntheticDate(state.visibleEndDay),
-      { animation: false },
-    );
-  } else {
-    resetWindow();
-  }
-  refreshItems(true);
+  timeline.setWindow(
+    toSyntheticDate(initialWindow.startDay),
+    toSyntheticDate(initialWindow.endDay),
+    { animation: false },
+  );
+  status.textContent = `${filteredEvents.length} of ${dataset.events.length} events visible. Chronos hides lower-importance events at distant zoom levels.`;
+  refreshList();
   renderAxis();
+  scheduleMinimap();
   if (state.selected && dataset.events.some((event) => event.id === state.selected)) {
     selectEvent(state.selected, false);
   }
 
   return () => {
+    destroyed = true;
+    if (minimapIdleHandle !== undefined && typeof window.cancelIdleCallback === 'function') {
+      window.cancelIdleCallback(minimapIdleHandle);
+    }
+    if (minimapTimeoutHandle !== undefined) window.clearTimeout(minimapTimeoutHandle);
     chronos.destroy();
     minimap?.destroy();
     root.innerHTML = '';
