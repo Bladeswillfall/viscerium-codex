@@ -10,61 +10,151 @@ function groupSignature(groups) {
   return values.map((group) => `${group.id}:${group.content ?? ''}`).join('|');
 }
 
+function installChronosTimelineProxy(chronos, initialResult, originalRenderParsed) {
+  let target = chronos.timeline;
+  let currentGroupSignature = groupSignature(initialResult.groups);
+  let pendingGroups;
+  let redrawFrame;
+  let destroyed = false;
+  const listeners = new Map();
+  let proxy;
+
+  const removeRefitButtons = () => {
+    chronos.container?.querySelectorAll?.('.chronos-timeline-refit-button')
+      .forEach((button) => button.remove());
+  };
+
+  const attachExternalListeners = () => {
+    for (const [eventType, handlers] of listeners) {
+      for (const handler of handlers) target.on(eventType, handler);
+    }
+  };
+
+  const scheduleNativeRedraw = () => {
+    window.cancelAnimationFrame(redrawFrame);
+    redrawFrame = window.requestAnimationFrame(() => target?.redraw?.());
+  };
+
+  const remountWithChronos = (items, groups) => {
+    if (destroyed) return undefined;
+
+    const visibleWindow = target?.getWindow?.();
+    const selection = target?.getSelection?.() ?? [];
+    target?.destroy?.();
+    removeRefitButtons();
+
+    originalRenderParsed.call(chronos, {
+      items,
+      groups,
+      markers: initialResult.markers ?? [],
+      flags: initialResult.flags ?? {},
+    });
+
+    target = chronos.timeline;
+    if (!target) throw new Error('Chronos did not recreate its timeline after a group change.');
+
+    if (visibleWindow) {
+      target.setWindow(visibleWindow.start, visibleWindow.end, { animation: false });
+    }
+    if (selection.length) target.setSelection(selection, { focus: false });
+    attachExternalListeners();
+
+    currentGroupSignature = groupSignature(groups);
+    pendingGroups = undefined;
+    chronos.timeline = proxy;
+    return undefined;
+  };
+
+  proxy = new Proxy({}, {
+    get(_proxyTarget, property) {
+      if (property === '__visceriumChronosProxy') return true;
+      if (property === '__visceriumChronosTarget') return target;
+
+      if (property === 'on') {
+        return (eventType, handler) => {
+          if (!listeners.has(eventType)) listeners.set(eventType, new Set());
+          listeners.get(eventType).add(handler);
+          target.on(eventType, handler);
+          return proxy;
+        };
+      }
+
+      if (property === 'off') {
+        return (eventType, handler) => {
+          listeners.get(eventType)?.delete(handler);
+          target.off?.(eventType, handler);
+          return proxy;
+        };
+      }
+
+      if (property === 'setOptions') {
+        return (nextOptions = {}) => {
+          const isLegacyHostOptionPass = (
+            nextOptions.verticalScroll === true
+            && nextOptions.horizontalScroll === true
+            && (nextOptions.height === '34rem' || nextOptions.height === '28rem')
+          );
+          if (isLegacyHostOptionPass) return undefined;
+          return target.setOptions(nextOptions);
+        };
+      }
+
+      if (property === 'setGroups') {
+        return (groups) => {
+          const nextSignature = groupSignature(groups);
+          if (nextSignature !== currentGroupSignature) pendingGroups = groups;
+          return undefined;
+        };
+      }
+
+      if (property === 'setItems') {
+        return (items) => {
+          if (pendingGroups !== undefined) return remountWithChronos(items, pendingGroups);
+          const result = target.setItems(items);
+          scheduleNativeRedraw();
+          return result;
+        };
+      }
+
+      if (property === 'destroy') {
+        return () => {
+          destroyed = true;
+          window.cancelAnimationFrame(redrawFrame);
+          removeRefitButtons();
+          return target?.destroy?.();
+        };
+      }
+
+      const value = target?.[property];
+      return typeof value === 'function' ? value.bind(target) : value;
+    },
+
+    set(_proxyTarget, property, value) {
+      target[property] = value;
+      return true;
+    },
+
+    has(_proxyTarget, property) {
+      return property in target;
+    },
+  });
+
+  chronos.timeline = proxy;
+  return proxy;
+}
+
 /**
- * Chronos sizes the timeline from its parsed source and settings. The older
- * Codex renderer follows that render with a second vis-timeline option pass,
- * which invalidates Chronos' completed group geometry. Ignore that one legacy
- * pass and leave Chronos' own layout, ordering, stacking and viewport intact.
- *
- * Chronos also performs a small zoom jiggle after initially rendering groups
- * because vis-timeline can otherwise retain stale panel geometry. The Codex
- * can replace groups at runtime, so repeat that native Chronos workaround only
- * when the group structure actually changes.
+ * Keep the fast indexed/filtering shell, but let Chronos own every grouped
+ * timeline render. Same-group item updates stay in place; changing declared
+ * lanes or categories rebuilds the timeline through Chronos and restores the
+ * existing world-time window behind a stable proxy used by the site controls.
  */
 export function mountTimeline(root, dataset, options) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
 
-  ChronosTimeline.prototype.renderParsed = function renderWithChronosLayout(...args) {
-    const result = originalRenderParsed.apply(this, args);
-    const timeline = this.timeline;
-
-    if (timeline && !timeline.__visceriumChronosLayoutPatched) {
-      const originalSetOptions = timeline.setOptions.bind(timeline);
-      const originalSetGroups = timeline.setGroups.bind(timeline);
-      let renderedGroupSignature = groupSignature(timeline.groupsData);
-      let layoutFrame;
-
-      timeline.setOptions = (nextOptions = {}) => {
-        const isLegacyHostOptionPass = (
-          nextOptions.verticalScroll === true
-          && nextOptions.horizontalScroll === true
-          && (nextOptions.height === '34rem' || nextOptions.height === '28rem')
-        );
-
-        if (isLegacyHostOptionPass) return undefined;
-        return originalSetOptions(nextOptions);
-      };
-
-      timeline.setGroups = (groups) => {
-        const nextSignature = groupSignature(groups);
-        const groupsChanged = nextSignature !== renderedGroupSignature;
-        const setResult = originalSetGroups(groups);
-        renderedGroupSignature = nextSignature;
-
-        if (groupsChanged) {
-          window.cancelAnimationFrame(layoutFrame);
-          layoutFrame = window.requestAnimationFrame(() => {
-            timeline.redraw();
-            this._jiggleZoom?.(timeline);
-          });
-        }
-        return setResult;
-      };
-
-      timeline.__visceriumChronosLayoutPatched = true;
-    }
-
-    return result;
+  ChronosTimeline.prototype.renderParsed = function renderWithChronosLayout(result) {
+    originalRenderParsed.call(this, result);
+    installChronosTimelineProxy(this, result, originalRenderParsed);
   };
 
   try {
