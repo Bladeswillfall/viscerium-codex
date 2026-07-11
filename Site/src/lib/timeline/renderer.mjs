@@ -11,11 +11,10 @@ function groupSignature(groups) {
 }
 
 /**
- * Chronos normally sizes its timeline to the rendered groups and only enables
- * fixed-height vertical scrolling when the Chronos source contains a HEIGHT
- * flag. The Codex renderer still applies an older fixed-height host override
- * after Chronos mounts; remove only those host layout fields and retain the
- * behavioural options such as stacking, zoom limits and selection.
+ * Chronos sizes the timeline from its parsed source and settings. The older
+ * Codex renderer follows that render with a second vis-timeline option pass,
+ * which invalidates Chronos' completed group geometry. Ignore that one legacy
+ * pass and leave Chronos' own layout, ordering, stacking and viewport intact.
  *
  * Chronos also performs a small zoom jiggle after initially rendering groups
  * because vis-timeline can otherwise retain stale panel geometry. The Codex
@@ -36,21 +35,14 @@ export function mountTimeline(root, dataset, options) {
       let layoutFrame;
 
       timeline.setOptions = (nextOptions = {}) => {
-        const isLegacyHostLayoutOverride = (
+        const isLegacyHostOptionPass = (
           nextOptions.verticalScroll === true
           && nextOptions.horizontalScroll === true
           && (nextOptions.height === '34rem' || nextOptions.height === '28rem')
         );
 
-        if (!isLegacyHostLayoutOverride) return originalSetOptions(nextOptions);
-
-        const {
-          height: _height,
-          horizontalScroll: _horizontalScroll,
-          verticalScroll: _verticalScroll,
-          ...chronosOptions
-        } = nextOptions;
-        return originalSetOptions(chronosOptions);
+        if (isLegacyHostOptionPass) return undefined;
+        return originalSetOptions(nextOptions);
       };
 
       timeline.setGroups = (groups) => {
