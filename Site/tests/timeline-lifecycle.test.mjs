@@ -71,19 +71,24 @@ test('large timeline runtime bounds graph, list, search and minimap work', () =>
   assert.doesNotMatch(renderer, /\.\.\.dataset\.events\.map\(\(event\) => \(\{[\s\S]*id: `mini:/);
 });
 
-test('the renderer entry point preserves and refreshes Chronos group layout', () => {
+test('group changes remount through Chronos behind a stable site-facing timeline handle', () => {
   const entry = read('../src/lib/timeline/renderer.mjs');
   const performanceStyles = read('../src/styles/timeline-performance.css');
 
-  assert.match(entry, /ChronosTimeline\.prototype\.renderParsed/);
-  assert.match(entry, /const timeline = this\.timeline/);
-  assert.match(entry, /isLegacyHostOptionPass/);
-  assert.match(entry, /if \(isLegacyHostOptionPass\) return undefined/);
+  assert.match(entry, /function installChronosTimelineProxy\(chronos, initialResult, originalRenderParsed\)/);
+  assert.match(entry, /proxy = new Proxy\(/);
+  assert.match(entry, /const listeners = new Map\(\)/);
   assert.match(entry, /function groupSignature\(groups\)/);
-  assert.match(entry, /timeline\.setGroups = \(groups\) =>/);
-  assert.match(entry, /timeline\.redraw\(\)/);
-  assert.match(entry, /this\._jiggleZoom\?\.\(timeline\)/);
-  assert.doesNotMatch(entry, /maxHeight:|groupHeightMode:|chronosOptions/);
+  assert.match(entry, /pendingGroups = groups/);
+  assert.match(entry, /remountWithChronos\(items, pendingGroups\)/);
+  assert.match(entry, /originalRenderParsed\.call\(chronos/);
+  assert.match(entry, /const visibleWindow = target\?\.getWindow\?\.\(\)/);
+  assert.match(entry, /target\.setWindow\(visibleWindow\.start, visibleWindow\.end/);
+  assert.match(entry, /attachExternalListeners\(\)/);
+  assert.match(entry, /chronos\.timeline = proxy/);
+  assert.match(entry, /const result = target\.setItems\(items\)/);
+  assert.match(entry, /installChronosTimelineProxy\(this, result, originalRenderParsed\)/);
   assert.match(entry, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
+  assert.doesNotMatch(entry, /maxHeight:|groupHeightMode:/);
   assert.doesNotMatch(performanceStyles, /:has\(|min-height: 58rem/);
 });
