@@ -1,21 +1,25 @@
 import path from 'node:path';
 import process from 'node:process';
-import fs from 'fs-extra';
-import fg from 'fast-glob';
-import matter from 'gray-matter';
+import { loadGeneratedDocs } from './content-manifest.mjs';
+import { isMainModule } from './script-entry.mjs';
 
-const docsDir = path.resolve(process.cwd(), 'src/content/docs');
-const files = await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true });
 const required = ['title', 'description', 'slug', 'type'];
-let failed = false;
-for (const file of files) {
-  const data = matter(await fs.readFile(file, 'utf8')).data;
-  for (const field of required) {
-    if (!data[field]) {
-      console.error(`Missing ${field}: ${path.relative(docsDir, file)}`);
-      failed = true;
+
+export function validateGeneratedContent(manifest) {
+  let failed = false;
+  for (const { file, data } of manifest.records) {
+    for (const field of required) {
+      if (!data[field]) {
+        console.error(`Missing ${field}: ${path.relative(manifest.rootDir, file)}`);
+        failed = true;
+      }
     }
   }
+  if (!failed) console.log(`Validated ${manifest.records.length} generated public docs.`);
+  return !failed;
 }
-if (failed) process.exit(1);
-console.log(`Validated ${files.length} generated public docs.`);
+
+if (isMainModule(import.meta.url)) {
+  const valid = validateGeneratedContent(await loadGeneratedDocs());
+  if (!valid) process.exitCode = 1;
+}

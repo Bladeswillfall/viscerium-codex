@@ -1,4 +1,0 @@
----
-const { timeline } = Astro.props;
----
-{timeline ? <section><h1>{timeline.title}</h1>{timeline.events.map((event) => <article class="timeline-event"><h2>{event.year ?? event.date}: <a href={event.page}>{event.title}</a></h2><p>{event.description}</p></article>)}</section> : <p class="codex-warning">Timeline not found.</p>}

@@ -1,6 +1,0 @@
-name: Lore suggestion
-description: Suggest a new public codex entry.
-body:
-  - type: textarea
-    id: suggestion
-    attributes: { label: Suggestion }
