@@ -77,16 +77,13 @@ test('the renderer entry point preserves and refreshes Chronos group layout', ()
 
   assert.match(entry, /ChronosTimeline\.prototype\.renderParsed/);
   assert.match(entry, /const timeline = this\.timeline/);
-  assert.match(entry, /isLegacyHostLayoutOverride/);
-  assert.match(entry, /height: _height/);
-  assert.match(entry, /horizontalScroll: _horizontalScroll/);
-  assert.match(entry, /verticalScroll: _verticalScroll/);
-  assert.match(entry, /return originalSetOptions\(chronosOptions\)/);
+  assert.match(entry, /isLegacyHostOptionPass/);
+  assert.match(entry, /if \(isLegacyHostOptionPass\) return undefined/);
   assert.match(entry, /function groupSignature\(groups\)/);
   assert.match(entry, /timeline\.setGroups = \(groups\) =>/);
   assert.match(entry, /timeline\.redraw\(\)/);
   assert.match(entry, /this\._jiggleZoom\?\.\(timeline\)/);
-  assert.doesNotMatch(entry, /maxHeight:|groupHeightMode:/);
+  assert.doesNotMatch(entry, /maxHeight:|groupHeightMode:|chronosOptions/);
   assert.match(entry, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
   assert.doesNotMatch(performanceStyles, /:has\(|min-height: 58rem/);
 });
