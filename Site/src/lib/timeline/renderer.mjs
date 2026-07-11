@@ -143,6 +143,82 @@ function installChronosTimelineProxy(chronos, initialResult, originalRenderParse
   return proxy;
 }
 
+function installTimelineDomGuards(root) {
+  let alignmentFrame;
+  let destroyed = false;
+
+  const removeItemTitle = (element) => {
+    const item = element?.matches?.('.vis-item') ? element : element?.closest?.('.vis-item');
+    item?.removeAttribute('title');
+  };
+
+  const alignAxisToChronosCenter = () => {
+    const axis = root.querySelector('[data-vc-axis]');
+    const centerPanel = root.querySelector('[data-vc-canvas] .vis-panel.vis-center');
+    if (!axis || !centerPanel) return;
+
+    const axisRect = axis.getBoundingClientRect();
+    const centerRect = centerPanel.getBoundingClientRect();
+    const startOffset = Math.max(0, centerRect.left - axisRect.left);
+    const usableWidth = Math.max(0, centerRect.width);
+
+    for (const tick of axis.querySelectorAll(':scope > span')) {
+      const rawPosition = tick.dataset.vcAxisPercent ?? tick.style.left;
+      const percent = Number.parseFloat(rawPosition);
+      if (!Number.isFinite(percent)) continue;
+
+      tick.dataset.vcAxisPercent = String(percent);
+      tick.style.left = `${startOffset + (usableWidth * percent) / 100}px`;
+    }
+  };
+
+  const sanitizeItemTitles = () => {
+    root.querySelectorAll('.vis-item[title]').forEach((item) => item.removeAttribute('title'));
+  };
+
+  const scheduleAlignment = () => {
+    window.cancelAnimationFrame(alignmentFrame);
+    alignmentFrame = window.requestAnimationFrame(() => {
+      if (destroyed) return;
+      sanitizeItemTitles();
+      alignAxisToChronosCenter();
+    });
+  };
+
+  const mutationObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'title') {
+        removeItemTitle(mutation.target);
+      }
+    }
+    scheduleAlignment();
+  });
+  mutationObserver.observe(root, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: ['title'],
+  });
+
+  const handlePointerOver = (event) => removeItemTitle(event.target);
+  root.addEventListener('pointerover', handlePointerOver, true);
+
+  const resizeObserver = typeof ResizeObserver === 'function'
+    ? new ResizeObserver(scheduleAlignment)
+    : undefined;
+  resizeObserver?.observe(root);
+
+  scheduleAlignment();
+
+  return () => {
+    destroyed = true;
+    window.cancelAnimationFrame(alignmentFrame);
+    mutationObserver.disconnect();
+    resizeObserver?.disconnect();
+    root.removeEventListener('pointerover', handlePointerOver, true);
+  };
+}
+
 /**
  * Keep the fast indexed/filtering shell, but let Chronos own every grouped
  * timeline render. Same-group item updates stay in place; changing declared
@@ -151,6 +227,7 @@ function installChronosTimelineProxy(chronos, initialResult, originalRenderParse
  */
 export function mountTimeline(root, dataset, options) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
+  let nativeCleanup;
 
   ChronosTimeline.prototype.renderParsed = function renderWithChronosLayout(result) {
     originalRenderParsed.call(this, result);
@@ -158,8 +235,14 @@ export function mountTimeline(root, dataset, options) {
   };
 
   try {
-    return mountNativeTimeline(root, dataset, options);
+    nativeCleanup = mountNativeTimeline(root, dataset, options);
   } finally {
     ChronosTimeline.prototype.renderParsed = originalRenderParsed;
   }
+
+  const cleanupDomGuards = installTimelineDomGuards(root);
+  return () => {
+    cleanupDomGuards();
+    nativeCleanup?.();
+  };
 }
