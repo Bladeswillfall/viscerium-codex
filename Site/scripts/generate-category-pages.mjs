@@ -9,9 +9,12 @@ import matter from 'gray-matter';
 const execFileAsync = promisify(execFile);
 const siteRoot = process.cwd();
 const repoRoot = path.resolve(siteRoot, '..');
-const docsDir = path.resolve(siteRoot, 'src/content/docs');
+const docsDir = process.env.VISCERIUM_DOCS_DIR
+  ? path.resolve(process.env.VISCERIUM_DOCS_DIR)
+  : path.resolve(siteRoot, 'src/content/docs');
 const loreRoot = 'Vault/Lore/';
 const markdownExtensions = /\.(md|mdx)$/i;
+const leadingArticlePattern = /^(?:the|an|a)\s+/i;
 
 function cleanSlug(value) {
   return String(value ?? '').trim().replace(/^\/+|\/+$/g, '').toLowerCase();
@@ -50,29 +53,131 @@ function entryDate(data) {
   return asDate(data.updated) ?? asDate(data.date) ?? asDate(data.published);
 }
 
-function escapeMarkdown(value) {
-  return String(value).replace(/([\\`*_[\]<>])/g, '\\$1');
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function sortableTitle(value) {
+  const title = String(value ?? '').trim();
+  const withoutArticle = title.replace(leadingArticlePattern, '').trim();
+  return withoutArticle || title;
+}
+
+function compareIndexTitles(left, right) {
+  const leftTitle = sortableTitle(left.title);
+  const rightTitle = sortableTitle(right.title);
+  const primary = leftTitle.localeCompare(rightTitle, 'en', { sensitivity: 'base' });
+  if (primary !== 0) return primary;
+  return String(left.title ?? '').localeCompare(String(right.title ?? ''), 'en', { sensitivity: 'base' });
+}
+
+function alphaKey(value) {
+  const normalized = sortableTitle(value)
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '');
+  const match = normalized.match(/[a-z0-9]/i);
+  if (!match || /\d/.test(match[0])) return '#';
+  return match[0].toUpperCase();
+}
+
+function alphaId(value) {
+  return value === '#' ? 'other' : value.toLowerCase();
+}
+
+function groupedAlphabetically(items) {
+  const groups = new Map();
+  for (const item of items) {
+    const key = alphaKey(item.title);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+
+  return [...groups.entries()]
+    .sort(([left], [right]) => {
+      if (left === '#') return 1;
+      if (right === '#') return -1;
+      return left.localeCompare(right, 'en', { sensitivity: 'base' });
+    })
+    .map(([letter, groupItems]) => ({
+      letter,
+      items: groupItems.sort(compareIndexTitles),
+    }));
+}
+
+function renderAlphabeticalIndex(items, { idPrefix, kind, renderMeta, renderDescription }) {
+  const groups = groupedAlphabetically(items);
+  if (groups.length === 0) return '';
+
+  const lines = [
+    `<div class="codex-alpha-index" data-index-kind="${escapeHtml(kind)}" aria-label="Alphabetical ${escapeHtml(kind)} index">`,
+  ];
+
+  for (const group of groups) {
+    const headingId = `${idPrefix}-${alphaId(group.letter)}`;
+    lines.push(
+      `<section class="codex-alpha-index__group" aria-labelledby="${headingId}">`,
+      `<h3 id="${headingId}" class="codex-alpha-index__letter">${escapeHtml(group.letter)}</h3>`,
+      '<ul class="codex-alpha-index__items">',
+    );
+
+    for (const item of group.items) {
+      const meta = renderMeta?.(item);
+      const description = renderDescription?.(item);
+      lines.push(
+        '<li class="codex-alpha-index__item">',
+        `<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="${escapeHtml(routeFor(item.slug))}">${escapeHtml(item.title)}</a>${meta ? `<span class="codex-alpha-index__meta">${escapeHtml(meta)}</span>` : ''}</div>`,
+        description ? `<p class="codex-alpha-index__description">${escapeHtml(description)}</p>` : '',
+        '</li>',
+      );
+    }
+
+    lines.push('</ul>', '</section>');
+  }
+
+  lines.push('</div>');
+  return lines.filter(Boolean).join('\n');
 }
 
 function generatedCategorySection(descendants, childCategories) {
   const lines = [];
 
   if (childCategories.length > 0) {
-    lines.push('## Subcategories', '');
-    for (const child of childCategories) {
-      lines.push(`- [${escapeMarkdown(child.title)}](${routeFor(child.slug)}) — ${child.count} public ${child.count === 1 ? 'page' : 'pages'}`);
-    }
-    lines.push('');
+    lines.push(
+      '## Subcategories',
+      '',
+      renderAlphabeticalIndex(childCategories, {
+        idPrefix: 'subcategories',
+        kind: 'subcategories',
+        renderMeta: (child) => `${child.count} ${child.count === 1 ? 'page' : 'pages'}`,
+      }),
+      '',
+    );
   }
 
   lines.push('## Pages in this category', '');
-  for (const entry of descendants) {
-    const type = entry.data.type && entry.data.type !== 'article' ? ` · ${escapeMarkdown(entry.data.type)}` : '';
-    lines.push(`- [${escapeMarkdown(entry.data.title)}](${routeFor(entry.slug)})${type}`);
-    if (entry.data.description) lines.push(`  ${escapeMarkdown(entry.data.description)}`);
+  if (descendants.length > 0) {
+    lines.push(
+      renderAlphabeticalIndex(descendants.map((entry) => ({
+        slug: entry.slug,
+        title: entry.data.title,
+        type: entry.data.type,
+        description: entry.data.description,
+      })), {
+        idPrefix: 'pages',
+        kind: 'pages',
+        renderMeta: (entry) => entry.type && entry.type !== 'article' ? entry.type : '',
+        renderDescription: (entry) => entry.description,
+      }),
+    );
+  } else {
+    lines.push('_No public pages are currently available in this category._');
   }
 
-  if (descendants.length === 0) lines.push('_No public pages are currently available in this category._');
   lines.push('');
   return lines.join('\n');
 }
@@ -153,16 +258,14 @@ const categoryList = [...categories.values()].sort((a, b) => a.slug.localeCompar
 for (const category of categoryList) {
   const prefix = `${category.slug}/`;
   const descendants = entries
-    .filter((entry) => entry.slug.startsWith(prefix))
-    .sort((a, b) => a.data.title.localeCompare(b.data.title));
+    .filter((entry) => entry.slug.startsWith(prefix));
   const childDepth = category.slug.split('/').length + 1;
   const childCategories = categoryList
     .filter((candidate) => candidate.slug.startsWith(prefix) && candidate.slug.split('/').length === childDepth)
     .map((candidate) => ({
       ...candidate,
       count: descendants.filter((entry) => entry.slug.startsWith(`${candidate.slug}/`)).length,
-    }))
-    .sort((a, b) => a.title.localeCompare(b.title));
+    }));
   const section = generatedCategorySection(descendants, childCategories);
   const existingEntry = entryBySlug.get(category.slug);
 
