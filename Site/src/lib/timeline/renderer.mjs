@@ -10,6 +10,19 @@ function groupSignature(groups) {
   return values.map((group) => `${group.id}:${group.content ?? ''}`).join('|');
 }
 
+function renderParsedWithoutChronosTooltip(chronos, result, originalRenderParsed) {
+  const hadOwnSetupTooltip = Object.prototype.hasOwnProperty.call(chronos, '_setupTooltip');
+  const previousSetupTooltip = chronos._setupTooltip;
+  chronos._setupTooltip = () => {};
+
+  try {
+    originalRenderParsed.call(chronos, result);
+  } finally {
+    if (hadOwnSetupTooltip) chronos._setupTooltip = previousSetupTooltip;
+    else delete chronos._setupTooltip;
+  }
+}
+
 function installChronosTimelineProxy(chronos, initialResult, originalRenderParsed) {
   let target = chronos.timeline;
   let currentGroupSignature = groupSignature(initialResult.groups);
@@ -43,12 +56,12 @@ function installChronosTimelineProxy(chronos, initialResult, originalRenderParse
     target?.destroy?.();
     removeRefitButtons();
 
-    originalRenderParsed.call(chronos, {
+    renderParsedWithoutChronosTooltip(chronos, {
       items,
       groups,
       markers: initialResult.markers ?? [],
       flags: initialResult.flags ?? {},
-    });
+    }, originalRenderParsed);
 
     target = chronos.timeline;
     if (!target) throw new Error('Chronos did not recreate its timeline after a group change.');
@@ -147,9 +160,14 @@ function installTimelineDomGuards(root) {
   let alignmentFrame;
   let destroyed = false;
 
-  const removeItemTitle = (element) => {
-    const item = element?.matches?.('.vis-item') ? element : element?.closest?.('.vis-item');
-    item?.removeAttribute('title');
+  const removeItemTitles = (element) => {
+    if (!element) return;
+    const item = element.matches?.('.vis-item') ? element : element.closest?.('.vis-item');
+    if (!item) return;
+
+    element.removeAttribute?.('title');
+    item.removeAttribute('title');
+    item.querySelectorAll?.('[title]').forEach((child) => child.removeAttribute('title'));
   };
 
   const alignAxisToChronosCenter = () => {
@@ -173,7 +191,8 @@ function installTimelineDomGuards(root) {
   };
 
   const sanitizeItemTitles = () => {
-    root.querySelectorAll('.vis-item[title]').forEach((item) => item.removeAttribute('title'));
+    root.querySelectorAll('.vis-item[title], .vis-item [title]')
+      .forEach((element) => element.removeAttribute('title'));
   };
 
   const scheduleAlignment = () => {
@@ -188,7 +207,7 @@ function installTimelineDomGuards(root) {
   const mutationObserver = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.type === 'attributes' && mutation.attributeName === 'title') {
-        removeItemTitle(mutation.target);
+        removeItemTitles(mutation.target);
       }
     }
     scheduleAlignment();
@@ -200,7 +219,7 @@ function installTimelineDomGuards(root) {
     attributeFilter: ['title'],
   });
 
-  const handlePointerOver = (event) => removeItemTitle(event.target);
+  const handlePointerOver = (event) => removeItemTitles(event.target);
   root.addEventListener('pointerover', handlePointerOver, true);
 
   const resizeObserver = typeof ResizeObserver === 'function'
@@ -224,13 +243,15 @@ function installTimelineDomGuards(root) {
  * timeline render. Same-group item updates stay in place; changing declared
  * lanes or categories rebuilds the timeline through Chronos and restores the
  * existing world-time window behind a stable proxy used by the site controls.
+ * Chronos's secondary tooltip installer is suppressed so vis-timeline remains
+ * the single tooltip owner and displays the canonical VISCERIUM item title.
  */
 export function mountTimeline(root, dataset, options) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
   let nativeCleanup;
 
   ChronosTimeline.prototype.renderParsed = function renderWithChronosLayout(result) {
-    originalRenderParsed.call(this, result);
+    renderParsedWithoutChronosTooltip(this, result, originalRenderParsed);
     installChronosTimelineProxy(this, result, originalRenderParsed);
   };
 
