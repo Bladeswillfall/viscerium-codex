@@ -36,6 +36,18 @@ test('category pages use alphabetically grouped responsive index markup', async 
       fixture({ title: 'Bastion Order', slug: 'factions/bastion', type: 'faction' }),
     );
     await writeFile(
+      path.join(docsDir, 'factions', 'okse.md'),
+      fixture({ title: 'The Okse Dominion', slug: 'factions/okse', type: 'faction' }),
+    );
+    await writeFile(
+      path.join(docsDir, 'factions', 'northern.md'),
+      fixture({ title: 'A Northern Pact', slug: 'factions/northern' }),
+    );
+    await writeFile(
+      path.join(docsDir, 'factions', 'eastern.md'),
+      fixture({ title: 'An Eastern League', slug: 'factions/eastern' }),
+    );
+    await writeFile(
       path.join(docsDir, 'factions', 'third.md'),
       fixture({ title: '3rd Company', slug: 'factions/third' }),
     );
@@ -59,10 +71,21 @@ test('category pages use alphabetically grouped responsive index markup', async 
     assert.doesNotMatch(output, /\n- \[/);
 
     const pages = output.slice(output.indexOf('## Pages in this category'));
+    for (const letter of ['a', 'b', 'c', 'e', 'n', 'o', 'other']) {
+      assert.ok(pages.includes(`id="pages-${letter}"`), `Expected ${letter.toUpperCase()} group`);
+    }
+    assert.doesNotMatch(pages, /id="pages-t"/);
+    assert.match(pages, /id="pages-o"[\s\S]*>The Okse Dominion<\/a>/);
+    assert.match(pages, /id="pages-n"[\s\S]*>A Northern Pact<\/a>/);
+    assert.match(pages, /id="pages-e"[\s\S]*>An Eastern League<\/a>/);
+
     const positions = [
       pages.indexOf('id="pages-a"'),
       pages.indexOf('id="pages-b"'),
       pages.indexOf('id="pages-c"'),
+      pages.indexOf('id="pages-e"'),
+      pages.indexOf('id="pages-n"'),
+      pages.indexOf('id="pages-o"'),
       pages.indexOf('id="pages-other"'),
     ];
     assert.ok(positions.every((position) => position >= 0));
