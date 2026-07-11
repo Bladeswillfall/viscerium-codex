@@ -19,15 +19,6 @@ function installChronosTimelineProxy(chronos, initialResult, originalRenderParse
   const listeners = new Map();
   let proxy;
 
-  const configureChronosSurface = () => {
-    if (!target) return;
-    // The site renders its world-calendar axis immediately above the Chronos
-    // canvas, so vis-timeline's internal axis reservation is unnecessary. Use
-    // the native option rather than compensating with a host height or offset.
-    target.setOptions({ margin: { axis: 0 } });
-    target.redraw();
-  };
-
   const removeRefitButtons = () => {
     chronos.container?.querySelectorAll?.('.chronos-timeline-refit-button')
       .forEach((button) => button.remove());
@@ -61,7 +52,6 @@ function installChronosTimelineProxy(chronos, initialResult, originalRenderParse
 
     target = chronos.timeline;
     if (!target) throw new Error('Chronos did not recreate its timeline after a group change.');
-    configureChronosSurface();
 
     if (visibleWindow) {
       target.setWindow(visibleWindow.start, visibleWindow.end, { animation: false });
@@ -74,8 +64,6 @@ function installChronosTimelineProxy(chronos, initialResult, originalRenderParse
     chronos.timeline = proxy;
     return undefined;
   };
-
-  configureChronosSurface();
 
   proxy = new Proxy({}, {
     get(_proxyTarget, property) {
