@@ -2,40 +2,41 @@ import { ChronosTimeline } from 'chronos-timeline-md';
 import { mountTimeline as mountNativeTimeline } from './chronos-native-renderer.mjs';
 
 /**
- * The canonical renderer supplies a fixed height to the primary vis-timeline.
- * Chronos creates that timeline internally, so intercept the exact instance as
- * soon as renderParsed() exposes it and translate the primary configuration to
- * maxHeight. The separate 8rem overview timeline is not Chronos-owned and is
- * therefore unaffected.
+ * Chronos normally sizes its timeline to the rendered groups and only enables
+ * fixed-height vertical scrolling when the Chronos source contains a HEIGHT
+ * flag. The Codex renderer still applies an older fixed-height host override
+ * after Chronos mounts; remove only those host layout fields and retain the
+ * behavioural options such as stacking, zoom limits and selection.
  */
 export function mountTimeline(root, dataset, options) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
 
-  ChronosTimeline.prototype.renderParsed = function renderWithNaturalTimelineHeight(...args) {
+  ChronosTimeline.prototype.renderParsed = function renderWithChronosLayout(...args) {
     const result = originalRenderParsed.apply(this, args);
     const timeline = this.timeline;
 
-    if (timeline && !timeline.__visceriumNaturalHeightPatched) {
+    if (timeline && !timeline.__visceriumChronosLayoutPatched) {
       const originalSetOptions = timeline.setOptions.bind(timeline);
 
       timeline.setOptions = (nextOptions = {}) => {
-        const isPrimaryConfiguration = (
+        const isLegacyHostLayoutOverride = (
           nextOptions.verticalScroll === true
           && nextOptions.horizontalScroll === true
           && (nextOptions.height === '34rem' || nextOptions.height === '28rem')
         );
 
-        if (!isPrimaryConfiguration) return originalSetOptions(nextOptions);
+        if (!isLegacyHostLayoutOverride) return originalSetOptions(nextOptions);
 
-        const { height, ...remainingOptions } = nextOptions;
-        return originalSetOptions({
-          ...remainingOptions,
-          maxHeight: height,
-          groupHeightMode: 'fixed',
-        });
+        const {
+          height: _height,
+          horizontalScroll: _horizontalScroll,
+          verticalScroll: _verticalScroll,
+          ...chronosOptions
+        } = nextOptions;
+        return originalSetOptions(chronosOptions);
       };
 
-      timeline.__visceriumNaturalHeightPatched = true;
+      timeline.__visceriumChronosLayoutPatched = true;
     }
 
     return result;
