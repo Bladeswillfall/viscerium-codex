@@ -76,10 +76,12 @@ test('the renderer entry point gives Chronos a natural-height lane table inside 
   const scrollStyles = read('../src/styles/timeline-scroll.css');
   const performanceStyles = read('../src/styles/timeline-performance.css');
 
+  assert.match(entry, /ChronosTimeline\.prototype\.renderParsed/);
+  assert.match(entry, /const timeline = this\.timeline/);
   assert.match(entry, /nextOptions\.height === '34rem'/);
   assert.match(entry, /maxHeight: height/);
   assert.match(entry, /groupHeightMode: 'fixed'/);
-  assert.match(entry, /finally \{[\s\S]*Timeline\.prototype\.setOptions = originalSetOptions/);
+  assert.match(entry, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
   assert.match(scrollStyles, /\.vc-timeline-canvas \{[\s\S]*max-height: 34rem;[\s\S]*overflow-y: auto/);
   assert.match(scrollStyles, /\.vc-timeline-canvas \.vis-timeline \{[\s\S]*max-height: none !important/);
   assert.doesNotMatch(performanceStyles, /:has\(|min-height: 58rem/);
