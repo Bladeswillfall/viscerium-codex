@@ -22,6 +22,7 @@ test('TimelineApp delegates browser behaviour to a client-loaded island', () => 
 
   assert.match(app, /import TimelineIsland from '\.\/TimelineIsland'/);
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-loading\.css'/);
+  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-performance\.css'/);
   assert.match(app, /<TimelineIsland[\s\S]*client:load/);
   assert.match(app, /fallbackEvents=\{fallbackEvents\}/);
   assert.doesNotMatch(app, /<script>|astro:page-load|__visceriumTimelineRuntime|application\/json/);
@@ -48,9 +49,23 @@ test('timeline startup uses the resolved viewport once and defers the minimap', 
 
   assert.match(renderer, /function resolveInitialWindow\(\)/);
   assert.match(renderer, /getZoomImportanceThreshold\(Math\.max\(1, initialWindow\.endDay - initialWindow\.startDay\)\)/);
-  assert.match(renderer, /events: filteredEvents,[\s\S]*visibleStartDay: initialWindow\.startDay,[\s\S]*visibleEndDay: initialWindow\.endDay/);
+  assert.match(renderer, /events: renderedEvents,[\s\S]*visibleStartDay: initialWindow\.startDay,[\s\S]*visibleEndDay: initialWindow\.endDay/);
   assert.match(renderer, /function scheduleMinimap\(\)/);
   assert.match(renderer, /window\.requestIdleCallback\(mountMinimap, \{ timeout: 1_500 \}\)/);
   assert.match(renderer, /timeline\.setWindow\([\s\S]*initialWindow\.startDay[\s\S]*initialWindow\.endDay/);
   assert.doesNotMatch(renderer, /\}\s*else\s*\{\s*resetWindow\(\);\s*\}\s*refreshItems\(true\)/);
+});
+
+test('large timeline runtime bounds graph, list, search and minimap work', () => {
+  const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+
+  assert.match(renderer, /createTimelineRangeIndex\(dataset\.events\)/);
+  assert.match(renderer, /queryTimelineRange\(rangeIndex, loadedStartDay, loadedEndDay\)/);
+  assert.match(renderer, /const VIEWPORT_BUFFER_FACTOR = 1\.25/);
+  assert.match(renderer, /const LIST_PAGE_SIZE = 100/);
+  assert.match(renderer, /listPanel\.hidden[\s\S]*listDirty = true/);
+  assert.match(renderer, /data-vc-list-more/);
+  assert.match(renderer, /window\.setTimeout\(applyFilters, SEARCH_DEBOUNCE_MS\)/);
+  assert.match(renderer, /bucketTimelineEvents\([\s\S]*MINIMAP_BUCKET_COUNT/);
+  assert.doesNotMatch(renderer, /\.\.\.dataset\.events\.map\(\(event\) => \(\{[\s\S]*id: `mini:/);
 });
