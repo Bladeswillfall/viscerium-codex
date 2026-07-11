@@ -1,8 +1,0 @@
----
-import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
-import Timeline from '../../components/Timeline.astro';
-import timelines from '../../data/timelines.json';
-export function getStaticPaths() { return Object.keys(timelines).map((id) => ({ params: { id } })); }
-const timeline = timelines[Astro.params.id];
----
-<StarlightPage frontmatter={{ title: timeline?.title ?? 'Timeline', description: 'Generated world timeline.' }}><Timeline timeline={timeline} /></StarlightPage>

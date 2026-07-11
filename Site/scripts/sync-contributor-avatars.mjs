@@ -1,19 +1,15 @@
 import path from 'node:path';
 import process from 'node:process';
 import fs from 'fs-extra';
-import fg from 'fast-glob';
-import matter from 'gray-matter';
 import sharp from 'sharp';
 import siteConfig from '../site.config.mjs';
+import { loadGeneratedDocs } from './content-manifest.mjs';
+import { isMainModule } from './script-entry.mjs';
 
 const siteRoot = process.cwd();
 const registryPath = path.resolve(siteRoot, 'src/data/contributors.json');
-const docsDir = path.resolve(siteRoot, 'src/content/docs');
 const cacheDir = path.resolve(siteRoot, siteConfig.vaultAssetDir, 'Contributors');
 const publicDir = path.resolve(siteRoot, 'public/assets/contributors');
-const shouldRefresh = process.env.CODEX_SKIP_AVATAR_REFRESH !== '1';
-const registry = await fs.readJson(registryPath);
-const profiles = registry.profiles ?? {};
 
 function normaliseContributor(item) {
   if (typeof item === 'string') return { id: item.trim().toLowerCase() };
@@ -39,7 +35,8 @@ function placeholderSvg(profile) {
 </svg>`);
 }
 
-async function validateRegistry() {
+function validateRegistry(registry, manifest) {
+  const profiles = registry.profiles ?? {};
   let failed = false;
   const defaultEntries = Array.isArray(registry.defaultContributors) ? registry.defaultContributors : [];
 
@@ -63,23 +60,21 @@ async function validateRegistry() {
     }
   }
 
-  const docs = await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true });
-  for (const file of docs) {
-    const { data } = matter(await fs.readFile(file, 'utf8'));
-    const contributors = Array.isArray(data.contributors) ? data.contributors : [];
+  for (const record of manifest.records) {
+    const contributors = Array.isArray(record.data.contributors) ? record.data.contributors : [];
     for (const item of contributors) {
       const contributor = normaliseContributor(item);
       if (!contributor || !profiles[contributor.id]) {
-        console.error(`Unknown contributor id in ${path.relative(docsDir, file)}: ${contributor?.id ?? JSON.stringify(item)}`);
+        console.error(`Unknown contributor id in ${record.relativePath}: ${contributor?.id ?? JSON.stringify(item)}`);
         failed = true;
       }
     }
   }
 
-  if (failed) process.exit(1);
+  return !failed;
 }
 
-async function refreshAvatar(id, profile) {
+async function refreshAvatar(id, profile, shouldRefresh) {
   const filename = path.basename(profile.avatar);
   const cachePath = path.join(cacheDir, filename);
   const publicPath = path.join(publicDir, filename);
@@ -122,12 +117,27 @@ async function refreshAvatar(id, profile) {
   console.log(`${refreshed ? 'Refreshed' : 'Copied cached'} contributor avatar ${filename}.`);
 }
 
-await fs.ensureDir(cacheDir);
-await fs.ensureDir(publicDir);
-await validateRegistry();
+export async function syncContributorAvatars({ manifest, shouldRefresh = process.env.CODEX_SKIP_AVATAR_REFRESH !== '1' } = {}) {
+  const docs = manifest ?? await loadGeneratedDocs();
+  const registry = await fs.readJson(registryPath);
+  const profiles = registry.profiles ?? {};
 
-for (const [id, profile] of Object.entries(profiles)) {
-  await refreshAvatar(id, profile);
+  if (!validateRegistry(registry, docs)) throw new Error('Contributor registry validation failed.');
+
+  await fs.ensureDir(cacheDir);
+  await fs.ensureDir(publicDir);
+  for (const [id, profile] of Object.entries(profiles)) {
+    await refreshAvatar(id, profile, shouldRefresh);
+  }
+
+  console.log(`Synced ${Object.keys(profiles).length} contributor avatar${Object.keys(profiles).length === 1 ? '' : 's'} as WebP.`);
 }
 
-console.log(`Synced ${Object.keys(profiles).length} contributor avatar${Object.keys(profiles).length === 1 ? '' : 's'} as WebP.`);
+if (isMainModule(import.meta.url)) {
+  try {
+    await syncContributorAvatars();
+  } catch (error) {
+    console.error(error.message ?? error);
+    process.exitCode = 1;
+  }
+}
