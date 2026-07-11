@@ -92,3 +92,19 @@ test('group changes remount through Chronos behind a stable site-facing timeline
   assert.doesNotMatch(entry, /maxHeight:|groupHeightMode:/);
   assert.doesNotMatch(performanceStyles, /:has\(|min-height: 58rem/);
 });
+
+test('the site ruler follows Chronos centre geometry and item hover uses one tooltip system', () => {
+  const entry = read('../src/lib/timeline/renderer.mjs');
+
+  assert.match(entry, /function installTimelineDomGuards\(root\)/);
+  assert.match(entry, /querySelector\('\[data-vc-canvas\] \.vis-panel\.vis-center'\)/);
+  assert.match(entry, /const startOffset = Math\.max\(0, centerRect\.left - axisRect\.left\)/);
+  assert.match(entry, /tick\.dataset\.vcAxisPercent/);
+  assert.match(entry, /usableWidth \* percent/);
+  assert.match(entry, /querySelectorAll\('\.vis-item\[title\]'\)/);
+  assert.match(entry, /attributeFilter: \['title'\]/);
+  assert.match(entry, /root\.addEventListener\('pointerover', handlePointerOver, true\)/);
+  assert.match(entry, /new ResizeObserver\(scheduleAlignment\)/);
+  assert.match(entry, /const cleanupDomGuards = installTimelineDomGuards\(root\)/);
+  assert.match(entry, /cleanupDomGuards\(\)/);
+});
