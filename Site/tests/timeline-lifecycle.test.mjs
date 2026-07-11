@@ -81,7 +81,7 @@ test('group changes remount through Chronos behind a stable site-facing timeline
   assert.match(entry, /function groupSignature\(groups\)/);
   assert.match(entry, /pendingGroups = groups/);
   assert.match(entry, /remountWithChronos\(items, pendingGroups\)/);
-  assert.match(entry, /originalRenderParsed\.call\(chronos/);
+  assert.match(entry, /renderParsedWithoutChronosTooltip\(chronos/);
   assert.match(entry, /const visibleWindow = target\?\.getWindow\?\.\(\)/);
   assert.match(entry, /target\.setWindow\(visibleWindow\.start, visibleWindow\.end/);
   assert.match(entry, /attachExternalListeners\(\)/);
@@ -93,15 +93,20 @@ test('group changes remount through Chronos behind a stable site-facing timeline
   assert.doesNotMatch(performanceStyles, /:has\(|min-height: 58rem/);
 });
 
-test('the site ruler follows Chronos centre geometry and item hover uses one tooltip system', () => {
+test('the site ruler follows Chronos centre geometry and item hover has one canonical tooltip owner', () => {
   const entry = read('../src/lib/timeline/renderer.mjs');
 
+  assert.match(entry, /function renderParsedWithoutChronosTooltip\(chronos, result, originalRenderParsed\)/);
+  assert.match(entry, /chronos\._setupTooltip = \(\) => \{\}/);
+  assert.match(entry, /originalRenderParsed\.call\(chronos, result\)/);
+  assert.match(entry, /delete chronos\._setupTooltip/);
   assert.match(entry, /function installTimelineDomGuards\(root\)/);
   assert.match(entry, /querySelector\('\[data-vc-canvas\] \.vis-panel\.vis-center'\)/);
   assert.match(entry, /const startOffset = Math\.max\(0, centerRect\.left - axisRect\.left\)/);
   assert.match(entry, /tick\.dataset\.vcAxisPercent/);
   assert.match(entry, /usableWidth \* percent/);
-  assert.match(entry, /querySelectorAll\('\.vis-item\[title\]'\)/);
+  assert.match(entry, /querySelectorAll\('\.vis-item\[title\], \.vis-item \[title\]'\)/);
+  assert.match(entry, /item\.querySelectorAll\?\.\('\[title\]'\)/);
   assert.match(entry, /attributeFilter: \['title'\]/);
   assert.match(entry, /root\.addEventListener\('pointerover', handlePointerOver, true\)/);
   assert.match(entry, /new ResizeObserver\(scheduleAlignment\)/);
