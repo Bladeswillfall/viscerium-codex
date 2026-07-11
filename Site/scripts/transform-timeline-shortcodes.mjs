@@ -157,6 +157,7 @@ for (const file of files) {
   const imports = [];
   if (usedTimeline) imports.push(`import TimelineEmbed from '${relativeImport(outFile, timelineComponentPath)}';`);
   if (usedChronos) imports.push(`import ChronosEmbed from '${relativeImport(outFile, chronosComponentPath)}';`);
+  if (usedTimeline) parsed.data.timelinePage = true;
   const content = `${imports.join('\n')}\n\n${output.join('\n')}`;
   await fs.writeFile(outFile, matter.stringify(content, parsed.data));
   if (outFile !== file) await fs.remove(file);
