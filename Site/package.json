@@ -9,6 +9,7 @@
     "validate:vault": "node scripts/validate-vault-notes.mjs",
     "validate:timelines": "node scripts/generate-timeline-data.mjs --validate-only",
     "validate:icons": "node scripts/validate-icon-output.mjs",
+    "validate:math": "node scripts/validate-math-output.mjs",
     "sync:avatars": "node scripts/sync-contributor-avatars.mjs",
     "sync": "node scripts/build-content.mjs --mode=sync",
     "validate": "node scripts/validate-content.mjs",
@@ -19,7 +20,7 @@
     "test:unit": "node --test tests/*.test.mjs",
     "prebuild": "node scripts/build-content.mjs --mode=build",
     "build": "astro build",
-    "postbuild": "npm run validate:icons",
+    "postbuild": "npm run validate:icons && npm run validate:math",
     "preview": "astro preview",
     "astro": "astro",
     "test": "npm run test:unit && npm run build"
