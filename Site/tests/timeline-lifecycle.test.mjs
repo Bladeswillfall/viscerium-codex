@@ -71,7 +71,7 @@ test('large timeline runtime bounds graph, list, search and minimap work', () =>
   assert.doesNotMatch(renderer, /\.\.\.dataset\.events\.map\(\(event\) => \(\{[\s\S]*id: `mini:/);
 });
 
-test('the renderer entry point preserves Chronos natural group layout', () => {
+test('the renderer entry point preserves and refreshes Chronos group layout', () => {
   const entry = read('../src/lib/timeline/renderer.mjs');
   const performanceStyles = read('../src/styles/timeline-performance.css');
 
@@ -82,6 +82,10 @@ test('the renderer entry point preserves Chronos natural group layout', () => {
   assert.match(entry, /horizontalScroll: _horizontalScroll/);
   assert.match(entry, /verticalScroll: _verticalScroll/);
   assert.match(entry, /return originalSetOptions\(chronosOptions\)/);
+  assert.match(entry, /function groupSignature\(groups\)/);
+  assert.match(entry, /timeline\.setGroups = \(groups\) =>/);
+  assert.match(entry, /timeline\.redraw\(\)/);
+  assert.match(entry, /this\._jiggleZoom\?\.\(timeline\)/);
   assert.doesNotMatch(entry, /maxHeight:|groupHeightMode:/);
   assert.match(entry, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
   assert.doesNotMatch(performanceStyles, /:has\(|min-height: 58rem/);
