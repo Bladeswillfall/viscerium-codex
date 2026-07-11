@@ -1,82 +1,230 @@
 ---
+import { sourceUsesMath } from '../lib/math-source.mjs';
+
+const entry = Astro.locals.starlightRoute?.entry;
+const source = typeof entry?.body === 'string' ? entry.body : '';
+const tags = Array.isArray(entry?.data?.tags) ? entry.data.tags : [];
+const usesMath = sourceUsesMath(source) || tags.includes('math');
 ---
 
-<script is:inline>
-  (() => {
-    const MATHJAX_SCRIPT_ID = 'viscerium-mathjax';
-    const MATHJAX_SRC = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js';
+{usesMath && (
+  <>
+    <span data-codex-math-page hidden aria-hidden="true"></span>
+    <script is:inline>
+      (() => {
+        const STATE_KEY = '__visceriumMathLoader';
+        const MATHJAX_SCRIPT_ID = 'viscerium-mathjax';
+        const MATHJAX_SRC = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js';
+        const BLOCK_SELECTOR = 'p, li, td, th, dd, dt, blockquote, .cx-equation, .cx-math-display';
+        const state = window[STATE_KEY] ??= {
+          observer: undefined,
+          idleHandle: undefined,
+          loadPromise: undefined,
+          listenerBound: false,
+        };
 
-    const findMathPreBlocks = () => {
-      return [...document.querySelectorAll('pre')].filter((pre) => {
-        if (pre.dataset.mathProcessed === 'true') return false;
-        const code = pre.querySelector('code');
-        const languageHints = [
-          pre.dataset.language,
-          pre.getAttribute('data-language'),
-          pre.className,
-          code?.className,
-        ].filter(Boolean).join(' ').toLowerCase();
+        const activeMathPage = () => Boolean(document.querySelector('[data-codex-math-page]'));
+        const contentRoot = () => document.querySelector('.sl-markdown-content') ?? document.querySelector('main');
 
-        return /(?:^|\s|-)math(?:\s|$)/.test(languageHints) || languageHints.includes('language-math');
-      });
-    };
+        const findMathPreBlocks = () => {
+          return [...document.querySelectorAll('pre')].filter((pre) => {
+            if (pre.dataset.mathProcessed === 'true') return false;
+            const code = pre.querySelector('code');
+            const languageHints = [
+              pre.dataset.language,
+              pre.getAttribute('data-language'),
+              pre.className,
+              code?.className,
+            ].filter(Boolean).join(' ').toLowerCase();
 
-    const convertMathCodeBlocks = () => {
-      for (const pre of findMathPreBlocks()) {
-        const code = pre.querySelector('code');
-        const source = (code?.textContent ?? pre.textContent ?? '').trim();
-        if (!source) continue;
+            return /(?:^|\s|-)math(?:\s|$)/.test(languageHints) || languageHints.includes('language-math');
+          });
+        };
 
-        const replacement = document.createElement('div');
-        replacement.className = 'cx-math-display tex2jax_process';
-        replacement.textContent = `\\[\n${source}\n\\]`;
+        const convertMathCodeBlocks = () => {
+          for (const pre of findMathPreBlocks()) {
+            const code = pre.querySelector('code');
+            const source = (code?.textContent ?? pre.textContent ?? '').trim();
+            if (!source) continue;
 
-        const expressiveWrapper = pre.closest('.expressive-code');
-        const target = expressiveWrapper ?? pre;
-        pre.dataset.mathProcessed = 'true';
-        target.replaceWith(replacement);
-      }
-    };
+            const replacement = document.createElement('div');
+            replacement.className = 'cx-math-display tex2jax_process';
+            replacement.textContent = `\\[\n${source}\n\\]`;
 
-    const typesetMath = () => {
-      convertMathCodeBlocks();
-      if (window.MathJax?.typesetPromise) {
-        window.MathJax.typesetPromise().catch((error) => console.warn('MathJax typeset failed', error));
-      }
-    };
+            const expressiveWrapper = pre.closest('.expressive-code');
+            const target = expressiveWrapper ?? pre;
+            pre.dataset.mathProcessed = 'true';
+            target.replaceWith(replacement);
+          }
+        };
 
-    window.MathJax = window.MathJax ?? {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']],
-        processEscapes: true,
-        processEnvironments: true,
-        tags: 'ams',
-      },
-      options: {
-        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-        ignoreHtmlClass: 'tex2jax_ignore|mathjax_ignore',
-        processHtmlClass: 'tex2jax_process|sl-markdown-content|content-panel|cx-equation|cx-math-display',
-      },
-      startup: {
-        ready() {
-          MathJax.startup.defaultReady();
-          typesetMath();
-          document.documentElement.classList.add('viscerium-math-ready');
-        },
-      },
-    };
+        const hasInlineDollarMath = (source) => {
+          const text = String(source ?? '');
+          for (let index = 0; index < text.length; index += 1) {
+            if (text[index] !== '$' || text[index - 1] === '\\' || text[index - 1] === '$' || text[index + 1] === '$') continue;
+            for (let end = index + 1; end < text.length; end += 1) {
+              if (text[end] === '\n') break;
+              if (text[end] !== '$' || text[end - 1] === '\\' || text[end + 1] === '$') continue;
+              const expression = text.slice(index + 1, end);
+              if (expression && expression.trim() === expression && /[A-Za-z\\^_{}=+\-*/<>]/.test(expression)) return true;
+              index = end;
+              break;
+            }
+          }
+          return false;
+        };
 
-    convertMathCodeBlocks();
+        const textContainsMath = (text) => {
+          const value = String(text ?? '');
+          return (
+            /\$\$[\s\S]+?\$\$/.test(value)
+            || /\\\[[\s\S]+?\\\]/.test(value)
+            || /\\\([\s\S]+?\\\)/.test(value)
+            || /\\begin\{[A-Za-z*]+\}/.test(value)
+            || hasInlineDollarMath(value)
+          );
+        };
 
-    if (!document.getElementById(MATHJAX_SCRIPT_ID)) {
-      const script = document.createElement('script');
-      script.id = MATHJAX_SCRIPT_ID;
-      script.src = MATHJAX_SRC;
-      script.async = true;
-      document.head.appendChild(script);
-    }
+        const findMathTargets = () => {
+          const root = contentRoot();
+          if (!root) return [];
 
-    document.addEventListener('astro:page-load', typesetMath);
-  })();
-</script>
+          const targets = new Set(root.querySelectorAll('.cx-math-display'));
+          const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+          let node = walker.nextNode();
+          while (node) {
+            const parent = node.parentElement;
+            if (
+              parent
+              && !parent.closest('pre, code, script, style, noscript, textarea, .mathjax_ignore, .tex2jax_ignore')
+              && textContainsMath(node.nodeValue)
+            ) {
+              targets.add(parent.closest(BLOCK_SELECTOR) ?? parent);
+            }
+            node = walker.nextNode();
+          }
+
+          return [...targets];
+        };
+
+        const configureMathJax = (ready) => {
+          const existing = window.MathJax ?? {};
+          window.MathJax = {
+            ...existing,
+            tex: {
+              ...existing.tex,
+              inlineMath: [['$', '$'], ['\\(', '\\)']],
+              displayMath: [['$$', '$$'], ['\\[', '\\]']],
+              processEscapes: true,
+              processEnvironments: true,
+              tags: 'ams',
+            },
+            options: {
+              ...existing.options,
+              skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+              ignoreHtmlClass: 'tex2jax_ignore|mathjax_ignore',
+              processHtmlClass: 'tex2jax_process|sl-markdown-content|content-panel|cx-equation|cx-math-display',
+            },
+            startup: {
+              ...existing.startup,
+              ready() {
+                window.MathJax.startup.defaultReady();
+                document.documentElement.classList.add('viscerium-math-ready');
+                ready();
+              },
+            },
+          };
+        };
+
+        const loadMathJax = () => {
+          if (window.MathJax?.typesetPromise) return Promise.resolve();
+          if (state.loadPromise) return state.loadPromise;
+
+          state.loadPromise = new Promise((resolve, reject) => {
+            configureMathJax(resolve);
+
+            const existingScript = document.getElementById(MATHJAX_SCRIPT_ID);
+            if (existingScript) {
+              existingScript.addEventListener('error', () => {
+                existingScript.remove();
+                reject(new Error('MathJax failed to load.'));
+              }, { once: true });
+              return;
+            }
+
+            const script = document.createElement('script');
+            script.id = MATHJAX_SCRIPT_ID;
+            script.src = MATHJAX_SRC;
+            script.async = true;
+            script.addEventListener('error', () => {
+              script.remove();
+              reject(new Error('MathJax failed to load.'));
+            }, { once: true });
+            document.head.appendChild(script);
+          }).catch((error) => {
+            state.loadPromise = undefined;
+            throw error;
+          });
+
+          return state.loadPromise;
+        };
+
+        const typesetPage = async () => {
+          convertMathCodeBlocks();
+          const root = contentRoot();
+          if (!root || !window.MathJax?.typesetPromise) return;
+          await window.MathJax.typesetPromise([root]);
+        };
+
+        const clearScheduledLoad = () => {
+          state.observer?.disconnect();
+          state.observer = undefined;
+          if (state.idleHandle !== undefined) {
+            if ('cancelIdleCallback' in window) window.cancelIdleCallback(state.idleHandle);
+            else window.clearTimeout(state.idleHandle);
+            state.idleHandle = undefined;
+          }
+        };
+
+        const initialiseMathPage = () => {
+          clearScheduledLoad();
+          if (!activeMathPage()) return;
+
+          convertMathCodeBlocks();
+          const root = contentRoot();
+          if (!root) return;
+          const targets = findMathTargets();
+          const observedTargets = targets.length > 0 ? targets : [root];
+
+          const trigger = () => {
+            clearScheduledLoad();
+            loadMathJax()
+              .then(typesetPage)
+              .catch((error) => console.warn('MathJax loading or typesetting failed', error));
+          };
+
+          if ('IntersectionObserver' in window) {
+            state.observer = new IntersectionObserver((entries) => {
+              if (entries.some((entry) => entry.isIntersecting)) trigger();
+            }, { rootMargin: '320px 0px' });
+            for (const target of observedTargets) state.observer.observe(target);
+            return;
+          }
+
+          if ('requestIdleCallback' in window) {
+            state.idleHandle = window.requestIdleCallback(trigger, { timeout: 1500 });
+          } else {
+            state.idleHandle = window.setTimeout(trigger, 250);
+          }
+        };
+
+        if (!state.listenerBound) {
+          document.addEventListener('astro:page-load', initialiseMathPage);
+          state.listenerBound = true;
+        }
+
+        initialiseMathPage();
+      })();
+    </script>
+  </>
+)}
