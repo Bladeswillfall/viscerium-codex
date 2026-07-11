@@ -94,28 +94,45 @@ jobs:
                 await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
                 await page.waitForTimeout(500);
 
-                const scrollViewport = page.locator('[data-vc-canvas]');
-                const scrollMetrics = await scrollViewport.evaluate((element) => {
-                  const style = getComputedStyle(element);
+                const layoutMetrics = await page.locator('[data-vc-canvas]').evaluate((canvas) => {
+                  const timeline = canvas.querySelector('.vis-timeline');
+                  const labels = [...canvas.querySelectorAll('.vis-labelset .vis-label')]
+                    .filter((element) => element.getClientRects().length > 0);
+                  const groups = [...canvas.querySelectorAll('.vis-foreground > .vis-group')]
+                    .filter((element) => element.getClientRects().length > 0);
+                  const canvasRect = canvas.getBoundingClientRect();
+                  const timelineRect = timeline?.getBoundingClientRect();
+                  const firstLabelRect = labels[0]?.getBoundingClientRect();
+                  const lastLabelRect = labels.at(-1)?.getBoundingClientRect();
+                  const lastGroupRect = groups.at(-1)?.getBoundingClientRect();
+
                   return {
-                    clientHeight: element.clientHeight,
-                    scrollHeight: element.scrollHeight,
-                    overflowY: style.overflowY,
-                    maxHeight: style.maxHeight,
+                    labelCount: labels.length,
+                    groupCount: groups.length,
+                    canvasHeight: canvasRect.height,
+                    timelineHeight: timelineRect?.height ?? 0,
+                    timelineTop: timelineRect?.top ?? 0,
+                    timelineBottom: timelineRect?.bottom ?? 0,
+                    canvasBottom: canvasRect.bottom,
+                    firstLabelTop: firstLabelRect?.top ?? 0,
+                    lastLabelBottom: lastLabelRect?.bottom ?? 0,
+                    lastGroupBottom: lastGroupRect?.bottom ?? 0,
+                    canvasOverflowY: getComputedStyle(canvas).overflowY,
                   };
                 });
                 writeFileSync(
-                  'timeline-browser-diagnostics/citadel-scroll.json',
-                  JSON.stringify(scrollMetrics, null, 2),
+                  'timeline-browser-diagnostics/citadel-chronos-layout.json',
+                  JSON.stringify(layoutMetrics, null, 2),
                 );
 
-                expect(scrollMetrics.overflowY).toBe('auto');
-                expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
-                await scrollViewport.evaluate((element) => {
-                  element.scrollTop = element.scrollHeight;
-                });
-                await expect.poll(() => scrollViewport.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
-                await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-scroll.png', fullPage: true });
+                expect(layoutMetrics.labelCount).toBeGreaterThan(1);
+                expect(layoutMetrics.groupCount).toBeGreaterThan(1);
+                expect(layoutMetrics.timelineHeight).toBeGreaterThan(320);
+                expect(layoutMetrics.firstLabelTop).toBeGreaterThanOrEqual(layoutMetrics.timelineTop - 1);
+                expect(layoutMetrics.lastLabelBottom).toBeLessThanOrEqual(layoutMetrics.timelineBottom + 1);
+                expect(layoutMetrics.lastGroupBottom).toBeLessThanOrEqual(layoutMetrics.timelineBottom + 1);
+                expect(layoutMetrics.timelineBottom).toBeLessThanOrEqual(layoutMetrics.canvasBottom + 1);
+                await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-chronos-layout.png', fullPage: true });
               }
 
               if (era === 'smog') {
