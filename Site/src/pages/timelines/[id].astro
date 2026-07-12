@@ -2,6 +2,7 @@
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import TimelineApp from '../../components/timeline/TimelineApp.astro';
 import { TIMELINE_IDS } from '../../lib/timeline/core.mjs';
+import '../../styles/timeline-pages.css';
 
 const datasets = import.meta.glob('../../data/timelines/{super,citadel,smog,nearsight,entropy}.json', {
   eager: true,
@@ -17,7 +18,14 @@ const timeline = datasets[`../../data/timelines/${id}.json`];
 if (!timeline) return Astro.redirect('/timelines/');
 ---
 
-<StarlightPage frontmatter={{ title: timeline.title, description: timeline.description }}>
+<StarlightPage
+  frontmatter={{
+    title: timeline.title,
+    description: timeline.description,
+    timelinePage: true,
+  }}
+  hasSidebar={false}
+>
   <header class="vc-timeline-page-header">
     <p class="timeline-kicker">Generated chronology</p>
     <h1>{timeline.title}</h1>
