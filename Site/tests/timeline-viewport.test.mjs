@@ -10,6 +10,7 @@ test('timeline rows live inside a bounded vertically scrollable canvas', () => {
 
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-viewport\.css'/);
   assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
+  assert.match(styles, /padding-block-end: 10rem/);
   assert.match(styles, /overflow-y: auto/);
   assert.match(styles, /overscroll-behavior: contain/);
   assert.match(styles, /\.vc-timeline-app\.is-compact \.vc-timeline-canvas[\s\S]*clamp\(22rem, 48vh, 32rem\)/);
@@ -23,21 +24,20 @@ test('the compatibility proxy forwards every legacy option except the obsolete f
   assert.doesNotMatch(renderer, /if \(isLegacyHostOptionPass\) return undefined/);
 });
 
-test('one canonical hovercard is body-level, narrow, theme-aware and line-clamped', () => {
-  const sync = read('../src/lib/timeline/tooltip-canonical-sync.mjs');
+test('the renderer owns one body-level, narrow, theme-aware and line-clamped hovercard', () => {
+  const island = read('../src/components/timeline/TimelineIsland.tsx');
+  const renderer = read('../src/lib/timeline/renderer.mjs');
   const styles = read('../src/styles/timeline-viewport.css');
 
-  assert.match(sync, /tooltip\.className = 'vis-tooltip vc-timeline-hovercard is-canonical'/);
-  assert.match(sync, /document\.body\.append\(tooltip\)/);
-  assert.match(sync, /document\.elementsFromPoint\(x, y\)/);
-  assert.match(sync, /function|const cardByGeometry/);
-  assert.match(sync, /document\.addEventListener\('pointermove', handleMove, true\)/);
-  assert.match(sync, /document\.addEventListener\('mousemove', handleMove, true\)/);
-  assert.match(sync, /root\.contains\(card\)/);
-  assert.match(styles, /body > \.vc-timeline-hovercard:not\(\.is-canonical\)[\s\S]*display: none !important/);
-  assert.match(styles, /body > \.vc-timeline-hovercard\.is-canonical[\s\S]*position: fixed !important/);
+  assert.doesNotMatch(island, /tooltip-canonical-sync/);
+  assert.match(renderer, /function installTimelineHoverTooltip\(root, dataset\)/);
+  assert.match(renderer, /tooltip\.className = 'vis-tooltip vc-timeline-hovercard'/);
+  assert.match(renderer, /document\.body\.append\(tooltip\)/);
+  assert.match(renderer, /const visibleTitle = item\?\.textContent/);
+  assert.match(renderer, /root\.addEventListener\('pointerover', handlePointerOver, true\)/);
+  assert.match(styles, /body > \.vc-timeline-hovercard[\s\S]*position: fixed !important/);
   assert.match(styles, /max-width: 18rem/);
-  assert.match(styles, /:root\[data-theme='light'\] body > \.vc-timeline-hovercard\.is-canonical/);
+  assert.match(styles, /:root\[data-theme='light'\] body > \.vc-timeline-hovercard/);
   assert.match(styles, /--vc-hovercard-bg: #151310f7/);
   assert.match(styles, /-webkit-line-clamp: 4/);
 });
