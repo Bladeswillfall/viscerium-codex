@@ -432,8 +432,7 @@ function installTimelineHoverTooltip(root, dataset) {
   };
 
   const eventForItem = (item) => {
-    const id = item?.getAttribute?.('data-id')
-      ?? item?.querySelector?.('[data-id]')?.getAttribute?.('data-id');
+    const id = item?.getAttribute?.('data-id');
     if (id && eventById.has(id)) return eventById.get(id);
 
     const visibleTitle = item?.textContent?.replace(/\s+/g, ' ').trim();
