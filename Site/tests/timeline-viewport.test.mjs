@@ -24,20 +24,24 @@ test('the compatibility proxy forwards every legacy option except the obsolete f
   assert.doesNotMatch(renderer, /if \(isLegacyHostOptionPass\) return undefined/);
 });
 
-test('the renderer owns one body-level, narrow, theme-aware and line-clamped hovercard', () => {
+test('the renderer owns one body-level hovercard and visible card text corrects recycled identity', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
   const renderer = read('../src/lib/timeline/renderer.mjs');
+  const sync = read('../src/lib/timeline/tooltip-content-sync.mjs');
   const styles = read('../src/styles/timeline-viewport.css');
 
-  assert.doesNotMatch(island, /tooltip-canonical-sync/);
   assert.match(renderer, /function installTimelineHoverTooltip\(root, dataset\)/);
   assert.match(renderer, /tooltip\.className = 'vis-tooltip vc-timeline-hovercard'/);
   assert.match(renderer, /document\.body\.append\(tooltip\)/);
-  assert.match(renderer, /const visibleTitle = item\?\.textContent/);
   assert.match(renderer, /root\.addEventListener\('pointerover', handlePointerOver, true\)/);
+  assert.match(island, /installTimelineTooltipContentSync\(root, dataset\)/);
+  assert.match(sync, /const visibleText = normaliseVisibleText\(item\?\.textContent\)/);
+  assert.match(sync, /tooltip\.querySelector\('\.vc-timeline-hovercard-title'\)\.textContent = event\.title/);
+  assert.match(sync, /window\.requestAnimationFrame\(sync\)/);
   assert.match(styles, /body > \.vc-timeline-hovercard[\s\S]*position: fixed !important/);
-  assert.match(styles, /max-width: 18rem/);
+  assert.match(styles, /max-width: 18rem !important/);
   assert.match(styles, /:root\[data-theme='light'\] body > \.vc-timeline-hovercard/);
-  assert.match(styles, /--vc-hovercard-bg: #151310f7/);
+  assert.match(styles, /background-color: var\(--vc-hovercard-bg\) !important/);
+  assert.match(styles, /color: var\(--vc-hovercard-text\) !important/);
   assert.match(styles, /-webkit-line-clamp: 4/);
 });
