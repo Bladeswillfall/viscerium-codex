@@ -88,12 +88,19 @@ test('serializes canonical records through native Chronos syntax and parsing', (
   assert.equal(model.groups[0].content, 'Chronology');
   assert.equal(model.groups[0].order, 0);
   assert.equal(model.groups.at(-1).id, '__vc-timeline-row-end-cap__');
-  assert.match(model.groups.at(-1).content, /vc-timeline-row-end-cap-marker/);
-  assert.equal(model.groups.at(-1).className, 'vc-timeline-row-end-cap-group');
+  assert.equal(model.groups.at(-1).content, '');
   assert.equal(model.groups.at(-1).order, 1);
   assert.equal(model.parsed.groups, model.groups);
   assert.equal(model.parsed.markers.length, 0);
   assert.equal(model.parsed.flags.noToday, true);
+
+  const spacer = model.items.find((item) => item.id === '__vc-timeline-row-end-cap-item__');
+  assert.ok(spacer);
+  assert.equal(spacer.group, '__vc-timeline-row-end-cap__');
+  assert.equal(spacer.content, '');
+  assert.equal(spacer.className, 'vc-timeline-row-end-cap-item');
+  assert.equal(spacer.selectable, false);
+  assert.equal(syntheticDateToAbsoluteDay(spacer.start), 0);
 
   const first = model.items.find((item) => item.id === 'event-a');
   assert.equal(first.type, undefined);
