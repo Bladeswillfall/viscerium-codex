@@ -1,6 +1,5 @@
 const EVENT_ITEM_SELECTOR = '.vis-item.vc-timeline-item';
 const TOP_INSET = 12;
-const BOTTOM_INSET = 12;
 const SETTLE_DURATION_MS = 1_800;
 const SETTLE_INTERVAL_MS = 50;
 
@@ -19,8 +18,8 @@ function renderedEventItems(canvas) {
  * its measured content height inside it, while normal vertical wheel and
  * keyboard input are claimed before vis-timeline can reinterpret them as date
  * navigation. During initial/lane/filter layout settling, frame the first event
- * near the top and add only the exact scroll extent required when a rendered
- * card protrudes beyond Chronos's own capped element.
+ * near the top. A small stable end cap compensates for vis-timeline cards that
+ * protrude a few pixels beyond its capped element without creating a large floor.
  */
 export function installTimelineOuterScroll(root) {
   const canvas = root.querySelector('[data-vc-canvas]');
@@ -59,31 +58,15 @@ export function installTimelineOuterScroll(root) {
 
     const sentinel = ensureBottomSentinel();
     const canvasRect = canvas.getBoundingClientRect();
-    const bounds = items.map((item) => {
+    const firstTop = Math.min(...items.map((item) => {
       const rect = item.getBoundingClientRect();
-      return {
-        top: rect.top - canvasRect.top + canvas.scrollTop,
-        bottom: rect.bottom - canvasRect.top + canvas.scrollTop,
-      };
-    });
-    const firstTop = Math.min(...bounds.map(({ top }) => top));
-    const lowestBottom = Math.max(...bounds.map(({ bottom }) => bottom));
-
-    const previousExtension = sentinel.offsetHeight;
-    const baseScrollHeight = Math.max(0, canvas.scrollHeight - previousExtension);
-    const requiredExtension = Math.max(
-      0,
-      Math.ceil(lowestBottom + BOTTOM_INSET - baseScrollHeight),
-    );
-    if (Math.abs(requiredExtension - previousExtension) > 1) {
-      sentinel.style.blockSize = `${requiredExtension}px`;
-    }
-
+      return rect.top - canvasRect.top + canvas.scrollTop;
+    }));
     const target = Math.max(0, Math.min(maximumScroll(), Math.round(firstTop - TOP_INSET)));
     if (Math.abs(canvas.scrollTop - target) > 1) canvas.scrollTop = target;
 
     canvas.dataset.vcInitialScroll = String(target);
-    canvas.dataset.vcBottomExtension = String(requiredExtension);
+    canvas.dataset.vcBottomExtension = String(sentinel.offsetHeight);
     canvas.dataset.vcOuterScrollRange = String(maximumScroll());
   };
 
