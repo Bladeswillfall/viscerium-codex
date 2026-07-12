@@ -10,6 +10,7 @@ import {
 import {
   calendarYearBoundaries,
   createTimelineYearGridItems,
+  selectCalendarYearTicks,
 } from '../src/lib/timeline/year-grid.mjs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
@@ -34,6 +35,17 @@ test('returns every individual calendar-year boundary in a visible range', () =>
       getDaysInYear(calendar, boundaries[index].year),
     );
   }
+});
+
+test('selects readable year labels from the exact same boundaries as the grid', () => {
+  const startDay = yearStart(9267) + 90;
+  const endDay = yearStart(9278) - 90;
+  const boundaries = calendarYearBoundaries(startDay, endDay, defaultCalendarId);
+  const ticks = selectCalendarYearTicks(startDay, endDay, defaultCalendarId, 6);
+  const boundaryDays = new Map(boundaries.map(({ year, absoluteDay }) => [year, absoluteDay]));
+
+  assert.deepEqual(ticks.map(({ year }) => year), [9268, 9270, 9272, 9274, 9276]);
+  assert.ok(ticks.every(({ year, absoluteDay }) => boundaryDays.get(year) === absoluteDay));
 });
 
 test('supports negative years and retains exact decade and century classes', () => {
@@ -68,4 +80,14 @@ test('the browser renderer mounts an explicit SVG grid and disables adaptive nat
   assert.match(styles, /\.vc-year-grid-decade/);
   assert.match(styles, /\.vc-year-grid-century/);
   assert.match(styles, /\.vis-grid\.vis-vertical[\s\S]*transparent !important/);
+});
+
+test('the timeline island replaces fixed-day labels with exact calendar-year labels', () => {
+  const island = read('../src/components/timeline/TimelineIsland.tsx');
+  const synchroniser = read('../src/lib/timeline/year-axis-sync.mjs');
+
+  assert.match(island, /installCalendarYearAxisSync\(root, dataset\)/);
+  assert.match(synchroniser, /selectCalendarYearTicks\(startDay, endDay, calendarId, maximumCount\)/);
+  assert.match(synchroniser, /data-vc-axis-year-boundary/);
+  assert.match(synchroniser, /data-vc-axis-absolute-day/);
 });

@@ -35,7 +35,9 @@ test('the Preact island owns Chronos mount and cleanup while retaining fallback 
   assert.match(island, /useEffect\(/);
   assert.match(island, /useRef<HTMLDivElement>/);
   assert.match(island, /await import\('\.\.\/\.\.\/lib\/timeline\/renderer\.mjs'\)/);
-  assert.match(island, /cleanup = mountTimeline\(root, dataset, options\)/);
+  assert.match(island, /const cleanupTimeline = mountTimeline\(root, dataset, options\)/);
+  assert.match(island, /const cleanupYearAxis = installCalendarYearAxisSync\(root, dataset\)/);
+  assert.match(island, /cleanup = \(\) => \{[\s\S]*cleanupYearAxis\(\);[\s\S]*cleanupTimeline\(\);/);
   assert.match(island, /return \(\) => \{[\s\S]*cleanup\?\.\(\)/);
   assert.match(island, /class="vc-timeline-fallback"/);
   assert.match(island, /data-vc-timeline-skeleton/);
