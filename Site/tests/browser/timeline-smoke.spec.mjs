@@ -29,7 +29,7 @@ async function waitForTimeline(page) {
   await expect(page.locator('[data-vc-canvas]')).toBeVisible();
   await expect(page.locator('[data-vc-fallback]')).toBeHidden();
   await expect(page.locator('[data-vc-timeline-mount]')).not.toBeEmpty();
-  await page.waitForTimeout(1_000);
+  await page.waitForTimeout(2_100);
 }
 
 async function openEra(page, era) {
@@ -47,11 +47,7 @@ function measureViewport(canvas) {
       const rect = element.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0;
     });
-  const intersectingItems = items.filter((element) => {
-    const rect = element.getBoundingClientRect();
-    return rect.bottom > canvasRect.top && rect.top < canvasRect.bottom;
-  });
-  const itemBounds = intersectingItems.map((element) => {
+  const allItemBounds = items.map((element) => {
     const rect = element.getBoundingClientRect();
     return {
       text: element.textContent?.trim() ?? '',
@@ -59,53 +55,32 @@ function measureViewport(canvas) {
       bottom: rect.bottom,
     };
   });
-  const scrollCandidates = [...canvas.querySelectorAll(
-    '.vis-panel.vis-center, .vis-panel.vis-left, .vis-content, .vis-itemset',
-  )].map((element) => {
-    const style = getComputedStyle(element);
-    return {
-      className: element.className,
-      clientHeight: element.clientHeight,
-      scrollHeight: element.scrollHeight,
-      scrollTop: element.scrollTop,
-      overflowY: style.overflowY,
-      transform: style.transform,
-    };
-  });
+  const intersectingItems = allItemBounds.filter(({ top, bottom }) => (
+    bottom > canvasRect.top && top < canvasRect.bottom
+  ));
   return {
     canvasHeight: canvasRect.height,
     canvasClientHeight: canvas.clientHeight,
     canvasScrollHeight: canvas.scrollHeight,
+    canvasScrollTop: canvas.scrollTop,
+    canvasScrollMaximum: Math.max(0, canvas.scrollHeight - canvas.clientHeight),
     canvasOverflowY: canvasStyle.overflowY,
     timelineHeight: timelineRect?.height ?? 0,
-    viewportHeightToken: canvas.dataset.vcViewportHeight ?? null,
-    visibleEventCount: itemBounds.length,
-    firstVisibleEventTop: itemBounds.length
-      ? Math.min(...itemBounds.map(({ top }) => top))
+    initialScrollToken: canvas.dataset.vcInitialScroll ?? null,
+    outerRangeToken: canvas.dataset.vcOuterScrollRange ?? null,
+    visibleEventCount: intersectingItems.length,
+    firstVisibleEventTop: intersectingItems.length
+      ? Math.min(...intersectingItems.map(({ top }) => top))
       : null,
-    lastVisibleEventBottom: itemBounds.length
-      ? Math.max(...itemBounds.map(({ bottom }) => bottom))
+    lastVisibleEventBottom: intersectingItems.length
+      ? Math.max(...intersectingItems.map(({ bottom }) => bottom))
+      : null,
+    lowestRenderedEventBottom: allItemBounds.length
+      ? Math.max(...allItemBounds.map(({ bottom }) => bottom))
       : null,
     canvasTop: canvasRect.top,
     canvasBottom: canvasRect.bottom,
-    scrollCandidates,
   };
-}
-
-async function setRowScroll(page, edge) {
-  return page.locator('[data-vc-canvas]').evaluate((canvas, requestedEdge) => {
-    const scroller = canvas.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
-    if (!scroller) return null;
-    const maximum = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
-    scroller.scrollTop = requestedEdge === 'top' ? 0 : maximum;
-    scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
-    return {
-      maximum,
-      applied: scroller.scrollTop,
-      clientHeight: scroller.clientHeight,
-      scrollHeight: scroller.scrollHeight,
-    };
-  }, edge);
 }
 
 for (const era of eras) {
@@ -116,7 +91,7 @@ for (const era of eras) {
     if (era === 'citadel') {
       await page.locator('[data-vc-lane]').selectOption('lane');
       await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
-      await page.waitForTimeout(750);
+      await page.waitForTimeout(2_100);
 
       const metrics = await page.locator('[data-vc-canvas]').evaluate(measureViewport);
       const labels = await page.locator('[data-vc-canvas]').evaluate((canvas) => (
@@ -135,12 +110,12 @@ for (const era of eras) {
       await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-chronos-layout.png', fullPage: true });
 
       expect(metrics.canvasHeight).toBeLessThanOrEqual(674);
-      expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
-      expect(metrics.canvasScrollHeight).toBeLessThanOrEqual(metrics.canvasClientHeight + 2);
-      expect(metrics.canvasOverflowY).toBe('hidden');
-      expect(Number(metrics.viewportHeightToken)).toBeCloseTo(metrics.canvasHeight, 0);
+      expect(metrics.timelineHeight).toBeGreaterThan(metrics.canvasHeight + 20);
+      expect(metrics.canvasScrollHeight).toBeGreaterThan(metrics.canvasClientHeight + 20);
+      expect(['auto', 'scroll']).toContain(metrics.canvasOverflowY);
+      expect(Number(metrics.outerRangeToken)).toBeGreaterThan(20);
       expect(metrics.visibleEventCount).toBeGreaterThan(1);
-      expect(metrics.firstVisibleEventTop - metrics.canvasTop).toBeLessThan(metrics.canvasHeight * 0.45);
+      expect(metrics.firstVisibleEventTop - metrics.canvasTop).toBeLessThanOrEqual(32);
       expect(labels.some(({ text }) => text === 'Veyr Court')).toBe(true);
       expect(labels.every(({ marginTop, marginBottom }) => marginTop === '0px' && marginBottom === '0px')).toBe(true);
     }
@@ -159,7 +134,7 @@ for (const era of eras) {
     if (era === 'entropy') {
       await page.locator('[data-vc-lane]').selectOption('lane');
       await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
-      await page.waitForTimeout(750);
+      await page.waitForTimeout(2_100);
 
       const axis = await page.evaluate(() => {
         const ruler = document.querySelector('[data-vc-axis]');
@@ -183,8 +158,9 @@ for (const era of eras) {
       expect(axis.ticks.every(({ percent, error }) => Number.isFinite(percent) && error <= 2)).toBe(true);
 
       const pathfinder = page.locator('.vis-item.vc-timeline-item', { hasText: 'The Pathfinder Exodus' }).first();
+      await expect(pathfinder).toBeAttached();
+      await pathfinder.scrollIntoViewIfNeeded();
       await expect(pathfinder).toBeVisible();
-      await page.locator('[data-vc-canvas]').scrollIntoViewIfNeeded();
       await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
       await pathfinder.hover();
       await page.waitForTimeout(500);
@@ -233,7 +209,7 @@ for (const era of eras) {
   });
 }
 
-test('global chronology starts high and ends without an artificial floor', async ({ page }) => {
+test('global chronology wheel-scrolls from a top-framed start to a complete final row', async ({ page }) => {
   const messages = collectErrors(page, 'global');
   await page.goto('http://127.0.0.1:4321/timelines/', { waitUntil: 'networkidle' });
   const globalLink = page.getByRole('link', { name: 'The VISCERIUM Timeline', exact: true }).first();
@@ -244,37 +220,42 @@ test('global chronology starts high and ends without an artificial floor', async
 
   const canvas = page.locator('[data-vc-canvas]');
   await page.locator('[data-vc-lane]').selectOption('lane');
-  await page.waitForTimeout(750);
+  await page.waitForTimeout(2_100);
   await canvas.scrollIntoViewIfNeeded();
 
   const before = await canvas.evaluate(measureViewport);
-  const topScroll = await setRowScroll(page, 'top');
-  await page.waitForTimeout(200);
-  const atTop = await canvas.evaluate(measureViewport);
-  const bottomScroll = await setRowScroll(page, 'bottom');
-  await page.waitForTimeout(200);
+  const box = await canvas.boundingBox();
+  if (box) {
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.wheel(0, 180);
+  }
+  await page.waitForTimeout(250);
+  const afterWheel = await canvas.evaluate(measureViewport);
+
+  const bottomScroll = await canvas.evaluate((element) => {
+    const maximum = Math.max(0, element.scrollHeight - element.clientHeight);
+    element.scrollTop = maximum;
+    return { maximum, applied: element.scrollTop };
+  });
+  await page.waitForTimeout(250);
   const after = await canvas.evaluate(measureViewport);
 
   writeFileSync(
     'timeline-browser-diagnostics/global-scroll-framing.json',
-    JSON.stringify({ before, atTop, after, topScroll, bottomScroll, messages }, null, 2),
+    JSON.stringify({ before, afterWheel, after, bottomScroll, messages }, null, 2),
   );
   await page.screenshot({ path: 'timeline-browser-diagnostics/global-scroll-framing.png', fullPage: true });
 
-  expect(Math.abs(before.timelineHeight - before.canvasHeight)).toBeLessThanOrEqual(2);
-  expect(before.canvasScrollHeight).toBeLessThanOrEqual(before.canvasClientHeight + 2);
+  expect(before.canvasScrollMaximum).toBeGreaterThan(20);
+  expect(before.timelineHeight).toBeGreaterThan(before.canvasHeight + 20);
   expect(before.visibleEventCount).toBeGreaterThan(1);
-  expect(before.firstVisibleEventTop - before.canvasTop).toBeLessThan(before.canvasHeight * 0.45);
-  expect(topScroll).not.toBeNull();
-  expect(topScroll.maximum).toBeGreaterThan(0);
-  expect(topScroll.applied).toBe(0);
-  expect(atTop.scrollCandidates.some((candidate, index) => (
-    candidate.scrollTop !== (before.scrollCandidates[index]?.scrollTop ?? 0)
-    || candidate.transform !== before.scrollCandidates[index]?.transform
-  ))).toBe(true);
+  expect(before.firstVisibleEventTop - before.canvasTop).toBeLessThanOrEqual(32);
+  expect(afterWheel.canvasScrollTop).toBeGreaterThan(before.canvasScrollTop + 20);
+  expect(bottomScroll.maximum).toBeGreaterThan(20);
   expect(bottomScroll.applied).toBe(bottomScroll.maximum);
   expect(after.visibleEventCount).toBeGreaterThan(0);
-  expect(after.canvasBottom - after.lastVisibleEventBottom).toBeLessThanOrEqual(72);
+  expect(after.lowestRenderedEventBottom).toBeLessThanOrEqual(after.canvasBottom + 2);
+  expect(after.canvasBottom - after.lowestRenderedEventBottom).toBeLessThanOrEqual(48);
   expect(messages.filter((entry) => entry.startsWith('pageerror:'))).toEqual([]);
   expect(messages.filter((entry) => entry.includes('failed to mount'))).toEqual([]);
 });
