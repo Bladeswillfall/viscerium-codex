@@ -15,9 +15,9 @@ function formatEventDate(event, calendarId) {
 }
 
 /**
- * Chronos can place interaction surfaces above an event card and can recycle a
- * card without refreshing its outer identity. Resolve the visible card beneath
- * the pointer without mutating vis-timeline's internal DOM state.
+ * Own one canonical body-level hovercard. Chronos can place interaction surfaces
+ * above a card and can recycle stale DOM identity, so resolve the visible card
+ * beneath the pointer by title without mutating vis-timeline internals.
  */
 export function installTimelineTooltipCanonicalSync(root, dataset) {
   let positionFrame;
@@ -26,8 +26,21 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
   const calendarSelect = root.querySelector('[data-vc-calendar]');
   const eventsByLongestTitle = [...(dataset?.events ?? [])]
     .sort((left, right) => right.title.length - left.title.length);
+  const tooltipId = `vc-timeline-canonical-hovercard-${Math.random().toString(36).slice(2, 10)}`;
+  const tooltip = document.createElement('div');
+  tooltip.id = tooltipId;
+  tooltip.className = 'vis-tooltip vc-timeline-hovercard is-canonical';
+  tooltip.hidden = true;
+  tooltip.setAttribute('role', 'tooltip');
+  tooltip.innerHTML = `
+    <span class="vc-timeline-hovercard-date"></span>
+    <strong class="vc-timeline-hovercard-title"></strong>
+    <span class="vc-timeline-hovercard-description"></span>`;
+  document.body.append(tooltip);
 
-  const tooltipElement = () => document.querySelector('body > .vc-timeline-hovercard');
+  const dateElement = tooltip.querySelector('.vc-timeline-hovercard-date');
+  const titleElement = tooltip.querySelector('.vc-timeline-hovercard-title');
+  const descriptionElement = tooltip.querySelector('.vc-timeline-hovercard-description');
 
   const eventForCard = (card) => {
     const visibleText = normaliseVisibleText(card?.textContent);
@@ -51,8 +64,7 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
   };
 
   const position = () => {
-    const tooltip = tooltipElement();
-    if (destroyed || !activeCard || !tooltip || tooltip.hidden) return;
+    if (destroyed || !activeCard || tooltip.hidden) return;
 
     const itemRect = activeCard.getBoundingClientRect();
     const tooltipRect = tooltip.getBoundingClientRect();
@@ -81,16 +93,14 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
   };
 
   const hide = () => {
-    const tooltip = tooltipElement();
     activeCard?.removeAttribute('aria-describedby');
     activeCard = undefined;
-    if (tooltip) tooltip.hidden = true;
+    tooltip.hidden = true;
   };
 
   const show = (card) => {
     const event = eventForCard(card);
-    const tooltip = tooltipElement();
-    if (!event || !tooltip) {
+    if (!event) {
       hide();
       return;
     }
@@ -98,12 +108,12 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
     activeCard?.removeAttribute('aria-describedby');
     activeCard = card;
     const calendarId = calendarSelect?.value ?? dataset.defaultCalendar;
-    tooltip.querySelector('.vc-timeline-hovercard-date').textContent = formatEventDate(event, calendarId);
-    tooltip.querySelector('.vc-timeline-hovercard-title').textContent = event.title;
-    tooltip.querySelector('.vc-timeline-hovercard-description').textContent = event.description;
+    dateElement.textContent = formatEventDate(event, calendarId);
+    titleElement.textContent = event.title;
+    descriptionElement.textContent = event.description;
     tooltip.dataset.vcCanonicalEventId = event.id;
     tooltip.hidden = false;
-    activeCard.setAttribute('aria-describedby', tooltip.id);
+    activeCard.setAttribute('aria-describedby', tooltipId);
     schedulePosition();
   };
 
@@ -153,5 +163,6 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
     window.removeEventListener('scroll', schedulePosition, true);
     window.removeEventListener('resize', schedulePosition);
     hide();
+    tooltip.remove();
   };
 }
