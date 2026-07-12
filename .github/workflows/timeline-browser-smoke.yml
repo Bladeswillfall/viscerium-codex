@@ -62,6 +62,30 @@ jobs:
           const eras = ['citadel', 'smog', 'nearsight', 'entropy'];
           mkdirSync('timeline-browser-diagnostics', { recursive: true });
 
+          async function scrollItemIntoTimelineViewport(locator) {
+            const metrics = await locator.evaluate((item) => {
+              const canvas = item.closest('[data-vc-canvas]');
+              if (!canvas) return null;
+              const canvasRect = canvas.getBoundingClientRect();
+              const itemRect = item.getBoundingClientRect();
+              const targetScrollTop = Math.max(
+                0,
+                canvas.scrollTop
+                  + itemRect.top
+                  - canvasRect.top
+                  - (canvas.clientHeight - itemRect.height) / 2,
+              );
+              canvas.scrollTop = targetScrollTop;
+              return {
+                targetScrollTop,
+                clientHeight: canvas.clientHeight,
+                scrollHeight: canvas.scrollHeight,
+              };
+            });
+            await locator.page().waitForTimeout(300);
+            return metrics;
+          }
+
           for (const era of eras) {
             test(`${era} hydrates the Chronos timeline island`, async ({ page }) => {
               const browserMessages = [];
@@ -105,6 +129,8 @@ jobs:
                     '.vis-item.vis-box:not(.vis-background), .vis-item.vis-range:not(.vis-background), .vis-item.vis-point:not(.vis-background)',
                   )].filter((element) => element.getClientRects().length > 0);
                   const timelineRect = timeline?.getBoundingClientRect();
+                  const canvasRect = canvas.getBoundingClientRect();
+                  const canvasStyle = getComputedStyle(canvas);
                   const margins = labels.map((element) => {
                     const style = getComputedStyle(element);
                     return {
@@ -138,6 +164,10 @@ jobs:
                     timelineHeight: timelineRect?.height ?? 0,
                     timelineTop: timelineRect?.top ?? 0,
                     timelineBottom: timelineRect?.bottom ?? 0,
+                    canvasHeight: canvasRect.height,
+                    canvasClientHeight: canvas.clientHeight,
+                    canvasScrollHeight: canvas.scrollHeight,
+                    canvasOverflowY: canvasStyle.overflowY,
                     contentTransform: content ? getComputedStyle(content).transform : null,
                     margins,
                     namedLabelBounds,
@@ -153,6 +183,9 @@ jobs:
                 expect(layoutMetrics.namedLabelCount).toBeGreaterThan(1);
                 expect(layoutMetrics.eventItemCount).toBeGreaterThan(1);
                 expect(layoutMetrics.timelineHeight).toBeGreaterThan(320);
+                expect(layoutMetrics.canvasHeight).toBeLessThanOrEqual(674);
+                expect(layoutMetrics.canvasScrollHeight).toBeGreaterThan(layoutMetrics.canvasClientHeight);
+                expect(['auto', 'scroll']).toContain(layoutMetrics.canvasOverflowY);
                 expect(layoutMetrics.margins.every(({ top, bottom }) => top === '0px' && bottom === '0px')).toBe(true);
                 expect(layoutMetrics.namedLabelBounds.some(({ text }) => text === 'Veyr Court')).toBe(true);
                 expect(layoutMetrics.eventBounds.some(({ text }) => text.includes('The Hollow Feast of Veyr'))).toBe(true);
@@ -213,36 +246,59 @@ jobs:
                 expect(axisMetrics.ticks.every(({ percent, error }) => Number.isFinite(percent) && error <= 2)).toBe(true);
 
                 const pathfinder = page.locator('.vis-item.vc-timeline-item', { hasText: 'The Pathfinder Exodus' }).first();
-                await expect(pathfinder).toBeVisible();
+                await expect(pathfinder).toBeAttached();
+                const scrollMetrics = await scrollItemIntoTimelineViewport(pathfinder);
+                expect(scrollMetrics).not.toBeNull();
+                expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
+                await expect.poll(() => pathfinder.evaluate((item) => {
+                  const canvas = item.closest('[data-vc-canvas]');
+                  if (!canvas) return false;
+                  const canvasRect = canvas.getBoundingClientRect();
+                  const itemRect = item.getBoundingClientRect();
+                  return itemRect.top >= canvasRect.top && itemRect.bottom <= canvasRect.bottom;
+                })).toBe(true);
+
+                await page.evaluate(() => {
+                  document.documentElement.dataset.theme = 'dark';
+                });
                 await pathfinder.hover();
                 await page.waitForTimeout(800);
 
                 const tooltipMetrics = await page.evaluate(() => {
                   const item = [...document.querySelectorAll('.vis-item.vc-timeline-item')]
                     .find((element) => element.textContent?.includes('The Pathfinder Exodus'));
-                  const visibleTooltips = [...document.querySelectorAll('.vis-tooltip')]
+                  const visibleTooltips = [...document.querySelectorAll('body > .vc-timeline-hovercard.is-canonical')]
                     .filter((element) => {
                       const style = getComputedStyle(element);
                       const rect = element.getBoundingClientRect();
                       return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
                     });
+                  const tooltip = visibleTooltips[0];
+                  const style = tooltip ? getComputedStyle(tooltip) : null;
                   return {
                     itemTitle: item?.getAttribute('title') ?? null,
                     tooltipCount: visibleTooltips.length,
                     tooltipText: visibleTooltips.map((element) => element.textContent ?? '').join(' '),
+                    tooltipEventId: tooltip?.dataset.vcCanonicalEventId ?? null,
+                    backgroundColor: style?.backgroundColor ?? null,
+                    color: style?.color ?? null,
                   };
                 });
 
                 writeFileSync(
                   'timeline-browser-diagnostics/entropy-axis-tooltip.json',
-                  JSON.stringify({ axisMetrics, tooltipMetrics }, null, 2),
+                  JSON.stringify({ axisMetrics, scrollMetrics, tooltipMetrics }, null, 2),
                 );
                 await page.screenshot({ path: 'timeline-browser-diagnostics/entropy-axis-tooltip.png', fullPage: true });
 
                 expect(tooltipMetrics.itemTitle).toBeNull();
                 expect(tooltipMetrics.tooltipCount).toBe(1);
                 expect(tooltipMetrics.tooltipText).toContain('11,431');
+                expect(tooltipMetrics.tooltipText).toContain('The Pathfinder Exodus');
                 expect(tooltipMetrics.tooltipText).not.toMatch(/2030|2036/);
+                expect(tooltipMetrics.tooltipEventId).toBeTruthy();
+                expect(tooltipMetrics.backgroundColor).toMatch(/21,\s*19,\s*16/);
+                expect(tooltipMetrics.color).toMatch(/244,\s*239,\s*229/);
               }
 
               const diagnostics = await page.evaluate(() => {
