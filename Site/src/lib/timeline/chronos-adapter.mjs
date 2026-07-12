@@ -1,6 +1,8 @@
 import { attachChronosStyles, parseChronos } from 'chronos-timeline-md';
 import { absoluteDayToSyntheticDate, capTimelineGroups, KNOWN_CATEGORY_TOKENS } from './core.mjs';
 
+const ROW_END_CAP_GROUP_ID = '__vc-timeline-row-end-cap__';
+
 const CATEGORY_COLORS = {
   technology: 'cyan',
   military: 'orange',
@@ -159,6 +161,17 @@ function enrichParsedItem(item, metadata, formatEventDate) {
   return item;
 }
 
+function addRowEndCapGroup(groups) {
+  const ordered = groups.map((group, index) => ({ ...group, order: index }));
+  ordered.push({
+    id: ROW_END_CAP_GROUP_ID,
+    content: '',
+    className: 'vc-timeline-row-end-cap-group',
+    order: ordered.length,
+  });
+  return ordered;
+}
+
 export function createChronosTimelineModel({
   dataset,
   events = dataset?.events ?? [],
@@ -202,6 +215,7 @@ export function createChronosTimelineModel({
   }
 
   parsed.items = parsed.items.map((item, index) => enrichParsedItem(item, records[index].metadata, formatEventDate));
+  parsed.groups = addRowEndCapGroup(parsed.groups);
 
   return {
     source,
