@@ -1,0 +1,350 @@
+/* Full-width VISCERIUM landing page. The existing Starlight header and footer remain in control. */
+main:has(.home-gateway) {
+  min-width: 0;
+  padding: 0 !important;
+  overflow: clip;
+}
+
+main:has(.home-gateway) > .content-panel:first-of-type {
+  display: none;
+}
+
+main:has(.home-gateway) > .content-panel:last-of-type {
+  padding: 0;
+  border-block-start: 0;
+}
+
+main:has(.home-gateway) > .content-panel:last-of-type > .sl-container {
+  max-width: none;
+  margin-inline: 0;
+}
+
+main:has(.home-gateway) .sl-markdown-content {
+  max-width: none;
+}
+
+main:has(.home-gateway) .sl-container > .home-gateway + * {
+  margin-block-start: 0;
+}
+
+.home-gateway {
+  --home-bg: var(--sl-color-bg);
+  --home-surface: var(--sl-color-bg-nav);
+  --home-surface-soft: color-mix(in srgb, var(--sl-color-bg-nav) 82%, var(--sl-color-bg));
+  --home-text: var(--sl-color-white);
+  --home-text-soft: var(--sl-color-gray-2);
+  --home-muted: var(--sl-color-gray-3);
+  --home-line: var(--sl-color-hairline-light);
+  --home-gold: var(--sl-color-accent-high);
+  --home-gold-low: var(--sl-color-accent-low);
+  --home-focus: var(--sl-color-white);
+  --home-content-max: 120rem;
+  --home-reading-max: 72rem;
+  --home-gutter: clamp(1rem, 3vw, 6rem);
+  --home-shadow: 0 1.5rem 5rem rgba(0, 0, 0, .38);
+  --home-step--1: clamp(.79rem, .74rem + .18vw, .92rem);
+  --home-step-0: clamp(1rem, .94rem + .22vw, 1.16rem);
+  --home-step-1: clamp(1.22rem, 1.08rem + .52vw, 1.62rem);
+  --home-step-2: clamp(1.55rem, 1.25rem + 1vw, 2.35rem);
+  --home-step-3: clamp(2.1rem, 1.55rem + 2vw, 3.9rem);
+  --home-step-4: clamp(3rem, 1.9rem + 4vw, 6.7rem);
+  --home-step-5: clamp(4.1rem, 2rem + 7vw, 10rem);
+  min-width: 0;
+  margin: 0;
+  overflow-x: clip;
+  background:
+    radial-gradient(circle at 50% -15%, color-mix(in srgb, var(--home-gold) 14%, transparent), transparent 32rem),
+    var(--home-bg);
+  color: var(--home-text);
+  font-family: var(--vc-font-ui);
+  line-height: 1.5;
+}
+
+.home-gateway *,
+.home-gateway *::before,
+.home-gateway *::after {
+  box-sizing: border-box;
+}
+
+.home-gateway img,
+.home-gateway svg {
+  display: block;
+  max-width: 100%;
+}
+
+.home-gateway a {
+  color: inherit;
+  text-decoration-thickness: .08em;
+  text-underline-offset: .2em;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.home-gateway p,
+.home-gateway h1,
+.home-gateway h2,
+.home-gateway h3 {
+  overflow-wrap: anywhere;
+}
+
+.home-gateway h1,
+.home-gateway h2,
+.home-gateway h3 {
+  text-wrap: balance;
+}
+
+.home-gateway p {
+  text-wrap: pretty;
+}
+
+.home-gateway section {
+  scroll-margin-top: calc(var(--sl-nav-height) + 1rem);
+}
+
+.home-gateway :focus-visible {
+  outline: .2rem solid var(--home-focus);
+  outline-offset: .25rem;
+}
+
+.home-hero {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 150rem);
+  margin-inline: auto;
+  background: #09090b;
+}
+
+.home-hero__copy {
+  position: absolute;
+  z-index: 20;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  width: min(82rem, calc(100% - 3rem));
+  translate: -50% -50%;
+  text-align: center;
+  pointer-events: none;
+  filter: drop-shadow(0 .75rem 2.4rem #000);
+}
+
+.home-hero__copy > * {
+  pointer-events: auto;
+}
+
+.home-eyebrow {
+  margin: 0 0 .8rem;
+  color: var(--home-gold);
+  font-family: var(--vc-font-ui);
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+
+.home-hero h1 {
+  margin: 0;
+  color: #fff;
+  font-family: var(--vc-font-display);
+  font-size: var(--home-step-5);
+  font-weight: 700;
+  letter-spacing: -.065em;
+  line-height: .78;
+  white-space: nowrap;
+}
+
+.home-hero__deck {
+  margin: clamp(1rem, 2.4vw, 1.8rem) auto 0;
+  color: #e1d8ce;
+  font-family: var(--vc-font-body);
+  font-size: var(--home-step-1);
+  line-height: 1.35;
+}
+
+.home-actions {
+  margin-block-start: clamp(1rem, 2.4vw, 1.8rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .65rem;
+}
+
+.home-button {
+  min-height: 3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .72rem 1.1rem;
+  border: 1px solid var(--home-gold);
+  background: var(--home-gold);
+  color: var(--sl-color-black);
+  font-family: var(--vc-font-ui);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.home-button--secondary {
+  background: rgba(8, 8, 10, .76);
+  color: #fff;
+}
+
+.home-button:hover,
+.home-button:focus-visible {
+  filter: brightness(1.08);
+}
+
+.home-era-gateway {
+  min-height: clamp(44rem, calc(100svh - var(--sl-nav-height)), 90rem);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  list-style: none;
+  overflow: hidden;
+}
+
+.home-era-gateway > li {
+  min-width: 0;
+  display: flex;
+  flex: 1 1 25%;
+  transition: flex-grow .5s cubic-bezier(.2, .75, .2, 1), filter .35s ease;
+}
+
+.home-era-card {
+  --home-era-accent: var(--home-gold);
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding: clamp(1rem, 2vw, 2.4rem);
+  border-inline-end: 1px solid rgba(255, 255, 255, .13);
+  color: #fff;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.home-era-gateway > li:last-child .home-era-card {
+  border-inline-end: 0;
+}
+
+.home-era-card::before,
+.home-era-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.home-era-card::before {
+  scale: 1.03;
+  transition: scale .75s ease, filter .4s ease;
+}
+
+.home-era-card::after {
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(5, 5, 7, .58) 0%, rgba(5, 5, 7, .12) 30%, rgba(5, 5, 7, .42) 58%, rgba(5, 5, 7, .97) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, .18), transparent 55%);
+}
+
+.home-era-card--citadel {
+  --home-era-accent: #d79a58;
+}
+
+.home-era-card--citadel::before {
+  background:
+    radial-gradient(circle at 56% 29%, rgba(218, 132, 63, .48), transparent 19%),
+    linear-gradient(25deg, #100a08, #422711 54%, #0b0a0b),
+    repeating-linear-gradient(57deg, transparent 0 1rem, rgba(255, 255, 255, .045) 1.05rem 1.1rem);
+}
+
+.home-era-card--smog {
+  --home-era-accent: #c5a06e;
+}
+
+.home-era-card--smog::before {
+  background:
+    radial-gradient(circle at 48% 30%, rgba(212, 162, 90, .42), transparent 22%),
+    linear-gradient(145deg, #090b0d, #44301c 68%, #101012),
+    repeating-linear-gradient(91deg, transparent 0 2rem, rgba(255, 255, 255, .025) 2.05rem 2.12rem);
+}
+
+.home-era-card--nearsight {
+  --home-era-accent: #79c6b7;
+}
+
+.home-era-card--nearsight::before {
+  background:
+    radial-gradient(circle at 55% 32%, rgba(91, 186, 166, .38), transparent 22%),
+    repeating-linear-gradient(0deg, #091111 0 .25rem, #0e1e1d .31rem .68rem),
+    linear-gradient(150deg, #081010, #15302d);
+}
+
+.home-era-card--entropy {
+  --home-era-accent: #ad9ce9;
+}
+
+.home-era-card--entropy::before {
+  background:
+    radial-gradient(circle at 55% 32%, rgba(149, 133, 216, .45), transparent 23%),
+    radial-gradient(circle at 23% 22%, #fff 0 .05rem, transparent .09rem),
+    radial-gradient(circle at 80% 70%, #ffddca 0 .055rem, transparent .1rem),
+    radial-gradient(circle at 67% 18%, #fff 0 .04rem, transparent .08rem),
+    linear-gradient(150deg, #08080e, #1b1430);
+}
+
+.home-era-card__content {
+  width: min(100%, 29rem);
+  text-shadow: 0 .2rem 1.3rem #000;
+}
+
+.home-era-card__number,
+.home-era-card__tags,
+.home-era-card__action {
+  font-family: var(--vc-font-ui);
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.home-era-card__number {
+  color: var(--home-era-accent);
+}
+
+.home-era-card h2 {
+  margin: .45rem 0 .65rem;
+  color: #fff;
+  font-family: var(--vc-font-display);
+  font-size: var(--home-step-3);
+  letter-spacing: -.045em;
+  line-height: .9;
+}
+
+.home-era-card__tags {
+  margin: 0 0 .85rem;
+  color: #e7ded4;
+  line-height: 1.45;
+}
+
+.home-era-card__description {
+  margin: 0;
+  color: #cfc6bd;
+  font-size: var(--home-step--1);
+  line-height: 1.62;
+}
+
+.home-era-card__action {
+  min-height: 2.75rem;
+  margin-block-start: .8rem;
+  display: inline-flex;
+  align-items: center;
+  color: var(--home-era-accent);
+}
+
+.home-era-card__action::after {
+  content: ' →';
+  margin-inline-start: .4rem;
+}
