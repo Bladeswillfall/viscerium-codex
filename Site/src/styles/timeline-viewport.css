@@ -41,24 +41,25 @@ body > .vc-timeline-hovercard {
 
   position: fixed !important;
   z-index: 2147483000 !important;
-  display: grid;
+  display: grid !important;
   visibility: visible !important;
   opacity: 1 !important;
-  width: min(18rem, calc(100vw - 1rem));
-  max-width: 18rem;
+  width: min(18rem, calc(100vw - 1rem)) !important;
+  max-width: 18rem !important;
   gap: .3rem;
-  margin: 0;
-  padding: .72rem .82rem;
-  overflow: hidden;
-  border: 1px solid var(--vc-hovercard-border);
-  border-radius: 0;
-  color: var(--vc-hovercard-text);
-  background: var(--vc-hovercard-bg);
-  box-shadow: 0 .75rem 2.5rem var(--vc-hovercard-shadow);
+  margin: 0 !important;
+  padding: .72rem .82rem !important;
+  overflow: hidden !important;
+  border: 1px solid var(--vc-hovercard-border) !important;
+  border-radius: 0 !important;
+  color: var(--vc-hovercard-text) !important;
+  background: var(--vc-hovercard-bg) !important;
+  background-color: var(--vc-hovercard-bg) !important;
+  box-shadow: 0 .75rem 2.5rem var(--vc-hovercard-shadow) !important;
   backdrop-filter: blur(10px);
-  font-family: var(--vc-font-ui, ui-sans-serif, system-ui);
+  font-family: var(--vc-font-ui, ui-sans-serif, system-ui) !important;
   line-height: 1.35;
-  white-space: normal;
+  white-space: normal !important;
   pointer-events: none;
 }
 
@@ -76,7 +77,7 @@ body > .vc-timeline-hovercard[hidden] {
 }
 
 .vc-timeline-hovercard-date {
-  color: var(--vc-hovercard-accent);
+  color: var(--vc-hovercard-accent) !important;
   font-size: .68rem;
   font-weight: 800;
   letter-spacing: .06em;
@@ -85,7 +86,7 @@ body > .vc-timeline-hovercard[hidden] {
 
 .vc-timeline-hovercard-title {
   overflow: hidden;
-  color: var(--vc-hovercard-text);
+  color: var(--vc-hovercard-text) !important;
   font-family: var(--vc-font-display, Cinzel, serif);
   font-size: .9rem;
   font-weight: 400;
@@ -97,7 +98,7 @@ body > .vc-timeline-hovercard[hidden] {
 .vc-timeline-hovercard-description {
   display: -webkit-box;
   overflow: hidden;
-  color: var(--vc-hovercard-muted);
+  color: var(--vc-hovercard-muted) !important;
   font-size: .78rem;
   line-height: 1.35;
   -webkit-box-orient: vertical;
@@ -112,16 +113,16 @@ body > .vc-timeline-hovercard[hidden] {
   }
 
   body > .vc-timeline-hovercard {
-    width: min(16.5rem, calc(100vw - 1rem));
+    width: min(16.5rem, calc(100vw - 1rem)) !important;
   }
 }
 
 @media (forced-colors: active) {
   body > .vc-timeline-hovercard {
-    border-color: CanvasText;
-    color: CanvasText;
-    background: Canvas;
-    box-shadow: none;
+    border-color: CanvasText !important;
+    color: CanvasText !important;
+    background: Canvas !important;
+    box-shadow: none !important;
     backdrop-filter: none;
     forced-color-adjust: none;
   }
