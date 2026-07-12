@@ -7,6 +7,12 @@
  * transparent so the grid remains visible in empty space, and place native
  * event geometry above both the grid and translucent era/background items.
  */
+.vc-timeline-app {
+  --vc-year-line: color-mix(in srgb, var(--sl-color-gray-3, #aaa49b) 48%, transparent);
+  --vc-year-line-decade: color-mix(in srgb, var(--sl-color-gray-2, #c6c0b7) 68%, transparent);
+  --vc-year-line-century: color-mix(in srgb, var(--sl-color-white, #f3efe7) 84%, transparent);
+}
+
 .vc-timeline-app .vc-timeline-canvas .vis-timeline > .vis-panel.vis-background {
   z-index: 0 !important;
   background-color: var(--chronos-canvas) !important;
@@ -26,6 +32,11 @@
 
 .vc-timeline-app .vc-timeline-canvas .vc-timeline-year-grid {
   z-index: 0;
+}
+
+/* Era bands remain perceptible, but must not wash out the year grid beneath. */
+.vc-timeline-app .vc-timeline-canvas .vis-item.vc-era-band {
+  opacity: .1;
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-itemset > .vis-background {
