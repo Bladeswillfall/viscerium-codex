@@ -18,8 +18,8 @@ function renderedEventItems(canvas) {
  * Give the bounded Chronos viewport a genuine user-facing vertical row scroll.
  * Normal vertical wheel and keyboard input is routed to vis-timeline's lane
  * scroller, while modified/horizontal input remains available for date
- * navigation. A small end cap is placed after the label content so the final
- * event card can clear vis-timeline's lower clipping edge.
+ * navigation. The adapter supplies an invisible final group so vis-timeline's
+ * own row model includes enough clearance for the last event card.
  */
 export function installTimelineRowScroll(root) {
   const canvas = root.querySelector('[data-vc-canvas]');
@@ -31,33 +31,8 @@ export function installTimelineRowScroll(root) {
   let settleTimeout;
   let searchTimer;
   let automaticFraming = true;
-  let endCap;
 
   const getScroller = () => canvas.querySelector(SCROLLER_SELECTOR);
-
-  const ensureEndCap = () => {
-    const scroller = getScroller();
-    if (!scroller) return undefined;
-
-    const content = [...scroller.querySelectorAll(':scope > .vis-content')]
-      .find((element) => element.offsetHeight > 0)
-      ?? scroller.querySelector(':scope > .vis-content');
-    if (!content) return scroller;
-
-    if (!endCap?.isConnected || endCap.parentElement !== scroller) {
-      endCap?.remove();
-      endCap = document.createElement('div');
-      endCap.className = 'vc-timeline-row-end-cap';
-      endCap.setAttribute('aria-hidden', 'true');
-      scroller.append(endCap);
-    }
-
-    const contentHeight = Math.max(content.offsetHeight, content.scrollHeight);
-    endCap.style.top = `${contentHeight}px`;
-    canvas.dataset.vcRowEndCap = String(endCap.offsetHeight);
-    return scroller;
-  };
-
   const maximumScroll = (scroller = getScroller()) => (
     scroller ? Math.max(0, scroller.scrollHeight - scroller.clientHeight) : 0
   );
@@ -82,7 +57,7 @@ export function installTimelineRowScroll(root) {
 
   const frameFirstEvent = () => {
     if (destroyed || !automaticFraming || canvas.hidden) return;
-    const scroller = ensureEndCap();
+    const scroller = getScroller();
     if (!scroller) return;
 
     const items = renderedEventItems(canvas);
@@ -125,7 +100,7 @@ export function installTimelineRowScroll(root) {
   };
 
   const scrollBy = (delta) => {
-    const scroller = ensureEndCap();
+    const scroller = getScroller();
     if (!scroller) return false;
     return applyScroll(scroller, scroller.scrollTop + delta);
   };
@@ -147,7 +122,7 @@ export function installTimelineRowScroll(root) {
 
   const handleKeyDown = (event) => {
     if (event.target !== canvas || event.ctrlKey || event.metaKey || event.altKey) return;
-    const scroller = ensureEndCap();
+    const scroller = getScroller();
     if (!scroller) return;
 
     const pageStep = Math.max(80, Math.round(scroller.clientHeight * 0.82));
@@ -185,7 +160,6 @@ export function installTimelineRowScroll(root) {
 
   const mutationObserver = new MutationObserver(() => {
     if (automaticFraming) scheduleFrame();
-    else ensureEndCap();
   });
   mutationObserver.observe(canvas, {
     subtree: true,
@@ -197,7 +171,7 @@ export function installTimelineRowScroll(root) {
   const resizeObserver = typeof ResizeObserver === 'function'
     ? new ResizeObserver(() => {
         if (automaticFraming) beginSettling();
-        else ensureEndCap();
+        else canvas.dataset.vcRowScrollRange = String(maximumScroll());
       })
     : undefined;
   resizeObserver?.observe(canvas);
@@ -225,6 +199,5 @@ export function installTimelineRowScroll(root) {
     root.removeEventListener('change', handleChange);
     root.removeEventListener('input', handleInput);
     root.removeEventListener('click', handleClick);
-    endCap?.remove();
   };
 }
