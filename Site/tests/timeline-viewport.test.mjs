@@ -4,16 +4,24 @@ import { readFileSync } from 'node:fs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('timeline rows live inside a bounded vertically scrollable canvas', () => {
+test('timeline rows use a bounded viewport with measured top and bottom framing', () => {
   const app = read('../src/components/timeline/TimelineApp.astro');
+  const island = read('../src/components/timeline/TimelineIsland.tsx');
+  const framing = read('../src/lib/timeline/scroll-framing.mjs');
   const styles = read('../src/styles/timeline-viewport.css');
 
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-viewport\.css'/);
+  assert.match(island, /installTimelineScrollFraming\(root\)/);
   assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
-  assert.match(styles, /padding-block-end: 12rem/);
   assert.match(styles, /overflow-y: auto/);
   assert.match(styles, /overscroll-behavior: contain/);
+  assert.doesNotMatch(styles, /padding-block-end:\s*1[02]rem/);
+  assert.match(styles, /\.vc-timeline-scroll-tail/);
   assert.match(styles, /\.vc-timeline-app\.is-compact \.vc-timeline-canvas[\s\S]*clamp\(22rem, 48vh, 32rem\)/);
+  assert.match(framing, /const firstTop = Math\.min/);
+  assert.match(framing, /const lastBottom = Math\.max/);
+  assert.match(framing, /lastBottom \+ BOTTOM_INSET - contentHeightWithoutTail/);
+  assert.match(framing, /canvas\.scrollTop = targetScroll/);
 });
 
 test('the compatibility proxy forwards every legacy option except the obsolete fixed height', () => {
