@@ -21,8 +21,8 @@ test('the bounded canvas routes real user input to viewport-ranked Chronos rows'
   assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
   assert.match(styles, /overflow: hidden/);
   assert.match(styles, /> \.vis-timeline \{[\s\S]*max-block-size: 100%/);
-  assert.match(styles, /\.vis-group:has\(\.vc-timeline-row-end-cap-item\)[\s\S]*block-size: 3rem/);
-  assert.match(styles, /\.vis-item\.vc-timeline-row-end-cap-item[\s\S]*block-size: 3rem/);
+  assert.match(styles, /\.vis-group:has\(\.vc-timeline-row-end-cap-item\)[\s\S]*block-size: 4\.5rem/);
+  assert.match(styles, /\.vis-item\.vc-timeline-row-end-cap-item[\s\S]*block-size: 4\.5rem/);
   assert.doesNotMatch(styles, /padding-block-end:\s*1[02]rem/);
 
   assert.match(adapter, /STABLE_GROUP_ID_PREFIX = 'vc-timeline-group-'/);
