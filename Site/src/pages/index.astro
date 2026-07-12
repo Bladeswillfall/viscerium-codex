@@ -25,3 +25,17 @@ const mappedEvents = canonEntries.filter(({ data }) => data.type === 'event' && 
 >
   <HomeGateway canonEntryCount={canonEntries.length} mappedEventCount={mappedEvents.length} />
 </StarlightPage>
+
+<style is:global>
+  @media (min-width: 68.76rem) {
+    .home-hero {
+      width: 100%;
+      max-width: none;
+      margin-inline: 0;
+    }
+
+    .home-era-gateway {
+      min-height: clamp(44rem, calc(100svh - var(--sl-nav-height)), 80rem);
+    }
+  }
+</style>
