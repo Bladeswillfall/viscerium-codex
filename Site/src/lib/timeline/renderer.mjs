@@ -1,9 +1,14 @@
 import { ChronosTimeline } from 'chronos-timeline-md';
+import { formatAbsoluteDay } from '../calendar/runtime.mjs';
 import { syntheticDateToAbsoluteDay } from './core.mjs';
 import { mountTimeline as mountNativeTimeline } from './chronos-native-renderer.mjs';
 import { calendarYearBoundaries } from './year-grid.mjs';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+const TIMELINE_MIN_HEIGHT = 420;
+const TIMELINE_MAX_HEIGHT = 1152;
+const TIMELINE_COMPACT_MIN_HEIGHT = 320;
+const TIMELINE_COMPACT_MAX_HEIGHT = 768;
 
 function groupSignature(groups) {
   const values = Array.isArray(groups)
@@ -111,7 +116,10 @@ function installChronosTimelineProxy(chronos, initialResult, originalRenderParse
             && nextOptions.horizontalScroll === true
             && (nextOptions.height === '34rem' || nextOptions.height === '28rem')
           );
-          if (isLegacyHostOptionPass) return undefined;
+          if (isLegacyHostOptionPass) {
+            const { height: _legacyFixedHeight, ...forwardedOptions } = nextOptions;
+            return target.setOptions(forwardedOptions);
+          }
           return target.setOptions(nextOptions);
         };
       }
@@ -271,6 +279,228 @@ function installAnnualYearGrid(root, dataset, timeline) {
   };
 }
 
+function installAdaptiveTimelineHeight(root, timeline, compact = false) {
+  let renderFrame;
+  let settleFrame;
+  let destroyed = false;
+  let appliedHeight = 0;
+  let appliedScrollable;
+  const canvas = root.querySelector('[data-vc-canvas]');
+  const minHeight = compact ? TIMELINE_COMPACT_MIN_HEIGHT : TIMELINE_MIN_HEIGHT;
+  const maxHeight = compact ? TIMELINE_COMPACT_MAX_HEIGHT : TIMELINE_MAX_HEIGHT;
+
+  const measure = () => {
+    if (destroyed || !canvas || canvas.hidden) return;
+
+    const timelineElement = canvas.querySelector('.vis-timeline');
+    const itemset = canvas.querySelector('.vis-panel.vis-center .vis-itemset');
+    if (!timelineElement || !itemset) return;
+
+    const itemsetRect = itemset.getBoundingClientRect();
+    const timelineRect = timelineElement.getBoundingClientRect();
+    const eventItems = [...itemset.querySelectorAll('.vis-foreground .vis-item.vc-timeline-item')]
+      .filter((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+      });
+
+    const lowestEventBottom = eventItems.reduce((bottom, element) => (
+      Math.max(bottom, element.getBoundingClientRect().bottom)
+    ), itemsetRect.top);
+    const contentHeight = Math.max(0, lowestEventBottom - itemsetRect.top) + 32;
+    const timelineChromeHeight = Math.max(0, timelineRect.height - itemsetRect.height);
+    const naturalHeight = Math.max(minHeight, Math.ceil(contentHeight + timelineChromeHeight));
+    const desiredHeight = Math.min(maxHeight, naturalHeight);
+    const scrollable = naturalHeight > maxHeight;
+
+    if (
+      Math.abs(desiredHeight - appliedHeight) < 2
+      && scrollable === appliedScrollable
+    ) return;
+
+    appliedHeight = desiredHeight;
+    appliedScrollable = scrollable;
+    canvas.dataset.vcAdaptiveHeight = String(desiredHeight);
+    canvas.dataset.vcVerticalScroll = String(scrollable);
+    timeline.setOptions({
+      height: `${desiredHeight}px`,
+      minHeight: `${minHeight}px`,
+      verticalScroll: true,
+    });
+  };
+
+  const scheduleMeasure = () => {
+    window.cancelAnimationFrame(renderFrame);
+    window.cancelAnimationFrame(settleFrame);
+    renderFrame = window.requestAnimationFrame(() => {
+      settleFrame = window.requestAnimationFrame(measure);
+    });
+  };
+
+  const mutationObserver = new MutationObserver(scheduleMeasure);
+  mutationObserver.observe(root, { subtree: true, childList: true });
+
+  const resizeObserver = typeof ResizeObserver === 'function'
+    ? new ResizeObserver(scheduleMeasure)
+    : undefined;
+  resizeObserver?.observe(root);
+
+  timeline.on('changed', scheduleMeasure);
+  timeline.on('rangechanged', scheduleMeasure);
+  window.addEventListener('resize', scheduleMeasure);
+  scheduleMeasure();
+
+  return () => {
+    destroyed = true;
+    window.cancelAnimationFrame(renderFrame);
+    window.cancelAnimationFrame(settleFrame);
+    mutationObserver.disconnect();
+    resizeObserver?.disconnect();
+    timeline.off?.('changed', scheduleMeasure);
+    timeline.off?.('rangechanged', scheduleMeasure);
+    window.removeEventListener('resize', scheduleMeasure);
+  };
+}
+
+function formatTooltipDate(event, calendarId) {
+  const start = formatAbsoluteDay(event.absoluteStartDay, calendarId, event.precision);
+  if (event.absoluteEndDay === undefined) return start;
+  return `${start} — ${formatAbsoluteDay(
+    event.absoluteEndDay,
+    calendarId,
+    event.endPrecision ?? event.precision,
+  )}`;
+}
+
+function installTimelineHoverTooltip(root, dataset) {
+  const eventById = new Map(dataset.events.map((event) => [event.id, event]));
+  const calendarSelect = root.querySelector('[data-vc-calendar]');
+  const tooltip = document.createElement('div');
+  const tooltipId = `vc-timeline-hovercard-${Math.random().toString(36).slice(2, 10)}`;
+  tooltip.id = tooltipId;
+  tooltip.className = 'vis-tooltip vc-timeline-hovercard';
+  tooltip.hidden = true;
+  tooltip.setAttribute('role', 'tooltip');
+  tooltip.innerHTML = `
+    <span class="vc-timeline-hovercard-date"></span>
+    <strong class="vc-timeline-hovercard-title"></strong>
+    <span class="vc-timeline-hovercard-description"></span>`;
+  document.body.append(tooltip);
+
+  const dateElement = tooltip.querySelector('.vc-timeline-hovercard-date');
+  const titleElement = tooltip.querySelector('.vc-timeline-hovercard-title');
+  const descriptionElement = tooltip.querySelector('.vc-timeline-hovercard-description');
+  let activeItem;
+  let activeEvent;
+  let positionFrame;
+
+  const position = () => {
+    if (!activeItem || tooltip.hidden) return;
+    const itemRect = activeItem.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const viewportPadding = 8;
+    const gap = 10;
+    const maximumLeft = Math.max(viewportPadding, window.innerWidth - tooltipRect.width - viewportPadding);
+    const left = Math.min(
+      maximumLeft,
+      Math.max(viewportPadding, itemRect.left + itemRect.width / 2 - tooltipRect.width / 2),
+    );
+    let top = itemRect.top - tooltipRect.height - gap;
+    if (top < viewportPadding) {
+      top = Math.min(
+        window.innerHeight - tooltipRect.height - viewportPadding,
+        itemRect.bottom + gap,
+      );
+    }
+    tooltip.style.left = `${Math.round(left)}px`;
+    tooltip.style.top = `${Math.max(viewportPadding, Math.round(top))}px`;
+  };
+
+  const schedulePosition = () => {
+    window.cancelAnimationFrame(positionFrame);
+    positionFrame = window.requestAnimationFrame(position);
+  };
+
+  const hide = () => {
+    if (activeItem) activeItem.removeAttribute('aria-describedby');
+    activeItem = undefined;
+    activeEvent = undefined;
+    tooltip.hidden = true;
+  };
+
+  const show = (item) => {
+    const id = item?.getAttribute?.('data-id');
+    const event = id ? eventById.get(id) : undefined;
+    if (!event) {
+      hide();
+      return;
+    }
+
+    activeItem?.removeAttribute('aria-describedby');
+    activeItem = item;
+    activeEvent = event;
+    const calendarId = calendarSelect?.value ?? dataset.defaultCalendar;
+    dateElement.textContent = formatTooltipDate(event, calendarId);
+    titleElement.textContent = event.title;
+    descriptionElement.textContent = event.description;
+    activeItem.setAttribute('aria-describedby', tooltipId);
+    tooltip.hidden = false;
+    schedulePosition();
+  };
+
+  const eventItemFor = (target) => target?.closest?.('.vis-item.vc-timeline-item');
+
+  const handlePointerOver = (event) => {
+    const item = eventItemFor(event.target);
+    if (!item || item === activeItem) return;
+    show(item);
+  };
+
+  const handlePointerOut = (event) => {
+    if (!activeItem) return;
+    const nextItem = eventItemFor(event.relatedTarget);
+    if (nextItem === activeItem) return;
+    hide();
+  };
+
+  const handleFocusIn = (event) => {
+    const item = eventItemFor(event.target);
+    if (item) show(item);
+  };
+
+  const handleFocusOut = (event) => {
+    const nextItem = eventItemFor(event.relatedTarget);
+    if (nextItem === activeItem) return;
+    hide();
+  };
+
+  const handleCalendarChange = () => {
+    if (activeItem && activeEvent) show(activeItem);
+  };
+
+  root.addEventListener('pointerover', handlePointerOver, true);
+  root.addEventListener('pointerout', handlePointerOut, true);
+  root.addEventListener('focusin', handleFocusIn, true);
+  root.addEventListener('focusout', handleFocusOut, true);
+  calendarSelect?.addEventListener('change', handleCalendarChange);
+  window.addEventListener('scroll', schedulePosition, true);
+  window.addEventListener('resize', schedulePosition);
+
+  return () => {
+    window.cancelAnimationFrame(positionFrame);
+    root.removeEventListener('pointerover', handlePointerOver, true);
+    root.removeEventListener('pointerout', handlePointerOut, true);
+    root.removeEventListener('focusin', handleFocusIn, true);
+    root.removeEventListener('focusout', handleFocusOut, true);
+    calendarSelect?.removeEventListener('change', handleCalendarChange);
+    window.removeEventListener('scroll', schedulePosition, true);
+    window.removeEventListener('resize', schedulePosition);
+    activeItem?.removeAttribute('aria-describedby');
+    tooltip.remove();
+  };
+}
+
 function installTimelineDomGuards(root) {
   let alignmentFrame;
   let destroyed = false;
@@ -358,8 +588,8 @@ function installTimelineDomGuards(root) {
  * timeline render. Same-group item updates stay in place; changing declared
  * lanes or categories rebuilds the timeline through Chronos and restores the
  * existing world-time window behind a stable proxy used by the site controls.
- * Chronos's secondary tooltip installer is suppressed so vis-timeline remains
- * the single tooltip owner and displays the canonical VISCERIUM item title.
+ * Chronos's secondary tooltip installer is suppressed in favour of a body-level
+ * VISCERIUM hovercard that cannot be clipped by the timeline viewport.
  */
 export function mountTimeline(root, dataset, options) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
@@ -378,12 +608,19 @@ export function mountTimeline(root, dataset, options) {
     ChronosTimeline.prototype.renderParsed = originalRenderParsed;
   }
 
+  const timeline = activeChronos?.timeline;
   const cleanupDomGuards = installTimelineDomGuards(root);
-  const cleanupYearGrid = activeChronos?.timeline
-    ? installAnnualYearGrid(root, dataset, activeChronos.timeline)
+  const cleanupYearGrid = timeline
+    ? installAnnualYearGrid(root, dataset, timeline)
     : undefined;
+  const cleanupAdaptiveHeight = timeline
+    ? installAdaptiveTimelineHeight(root, timeline, options?.compact === true)
+    : undefined;
+  const cleanupHoverTooltip = installTimelineHoverTooltip(root, dataset);
 
   return () => {
+    cleanupHoverTooltip();
+    cleanupAdaptiveHeight?.();
     cleanupYearGrid?.();
     cleanupDomGuards();
     nativeCleanup?.();
