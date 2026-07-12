@@ -1,5 +1,3 @@
-import { Timeline } from 'vis-timeline/standalone';
-
 function boundedHeight(compact) {
   const minimum = compact ? 320 : 420;
   const maximum = compact ? 512 : 672;
@@ -12,7 +10,8 @@ function boundedHeight(compact) {
  * Chronos. Bound only the vertically-scrollable primary timeline instances;
  * minimaps and unrelated vis-timeline instances remain untouched.
  */
-export function installTimelineViewportOptionGuard(root, compact = false) {
+export async function installTimelineViewportOptionGuard(root, compact = false) {
+  const { Timeline } = await import('vis-timeline/standalone');
   const prototype = Timeline.prototype;
   const originalSetOptions = prototype.setOptions;
   const guardedInstances = new Set();
