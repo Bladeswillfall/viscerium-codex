@@ -1,0 +1,56 @@
+/* Zoom-aware chronology grid. The legacy fixed annual/decade/century SVG remains
+   mounted by the Chronos adapter for compatibility, but this layer is the visible ruler. */
+.vc-timeline-app .vc-timeline-year-grid {
+  display: none !important;
+}
+
+.vc-timeline-app .vc-timeline-time-grid {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  margin: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.vc-timeline-app .vc-timeline-time-grid path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: crispEdges;
+}
+
+.vc-timeline-app .vc-time-grid-secondary {
+  stroke: var(--vc-year-line-decade, color-mix(in srgb, currentColor 28%, transparent));
+  stroke-width: .75;
+  opacity: .62;
+}
+
+.vc-timeline-app .vc-time-grid-primary {
+  stroke: var(--vc-year-line-century, color-mix(in srgb, currentColor 52%, transparent));
+  stroke-width: 1.25;
+  opacity: 1;
+}
+
+.vc-timeline-app .vc-timeline-time-grid.is-scale-transitioning path {
+  animation: vc-time-grid-reveal 160ms ease-out;
+}
+
+@keyframes vc-time-grid-reveal {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vc-timeline-app .vc-timeline-time-grid.is-scale-transitioning path {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .vc-timeline-app .vc-timeline-time-grid path {
+    stroke: CanvasText;
+  }
+
+  .vc-timeline-app .vc-time-grid-secondary {
+    opacity: .45;
+  }
+}
