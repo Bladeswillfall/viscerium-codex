@@ -24,7 +24,7 @@
 .vc-timeline-bottom-sentinel {
   display: block;
   inline-size: 1px;
-  min-block-size: 0;
+  block-size: 1.5rem;
   margin: 0;
   padding: 0;
   pointer-events: none;
