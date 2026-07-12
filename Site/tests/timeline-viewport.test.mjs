@@ -21,6 +21,7 @@ test('the bounded canvas routes real user input to viewport-ranked Chronos rows'
   assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
   assert.match(styles, /overflow: hidden/);
   assert.match(styles, /> \.vis-timeline \{[\s\S]*max-block-size: 100%/);
+  assert.match(styles, /\.vis-itemset,[\s\S]*\.vis-labelset[\s\S]*--vc-row-end-correction/);
   assert.match(styles, /\.vis-group:has\(\.vc-timeline-row-end-cap-item\)[\s\S]*block-size: 4\.5rem/);
   assert.match(styles, /\.vis-item\.vc-timeline-row-end-cap-item[\s\S]*block-size: 4\.5rem/);
   assert.doesNotMatch(styles, /padding-block-end:\s*1[02]rem/);
@@ -40,6 +41,10 @@ test('the bounded canvas routes real user input to viewport-ranked Chronos rows'
   assert.match(guard, /const isAdaptiveHeightPass/);
 
   assert.match(rowScroll, /SCROLLER_SELECTOR = '\.vis-panel\.vis-left\.vis-vertical-scroll'/);
+  assert.match(rowScroll, /MAX_END_CORRECTION = 24/);
+  assert.match(rowScroll, /const uncorrectedBottom = visibleBottom \+ appliedEndCorrection/);
+  assert.match(rowScroll, /--vc-row-end-correction/);
+  assert.match(rowScroll, /automaticFraming = false/);
   assert.match(rowScroll, /canvas\.addEventListener\('wheel', handleWheel, \{ capture: true, passive: false \}\)/);
   assert.match(rowScroll, /scroller\.scrollTop = target/);
   assert.match(rowScroll, /scroller\.dispatchEvent\(new Event\('scroll'/);
