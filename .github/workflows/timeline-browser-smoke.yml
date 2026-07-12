@@ -62,79 +62,97 @@ jobs:
           const eras = ['citadel', 'smog', 'nearsight', 'entropy'];
           mkdirSync('timeline-browser-diagnostics', { recursive: true });
 
-          async function collectErrors(page, era) {
+          function collectErrors(page, label) {
             const messages = [];
             page.on('console', (message) => {
               const entry = `console:${message.type()}: ${message.text()}`;
               messages.push(entry);
-              console.log(`[${era}] ${entry}`);
+              console.log(`[${label}] ${entry}`);
             });
             page.on('pageerror', (error) => {
               const entry = `pageerror: ${error.stack || error.message}`;
               messages.push(entry);
-              console.log(`[${era}] ${entry}`);
+              console.log(`[${label}] ${entry}`);
             });
             page.on('requestfailed', (request) => {
               const entry = `requestfailed: ${request.url()} — ${request.failure()?.errorText}`;
               messages.push(entry);
-              console.log(`[${era}] ${entry}`);
+              console.log(`[${label}] ${entry}`);
             });
             return messages;
           }
 
-          async function openEra(page, era) {
-            await page.goto(`http://127.0.0.1:4321/eras/${era}/`, { waitUntil: 'networkidle' });
-            await page.waitForTimeout(3_000);
+          async function waitForTimeline(page) {
             await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
             await expect(page.locator('[data-vc-canvas]')).toBeVisible();
             await expect(page.locator('[data-vc-fallback]')).toBeHidden();
             await expect(page.locator('[data-vc-timeline-mount]')).not.toBeEmpty();
+            await page.waitForTimeout(1_000);
           }
 
-          async function scrollBottomItemIntoView(page, item) {
-            const scroll = await item.evaluate((element) => {
-              const canvas = element.closest('[data-vc-canvas]');
-              if (!canvas) return null;
-              const canvasRect = canvas.getBoundingClientRect();
-              const itemRect = element.getBoundingClientRect();
-              const centred = canvas.scrollTop
-                + itemRect.top
-                - canvasRect.top
-                - (canvas.clientHeight - itemRect.height) / 2;
-              const maximum = Math.max(0, canvas.scrollHeight - canvas.clientHeight);
-              const applied = Math.min(maximum, Math.max(0, centred + 128));
-              canvas.scrollTop = applied;
+          async function openEra(page, era) {
+            await page.goto(`http://127.0.0.1:4321/eras/${era}/`, { waitUntil: 'networkidle' });
+            await waitForTimeline(page);
+          }
+
+          function measureViewport(canvas) {
+            const canvasRect = canvas.getBoundingClientRect();
+            const timeline = canvas.querySelector(':scope > .vis-timeline');
+            const timelineRect = timeline?.getBoundingClientRect();
+            const canvasStyle = getComputedStyle(canvas);
+            const items = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
+              .filter((element) => {
+                const rect = element.getBoundingClientRect();
+                return rect.width > 0 && rect.height > 0;
+              });
+            const intersectingItems = items.filter((element) => {
+              const rect = element.getBoundingClientRect();
+              return rect.bottom > canvasRect.top && rect.top < canvasRect.bottom;
+            });
+            const itemBounds = intersectingItems.map((element) => {
+              const rect = element.getBoundingClientRect();
               return {
-                targetScrollTop: centred,
-                appliedScrollTop: applied,
-                maximumScrollTop: maximum,
-                clientHeight: canvas.clientHeight,
-                scrollHeight: canvas.scrollHeight,
+                text: element.textContent?.trim() ?? '',
+                top: rect.top,
+                bottom: rect.bottom,
               };
             });
-            await page.locator('[data-vc-canvas]').scrollIntoViewIfNeeded();
-            await page.waitForTimeout(350);
-            const itemBox = await item.boundingBox();
-            const canvasBox = await page.locator('[data-vc-canvas]').boundingBox();
-            const viewport = page.viewportSize();
+            const scrollCandidates = [...canvas.querySelectorAll(
+              '.vis-panel.vis-center, .vis-panel.vis-left, .vis-content, .vis-itemset',
+            )].map((element) => {
+              const style = getComputedStyle(element);
+              return {
+                className: element.className,
+                clientHeight: element.clientHeight,
+                scrollHeight: element.scrollHeight,
+                scrollTop: element.scrollTop,
+                overflowY: style.overflowY,
+                transform: style.transform,
+              };
+            });
             return {
-              ...scroll,
-              itemBox,
-              canvasBox,
-              itemInCanvas: Boolean(itemBox && canvasBox
-                && itemBox.y >= canvasBox.y
-                && itemBox.y + itemBox.height <= canvasBox.y + canvasBox.height),
-              itemInBrowser: Boolean(itemBox && viewport
-                && itemBox.x >= 0
-                && itemBox.y >= 0
-                && itemBox.x + itemBox.width <= viewport.width
-                && itemBox.y + itemBox.height <= viewport.height),
+              canvasHeight: canvasRect.height,
+              canvasClientHeight: canvas.clientHeight,
+              canvasScrollHeight: canvas.scrollHeight,
+              canvasOverflowY: canvasStyle.overflowY,
+              timelineHeight: timelineRect?.height ?? 0,
+              viewportHeightToken: canvas.dataset.vcViewportHeight ?? null,
+              visibleEventCount: itemBounds.length,
+              firstVisibleEventTop: itemBounds.length
+                ? Math.min(...itemBounds.map(({ top }) => top))
+                : null,
+              lastVisibleEventBottom: itemBounds.length
+                ? Math.max(...itemBounds.map(({ bottom }) => bottom))
+                : null,
+              canvasTop: canvasRect.top,
+              canvasBottom: canvasRect.bottom,
+              scrollCandidates,
             };
           }
 
           for (const era of eras) {
             test(`${era} hydrates the Chronos timeline island`, async ({ page }) => {
-              const messages = await collectErrors(page, era);
+              const messages = collectErrors(page, era);
               await openEra(page, era);
 
               if (era === 'citadel') {
@@ -142,37 +160,31 @@ jobs:
                 await expect.poll(() => new URL(page.url()).searchParams.get('lane')).toBe('lane');
                 await page.waitForTimeout(750);
 
-                const metrics = await page.locator('[data-vc-canvas]').evaluate((canvas) => {
-                  const timeline = canvas.querySelector('.vis-timeline');
-                  const labels = [...canvas.querySelectorAll('.vis-labelset > .vis-label')]
-                    .filter((element) => element.getClientRects().length > 0);
-                  const events = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
-                    .filter((element) => element.getClientRects().length > 0);
-                  const canvasStyle = getComputedStyle(canvas);
-                  return {
-                    canvasHeight: canvas.getBoundingClientRect().height,
-                    clientHeight: canvas.clientHeight,
-                    scrollHeight: canvas.scrollHeight,
-                    overflowY: canvasStyle.overflowY,
-                    timelineHeight: timeline?.getBoundingClientRect().height ?? 0,
-                    labels: labels.map((element) => element.textContent?.trim() ?? ''),
-                    events: events.map((element) => element.textContent?.trim() ?? ''),
-                    labelMargins: labels.map((element) => {
-                      const style = getComputedStyle(element);
-                      return [style.marginTop, style.marginBottom];
-                    }),
-                  };
-                });
-                writeFileSync('timeline-browser-diagnostics/citadel-chronos-layout.json', JSON.stringify(metrics, null, 2));
+                const metrics = await page.locator('[data-vc-canvas]').evaluate(measureViewport);
+                const labels = await page.locator('[data-vc-canvas]').evaluate((canvas) => (
+                  [...canvas.querySelectorAll('.vis-labelset > .vis-label')]
+                    .filter((element) => element.getClientRects().length > 0)
+                    .map((element) => ({
+                      text: element.textContent?.trim() ?? '',
+                      marginTop: getComputedStyle(element).marginTop,
+                      marginBottom: getComputedStyle(element).marginBottom,
+                    }))
+                ));
+                writeFileSync(
+                  'timeline-browser-diagnostics/citadel-chronos-layout.json',
+                  JSON.stringify({ metrics, labels }, null, 2),
+                );
                 await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-chronos-layout.png', fullPage: true });
 
                 expect(metrics.canvasHeight).toBeLessThanOrEqual(674);
-                expect(metrics.timelineHeight).toBeGreaterThan(320);
-                expect(metrics.scrollHeight).toBeGreaterThan(metrics.clientHeight);
-                expect(['auto', 'scroll']).toContain(metrics.overflowY);
-                expect(metrics.labels).toContain('Veyr Court');
-                expect(metrics.events.some((text) => text.includes('The Hollow Feast of Veyr'))).toBe(true);
-                expect(metrics.labelMargins.every(([top, bottom]) => top === '0px' && bottom === '0px')).toBe(true);
+                expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
+                expect(metrics.canvasScrollHeight).toBeLessThanOrEqual(metrics.canvasClientHeight + 2);
+                expect(metrics.canvasOverflowY).toBe('hidden');
+                expect(Number(metrics.viewportHeightToken)).toBeCloseTo(metrics.canvasHeight, 0);
+                expect(metrics.visibleEventCount).toBeGreaterThan(1);
+                expect(metrics.firstVisibleEventTop - metrics.canvasTop).toBeLessThan(metrics.canvasHeight * 0.45);
+                expect(labels.some(({ text }) => text === 'Veyr Court')).toBe(true);
+                expect(labels.every(({ marginTop, marginBottom }) => marginTop === '0px' && marginBottom === '0px')).toBe(true);
               }
 
               if (era === 'smog') {
@@ -213,16 +225,11 @@ jobs:
                 expect(axis.ticks.every(({ percent, error }) => Number.isFinite(percent) && error <= 2)).toBe(true);
 
                 const pathfinder = page.locator('.vis-item.vc-timeline-item', { hasText: 'The Pathfinder Exodus' }).first();
-                await expect(pathfinder).toBeAttached();
-                const scroll = await scrollBottomItemIntoView(page, pathfinder);
+                await expect(pathfinder).toBeVisible();
+                await page.locator('[data-vc-canvas]').scrollIntoViewIfNeeded();
                 await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
-                if (scroll.itemBox) {
-                  await page.mouse.move(
-                    scroll.itemBox.x + scroll.itemBox.width / 2,
-                    scroll.itemBox.y + scroll.itemBox.height / 2,
-                  );
-                }
-                await page.waitForTimeout(800);
+                await pathfinder.hover();
+                await page.waitForTimeout(500);
 
                 const tooltip = await page.evaluate(() => {
                   const item = [...document.querySelectorAll('.vis-item.vc-timeline-item')]
@@ -245,13 +252,10 @@ jobs:
                 });
                 writeFileSync(
                   'timeline-browser-diagnostics/entropy-axis-tooltip.json',
-                  JSON.stringify({ axis, scroll, tooltip }, null, 2),
+                  JSON.stringify({ axis, viewport: await page.locator('[data-vc-canvas]').evaluate(measureViewport), tooltip }, null, 2),
                 );
                 await page.screenshot({ path: 'timeline-browser-diagnostics/entropy-axis-tooltip.png', fullPage: true });
 
-                expect(scroll.scrollHeight).toBeGreaterThan(scroll.clientHeight);
-                expect(scroll.itemInCanvas).toBe(true);
-                expect(scroll.itemInBrowser).toBe(true);
                 expect(tooltip.itemTitle).toBeNull();
                 expect(tooltip.count).toBe(1);
                 expect(tooltip.text).toContain('11,431');
@@ -270,6 +274,54 @@ jobs:
               expect(messages.filter((entry) => entry.includes('failed to mount'))).toEqual([]);
             });
           }
+
+          test('global chronology starts high and ends without an artificial floor', async ({ page }) => {
+            const messages = collectErrors(page, 'global');
+            await page.goto('http://127.0.0.1:4321/timelines/', { waitUntil: 'networkidle' });
+            const globalLink = page.getByRole('link', { name: 'The VISCERIUM Timeline', exact: true }).first();
+            await expect(globalLink).toBeVisible();
+            await globalLink.click();
+            await page.waitForLoadState('networkidle');
+            await waitForTimeline(page);
+
+            const canvas = page.locator('[data-vc-canvas]');
+            await page.locator('[data-vc-lane]').selectOption('lane');
+            await page.waitForTimeout(750);
+            await canvas.scrollIntoViewIfNeeded();
+
+            const before = await canvas.evaluate(measureViewport);
+            const box = await canvas.boundingBox();
+            if (box) {
+              await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+              for (let index = 0; index < 10; index += 1) {
+                await page.mouse.wheel(0, 1_200);
+                await page.waitForTimeout(60);
+              }
+            }
+            await page.waitForTimeout(350);
+            const after = await canvas.evaluate(measureViewport);
+
+            writeFileSync(
+              'timeline-browser-diagnostics/global-scroll-framing.json',
+              JSON.stringify({ before, after }, null, 2),
+            );
+            await page.screenshot({ path: 'timeline-browser-diagnostics/global-scroll-framing.png', fullPage: true });
+
+            expect(Math.abs(before.timelineHeight - before.canvasHeight)).toBeLessThanOrEqual(2);
+            expect(before.canvasScrollHeight).toBeLessThanOrEqual(before.canvasClientHeight + 2);
+            expect(before.visibleEventCount).toBeGreaterThan(1);
+            expect(before.firstVisibleEventTop - before.canvasTop).toBeLessThan(before.canvasHeight * 0.45);
+            expect(after.visibleEventCount).toBeGreaterThan(0);
+            expect(after.canvasBottom - after.lastVisibleEventBottom).toBeLessThanOrEqual(72);
+            expect(
+              after.scrollCandidates.some((candidate, index) => (
+                candidate.scrollTop > (before.scrollCandidates[index]?.scrollTop ?? 0)
+                || candidate.transform !== before.scrollCandidates[index]?.transform
+              )),
+            ).toBe(true);
+            expect(messages.filter((entry) => entry.startsWith('pageerror:'))).toEqual([]);
+            expect(messages.filter((entry) => entry.includes('failed to mount'))).toEqual([]);
+          });
           TEST
           npx playwright test tests/browser/timeline-smoke.spec.mjs --reporter=line --workers=1
       - name: Show Astro preview log
