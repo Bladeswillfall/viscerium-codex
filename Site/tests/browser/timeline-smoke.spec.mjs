@@ -151,8 +151,8 @@ for (const era of eras) {
       expect(metrics.canvasOverflowY).toBe('hidden');
       expect(Number(metrics.viewportHeightToken)).toBeCloseTo(metrics.canvasHeight, 0);
       expect(metrics.scrollerScrollMaximum).toBeGreaterThan(20);
-      expect(metrics.spacerItemHeight).toBeCloseTo(48, 0);
-      expect(metrics.spacerGroupHeight).toBeCloseTo(48, 0);
+      expect(metrics.spacerItemHeight).toBeCloseTo(72, 0);
+      expect(metrics.spacerGroupHeight).toBeCloseTo(72, 0);
       expect(metrics.spacerIsLowestGroup).toBe(true);
       expect(metrics.visibleEventCount).toBeGreaterThan(1);
       expect(metrics.firstVisibleEventTop - metrics.canvasTop).toBeLessThanOrEqual(32);
@@ -282,8 +282,8 @@ test('global chronology starts high, wheel-scrolls downward, and fully reveals i
   expect(before.canvasScrollHeight).toBeLessThanOrEqual(before.canvasClientHeight + 2);
   expect(before.scrollerScrollMaximum).toBeGreaterThan(40);
   expect(before.scrollerScrollRemaining).toBeGreaterThan(20);
-  expect(before.spacerItemHeight).toBeCloseTo(48, 0);
-  expect(before.spacerGroupHeight).toBeCloseTo(48, 0);
+  expect(before.spacerItemHeight).toBeCloseTo(72, 0);
+  expect(before.spacerGroupHeight).toBeCloseTo(72, 0);
   expect(before.spacerIsLowestGroup).toBe(true);
   expect(before.visibleEventCount).toBeGreaterThan(1);
   expect(before.firstVisibleEventTop - before.canvasTop).toBeLessThanOrEqual(32);
