@@ -375,6 +375,8 @@ function formatTooltipDate(event, calendarId) {
 
 function installTimelineHoverTooltip(root, dataset) {
   const eventById = new Map(dataset.events.map((event) => [event.id, event]));
+  const eventByTitle = new Map(dataset.events.map((event) => [event.title, event]));
+  const eventsByLongestTitle = [...dataset.events].sort((left, right) => right.title.length - left.title.length);
   const calendarSelect = root.querySelector('[data-vc-calendar]');
   const tooltip = document.createElement('div');
   const tooltipId = `vc-timeline-hovercard-${Math.random().toString(36).slice(2, 10)}`;
@@ -429,9 +431,19 @@ function installTimelineHoverTooltip(root, dataset) {
     tooltip.hidden = true;
   };
 
+  const eventForItem = (item) => {
+    const id = item?.getAttribute?.('data-id')
+      ?? item?.querySelector?.('[data-id]')?.getAttribute?.('data-id');
+    if (id && eventById.has(id)) return eventById.get(id);
+
+    const visibleTitle = item?.textContent?.replace(/\s+/g, ' ').trim();
+    if (!visibleTitle) return undefined;
+    return eventByTitle.get(visibleTitle)
+      ?? eventsByLongestTitle.find((event) => visibleTitle.includes(event.title));
+  };
+
   const show = (item) => {
-    const id = item?.getAttribute?.('data-id');
-    const event = id ? eventById.get(id) : undefined;
+    const event = eventForItem(item);
     if (!event) {
       hide();
       return;
