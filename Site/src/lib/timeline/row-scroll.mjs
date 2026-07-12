@@ -142,7 +142,12 @@ export function installTimelineRowScroll(root) {
     settleInterval = window.setInterval(scheduleFrame, SETTLE_INTERVAL_MS);
     settleTimeout = window.setTimeout(() => {
       stopSettling();
-      scheduleFrame();
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        frameFirstEvent();
+        automaticFraming = false;
+        scheduleEndCorrection();
+      });
     }, SETTLE_DURATION_MS);
   };
 
