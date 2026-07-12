@@ -43,12 +43,12 @@ function measureViewport(canvas) {
   const timelineRect = timeline?.getBoundingClientRect();
   const canvasStyle = getComputedStyle(canvas);
   const scroller = canvas.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
-  const marker = canvas.querySelector('.vc-timeline-row-end-cap-marker');
-  const spacerLabel = marker?.closest('.vis-label');
+  const spacerItem = canvas.querySelector('.vis-item.vc-timeline-row-end-cap-item');
+  const spacerGroup = spacerItem?.closest('.vis-group');
   const labels = [...canvas.querySelectorAll('.vis-labelset > .vis-label')];
   const centreGroups = [...canvas.querySelectorAll('.vis-panel.vis-center .vis-foreground > .vis-group')];
-  const spacerIndex = spacerLabel ? labels.indexOf(spacerLabel) : -1;
-  const spacerGroup = spacerIndex >= 0 ? centreGroups[spacerIndex] : undefined;
+  const spacerIndex = spacerGroup ? centreGroups.indexOf(spacerGroup) : -1;
+  const spacerLabel = spacerIndex >= 0 ? labels[spacerIndex] : undefined;
   const items = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
     .filter((element) => {
       const rect = element.getBoundingClientRect();
@@ -80,10 +80,11 @@ function measureViewport(canvas) {
     scrollerScrollMaximum: scroller
       ? Math.max(0, scroller.scrollHeight - scroller.clientHeight)
       : 0,
-    markerHeight: marker?.getBoundingClientRect().height ?? 0,
+    spacerItemHeight: spacerItem?.getBoundingClientRect().height ?? 0,
     spacerLabelHeight: spacerLabel?.getBoundingClientRect().height ?? 0,
     spacerGroupHeight: spacerGroup?.getBoundingClientRect().height ?? 0,
     spacerIndex,
+    spacerIsLastGroup: spacerIndex >= 0 && spacerIndex === centreGroups.length - 1,
     spacerIsLastLabel: spacerIndex >= 0 && spacerIndex === labels.length - 1,
     visibleEventCount: intersectingItems.length,
     firstVisibleEventTop: intersectingItems.length
@@ -146,7 +147,6 @@ for (const era of eras) {
           .map((element) => ({
             text: element.textContent?.trim() ?? '',
             className: element.className,
-            hasSpacerMarker: Boolean(element.querySelector('.vc-timeline-row-end-cap-marker')),
             marginTop: getComputedStyle(element).marginTop,
             marginBottom: getComputedStyle(element).marginBottom,
           }))
@@ -163,14 +163,14 @@ for (const era of eras) {
       expect(metrics.canvasOverflowY).toBe('hidden');
       expect(Number(metrics.viewportHeightToken)).toBeCloseTo(metrics.canvasHeight, 0);
       expect(metrics.scrollerScrollMaximum).toBeGreaterThan(20);
-      expect(metrics.markerHeight).toBeCloseTo(24, 0);
+      expect(metrics.spacerItemHeight).toBeCloseTo(24, 0);
       expect(metrics.spacerLabelHeight).toBeCloseTo(24, 0);
       expect(metrics.spacerGroupHeight).toBeCloseTo(24, 0);
+      expect(metrics.spacerIsLastGroup).toBe(true);
       expect(metrics.spacerIsLastLabel).toBe(true);
       expect(metrics.visibleEventCount).toBeGreaterThan(1);
       expect(metrics.firstVisibleEventTop - metrics.canvasTop).toBeLessThanOrEqual(32);
       expect(labels.some(({ text }) => text === 'Veyr Court')).toBe(true);
-      expect(labels.at(-1)?.hasSpacerMarker).toBe(true);
       expect(labels.every(({ marginTop, marginBottom }) => marginTop === '0px' && marginBottom === '0px')).toBe(true);
     }
 
@@ -299,9 +299,10 @@ test('global chronology wheel-scrolls its rows and fully reveals the final card'
   expect(Math.abs(before.timelineHeight - before.canvasHeight)).toBeLessThanOrEqual(2);
   expect(before.canvasScrollHeight).toBeLessThanOrEqual(before.canvasClientHeight + 2);
   expect(before.scrollerScrollMaximum).toBeGreaterThan(20);
-  expect(before.markerHeight).toBeCloseTo(24, 0);
+  expect(before.spacerItemHeight).toBeCloseTo(24, 0);
   expect(before.spacerLabelHeight).toBeCloseTo(24, 0);
   expect(before.spacerGroupHeight).toBeCloseTo(24, 0);
+  expect(before.spacerIsLastGroup).toBe(true);
   expect(before.spacerIsLastLabel).toBe(true);
   expect(before.visibleEventCount).toBeGreaterThan(1);
   expect(before.firstVisibleEventTop - before.canvasTop).toBeLessThanOrEqual(32);
