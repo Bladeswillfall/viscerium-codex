@@ -15,9 +15,9 @@ function formatEventDate(event, calendarId) {
 }
 
 /**
- * Chronos can recycle a visual card while leaving stale internal identity on
- * its DOM node. Do not mutate that internal state; instead make the external
- * hovercard follow the canonical event title the user is actually pointing at.
+ * Chronos can place interaction surfaces above an event card and can recycle a
+ * card without refreshing its outer identity. Resolve the visible card beneath
+ * the pointer without mutating vis-timeline's internal DOM state.
  */
 export function installTimelineTooltipCanonicalSync(root, dataset) {
   let positionFrame;
@@ -35,6 +35,19 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
     return eventsByLongestTitle.find((event) => (
       visibleText === event.title || visibleText.includes(event.title)
     ));
+  };
+
+  const cardForTarget = (target) => {
+    const card = target?.closest?.('.vis-item.vc-timeline-item');
+    return card && root.contains(card) ? card : undefined;
+  };
+
+  const cardAtPoint = (x, y) => {
+    for (const element of document.elementsFromPoint(x, y)) {
+      const card = cardForTarget(element);
+      if (card) return card;
+    }
+    return undefined;
   };
 
   const position = () => {
@@ -94,12 +107,14 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
     schedulePosition();
   };
 
-  const cardForTarget = (target) => target?.closest?.('.vis-item.vc-timeline-item');
-
   const handlePointerMove = (event) => {
-    const card = cardForTarget(event.target);
-    if (card) show(card);
-    else hide();
+    const card = cardAtPoint(event.clientX, event.clientY);
+    if (!card) {
+      hide();
+      return;
+    }
+    if (card !== activeCard) show(card);
+    else schedulePosition();
   };
 
   const handlePointerLeave = () => hide();
