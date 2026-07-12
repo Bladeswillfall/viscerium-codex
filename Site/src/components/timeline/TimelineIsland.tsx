@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'preact/hooks';
 import type { TimelineDataset, TimelineLaneMode } from '../../lib/timeline/types';
+import { installAdaptiveTimelineGrid } from '../../lib/timeline/adaptive-time-grid.mjs';
 import { installTimelineTooltipContentSync } from '../../lib/timeline/tooltip-content-sync.mjs';
 import { prepareTimelineViewportGuard } from '../../lib/timeline/viewport-guard.mjs';
 import { installCalendarYearAxisSync } from '../../lib/timeline/year-axis-sync.mjs';
@@ -55,7 +56,9 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
         viewportGuard.restorePrototype();
         const cleanupTooltipContent = installTimelineTooltipContentSync(root, dataset);
         const cleanupYearAxis = installCalendarYearAxisSync(root, dataset);
+        const cleanupAdaptiveTimeGrid = installAdaptiveTimelineGrid(root, dataset);
         cleanup = () => {
+          cleanupAdaptiveTimeGrid();
           cleanupYearAxis();
           cleanupTooltipContent();
           cleanupTimeline();

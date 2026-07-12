@@ -8,8 +8,13 @@ import {
   toAbsoluteDay,
 } from '../src/lib/calendar/runtime.mjs';
 import {
+  calendarDayBoundaries,
+  calendarMonthBoundaries,
+  calendarWeekBoundaries,
   calendarYearBoundaries,
+  createAdaptiveTimelineTicks,
   createTimelineYearGridItems,
+  selectAdaptiveTimelineScale,
   selectCalendarYearTicks,
 } from '../src/lib/timeline/year-grid.mjs';
 
@@ -22,6 +27,16 @@ const yearStart = (year) => toAbsoluteDay({
   month: firstMonth,
   day: 1,
 });
+
+function primaryScaleForSpan(startDay, endDay, previousScaleKey) {
+  return selectAdaptiveTimelineScale({
+    startDay,
+    endDay,
+    calendarId: defaultCalendarId,
+    width: 1_000,
+    previousScaleKey,
+  });
+}
 
 test('returns every individual calendar-year boundary in a visible range', () => {
   const startDay = yearStart(120);
@@ -37,7 +52,7 @@ test('returns every individual calendar-year boundary in a visible range', () =>
   }
 });
 
-test('selects readable year labels from the exact same boundaries as the grid', () => {
+test('selects readable legacy year labels from exact calendar boundaries', () => {
   const startDay = yearStart(9267) + 90;
   const endDay = yearStart(9278) - 90;
   const boundaries = calendarYearBoundaries(startDay, endDay, defaultCalendarId);
@@ -48,7 +63,72 @@ test('selects readable year labels from the exact same boundaries as the grid', 
   assert.ok(ticks.every(({ year, absoluteDay }) => boundaryDays.get(year) === absoluteDay));
 });
 
-test('supports negative years and retains exact decade and century classes', () => {
+test('chooses 1-2-5 year scales from actual viewport density', () => {
+  const cases = [
+    [8_000, 'year:1000', 'year:500'],
+    [4_000, 'year:500', 'year:100'],
+    [1_600, 'year:200', 'year:50'],
+    [800, 'year:100', 'year:50'],
+  ];
+
+  for (const [visibleYears, primaryKey, secondaryKey] of cases) {
+    const scale = primaryScaleForSpan(yearStart(1), yearStart(1 + visibleYears));
+    assert.equal(scale.primary.key, primaryKey);
+    assert.equal(scale.secondary?.key, secondaryKey);
+  }
+});
+
+test('descends from years through calendar months, weeks and days', () => {
+  const startDay = yearStart(1);
+  const cases = [
+    [yearStart(2), 'year:1', 'month:1'],
+    [startDay + 250, 'month:1', 'week:1'],
+    [startDay + 50, 'week:1', 'day:1'],
+    [startDay + 8, 'day:1', undefined],
+  ];
+
+  for (const [endDay, primaryKey, secondaryKey] of cases) {
+    const scale = primaryScaleForSpan(startDay, endDay);
+    assert.equal(scale.primary.key, primaryKey);
+    assert.equal(scale.secondary?.key, secondaryKey);
+  }
+});
+
+test('uses hysteresis to prevent scale flicker around a zoom boundary', () => {
+  const startDay = yearStart(1);
+  const initial = primaryScaleForSpan(startDay, yearStart(801));
+  const held = primaryScaleForSpan(startDay, yearStart(901), initial.primary.key);
+  const promoted = primaryScaleForSpan(startDay, yearStart(1_401), initial.primary.key);
+
+  assert.equal(initial.primary.key, 'year:100');
+  assert.equal(held.primary.key, 'year:100');
+  assert.equal(promoted.primary.key, 'year:200');
+});
+
+test('generates exact calendar boundaries for close zoom levels', () => {
+  const startDay = yearStart(120);
+  const endDay = yearStart(121) - 1;
+  const epochStart = yearStart(1);
+  const weeks = calendarWeekBoundaries(epochStart, epochStart + 49, defaultCalendarId);
+
+  assert.equal(calendarMonthBoundaries(startDay, endDay, defaultCalendarId).length, 13);
+  assert.equal(weeks.length, 8);
+  assert.ok(weeks.slice(1).every((boundary, index) => (
+    boundary.absoluteDay - weeks[index].absoluteDay === calendar.weekdays.length
+  )));
+  assert.equal(calendarDayBoundaries(epochStart, epochStart + 7).length, 8);
+
+  const ticks = createAdaptiveTimelineTicks({
+    startDay,
+    endDay,
+    calendarId: defaultCalendarId,
+    width: 1_000,
+  });
+  const primaryDays = new Set(ticks.primary.map(({ absoluteDay }) => absoluteDay));
+  assert.ok(ticks.secondary.every(({ absoluteDay }) => !primaryDays.has(absoluteDay)));
+});
+
+test('supports negative years and retains exact legacy background item classes', () => {
   const startDay = yearStart(-101);
   const endDay = yearStart(1);
   const items = createTimelineYearGridItems({
@@ -66,28 +146,31 @@ test('supports negative years and retains exact decade and century classes', () 
   assert.ok(items.every((item) => item.type === 'background' && item.selectable === false));
 });
 
-test('the browser renderer mounts an explicit SVG grid and disables adaptive native divisions', () => {
-  const renderer = read('../src/lib/timeline/renderer.mjs');
-  const styles = read('../src/styles/timeline-pages.css');
+test('the timeline island mounts one adaptive SVG grid on every timeline', () => {
+  const island = read('../src/components/timeline/TimelineIsland.tsx');
+  const grid = read('../src/lib/timeline/adaptive-time-grid.mjs');
+  const styles = read('../src/styles/timeline-adaptive-grid.css');
+  const app = read('../src/components/timeline/TimelineApp.astro');
 
-  assert.match(renderer, /function installAnnualYearGrid\(root, dataset, timeline\)/);
-  assert.match(renderer, /calendarYearBoundaries\(startDay, endDay, calendarId\)/);
-  assert.match(renderer, /data-vc-year-grid/);
-  assert.match(renderer, /timeline\.on\('rangechange', scheduleRender\)/);
-  assert.match(renderer, /timeline\.on\('rangechanged', scheduleRender\)/);
-  assert.match(styles, /\.vc-timeline-year-grid/);
-  assert.match(styles, /\.vc-year-grid-annual/);
-  assert.match(styles, /\.vc-year-grid-decade/);
-  assert.match(styles, /\.vc-year-grid-century/);
-  assert.match(styles, /\.vis-grid\.vis-vertical[\s\S]*transparent !important/);
+  assert.match(island, /installAdaptiveTimelineGrid\(root, dataset\)/);
+  assert.match(grid, /createAdaptiveTimelineTicks\(/);
+  assert.match(grid, /data-vc-time-grid/);
+  assert.match(grid, /vc-time-grid-secondary/);
+  assert.match(grid, /vc-time-grid-primary/);
+  assert.match(grid, /new MutationObserver\(scheduleRender\)/);
+  assert.match(styles, /\.vc-timeline-year-grid[\s\S]*display: none !important/);
+  assert.match(styles, /\.vc-time-grid-secondary/);
+  assert.match(styles, /\.vc-time-grid-primary/);
+  assert.match(app, /timeline-adaptive-grid\.css/);
 });
 
-test('the timeline island replaces fixed-day labels with exact calendar-year labels', () => {
-  const island = read('../src/components/timeline/TimelineIsland.tsx');
+test('the site axis labels use the same adaptive tick calculation as the grid', () => {
   const synchroniser = read('../src/lib/timeline/year-axis-sync.mjs');
 
-  assert.match(island, /installCalendarYearAxisSync\(root, dataset\)/);
-  assert.match(synchroniser, /selectCalendarYearTicks\(startDay, endDay, calendarId, maximumCount\)/);
-  assert.match(synchroniser, /data-vc-axis-year-boundary/);
+  assert.match(synchroniser, /createAdaptiveTimelineTicks\(/);
+  assert.match(synchroniser, /previousScaleKey/);
+  assert.match(synchroniser, /ticks\.labelPrecision/);
+  assert.match(synchroniser, /data-vc-axis-time-boundary/);
+  assert.match(synchroniser, /data-vc-axis-scale/);
   assert.match(synchroniser, /data-vc-axis-absolute-day/);
 });
