@@ -2,9 +2,17 @@
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import manifest from '../../data/timelines/manifest.json';
 import { formatAbsoluteDay } from '../../lib/calendar/runtime.mjs';
+import '../../styles/timeline-pages.css';
 ---
 
-<StarlightPage frontmatter={{ title: 'Timelines', description: 'Explore the generated chronology of VISCERIUM across all four eras.' }}>
+<StarlightPage
+  frontmatter={{
+    title: 'Timelines',
+    description: 'Explore the generated chronology of VISCERIUM across all four eras.',
+    timelinePage: true,
+  }}
+  hasSidebar={false}
+>
   <header class="vc-timeline-page-header">
     <p class="timeline-kicker">Absolute world-time archive</p>
     <h1>VISCERIUM Timelines</h1>
