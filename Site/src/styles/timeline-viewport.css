@@ -1,0 +1,129 @@
+/* Bounded timeline viewport and unclipped event hovercards. */
+
+.vc-timeline-app .vc-timeline-canvas {
+  position: relative;
+  block-size: clamp(28rem, 58vh, 42rem);
+  min-height: 0;
+  padding-block-end: 12rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
+  scrollbar-gutter: stable;
+}
+
+.vc-timeline-app.is-compact .vc-timeline-canvas {
+  block-size: clamp(22rem, 48vh, 32rem);
+  padding-block-end: 10rem;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-left {
+  scrollbar-width: thin;
+  scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
+}
+
+/* Native vis-timeline tooltips remain clipped to the canvas. The renderer owns
+   one body-level VISCERIUM hovercard instead. */
+.vc-timeline-app .vis-tooltip:not(.vc-timeline-hovercard),
+body > .vis-tooltip:not(.vc-timeline-hovercard) {
+  display: none !important;
+}
+
+body > .vc-timeline-hovercard {
+  --vc-hovercard-bg: #151310f7;
+  --vc-hovercard-border: #b8874670;
+  --vc-hovercard-text: #f4efe5;
+  --vc-hovercard-muted: #c2bbb0;
+  --vc-hovercard-accent: #f1d29b;
+  --vc-hovercard-shadow: #000000a6;
+
+  position: fixed !important;
+  z-index: 2147483000 !important;
+  display: grid !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: min(18rem, calc(100vw - 1rem)) !important;
+  max-width: 18rem !important;
+  gap: .3rem;
+  margin: 0 !important;
+  padding: .72rem .82rem !important;
+  overflow: hidden !important;
+  border: 1px solid var(--vc-hovercard-border) !important;
+  border-radius: 0 !important;
+  color: var(--vc-hovercard-text) !important;
+  background: var(--vc-hovercard-bg) !important;
+  background-color: var(--vc-hovercard-bg) !important;
+  box-shadow: 0 .75rem 2.5rem var(--vc-hovercard-shadow) !important;
+  backdrop-filter: blur(10px);
+  font-family: var(--vc-font-ui, ui-sans-serif, system-ui) !important;
+  line-height: 1.35;
+  white-space: normal !important;
+  pointer-events: none;
+}
+
+:root[data-theme='light'] body > .vc-timeline-hovercard {
+  --vc-hovercard-bg: #f7f2eafa;
+  --vc-hovercard-border: #6f4a2770;
+  --vc-hovercard-text: #201d19;
+  --vc-hovercard-muted: #5f574d;
+  --vc-hovercard-accent: #6d431d;
+  --vc-hovercard-shadow: #37261433;
+}
+
+body > .vc-timeline-hovercard[hidden] {
+  display: none !important;
+}
+
+.vc-timeline-hovercard-date {
+  color: var(--vc-hovercard-accent) !important;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.vc-timeline-hovercard-title {
+  overflow: hidden;
+  color: var(--vc-hovercard-text) !important;
+  font-family: var(--vc-font-display, Cinzel, serif);
+  font-size: .9rem;
+  font-weight: 400;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vc-timeline-hovercard-description {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--vc-hovercard-muted) !important;
+  font-size: .78rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+}
+
+@media (max-width: 38rem) {
+  .vc-timeline-app .vc-timeline-canvas {
+    block-size: clamp(22rem, 54vh, 30rem);
+    padding-block-end: 10rem;
+  }
+
+  body > .vc-timeline-hovercard {
+    width: min(16.5rem, calc(100vw - 1rem)) !important;
+  }
+}
+
+@media (forced-colors: active) {
+  body > .vc-timeline-hovercard {
+    border-color: CanvasText !important;
+    color: CanvasText !important;
+    background: Canvas !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+    forced-color-adjust: none;
+  }
+}
