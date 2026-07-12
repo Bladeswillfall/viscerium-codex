@@ -2,9 +2,20 @@
 type Props = {
   canonEntryCount: number;
   mappedEventCount: number;
+  unbrokenTimelineCount: number;
 };
 
-const { canonEntryCount, mappedEventCount } = Astro.props;
+const { canonEntryCount, mappedEventCount, unbrokenTimelineCount } = Astro.props;
+const numberFormatter = new Intl.NumberFormat('en-GB');
+const formattedCanonEntryCount = numberFormatter.format(canonEntryCount);
+const formattedMappedEventCount = numberFormatter.format(mappedEventCount);
+const formattedTimelineCount = numberFormatter.format(unbrokenTimelineCount);
+const timelineLead = unbrokenTimelineCount === 1
+  ? 'One timeline.'
+  : `${formattedTimelineCount} timelines.`;
+const timelineStatLabel = unbrokenTimelineCount === 1
+  ? 'Unbroken timeline'
+  : 'Unbroken timelines';
 ---
 
 <div class="home-gateway" id="home-gateway-top">
@@ -12,7 +23,7 @@ const { canonEntryCount, mappedEventCount } = Astro.props;
     <div class="home-hero__copy">
       <p class="home-eyebrow">Choose an age. Enter the same world.</p>
       <h1 id="home-hero-title">VISCERIUM</h1>
-      <p class="home-hero__deck">One timeline. Four eras. Infinite stories.</p>
+      <p class="home-hero__deck">{timelineLead} Four eras. Infinite stories.</p>
       <div class="home-actions">
         <a class="home-button" href="/start-here/">Start here</a>
         <a class="home-button home-button--secondary" href="#home-era-gateway">Explore the four eras</a>
@@ -118,9 +129,9 @@ const { canonEntryCount, mappedEventCount } = Astro.props;
 
     <dl class="home-stats">
       <div class="home-stat"><dd>4</dd><dt>Distinct eras</dt></div>
-      <div class="home-stat"><dd>{canonEntryCount}</dd><dt>Canon entries</dt></div>
-      <div class="home-stat"><dd>{mappedEventCount}</dd><dt>Mapped events</dt></div>
-      <div class="home-stat"><dd>1</dd><dt>Unbroken timeline</dt></div>
+      <div class="home-stat"><dd>{formattedCanonEntryCount}</dd><dt>Canon entries</dt></div>
+      <div class="home-stat"><dd>{formattedMappedEventCount}</dd><dt>Mapped events</dt></div>
+      <div class="home-stat"><dd>{formattedTimelineCount}</dd><dt>{timelineStatLabel}</dt></div>
     </dl>
   </section>
 
