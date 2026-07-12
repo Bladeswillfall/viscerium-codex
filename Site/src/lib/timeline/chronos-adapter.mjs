@@ -3,6 +3,7 @@ import { absoluteDayToSyntheticDate, capTimelineGroups, KNOWN_CATEGORY_TOKENS } 
 
 const ROW_END_CAP_GROUP_ID = '__vc-timeline-row-end-cap__';
 const ROW_END_CAP_ITEM_ID = '__vc-timeline-row-end-cap-item__';
+const STABLE_GROUP_ID_PREFIX = 'vc-timeline-group-';
 
 const CATEGORY_COLORS = {
   technology: 'cyan',
@@ -100,6 +101,66 @@ function buildGroups(events, laneMode) {
   };
 }
 
+function eventValues(event, laneMode) {
+  return laneMode === 'category' ? event.categories : event.lanes;
+}
+
+function orderGroupsForViewport(groups, events, laneMode, groupFor, startDay, endDay) {
+  if (groups.length < 2 || laneMode === 'unified') return groups;
+
+  const originalOrder = new Map(groups.map((group, index) => [group.key, index]));
+  const metrics = new Map(groups.map((group) => [group.key, {
+    active: false,
+    activeStart: Number.POSITIVE_INFINITY,
+    distance: Number.POSITIVE_INFINITY,
+    earliestStart: Number.POSITIVE_INFINITY,
+  }]));
+
+  for (const event of events) {
+    const values = eventValues(event, laneMode);
+    const group = groupFor(values[0] ?? 'other');
+    const metric = metrics.get(group.key);
+    if (!metric) continue;
+
+    const eventEnd = event.absoluteEndDay ?? event.absoluteStartDay;
+    const overlaps = event.absoluteStartDay <= endDay && eventEnd >= startDay;
+    const distance = overlaps
+      ? 0
+      : eventEnd < startDay
+        ? startDay - eventEnd
+        : event.absoluteStartDay - endDay;
+
+    metric.active ||= overlaps;
+    metric.activeStart = Math.min(
+      metric.activeStart,
+      overlaps ? Math.max(startDay, event.absoluteStartDay) : Number.POSITIVE_INFINITY,
+    );
+    metric.distance = Math.min(metric.distance, distance);
+    metric.earliestStart = Math.min(metric.earliestStart, event.absoluteStartDay);
+  }
+
+  return [...groups].sort((left, right) => {
+    const leftMetric = metrics.get(left.key);
+    const rightMetric = metrics.get(right.key);
+    const activeOrder = Number(rightMetric?.active) - Number(leftMetric?.active);
+    if (activeOrder) return activeOrder;
+
+    const activeStartOrder = (leftMetric?.activeStart ?? Number.POSITIVE_INFINITY)
+      - (rightMetric?.activeStart ?? Number.POSITIVE_INFINITY);
+    if (Number.isFinite(activeStartOrder) && activeStartOrder) return activeStartOrder;
+
+    const distanceOrder = (leftMetric?.distance ?? Number.POSITIVE_INFINITY)
+      - (rightMetric?.distance ?? Number.POSITIVE_INFINITY);
+    if (Number.isFinite(distanceOrder) && distanceOrder) return distanceOrder;
+
+    const earliestOrder = (leftMetric?.earliestStart ?? Number.POSITIVE_INFINITY)
+      - (rightMetric?.earliestStart ?? Number.POSITIVE_INFINITY);
+    if (Number.isFinite(earliestOrder) && earliestOrder) return earliestOrder;
+
+    return (originalOrder.get(left.key) ?? 0) - (originalOrder.get(right.key) ?? 0);
+  });
+}
+
 function eventColor(event) {
   const category = event.categories.find((value) => KNOWN_CATEGORY_TOKENS[value]) ?? 'unknown';
   return {
@@ -109,7 +170,7 @@ function eventColor(event) {
 }
 
 function eventLine(event, laneMode, groupFor, syntheticOriginDay) {
-  const values = laneMode === 'category' ? event.categories : event.lanes;
+  const values = eventValues(event, laneMode);
   const group = groupFor(values[0] ?? 'other');
   const { color } = eventColor(event);
   const start = chronosDate(event.absoluteStartDay, syntheticOriginDay);
@@ -162,14 +223,25 @@ function enrichParsedItem(item, metadata, formatEventDate) {
   return item;
 }
 
+function stabilizeParsedGroupIds(parsed) {
+  const idMap = new Map();
+  parsed.groups = parsed.groups.map((group, index) => {
+    const id = `${STABLE_GROUP_ID_PREFIX}${String(index).padStart(3, '0')}`;
+    idMap.set(group.id, id);
+    return { ...group, id, order: index };
+  });
+
+  for (const item of parsed.items) {
+    if (item.group !== undefined && idMap.has(item.group)) item.group = idMap.get(item.group);
+  }
+}
+
 function addRowEndCap(parsed, startDay, syntheticOriginDay) {
-  const ordered = parsed.groups.map((group, index) => ({ ...group, order: index }));
-  ordered.push({
+  parsed.groups.push({
     id: ROW_END_CAP_GROUP_ID,
     content: '',
-    order: ordered.length,
+    order: parsed.groups.length,
   });
-  parsed.groups = ordered;
   parsed.items.push({
     id: ROW_END_CAP_ITEM_ID,
     group: ROW_END_CAP_GROUP_ID,
@@ -198,12 +270,20 @@ export function createChronosTimelineModel({
   if (typeof document !== 'undefined') attachChronosStyles(document);
 
   const syntheticOriginDay = dataset.absoluteStartDay;
-  const { groups, groupFor } = buildGroups(events, laneMode);
   const startDay = Number.isSafeInteger(visibleStartDay) ? visibleStartDay : dataset.absoluteStartDay;
   const endDay = Number.isSafeInteger(visibleEndDay) ? visibleEndDay : dataset.absoluteEndDay;
+  const groupModel = buildGroups(events, laneMode);
+  const groups = orderGroupsForViewport(
+    groupModel.groups,
+    events,
+    laneMode,
+    groupModel.groupFor,
+    startDay,
+    endDay,
+  );
   const records = [
     ...eraLines(dataset, groups, syntheticOriginDay),
-    ...events.map((event) => eventLine(event, laneMode, groupFor, syntheticOriginDay)),
+    ...events.map((event) => eventLine(event, laneMode, groupModel.groupFor, syntheticOriginDay)),
   ];
   const source = [
     '> NOTODAY',
@@ -223,6 +303,7 @@ export function createChronosTimelineModel({
   }
 
   parsed.items = parsed.items.map((item, index) => enrichParsedItem(item, records[index].metadata, formatEventDate));
+  stabilizeParsedGroupIds(parsed);
   addRowEndCap(parsed, startDay, syntheticOriginDay);
 
   return {
