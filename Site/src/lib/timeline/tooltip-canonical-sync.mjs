@@ -134,7 +134,7 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
     if (activeCard) show(activeCard);
   };
 
-  root.addEventListener('pointermove', handlePointerMove, true);
+  document.addEventListener('pointermove', handlePointerMove, true);
   root.addEventListener('pointerleave', handlePointerLeave, true);
   root.addEventListener('focusin', handleFocusIn, true);
   root.addEventListener('focusout', handleFocusOut, true);
@@ -145,7 +145,7 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
   return () => {
     destroyed = true;
     window.cancelAnimationFrame(positionFrame);
-    root.removeEventListener('pointermove', handlePointerMove, true);
+    document.removeEventListener('pointermove', handlePointerMove, true);
     root.removeEventListener('pointerleave', handlePointerLeave, true);
     root.removeEventListener('focusin', handleFocusIn, true);
     root.removeEventListener('focusout', handleFocusOut, true);
