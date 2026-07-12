@@ -2,7 +2,7 @@ import { attachChronosStyles, parseChronos } from 'chronos-timeline-md';
 import { absoluteDayToSyntheticDate, capTimelineGroups, KNOWN_CATEGORY_TOKENS } from './core.mjs';
 
 const ROW_END_CAP_GROUP_ID = '__vc-timeline-row-end-cap__';
-const ROW_END_CAP_MARKER = '<span class="vc-timeline-row-end-cap-marker" aria-hidden="true"></span>';
+const ROW_END_CAP_ITEM_ID = '__vc-timeline-row-end-cap-item__';
 
 const CATEGORY_COLORS = {
   technology: 'cyan',
@@ -162,15 +162,22 @@ function enrichParsedItem(item, metadata, formatEventDate) {
   return item;
 }
 
-function addRowEndCapGroup(groups) {
-  const ordered = groups.map((group, index) => ({ ...group, order: index }));
+function addRowEndCap(parsed, startDay, syntheticOriginDay) {
+  const ordered = parsed.groups.map((group, index) => ({ ...group, order: index }));
   ordered.push({
     id: ROW_END_CAP_GROUP_ID,
-    content: ROW_END_CAP_MARKER,
-    className: 'vc-timeline-row-end-cap-group',
+    content: '',
     order: ordered.length,
   });
-  return ordered;
+  parsed.groups = ordered;
+  parsed.items.push({
+    id: ROW_END_CAP_ITEM_ID,
+    group: ROW_END_CAP_GROUP_ID,
+    start: absoluteDayToSyntheticDate(startDay, syntheticOriginDay),
+    content: '',
+    className: 'vc-timeline-row-end-cap-item',
+    selectable: false,
+  });
 }
 
 export function createChronosTimelineModel({
@@ -216,7 +223,7 @@ export function createChronosTimelineModel({
   }
 
   parsed.items = parsed.items.map((item, index) => enrichParsedItem(item, records[index].metadata, formatEventDate));
-  parsed.groups = addRowEndCapGroup(parsed.groups);
+  addRowEndCap(parsed, startDay, syntheticOriginDay);
 
   return {
     source,
