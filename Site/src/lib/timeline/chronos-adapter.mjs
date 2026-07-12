@@ -2,6 +2,7 @@ import { attachChronosStyles, parseChronos } from 'chronos-timeline-md';
 import { absoluteDayToSyntheticDate, capTimelineGroups, KNOWN_CATEGORY_TOKENS } from './core.mjs';
 
 const ROW_END_CAP_GROUP_ID = '__vc-timeline-row-end-cap__';
+const ROW_END_CAP_MARKER = '<span class="vc-timeline-row-end-cap-marker" aria-hidden="true"></span>';
 
 const CATEGORY_COLORS = {
   technology: 'cyan',
@@ -165,7 +166,7 @@ function addRowEndCapGroup(groups) {
   const ordered = groups.map((group, index) => ({ ...group, order: index }));
   ordered.push({
     id: ROW_END_CAP_GROUP_ID,
-    content: '',
+    content: ROW_END_CAP_MARKER,
     className: 'vc-timeline-row-end-cap-group',
     order: ordered.length,
   });
