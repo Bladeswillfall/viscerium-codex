@@ -108,10 +108,15 @@ test('uses hysteresis to prevent scale flicker around a zoom boundary', () => {
 test('generates exact calendar boundaries for close zoom levels', () => {
   const startDay = yearStart(120);
   const endDay = yearStart(121) - 1;
+  const epochStart = yearStart(1);
+  const weeks = calendarWeekBoundaries(epochStart, epochStart + 49, defaultCalendarId);
 
   assert.equal(calendarMonthBoundaries(startDay, endDay, defaultCalendarId).length, 13);
-  assert.equal(calendarWeekBoundaries(startDay, startDay + 49, defaultCalendarId).length, 8);
-  assert.equal(calendarDayBoundaries(startDay, startDay + 7).length, 8);
+  assert.equal(weeks.length, 8);
+  assert.ok(weeks.slice(1).every((boundary, index) => (
+    boundary.absoluteDay - weeks[index].absoluteDay === calendar.weekdays.length
+  )));
+  assert.equal(calendarDayBoundaries(epochStart, epochStart + 7).length, 8);
 
   const ticks = createAdaptiveTimelineTicks({
     startDay,
