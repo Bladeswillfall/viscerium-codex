@@ -92,6 +92,22 @@ function measureViewport(canvas) {
   };
 }
 
+async function setRowScroll(page, edge) {
+  return page.locator('[data-vc-canvas]').evaluate((canvas, requestedEdge) => {
+    const scroller = canvas.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
+    if (!scroller) return null;
+    const maximum = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+    scroller.scrollTop = requestedEdge === 'top' ? 0 : maximum;
+    scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
+    return {
+      maximum,
+      applied: scroller.scrollTop,
+      clientHeight: scroller.clientHeight,
+      scrollHeight: scroller.scrollHeight,
+    };
+  }, edge);
+}
+
 for (const era of eras) {
   test(`${era} hydrates the Chronos timeline island`, async ({ page }) => {
     const messages = collectErrors(page, era);
@@ -232,20 +248,16 @@ test('global chronology starts high and ends without an artificial floor', async
   await canvas.scrollIntoViewIfNeeded();
 
   const before = await canvas.evaluate(measureViewport);
-  const box = await canvas.boundingBox();
-  if (box) {
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    for (let index = 0; index < 10; index += 1) {
-      await page.mouse.wheel(0, 1_200);
-      await page.waitForTimeout(60);
-    }
-  }
-  await page.waitForTimeout(350);
+  const topScroll = await setRowScroll(page, 'top');
+  await page.waitForTimeout(200);
+  const atTop = await canvas.evaluate(measureViewport);
+  const bottomScroll = await setRowScroll(page, 'bottom');
+  await page.waitForTimeout(200);
   const after = await canvas.evaluate(measureViewport);
 
   writeFileSync(
     'timeline-browser-diagnostics/global-scroll-framing.json',
-    JSON.stringify({ before, after, messages }, null, 2),
+    JSON.stringify({ before, atTop, after, topScroll, bottomScroll, messages }, null, 2),
   );
   await page.screenshot({ path: 'timeline-browser-diagnostics/global-scroll-framing.png', fullPage: true });
 
@@ -253,14 +265,16 @@ test('global chronology starts high and ends without an artificial floor', async
   expect(before.canvasScrollHeight).toBeLessThanOrEqual(before.canvasClientHeight + 2);
   expect(before.visibleEventCount).toBeGreaterThan(1);
   expect(before.firstVisibleEventTop - before.canvasTop).toBeLessThan(before.canvasHeight * 0.45);
+  expect(topScroll).not.toBeNull();
+  expect(topScroll.maximum).toBeGreaterThan(0);
+  expect(topScroll.applied).toBe(0);
+  expect(atTop.scrollCandidates.some((candidate, index) => (
+    candidate.scrollTop !== (before.scrollCandidates[index]?.scrollTop ?? 0)
+    || candidate.transform !== before.scrollCandidates[index]?.transform
+  ))).toBe(true);
+  expect(bottomScroll.applied).toBe(bottomScroll.maximum);
   expect(after.visibleEventCount).toBeGreaterThan(0);
   expect(after.canvasBottom - after.lastVisibleEventBottom).toBeLessThanOrEqual(72);
-  expect(
-    after.scrollCandidates.some((candidate, index) => (
-      candidate.scrollTop > (before.scrollCandidates[index]?.scrollTop ?? 0)
-      || candidate.transform !== before.scrollCandidates[index]?.transform
-    )),
-  ).toBe(true);
   expect(messages.filter((entry) => entry.startsWith('pageerror:'))).toEqual([]);
   expect(messages.filter((entry) => entry.includes('failed to mount'))).toEqual([]);
 });
