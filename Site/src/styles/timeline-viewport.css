@@ -4,7 +4,7 @@
   position: relative;
   block-size: clamp(28rem, 58vh, 42rem);
   min-height: 0;
-  padding-block-end: 8rem;
+  padding-block-end: 10rem;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -15,7 +15,7 @@
 
 .vc-timeline-app.is-compact .vc-timeline-canvas {
   block-size: clamp(22rem, 48vh, 32rem);
-  padding-block-end: 6rem;
+  padding-block-end: 8rem;
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
@@ -24,15 +24,14 @@
   scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
 }
 
-/* Native and legacy renderer tooltips are constrained by the canvas or can
-   race the canonical title resolver. Keep one body-level owner only. */
+/* Native vis-timeline tooltips remain clipped to the canvas. The renderer owns
+   one body-level VISCERIUM hovercard instead. */
 .vc-timeline-app .vis-tooltip:not(.vc-timeline-hovercard),
-body > .vis-tooltip:not(.vc-timeline-hovercard),
-body > .vc-timeline-hovercard:not(.is-canonical) {
+body > .vis-tooltip:not(.vc-timeline-hovercard) {
   display: none !important;
 }
 
-body > .vc-timeline-hovercard.is-canonical {
+body > .vc-timeline-hovercard {
   --vc-hovercard-bg: #151310f7;
   --vc-hovercard-border: #b8874670;
   --vc-hovercard-text: #f4efe5;
@@ -63,7 +62,7 @@ body > .vc-timeline-hovercard.is-canonical {
   pointer-events: none;
 }
 
-:root[data-theme='light'] body > .vc-timeline-hovercard.is-canonical {
+:root[data-theme='light'] body > .vc-timeline-hovercard {
   --vc-hovercard-bg: #f7f2eafa;
   --vc-hovercard-border: #6f4a2770;
   --vc-hovercard-text: #201d19;
@@ -109,16 +108,16 @@ body > .vc-timeline-hovercard[hidden] {
 @media (max-width: 38rem) {
   .vc-timeline-app .vc-timeline-canvas {
     block-size: clamp(22rem, 54vh, 30rem);
-    padding-block-end: 6rem;
+    padding-block-end: 8rem;
   }
 
-  body > .vc-timeline-hovercard.is-canonical {
+  body > .vc-timeline-hovercard {
     width: min(16.5rem, calc(100vw - 1rem));
   }
 }
 
 @media (forced-colors: active) {
-  body > .vc-timeline-hovercard.is-canonical {
+  body > .vc-timeline-hovercard {
     border-color: CanvasText;
     color: CanvasText;
     background: Canvas;
