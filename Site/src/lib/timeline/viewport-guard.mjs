@@ -1,12 +1,27 @@
 import { ChronosTimeline } from 'chronos-timeline-md';
 
 const GUARDED = Symbol('visceriumTimelineViewportGuard');
+const ROW_END_CAP_GROUP_ID = '__vc-timeline-row-end-cap__';
+
+function orderTimelineGroups(left, right) {
+  if (left?.id === ROW_END_CAP_GROUP_ID) return right?.id === ROW_END_CAP_GROUP_ID ? 0 : 1;
+  if (right?.id === ROW_END_CAP_GROUP_ID) return -1;
+
+  const leftOrder = Number(left?.order);
+  const rightOrder = Number(right?.order);
+  if (Number.isFinite(leftOrder) && Number.isFinite(rightOrder) && leftOrder !== rightOrder) {
+    return leftOrder - rightOrder;
+  }
+
+  return String(left?.content ?? left?.id ?? '')
+    .localeCompare(String(right?.content ?? right?.id ?? ''));
+}
 
 /**
  * Chronos creates the raw vis-timeline instance before the site renderer wraps
  * it in a compatibility proxy. Intercept that creation point so the raw
- * timeline uses the bounded canvas height, honours the adapter's explicit row
- * order, and ignores later adaptive pixel heights. Row scrolling is then
+ * timeline uses the bounded canvas height, keeps the invisible spacer as the
+ * final row, and ignores later adaptive pixel heights. Row scrolling is then
  * handled by vis-timeline inside that viewport.
  */
 export function prepareTimelineViewportGuard(root) {
@@ -33,7 +48,7 @@ export function prepareTimelineViewportGuard(root) {
       height: `${height}px`,
       minHeight: `${height}px`,
       verticalScroll: true,
-      groupOrder: 'order',
+      groupOrder: orderTimelineGroups,
     });
     if (canvas) canvas.dataset.vcViewportHeight = String(height);
   };
