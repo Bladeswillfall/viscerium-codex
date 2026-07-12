@@ -1,13 +1,15 @@
-/* Adaptive timeline viewport and unclipped event hovercards. */
+/* Bounded timeline viewport and unclipped event hovercards. */
 
 .vc-timeline-app .vc-timeline-canvas {
-  min-height: 20rem;
+  min-height: 0;
+  overscroll-behavior-y: contain;
 }
 
 .vc-timeline-app .vc-timeline-canvas[data-vc-vertical-scroll='true'] .vis-panel.vis-center,
 .vc-timeline-app .vc-timeline-canvas[data-vc-vertical-scroll='true'] .vis-panel.vis-left {
   scrollbar-width: thin;
   scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
+  scrollbar-gutter: stable;
 }
 
 /* Native vis-timeline tooltips are constrained by the canvas and can be clipped.
@@ -18,26 +20,43 @@ body > .vis-tooltip:not(.vc-timeline-hovercard) {
 }
 
 body > .vc-timeline-hovercard {
+  --vc-hovercard-bg: #151310f7;
+  --vc-hovercard-border: #b8874670;
+  --vc-hovercard-text: #f4efe5;
+  --vc-hovercard-muted: #c2bbb0;
+  --vc-hovercard-accent: #f1d29b;
+  --vc-hovercard-shadow: #000000a6;
+
   position: fixed !important;
   z-index: 2147483000 !important;
   display: grid;
   visibility: visible !important;
   opacity: 1 !important;
-  width: min(20rem, calc(100vw - 1rem));
-  max-width: 20rem;
+  width: min(18rem, calc(100vw - 1rem));
+  max-width: 18rem;
   gap: .3rem;
   margin: 0;
-  padding: .7rem .8rem;
+  padding: .72rem .82rem;
   overflow: hidden;
-  border: 1px solid var(--codex-border-strong, #666057);
+  border: 1px solid var(--vc-hovercard-border);
   border-radius: 0;
-  color: var(--sl-color-white, #f3efe7);
-  background: color-mix(in srgb, var(--codex-bg, #0d0e0f) 96%, transparent);
-  box-shadow: 0 .75rem 2.5rem color-mix(in srgb, black 58%, transparent);
+  color: var(--vc-hovercard-text);
+  background: var(--vc-hovercard-bg);
+  box-shadow: 0 .75rem 2.5rem var(--vc-hovercard-shadow);
+  backdrop-filter: blur(10px);
   font-family: var(--vc-font-ui, ui-sans-serif, system-ui);
   line-height: 1.35;
   white-space: normal;
   pointer-events: none;
+}
+
+:root[data-theme='light'] body > .vc-timeline-hovercard {
+  --vc-hovercard-bg: #f7f2eafa;
+  --vc-hovercard-border: #6f4a2770;
+  --vc-hovercard-text: #201d19;
+  --vc-hovercard-muted: #5f574d;
+  --vc-hovercard-accent: #6d431d;
+  --vc-hovercard-shadow: #37261433;
 }
 
 body > .vc-timeline-hovercard[hidden] {
@@ -45,7 +64,7 @@ body > .vc-timeline-hovercard[hidden] {
 }
 
 .vc-timeline-hovercard-date {
-  color: var(--sl-color-accent-high, #c59a5c);
+  color: var(--vc-hovercard-accent);
   font-size: .68rem;
   font-weight: 800;
   letter-spacing: .06em;
@@ -54,7 +73,7 @@ body > .vc-timeline-hovercard[hidden] {
 
 .vc-timeline-hovercard-title {
   overflow: hidden;
-  color: var(--sl-color-white, #f3efe7);
+  color: var(--vc-hovercard-text);
   font-family: var(--vc-font-display, Cinzel, serif);
   font-size: .9rem;
   font-weight: 400;
@@ -66,7 +85,7 @@ body > .vc-timeline-hovercard[hidden] {
 .vc-timeline-hovercard-description {
   display: -webkit-box;
   overflow: hidden;
-  color: var(--sl-color-gray-2, #c6c0b7);
+  color: var(--vc-hovercard-muted);
   font-size: .78rem;
   line-height: 1.35;
   -webkit-box-orient: vertical;
@@ -76,7 +95,7 @@ body > .vc-timeline-hovercard[hidden] {
 
 @media (max-width: 38rem) {
   body > .vc-timeline-hovercard {
-    width: min(18rem, calc(100vw - 1rem));
+    width: min(16.5rem, calc(100vw - 1rem));
   }
 }
 
@@ -86,6 +105,7 @@ body > .vc-timeline-hovercard[hidden] {
     color: CanvasText;
     background: Canvas;
     box-shadow: none;
+    backdrop-filter: none;
     forced-color-adjust: none;
   }
 }
