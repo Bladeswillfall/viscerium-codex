@@ -30,7 +30,9 @@ test('one canonical hovercard is body-level, narrow, theme-aware and line-clampe
   assert.match(sync, /tooltip\.className = 'vis-tooltip vc-timeline-hovercard is-canonical'/);
   assert.match(sync, /document\.body\.append\(tooltip\)/);
   assert.match(sync, /document\.elementsFromPoint\(x, y\)/);
-  assert.match(sync, /document\.addEventListener\('pointermove', handlePointerMove, true\)/);
+  assert.match(sync, /function|const cardByGeometry/);
+  assert.match(sync, /document\.addEventListener\('pointermove', handleMove, true\)/);
+  assert.match(sync, /document\.addEventListener\('mousemove', handleMove, true\)/);
   assert.match(sync, /root\.contains\(card\)/);
   assert.match(styles, /body > \.vc-timeline-hovercard:not\(\.is-canonical\)[\s\S]*display: none !important/);
   assert.match(styles, /body > \.vc-timeline-hovercard\.is-canonical[\s\S]*position: fixed !important/);
