@@ -15,28 +15,28 @@
   max-block-size: 100%;
 }
 
-.vc-timeline-row-end-cap-marker {
-  display: block;
-  inline-size: 1px;
-  block-size: 1.5rem;
-  color: transparent;
-  pointer-events: none;
-}
-
-.vc-timeline-app .vis-label:has(.vc-timeline-row-end-cap-marker),
-.vc-timeline-app .vis-label.vc-timeline-row-end-cap-group,
-.vc-timeline-app .vis-group.vc-timeline-row-end-cap-group {
+.vc-timeline-app .vis-group:has(.vc-timeline-row-end-cap-item) {
   min-block-size: 1.5rem !important;
   block-size: 1.5rem !important;
   border: 0 !important;
-  color: transparent !important;
   background: transparent !important;
   pointer-events: none;
 }
 
-.vc-timeline-app .vis-label:has(.vc-timeline-row-end-cap-marker) .vis-inner,
-.vc-timeline-app .vis-label.vc-timeline-row-end-cap-group .vis-inner {
+.vc-timeline-app .vis-item.vc-timeline-row-end-cap-item {
+  min-block-size: 1.5rem !important;
+  block-size: 1.5rem !important;
+  inline-size: 1px !important;
+  min-inline-size: 1px !important;
   padding: 0 !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+.vc-timeline-app .vis-item.vc-timeline-row-end-cap-item .vis-item-content {
+  display: none !important;
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
