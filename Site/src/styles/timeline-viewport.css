@@ -4,10 +4,10 @@
   position: relative;
   block-size: clamp(28rem, 58vh, 42rem);
   min-height: 0;
-  padding-block-end: 12rem;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  scroll-padding-block: 1.25rem;
   scrollbar-width: thin;
   scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
   scrollbar-gutter: stable;
@@ -15,7 +15,15 @@
 
 .vc-timeline-app.is-compact .vc-timeline-canvas {
   block-size: clamp(22rem, 48vh, 32rem);
-  padding-block-end: 10rem;
+}
+
+.vc-timeline-scroll-tail {
+  display: block;
+  inline-size: 1px;
+  min-block-size: 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
@@ -109,7 +117,6 @@ body > .vc-timeline-hovercard[hidden] {
 @media (max-width: 38rem) {
   .vc-timeline-app .vc-timeline-canvas {
     block-size: clamp(22rem, 54vh, 30rem);
-    padding-block-end: 10rem;
   }
 
   body > .vc-timeline-hovercard {
