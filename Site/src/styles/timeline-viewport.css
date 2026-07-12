@@ -1,15 +1,25 @@
 /* Bounded timeline viewport and unclipped event hovercards. */
 
 .vc-timeline-app .vc-timeline-canvas {
+  position: relative;
+  block-size: clamp(28rem, 58vh, 42rem);
   min-height: 0;
-  overscroll-behavior-y: contain;
-}
-
-.vc-timeline-app .vc-timeline-canvas[data-vc-vertical-scroll='true'] .vis-panel.vis-center,
-.vc-timeline-app .vc-timeline-canvas[data-vc-vertical-scroll='true'] .vis-panel.vis-left {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
   scrollbar-gutter: stable;
+}
+
+.vc-timeline-app.is-compact .vc-timeline-canvas {
+  block-size: clamp(22rem, 48vh, 32rem);
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-left {
+  scrollbar-width: thin;
+  scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
 }
 
 /* Native vis-timeline tooltips are constrained by the canvas and can be clipped.
@@ -94,6 +104,10 @@ body > .vc-timeline-hovercard[hidden] {
 }
 
 @media (max-width: 38rem) {
+  .vc-timeline-app .vc-timeline-canvas {
+    block-size: clamp(22rem, 54vh, 30rem);
+  }
+
   body > .vc-timeline-hovercard {
     width: min(16.5rem, calc(100vw - 1rem));
   }
