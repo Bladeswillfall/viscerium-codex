@@ -1,6 +1,7 @@
 const EVENT_ITEM_SELECTOR = '.vis-item.vc-timeline-item';
 const TOP_INSET = 20;
 const BOTTOM_INSET = 20;
+const REQUIRED_STABLE_PASSES = 3;
 
 function visibleEventItems(canvas) {
   return [...canvas.querySelectorAll(EVENT_ITEM_SELECTOR)].filter((element) => {
@@ -15,9 +16,9 @@ function visibleEventItems(canvas) {
 
 /**
  * Frame the rendered Chronos cards inside the bounded outer viewport without a
- * permanent padding floor. The first rendered card is brought near the top on
- * initial mount (and after explicit filter/lane changes), while a measured tail
- * supplies only the extra scroll range genuinely needed by the final card.
+ * permanent padding floor. Chronos settles card geometry through inline style
+ * updates, so measurement follows those updates until the top and bottom bounds
+ * stabilise. Explicit lane/filter changes start a new framing cycle.
  */
 export function installTimelineScrollFraming(root) {
   const canvas = root.querySelector('[data-vc-canvas]');
@@ -27,7 +28,9 @@ export function installTimelineScrollFraming(root) {
   let settleFrame;
   let searchTimer;
   let destroyed = false;
-  let reframePending = true;
+  let reframeActive = true;
+  let stablePasses = 0;
+  let previousGeometry;
   let tail;
 
   const ensureTail = () => {
@@ -37,6 +40,14 @@ export function installTimelineScrollFraming(root) {
     tail.setAttribute('aria-hidden', 'true');
     canvas.append(tail);
     return tail;
+  };
+
+  const scheduleMeasure = () => {
+    window.cancelAnimationFrame(frame);
+    window.cancelAnimationFrame(settleFrame);
+    frame = window.requestAnimationFrame(() => {
+      settleFrame = window.requestAnimationFrame(measure);
+    });
   };
 
   const measure = () => {
@@ -67,33 +78,50 @@ export function installTimelineScrollFraming(root) {
 
     if (Math.abs(requiredTail - previousTail) > 1) {
       scrollTail.style.blockSize = `${requiredTail}px`;
+      scheduleMeasure();
     }
     canvas.dataset.vcScrollTail = String(requiredTail);
 
-    if (reframePending) {
+    const geometry = {
+      firstTop: Math.round(firstTop),
+      lastBottom: Math.round(lastBottom),
+      contentHeight: Math.round(contentHeightWithoutTail),
+      itemCount: items.length,
+    };
+    const geometryStable = previousGeometry
+      && Math.abs(geometry.firstTop - previousGeometry.firstTop) <= 1
+      && Math.abs(geometry.lastBottom - previousGeometry.lastBottom) <= 1
+      && Math.abs(geometry.contentHeight - previousGeometry.contentHeight) <= 1
+      && geometry.itemCount === previousGeometry.itemCount;
+    stablePasses = geometryStable ? stablePasses + 1 : 0;
+    previousGeometry = geometry;
+
+    if (reframeActive) {
       const maximumScroll = Math.max(0, canvas.scrollHeight - canvas.clientHeight);
       const targetScroll = Math.max(0, Math.min(maximumScroll, Math.floor(firstTop - TOP_INSET)));
       canvas.scrollTop = targetScroll;
       canvas.dataset.vcInitialScroll = String(targetScroll);
-      reframePending = false;
+      if (stablePasses >= REQUIRED_STABLE_PASSES) reframeActive = false;
     }
   };
 
-  const scheduleMeasure = () => {
-    window.cancelAnimationFrame(frame);
-    window.cancelAnimationFrame(settleFrame);
-    frame = window.requestAnimationFrame(() => {
-      settleFrame = window.requestAnimationFrame(measure);
-    });
-  };
-
   const requestReframe = () => {
-    reframePending = true;
+    reframeActive = true;
+    stablePasses = 0;
+    previousGeometry = undefined;
     scheduleMeasure();
   };
 
-  const mutationObserver = new MutationObserver(scheduleMeasure);
-  mutationObserver.observe(canvas, { subtree: true, childList: true });
+  const mutationObserver = new MutationObserver((mutations) => {
+    const hasChronosMutation = mutations.some((mutation) => mutation.target !== tail);
+    if (hasChronosMutation) scheduleMeasure();
+  });
+  mutationObserver.observe(canvas, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: ['style', 'class'],
+  });
 
   const resizeObserver = typeof ResizeObserver === 'function'
     ? new ResizeObserver(scheduleMeasure)
@@ -114,9 +142,15 @@ export function installTimelineScrollFraming(root) {
     if (event.target?.closest?.('[data-vc-clear], [data-vc-reset]')) requestReframe();
   };
 
+  const stopAutomaticReframing = () => {
+    reframeActive = false;
+  };
+
   root.addEventListener('change', handleChange);
   root.addEventListener('input', handleInput);
   root.addEventListener('click', handleClick);
+  canvas.addEventListener('wheel', stopAutomaticReframing, { passive: true });
+  canvas.addEventListener('pointerdown', stopAutomaticReframing, { passive: true });
   window.addEventListener('resize', scheduleMeasure, { passive: true });
   scheduleMeasure();
 
@@ -130,6 +164,8 @@ export function installTimelineScrollFraming(root) {
     root.removeEventListener('change', handleChange);
     root.removeEventListener('input', handleInput);
     root.removeEventListener('click', handleClick);
+    canvas.removeEventListener('wheel', stopAutomaticReframing);
+    canvas.removeEventListener('pointerdown', stopAutomaticReframing);
     window.removeEventListener('resize', scheduleMeasure);
     tail?.remove();
   };
