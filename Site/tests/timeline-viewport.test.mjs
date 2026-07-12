@@ -18,7 +18,9 @@ test('the bounded canvas delegates row scrolling to the guarded vis-timeline ins
   assert.doesNotMatch(styles, /padding-block-end/);
   assert.doesNotMatch(styles, /vc-timeline-scroll-tail/);
   assert.match(styles, /\.vc-timeline-app\.is-compact \.vc-timeline-canvas[\s\S]*clamp\(22rem, 48vh, 32rem\)/);
-  assert.match(guard, /const viewportHeight = \(\) => Math\.max\(320, Math\.round\(canvas\?\.clientHeight \?\? 0\)\)/);
+  assert.match(guard, /const getCanvas = \(\) => root\.querySelector\('\[data-vc-canvas\]'\)/);
+  assert.match(guard, /const canvas = getCanvas\(\);[\s\S]*Math\.max\(320, Math\.round\(canvas\?\.clientHeight \?\? 0\)\)/);
+  assert.match(guard, /observeCanvas\(\);[\s\S]*applyViewportHeight\(timeline\)/);
   assert.match(guard, /height: `\$\{height\}px`/);
   assert.match(guard, /const isAdaptiveHeightPass/);
   assert.match(guard, /\^\\d\+px\$/);
