@@ -1,7 +1,8 @@
 const EVENT_ITEM_SELECTOR = '.vis-item.vc-timeline-item';
 const TOP_INSET = 20;
 const BOTTOM_INSET = 20;
-const REQUIRED_STABLE_PASSES = 3;
+const SETTLE_DURATION_MS = 1_800;
+const SETTLE_INTERVAL_MS = 50;
 
 function visibleEventItems(canvas) {
   return [...canvas.querySelectorAll(EVENT_ITEM_SELECTOR)].filter((element) => {
@@ -16,9 +17,9 @@ function visibleEventItems(canvas) {
 
 /**
  * Frame the rendered Chronos cards inside the bounded outer viewport without a
- * permanent padding floor. Chronos settles card geometry through inline style
- * updates, so measurement follows those updates until the top and bottom bounds
- * stabilise. Explicit lane/filter changes start a new framing cycle.
+ * permanent padding floor. Chronos can continue positioning cards after its DOM
+ * has stopped mutating, so mount and explicit control changes receive a short,
+ * cancellable settling window of repeated measurements.
  */
 export function installTimelineScrollFraming(root) {
   const canvas = root.querySelector('[data-vc-canvas]');
@@ -26,11 +27,11 @@ export function installTimelineScrollFraming(root) {
 
   let frame;
   let settleFrame;
+  let settleTimer;
   let searchTimer;
   let destroyed = false;
   let reframeActive = true;
-  let stablePasses = 0;
-  let previousGeometry;
+  let reframeDeadline = Date.now() + SETTLE_DURATION_MS;
   let tail;
 
   const ensureTail = () => {
@@ -50,11 +51,24 @@ export function installTimelineScrollFraming(root) {
     });
   };
 
+  const scheduleSettlingPass = () => {
+    window.clearTimeout(settleTimer);
+    if (!reframeActive || destroyed) return;
+    if (Date.now() >= reframeDeadline) {
+      reframeActive = false;
+      return;
+    }
+    settleTimer = window.setTimeout(scheduleMeasure, SETTLE_INTERVAL_MS);
+  };
+
   const measure = () => {
     if (destroyed || canvas.hidden) return;
 
     const items = visibleEventItems(canvas);
-    if (!items.length) return;
+    if (!items.length) {
+      scheduleSettlingPass();
+      return;
+    }
 
     const scrollTail = ensureTail();
     const canvasRect = canvas.getBoundingClientRect();
@@ -78,37 +92,24 @@ export function installTimelineScrollFraming(root) {
 
     if (Math.abs(requiredTail - previousTail) > 1) {
       scrollTail.style.blockSize = `${requiredTail}px`;
-      scheduleMeasure();
     }
     canvas.dataset.vcScrollTail = String(requiredTail);
-
-    const geometry = {
-      firstTop: Math.round(firstTop),
-      lastBottom: Math.round(lastBottom),
-      contentHeight: Math.round(contentHeightWithoutTail),
-      itemCount: items.length,
-    };
-    const geometryStable = previousGeometry
-      && Math.abs(geometry.firstTop - previousGeometry.firstTop) <= 1
-      && Math.abs(geometry.lastBottom - previousGeometry.lastBottom) <= 1
-      && Math.abs(geometry.contentHeight - previousGeometry.contentHeight) <= 1
-      && geometry.itemCount === previousGeometry.itemCount;
-    stablePasses = geometryStable ? stablePasses + 1 : 0;
-    previousGeometry = geometry;
+    canvas.dataset.vcFirstEventTop = String(Math.round(firstTop));
+    canvas.dataset.vcLastEventBottom = String(Math.round(lastBottom));
 
     if (reframeActive) {
       const maximumScroll = Math.max(0, canvas.scrollHeight - canvas.clientHeight);
       const targetScroll = Math.max(0, Math.min(maximumScroll, Math.floor(firstTop - TOP_INSET)));
       canvas.scrollTop = targetScroll;
       canvas.dataset.vcInitialScroll = String(targetScroll);
-      if (stablePasses >= REQUIRED_STABLE_PASSES) reframeActive = false;
     }
+
+    scheduleSettlingPass();
   };
 
   const requestReframe = () => {
     reframeActive = true;
-    stablePasses = 0;
-    previousGeometry = undefined;
+    reframeDeadline = Date.now() + SETTLE_DURATION_MS;
     scheduleMeasure();
   };
 
@@ -144,6 +145,7 @@ export function installTimelineScrollFraming(root) {
 
   const stopAutomaticReframing = () => {
     reframeActive = false;
+    window.clearTimeout(settleTimer);
   };
 
   root.addEventListener('change', handleChange);
@@ -158,6 +160,7 @@ export function installTimelineScrollFraming(root) {
     destroyed = true;
     window.cancelAnimationFrame(frame);
     window.cancelAnimationFrame(settleFrame);
+    window.clearTimeout(settleTimer);
     window.clearTimeout(searchTimer);
     mutationObserver.disconnect();
     resizeObserver?.disconnect();
