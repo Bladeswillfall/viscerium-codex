@@ -16,16 +16,16 @@
 }
 
 .vc-timeline-app .vis-group:has(.vc-timeline-row-end-cap-item) {
-  min-block-size: 1.5rem !important;
-  block-size: 1.5rem !important;
+  min-block-size: 3rem !important;
+  block-size: 3rem !important;
   border: 0 !important;
   background: transparent !important;
   pointer-events: none;
 }
 
 .vc-timeline-app .vis-item.vc-timeline-row-end-cap-item {
-  min-block-size: 1.5rem !important;
-  block-size: 1.5rem !important;
+  min-block-size: 3rem !important;
+  block-size: 3rem !important;
   inline-size: 1px !important;
   min-inline-size: 1px !important;
   padding: 0 !important;
