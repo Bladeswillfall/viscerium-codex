@@ -21,6 +21,8 @@ body > .vc-timeline-hovercard {
   position: fixed !important;
   z-index: 2147483000 !important;
   display: grid;
+  visibility: visible !important;
+  opacity: 1 !important;
   width: min(20rem, calc(100vw - 1rem));
   max-width: 20rem;
   gap: .3rem;
