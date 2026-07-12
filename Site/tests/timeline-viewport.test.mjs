@@ -7,6 +7,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 test('the bounded canvas routes real user input to the Chronos row scroller', () => {
   const app = read('../src/components/timeline/TimelineApp.astro');
   const island = read('../src/components/timeline/TimelineIsland.tsx');
+  const adapter = read('../src/lib/timeline/chronos-adapter.mjs');
   const guard = read('../src/lib/timeline/viewport-guard.mjs');
   const rowScroll = read('../src/lib/timeline/row-scroll.mjs');
   const styles = read('../src/styles/timeline-viewport.css');
@@ -20,8 +21,15 @@ test('the bounded canvas routes real user input to the Chronos row scroller', ()
   assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
   assert.match(styles, /overflow: hidden/);
   assert.match(styles, /> \.vis-timeline \{[\s\S]*max-block-size: 100%/);
-  assert.match(styles, /\.vc-timeline-row-end-cap[\s\S]*block-size: 1\.5rem/);
+  assert.match(styles, /\.vis-label\.vc-timeline-row-end-cap-group[\s\S]*block-size: 1\.5rem/);
+  assert.match(styles, /\.vis-group\.vc-timeline-row-end-cap-group/);
   assert.doesNotMatch(styles, /padding-block-end:\s*1[02]rem/);
+  assert.doesNotMatch(styles, /vc-timeline-row-end-cap\s*\{/);
+
+  assert.match(adapter, /ROW_END_CAP_GROUP_ID = '__vc-timeline-row-end-cap__'/);
+  assert.match(adapter, /function addRowEndCapGroup\(groups\)/);
+  assert.match(adapter, /className: 'vc-timeline-row-end-cap-group'/);
+  assert.match(adapter, /parsed\.groups = addRowEndCapGroup\(parsed\.groups\)/);
 
   assert.match(guard, /const getCanvas = \(\) => root\.querySelector\('\[data-vc-canvas\]'\)/);
   assert.match(guard, /height: `\$\{height\}px`/);
@@ -35,7 +43,7 @@ test('the bounded canvas routes real user input to the Chronos row scroller', ()
   assert.match(rowScroll, /event\.preventDefault\(\)/);
   assert.match(rowScroll, /const firstTop = Math\.min/);
   assert.match(rowScroll, /firstTop - TOP_INSET/);
-  assert.match(rowScroll, /endCap\.style\.top = `\$\{contentHeight\}px`/);
+  assert.doesNotMatch(rowScroll, /createElement\('div'\)|ensureEndCap/);
 });
 
 test('the compatibility proxy forwards every legacy option except the obsolete fixed height', () => {
