@@ -1,0 +1,89 @@
+/* Adaptive timeline viewport and unclipped event hovercards. */
+
+.vc-timeline-app .vc-timeline-canvas {
+  min-height: 20rem;
+}
+
+.vc-timeline-app .vc-timeline-canvas[data-vc-vertical-scroll='true'] .vis-panel.vis-center,
+.vc-timeline-app .vc-timeline-canvas[data-vc-vertical-scroll='true'] .vis-panel.vis-left {
+  scrollbar-width: thin;
+  scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
+}
+
+/* Native vis-timeline tooltips are constrained by the canvas and can be clipped.
+   The shared renderer supplies one body-level hovercard instead. */
+.vc-timeline-app .vis-tooltip:not(.vc-timeline-hovercard),
+body > .vis-tooltip:not(.vc-timeline-hovercard) {
+  display: none !important;
+}
+
+body > .vc-timeline-hovercard {
+  position: fixed !important;
+  z-index: 2147483000 !important;
+  display: grid;
+  width: min(20rem, calc(100vw - 1rem));
+  max-width: 20rem;
+  gap: .3rem;
+  margin: 0;
+  padding: .7rem .8rem;
+  overflow: hidden;
+  border: 1px solid var(--codex-border-strong, #666057);
+  border-radius: 0;
+  color: var(--sl-color-white, #f3efe7);
+  background: color-mix(in srgb, var(--codex-bg, #0d0e0f) 96%, transparent);
+  box-shadow: 0 .75rem 2.5rem color-mix(in srgb, black 58%, transparent);
+  font-family: var(--vc-font-ui, ui-sans-serif, system-ui);
+  line-height: 1.35;
+  white-space: normal;
+  pointer-events: none;
+}
+
+body > .vc-timeline-hovercard[hidden] {
+  display: none !important;
+}
+
+.vc-timeline-hovercard-date {
+  color: var(--sl-color-accent-high, #c59a5c);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.vc-timeline-hovercard-title {
+  overflow: hidden;
+  color: var(--sl-color-white, #f3efe7);
+  font-family: var(--vc-font-display, Cinzel, serif);
+  font-size: .9rem;
+  font-weight: 400;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vc-timeline-hovercard-description {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--sl-color-gray-2, #c6c0b7);
+  font-size: .78rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+}
+
+@media (max-width: 38rem) {
+  body > .vc-timeline-hovercard {
+    width: min(18rem, calc(100vw - 1rem));
+  }
+}
+
+@media (forced-colors: active) {
+  body > .vc-timeline-hovercard {
+    border-color: CanvasText;
+    color: CanvasText;
+    background: Canvas;
+    box-shadow: none;
+    forced-color-adjust: none;
+  }
+}
