@@ -9,16 +9,36 @@ const GUARDED = Symbol('visceriumTimelineViewportGuard');
  * heights that previously caused the canvas/timeline feedback loop.
  */
 export function prepareTimelineViewportGuard(root) {
-  const canvas = root.querySelector('[data-vc-canvas]');
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
   const activeTimelines = new Set();
+  let resizeObserver;
+  let observedCanvas;
   let restored = false;
 
-  const viewportHeight = () => Math.max(320, Math.round(canvas?.clientHeight ?? 0));
+  const getCanvas = () => root.querySelector('[data-vc-canvas]');
+
+  const viewportHeight = () => {
+    const canvas = getCanvas();
+    return Math.max(320, Math.round(canvas?.clientHeight ?? 0));
+  };
+
+  const observeCanvas = () => {
+    const canvas = getCanvas();
+    if (!canvas || canvas === observedCanvas || typeof ResizeObserver !== 'function') return;
+
+    resizeObserver?.disconnect();
+    observedCanvas = canvas;
+    resizeObserver = new ResizeObserver(() => {
+      for (const timeline of activeTimelines) applyViewportHeight(timeline);
+    });
+    resizeObserver.observe(canvas);
+  };
 
   const applyViewportHeight = (timeline) => {
     const guard = timeline?.[GUARDED];
     if (!guard || guard.destroyed) return;
+
+    const canvas = getCanvas();
     const height = viewportHeight();
     guard.originalSetOptions({
       height: `${height}px`,
@@ -61,6 +81,7 @@ export function prepareTimelineViewportGuard(root) {
       return originalDestroy();
     };
 
+    observeCanvas();
     applyViewportHeight(timeline);
   };
 
@@ -71,13 +92,6 @@ export function prepareTimelineViewportGuard(root) {
   }
 
   ChronosTimeline.prototype.renderParsed = guardedRenderParsed;
-
-  const resizeObserver = typeof ResizeObserver === 'function' && canvas
-    ? new ResizeObserver(() => {
-      for (const timeline of activeTimelines) applyViewportHeight(timeline);
-    })
-    : undefined;
-  resizeObserver?.observe(canvas);
 
   const restorePrototype = () => {
     if (restored) return;
