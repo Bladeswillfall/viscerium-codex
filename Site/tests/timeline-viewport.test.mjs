@@ -10,7 +10,7 @@ test('timeline rows live inside a bounded vertically scrollable canvas', () => {
 
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-viewport\.css'/);
   assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
-  assert.match(styles, /padding-block-end: 10rem/);
+  assert.match(styles, /padding-block-end: 12rem/);
   assert.match(styles, /overflow-y: auto/);
   assert.match(styles, /overscroll-behavior: contain/);
   assert.match(styles, /\.vc-timeline-app\.is-compact \.vc-timeline-canvas[\s\S]*clamp\(22rem, 48vh, 32rem\)/);
