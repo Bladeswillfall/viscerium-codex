@@ -1,45 +1,19 @@
 /*
- * vis-timeline's top-level background and centre panels overlap. Without an
- * explicit stacking context, the positioned SVG year grid can escape its
- * background panel and paint over foreground event cards.
+ * The explicit calendar grid lives inside vis-timeline's itemset so all three
+ * chronology layers share one stacking context:
  *
- * Keep the canvas/grid at the back, make every centre-content surface
- * transparent so the grid remains visible in empty space, and place native
- * event geometry above both the grid and translucent era/background items.
+ *   0 — native era/background bands
+ *   1 — exact annual SVG grid
+ *   2 — native foreground event geometry
+ *
+ * Event cards and selected states remain explicitly higher for resilience
+ * against Chronos/vis-timeline redraws.
  */
-.vc-timeline-app {
-  --vc-year-line: color-mix(in srgb, var(--sl-color-gray-3, #aaa49b) 48%, transparent);
-  --vc-year-line-decade: color-mix(in srgb, var(--sl-color-gray-2, #c6c0b7) 68%, transparent);
-  --vc-year-line-century: color-mix(in srgb, var(--sl-color-white, #f3efe7) 84%, transparent);
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-timeline > .vis-panel.vis-background {
-  z-index: 0 !important;
-  background-color: var(--chronos-canvas) !important;
-}
-
-.vc-timeline-app .vc-timeline-canvas .vis-timeline > .vis-panel.vis-center {
-  z-index: 1 !important;
-  background-color: transparent !important;
-}
-
-/* chronos-native.css gives .vis-content an opaque canvas fill. That child
-   otherwise covers the grid even though its parent centre panel is transparent. */
-.vc-timeline-app .vc-timeline-canvas .vis-timeline > .vis-panel.vis-center > .vis-content,
-.vc-timeline-app .vc-timeline-canvas .vis-timeline > .vis-panel.vis-center > .vis-content > .vis-itemset {
-  background-color: transparent !important;
-}
-
-.vc-timeline-app .vc-timeline-canvas .vc-timeline-year-grid {
-  z-index: 0;
-}
-
-/* Era bands remain perceptible, but must not wash out the year grid beneath. */
-.vc-timeline-app .vc-timeline-canvas .vis-item.vc-era-band {
-  opacity: .1;
-}
-
 .vc-timeline-app .vc-timeline-canvas .vis-itemset > .vis-background {
+  z-index: 0 !important;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-itemset > .vc-timeline-year-grid {
   z-index: 1 !important;
 }
 
