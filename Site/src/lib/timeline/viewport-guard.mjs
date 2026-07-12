@@ -5,8 +5,9 @@ const GUARDED = Symbol('visceriumTimelineViewportGuard');
 /**
  * Chronos creates the raw vis-timeline instance before the site renderer wraps
  * it in a compatibility proxy. Intercept that creation point so the raw
- * timeline uses the bounded canvas height and ignores later adaptive pixel
- * heights. Row scrolling is then handled by vis-timeline inside that viewport.
+ * timeline uses the bounded canvas height, honours the adapter's explicit row
+ * order, and ignores later adaptive pixel heights. Row scrolling is then
+ * handled by vis-timeline inside that viewport.
  */
 export function prepareTimelineViewportGuard(root) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
@@ -32,6 +33,7 @@ export function prepareTimelineViewportGuard(root) {
       height: `${height}px`,
       minHeight: `${height}px`,
       verticalScroll: true,
+      groupOrder: 'order',
     });
     if (canvas) canvas.dataset.vcViewportHeight = String(height);
   };
