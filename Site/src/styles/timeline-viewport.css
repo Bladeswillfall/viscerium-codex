@@ -21,6 +21,15 @@
   min-block-size: 100%;
 }
 
+.vc-timeline-bottom-sentinel {
+  display: block;
+  inline-size: 1px;
+  min-block-size: 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-left {
   scrollbar-width: thin;
