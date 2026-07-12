@@ -67,6 +67,10 @@ function fixture() {
   };
 }
 
+function visibleGroups(model) {
+  return model.groups.filter((group) => group.id !== '__vc-timeline-row-end-cap__');
+}
+
 test('serializes canonical records through native Chronos syntax and parsing', () => {
   const dataset = fixture();
   const model = createChronosTimelineModel({
@@ -80,8 +84,13 @@ test('serializes canonical records through native Chronos syntax and parsing', (
   assert.match(model.source, /- \[[^\]]+\] #orange \{Chronology\} First event \| A point event\./);
   assert.match(model.source, /\* \[[^\]]+\] #purple \{Chronology\} Landmark point/);
 
-  assert.equal(model.groups.length, 1);
+  assert.equal(model.groups.length, 2);
   assert.equal(model.groups[0].content, 'Chronology');
+  assert.equal(model.groups[0].order, 0);
+  assert.equal(model.groups.at(-1).id, '__vc-timeline-row-end-cap__');
+  assert.equal(model.groups.at(-1).content, '');
+  assert.equal(model.groups.at(-1).className, 'vc-timeline-row-end-cap-group');
+  assert.equal(model.groups.at(-1).order, 1);
   assert.equal(model.parsed.groups, model.groups);
   assert.equal(model.parsed.markers.length, 0);
   assert.equal(model.parsed.flags.noToday, true);
@@ -122,10 +131,14 @@ test('lets Chronos create native groups from declared lanes without changing chr
     visibleStartDay: 5,
     visibleEndDay: 40,
   });
+  const lanes = visibleGroups(model);
 
-  assert.deepEqual(model.groups.map((group) => group.content), ['Okse Dominion', 'Other / unassigned']);
-  assert.equal(model.items.find((item) => item.id === 'event-a').group, model.groups[0].id);
-  assert.equal(model.items.find((item) => item.id === 'event-b').group, model.groups[1].id);
+  assert.deepEqual(lanes.map((group) => group.content), ['Okse Dominion', 'Other / unassigned']);
+  assert.deepEqual(lanes.map((group) => group.order), [0, 1]);
+  assert.equal(model.groups.at(-1).id, '__vc-timeline-row-end-cap__');
+  assert.equal(model.groups.at(-1).order, 2);
+  assert.equal(model.items.find((item) => item.id === 'event-a').group, lanes[0].id);
+  assert.equal(model.items.find((item) => item.id === 'event-b').group, lanes[1].id);
   assert.equal(syntheticDateToAbsoluteDay(new Date(model.parsed.flags.defaultView.start)), 5);
   assert.equal(syntheticDateToAbsoluteDay(new Date(model.parsed.flags.defaultView.end)), 40);
   assert.equal(model.items.filter((item) => item.id.startsWith('era:citadel:')).length, 2);
