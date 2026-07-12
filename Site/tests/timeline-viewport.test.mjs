@@ -4,29 +4,38 @@ import { readFileSync } from 'node:fs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('the bounded outer canvas owns real row scrolling and initial framing', () => {
+test('the bounded canvas routes real user input to the Chronos row scroller', () => {
   const app = read('../src/components/timeline/TimelineApp.astro');
   const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const outerScroll = read('../src/lib/timeline/outer-scroll.mjs');
+  const guard = read('../src/lib/timeline/viewport-guard.mjs');
+  const rowScroll = read('../src/lib/timeline/row-scroll.mjs');
   const styles = read('../src/styles/timeline-viewport.css');
 
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-viewport\.css'/);
-  assert.match(island, /installTimelineOuterScroll\(root\)/);
-  assert.doesNotMatch(island, /ViewportGuard|viewport-guard/);
-  assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
-  assert.match(styles, /overflow-y: auto/);
-  assert.match(styles, /overscroll-behavior: contain/);
-  assert.doesNotMatch(styles, /padding-block-end/);
-  assert.doesNotMatch(styles, /max-block-size:\s*100%/);
-  assert.match(styles, /> \.vis-timeline \{[\s\S]*min-block-size: 100%/);
-  assert.match(styles, /\.vc-timeline-app\.is-compact \.vc-timeline-canvas[\s\S]*clamp\(22rem, 48vh, 32rem\)/);
+  assert.match(island, /prepareTimelineViewportGuard\(root\)/);
+  assert.match(island, /viewportGuard\.restorePrototype\(\)/);
+  assert.match(island, /installTimelineRowScroll\(root\)/);
+  assert.doesNotMatch(island, /installTimelineOuterScroll/);
 
-  assert.match(outerScroll, /canvas\.addEventListener\('wheel', handleWheel, \{ capture: true, passive: false \}\)/);
-  assert.match(outerScroll, /canvas\.scrollTop = next/);
-  assert.match(outerScroll, /event\.preventDefault\(\);[\s\S]*event\.stopPropagation\(\)/);
-  assert.match(outerScroll, /const firstTop = Math\.min/);
-  assert.match(outerScroll, /firstTop - TOP_INSET/);
-  assert.doesNotMatch(outerScroll, /scroll-tail|padding-block-end/);
+  assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
+  assert.match(styles, /overflow: hidden/);
+  assert.match(styles, /> \.vis-timeline \{[\s\S]*max-block-size: 100%/);
+  assert.match(styles, /\.vc-timeline-row-end-cap[\s\S]*block-size: 1\.5rem/);
+  assert.doesNotMatch(styles, /padding-block-end:\s*1[02]rem/);
+
+  assert.match(guard, /const getCanvas = \(\) => root\.querySelector\('\[data-vc-canvas\]'\)/);
+  assert.match(guard, /height: `\$\{height\}px`/);
+  assert.match(guard, /const isAdaptiveHeightPass/);
+
+  assert.match(rowScroll, /SCROLLER_SELECTOR = '\.vis-panel\.vis-left\.vis-vertical-scroll'/);
+  assert.match(rowScroll, /canvas\.addEventListener\('wheel', handleWheel, \{ capture: true, passive: false \}\)/);
+  assert.match(rowScroll, /scroller\.scrollTop = target/);
+  assert.match(rowScroll, /scroller\.dispatchEvent\(new Event\('scroll'/);
+  assert.match(rowScroll, /event\.stopPropagation\(\)/);
+  assert.match(rowScroll, /event\.preventDefault\(\)/);
+  assert.match(rowScroll, /const firstTop = Math\.min/);
+  assert.match(rowScroll, /firstTop - TOP_INSET/);
+  assert.match(rowScroll, /endCap\.style\.top = `\$\{contentHeight\}px`/);
 });
 
 test('the compatibility proxy forwards every legacy option except the obsolete fixed height', () => {
