@@ -4,16 +4,27 @@ import { readFileSync } from 'node:fs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('timeline rows live inside a bounded vertically scrollable canvas', () => {
+test('the bounded canvas delegates row scrolling to the guarded vis-timeline instance', () => {
   const app = read('../src/components/timeline/TimelineApp.astro');
+  const island = read('../src/components/timeline/TimelineIsland.tsx');
+  const guard = read('../src/lib/timeline/viewport-guard.mjs');
   const styles = read('../src/styles/timeline-viewport.css');
 
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-viewport\.css'/);
+  assert.match(island, /prepareTimelineViewportGuard\(root\)/);
+  assert.match(island, /viewportGuard\.restorePrototype\(\)/);
   assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
-  assert.match(styles, /padding-block-end: 12rem/);
-  assert.match(styles, /overflow-y: auto/);
-  assert.match(styles, /overscroll-behavior: contain/);
+  assert.match(styles, /overflow: hidden/);
+  assert.doesNotMatch(styles, /padding-block-end/);
+  assert.doesNotMatch(styles, /vc-timeline-scroll-tail/);
   assert.match(styles, /\.vc-timeline-app\.is-compact \.vc-timeline-canvas[\s\S]*clamp\(22rem, 48vh, 32rem\)/);
+  assert.match(guard, /const getCanvas = \(\) => root\.querySelector\('\[data-vc-canvas\]'\)/);
+  assert.match(guard, /const canvas = getCanvas\(\);[\s\S]*Math\.max\(320, Math\.round\(canvas\?\.clientHeight \?\? 0\)\)/);
+  assert.match(guard, /observeCanvas\(\);[\s\S]*applyViewportHeight\(timeline\)/);
+  assert.match(guard, /height: `\$\{height\}px`/);
+  assert.match(guard, /const isAdaptiveHeightPass/);
+  assert.match(guard, /\^\\d\+px\$/);
+  assert.match(guard, /const \{ height: _height, minHeight: _minHeight, \.\.\.forwarded \} = options/);
 });
 
 test('the compatibility proxy forwards every legacy option except the obsolete fixed height', () => {
