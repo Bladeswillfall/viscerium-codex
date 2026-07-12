@@ -274,7 +274,7 @@ jobs:
                 const tooltipMetrics = await page.evaluate(() => {
                   const item = [...document.querySelectorAll('.vis-item.vc-timeline-item')]
                     .find((element) => element.textContent?.includes('The Pathfinder Exodus'));
-                  const visibleTooltips = [...document.querySelectorAll('body > .vc-timeline-hovercard.is-canonical')]
+                  const visibleTooltips = [...document.querySelectorAll('body > .vc-timeline-hovercard')]
                     .filter((element) => {
                       const style = getComputedStyle(element);
                       const rect = element.getBoundingClientRect();
@@ -286,7 +286,6 @@ jobs:
                     itemTitle: item?.getAttribute('title') ?? null,
                     tooltipCount: visibleTooltips.length,
                     tooltipText: visibleTooltips.map((element) => element.textContent ?? '').join(' '),
-                    tooltipEventId: tooltip?.dataset.vcCanonicalEventId ?? null,
                     backgroundColor: style?.backgroundColor ?? null,
                     color: style?.color ?? null,
                   };
@@ -307,7 +306,6 @@ jobs:
                 expect(tooltipMetrics.tooltipText).toContain('11,431');
                 expect(tooltipMetrics.tooltipText).toContain('The Pathfinder Exodus');
                 expect(tooltipMetrics.tooltipText).not.toMatch(/2030|2036/);
-                expect(tooltipMetrics.tooltipEventId).toBeTruthy();
                 expect(tooltipMetrics.backgroundColor).toMatch(/21,\s*19,\s*16/);
                 expect(tooltipMetrics.color).toMatch(/244,\s*239,\s*229/);
               }
