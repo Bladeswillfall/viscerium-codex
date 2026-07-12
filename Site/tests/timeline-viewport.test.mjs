@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('the bounded canvas routes real user input to the Chronos row scroller', () => {
+test('the bounded canvas routes real user input to viewport-ranked Chronos rows', () => {
   const app = read('../src/components/timeline/TimelineApp.astro');
   const island = read('../src/components/timeline/TimelineIsland.tsx');
   const adapter = read('../src/lib/timeline/chronos-adapter.mjs');
@@ -21,16 +21,20 @@ test('the bounded canvas routes real user input to the Chronos row scroller', ()
   assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
   assert.match(styles, /overflow: hidden/);
   assert.match(styles, /> \.vis-timeline \{[\s\S]*max-block-size: 100%/);
-  assert.match(styles, /\.vis-group:has\(\.vc-timeline-row-end-cap-item\)[\s\S]*block-size: 1\.5rem/);
-  assert.match(styles, /\.vis-item\.vc-timeline-row-end-cap-item[\s\S]*block-size: 1\.5rem/);
+  assert.match(styles, /\.vis-group:has\(\.vc-timeline-row-end-cap-item\)[\s\S]*block-size: 3rem/);
+  assert.match(styles, /\.vis-item\.vc-timeline-row-end-cap-item[\s\S]*block-size: 3rem/);
   assert.doesNotMatch(styles, /padding-block-end:\s*1[02]rem/);
 
+  assert.match(adapter, /STABLE_GROUP_ID_PREFIX = 'vc-timeline-group-'/);
+  assert.match(adapter, /function orderGroupsForViewport\(/);
+  assert.match(adapter, /metric\.active \|\|= overlaps/);
+  assert.match(adapter, /function stabilizeParsedGroupIds\(parsed\)/);
   assert.match(adapter, /ROW_END_CAP_GROUP_ID = '__vc-timeline-row-end-cap__'/);
   assert.match(adapter, /ROW_END_CAP_ITEM_ID = '__vc-timeline-row-end-cap-item__'/);
-  assert.match(adapter, /function addRowEndCap\(parsed, startDay, syntheticOriginDay\)/);
   assert.match(adapter, /className: 'vc-timeline-row-end-cap-item'/);
-  assert.match(adapter, /addRowEndCap\(parsed, startDay, syntheticOriginDay\)/);
 
+  assert.match(guard, /STABLE_GROUP_ID_PATTERN = \/\^vc-timeline-group-/);
+  assert.match(guard, /groupOrder: orderTimelineGroups/);
   assert.match(guard, /const getCanvas = \(\) => root\.querySelector\('\[data-vc-canvas\]'\)/);
   assert.match(guard, /height: `\$\{height\}px`/);
   assert.match(guard, /const isAdaptiveHeightPass/);
