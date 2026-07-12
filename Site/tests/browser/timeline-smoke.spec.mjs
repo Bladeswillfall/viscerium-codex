@@ -42,6 +42,8 @@ function measureViewport(canvas) {
   const timeline = canvas.querySelector(':scope > .vis-timeline');
   const timelineRect = timeline?.getBoundingClientRect();
   const canvasStyle = getComputedStyle(canvas);
+  const scroller = canvas.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
+  const endCap = scroller?.querySelector(':scope > .vc-timeline-row-end-cap');
   const items = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
     .filter((element) => {
       const rect = element.getBoundingClientRect();
@@ -62,12 +64,18 @@ function measureViewport(canvas) {
     canvasHeight: canvasRect.height,
     canvasClientHeight: canvas.clientHeight,
     canvasScrollHeight: canvas.scrollHeight,
-    canvasScrollTop: canvas.scrollTop,
-    canvasScrollMaximum: Math.max(0, canvas.scrollHeight - canvas.clientHeight),
     canvasOverflowY: canvasStyle.overflowY,
     timelineHeight: timelineRect?.height ?? 0,
-    initialScrollToken: canvas.dataset.vcInitialScroll ?? null,
-    outerRangeToken: canvas.dataset.vcOuterScrollRange ?? null,
+    viewportHeightToken: canvas.dataset.vcViewportHeight ?? null,
+    initialRowScrollToken: canvas.dataset.vcInitialRowScroll ?? null,
+    rowRangeToken: canvas.dataset.vcRowScrollRange ?? null,
+    scrollerClientHeight: scroller?.clientHeight ?? 0,
+    scrollerScrollHeight: scroller?.scrollHeight ?? 0,
+    scrollerScrollTop: scroller?.scrollTop ?? 0,
+    scrollerScrollMaximum: scroller
+      ? Math.max(0, scroller.scrollHeight - scroller.clientHeight)
+      : 0,
+    endCapHeight: endCap?.getBoundingClientRect().height ?? 0,
     visibleEventCount: intersectingItems.length,
     firstVisibleEventTop: intersectingItems.length
       ? Math.min(...intersectingItems.map(({ top }) => top))
@@ -81,6 +89,35 @@ function measureViewport(canvas) {
     canvasTop: canvasRect.top,
     canvasBottom: canvasRect.bottom,
   };
+}
+
+async function moveRowScrollerTo(page, edge) {
+  return page.locator('[data-vc-canvas]').evaluate((canvas, requestedEdge) => {
+    const scroller = canvas.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
+    if (!scroller) return null;
+    const maximum = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+    scroller.scrollTop = requestedEdge === 'top' ? 0 : maximum;
+    scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
+    return { maximum, applied: scroller.scrollTop };
+  }, edge);
+}
+
+async function revealRowItem(page, item) {
+  await item.evaluate((element) => {
+    const canvas = element.closest('[data-vc-canvas]');
+    const scroller = canvas?.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
+    if (!canvas || !scroller) return;
+    const canvasRect = canvas.getBoundingClientRect();
+    const itemRect = element.getBoundingClientRect();
+    const maximum = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+    const target = scroller.scrollTop
+      + itemRect.top
+      - canvasRect.top
+      - Math.max(12, (canvas.clientHeight - itemRect.height) / 2);
+    scroller.scrollTop = Math.max(0, Math.min(maximum, target));
+    scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
+  });
+  await page.waitForTimeout(250);
 }
 
 for (const era of eras) {
@@ -110,10 +147,12 @@ for (const era of eras) {
       await page.screenshot({ path: 'timeline-browser-diagnostics/citadel-chronos-layout.png', fullPage: true });
 
       expect(metrics.canvasHeight).toBeLessThanOrEqual(674);
-      expect(metrics.timelineHeight).toBeGreaterThan(metrics.canvasHeight + 20);
-      expect(metrics.canvasScrollHeight).toBeGreaterThan(metrics.canvasClientHeight + 20);
-      expect(['auto', 'scroll']).toContain(metrics.canvasOverflowY);
-      expect(Number(metrics.outerRangeToken)).toBeGreaterThan(20);
+      expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
+      expect(metrics.canvasScrollHeight).toBeLessThanOrEqual(metrics.canvasClientHeight + 2);
+      expect(metrics.canvasOverflowY).toBe('hidden');
+      expect(Number(metrics.viewportHeightToken)).toBeCloseTo(metrics.canvasHeight, 0);
+      expect(metrics.scrollerScrollMaximum).toBeGreaterThan(20);
+      expect(metrics.endCapHeight).toBeCloseTo(24, 0);
       expect(metrics.visibleEventCount).toBeGreaterThan(1);
       expect(metrics.firstVisibleEventTop - metrics.canvasTop).toBeLessThanOrEqual(32);
       expect(labels.some(({ text }) => text === 'Veyr Court')).toBe(true);
@@ -159,7 +198,7 @@ for (const era of eras) {
 
       const pathfinder = page.locator('.vis-item.vc-timeline-item', { hasText: 'The Pathfinder Exodus' }).first();
       await expect(pathfinder).toBeAttached();
-      await pathfinder.scrollIntoViewIfNeeded();
+      await revealRowItem(page, pathfinder);
       await expect(pathfinder).toBeVisible();
       await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
       await pathfinder.hover();
@@ -209,7 +248,7 @@ for (const era of eras) {
   });
 }
 
-test('global chronology wheel-scrolls from a top-framed start to a complete final row', async ({ page }) => {
+test('global chronology wheel-scrolls its rows and fully reveals the final card', async ({ page }) => {
   const messages = collectErrors(page, 'global');
   await page.goto('http://127.0.0.1:4321/timelines/', { waitUntil: 'networkidle' });
   const globalLink = page.getByRole('link', { name: 'The VISCERIUM Timeline', exact: true }).first();
@@ -227,16 +266,12 @@ test('global chronology wheel-scrolls from a top-framed start to a complete fina
   const box = await canvas.boundingBox();
   if (box) {
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.wheel(0, 180);
+    await page.mouse.wheel(0, 80);
   }
   await page.waitForTimeout(250);
   const afterWheel = await canvas.evaluate(measureViewport);
 
-  const bottomScroll = await canvas.evaluate((element) => {
-    const maximum = Math.max(0, element.scrollHeight - element.clientHeight);
-    element.scrollTop = maximum;
-    return { maximum, applied: element.scrollTop };
-  });
+  const bottomScroll = await moveRowScrollerTo(page, 'bottom');
   await page.waitForTimeout(250);
   const after = await canvas.evaluate(measureViewport);
 
@@ -246,12 +281,14 @@ test('global chronology wheel-scrolls from a top-framed start to a complete fina
   );
   await page.screenshot({ path: 'timeline-browser-diagnostics/global-scroll-framing.png', fullPage: true });
 
-  expect(before.canvasScrollMaximum).toBeGreaterThan(20);
-  expect(before.timelineHeight).toBeGreaterThan(before.canvasHeight + 20);
+  expect(Math.abs(before.timelineHeight - before.canvasHeight)).toBeLessThanOrEqual(2);
+  expect(before.canvasScrollHeight).toBeLessThanOrEqual(before.canvasClientHeight + 2);
+  expect(before.scrollerScrollMaximum).toBeGreaterThan(20);
+  expect(before.endCapHeight).toBeCloseTo(24, 0);
   expect(before.visibleEventCount).toBeGreaterThan(1);
   expect(before.firstVisibleEventTop - before.canvasTop).toBeLessThanOrEqual(32);
-  expect(afterWheel.canvasScrollTop).toBeGreaterThan(before.canvasScrollTop + 20);
-  expect(bottomScroll.maximum).toBeGreaterThan(20);
+  expect(afterWheel.scrollerScrollTop).toBeGreaterThan(before.scrollerScrollTop + 20);
+  expect(bottomScroll).not.toBeNull();
   expect(bottomScroll.applied).toBe(bottomScroll.maximum);
   expect(after.visibleEventCount).toBeGreaterThan(0);
   expect(after.lowestRenderedEventBottom).toBeLessThanOrEqual(after.canvasBottom + 2);
