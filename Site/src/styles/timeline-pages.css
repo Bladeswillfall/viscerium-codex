@@ -45,8 +45,9 @@
   --vc-event-social: #dcb8b4;
   --vc-event-environmental: #b7d0a8;
   --vc-event-unknown: #c9c4bb;
-  --vc-year-line: color-mix(in srgb, var(--sl-color-gray-4, #858078) 18%, transparent);
-  --vc-year-line-major: color-mix(in srgb, var(--sl-color-gray-3, #aaa49b) 30%, transparent);
+  --vc-year-line: color-mix(in srgb, var(--sl-color-gray-4, #858078) 22%, transparent);
+  --vc-year-line-decade: color-mix(in srgb, var(--sl-color-gray-3, #aaa49b) 36%, transparent);
+  --vc-year-line-century: color-mix(in srgb, var(--sl-color-gray-2, #c6c0b7) 52%, transparent);
 }
 
 /* The application itself is not a card. Its controls and visual modules provide structure. */
@@ -90,15 +91,41 @@
   border-top: 0;
 }
 
-/* Chronos/vis-timeline generates scale-aware vertical divisions.
-   At readable zooms these are annual; wider views automatically step upward. */
-.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-grid.vis-vertical {
-  border-inline-start: 1px solid var(--vc-year-line) !important;
-  border-inline-end: 0 !important;
+/* Native vis-timeline divisions are adaptive and may skip years. The explicit
+   SVG layer below is the sole vertical chronology grid in the main canvas. */
+.vc-timeline-app .vc-timeline-canvas .vis-grid.vis-vertical {
+  border-inline-start-color: transparent !important;
+  border-inline-end-color: transparent !important;
 }
 
-.vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-grid.vis-vertical.vis-major {
-  border-inline-start-color: var(--vc-year-line-major) !important;
+.vc-timeline-app .vc-timeline-year-grid {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  margin: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.vc-timeline-app .vc-timeline-year-grid path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: crispEdges;
+}
+
+.vc-timeline-app .vc-year-grid-annual {
+  stroke: var(--vc-year-line);
+  stroke-width: .75;
+}
+
+.vc-timeline-app .vc-year-grid-decade {
+  stroke: var(--vc-year-line-decade);
+  stroke-width: 1;
+}
+
+.vc-timeline-app .vc-year-grid-century {
+  stroke: var(--vc-year-line-century);
+  stroke-width: 1.25;
 }
 
 /* Category palette. Inline colours supplied by Chronos are intentionally replaced,
@@ -173,5 +200,9 @@
 @media (forced-colors: active) {
   .vc-timeline-app .vc-timeline-canvas .vis-item.vc-timeline-item {
     forced-color-adjust: auto;
+  }
+
+  .vc-timeline-app .vc-timeline-year-grid path {
+    stroke: CanvasText;
   }
 }
