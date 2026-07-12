@@ -7,6 +7,8 @@ import ContributorStrip from './ContributorStrip.astro';
 import GiscusComments from './GiscusComments.astro';
 import LocalIcon from './LocalIcon.astro';
 import siteConfig from '../../site.config.mjs';
+
+const isHomepage = Astro.url.pathname === '/';
 ---
 
 <button
@@ -21,7 +23,7 @@ import siteConfig from '../../site.config.mjs';
 
 <CodexMath />
 <ContributorStrip />
-<GiscusComments />
+{!isHomepage && <GiscusComments />}
 
 <footer class="codex-site-footer sl-flex">
   <div class="ion-codex-footer sl-flex">
