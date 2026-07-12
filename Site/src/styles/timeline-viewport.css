@@ -4,6 +4,7 @@
   position: relative;
   block-size: clamp(28rem, 58vh, 42rem);
   min-height: 0;
+  padding-block-end: 8rem;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -14,6 +15,7 @@
 
 .vc-timeline-app.is-compact .vc-timeline-canvas {
   block-size: clamp(22rem, 48vh, 32rem);
+  padding-block-end: 6rem;
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
@@ -107,6 +109,7 @@ body > .vc-timeline-hovercard[hidden] {
 @media (max-width: 38rem) {
   .vc-timeline-app .vc-timeline-canvas {
     block-size: clamp(22rem, 54vh, 30rem);
+    padding-block-end: 6rem;
   }
 
   body > .vc-timeline-hovercard.is-canonical {
