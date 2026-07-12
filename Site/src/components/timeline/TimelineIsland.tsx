@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'preact/hooks';
 import type { TimelineDataset, TimelineLaneMode } from '../../lib/timeline/types';
 import { installTimelineTooltipCanonicalSync } from '../../lib/timeline/tooltip-canonical-sync.mjs';
-import { installTimelineViewportOptionGuard } from '../../lib/timeline/viewport-option-guard.mjs';
 import { installCalendarYearAxisSync } from '../../lib/timeline/year-axis-sync.mjs';
 
 type TimelineIslandOptions = {
@@ -44,14 +43,9 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
       if (fallbackRef.current) fallbackRef.current.hidden = true;
       if (skeletonRef.current) skeletonRef.current.hidden = false;
 
-      const cleanupViewportGuard = await installTimelineViewportOptionGuard(root, options.compact === true);
-
       try {
         const { mountTimeline } = await import('../../lib/timeline/renderer.mjs');
-        if (cancelled || !mountRef.current) {
-          cleanupViewportGuard();
-          return;
-        }
+        if (cancelled || !mountRef.current) return;
 
         const cleanupTimeline = mountTimeline(root, dataset, options);
         const cleanupTooltipSync = installTimelineTooltipCanonicalSync(root, dataset);
@@ -60,14 +54,12 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
           cleanupYearAxis();
           cleanupTooltipSync();
           cleanupTimeline();
-          cleanupViewportGuard();
         };
         root.setAttribute('data-vc-island-mounted', 'true');
         root.setAttribute('aria-busy', 'false');
         if (skeletonRef.current) skeletonRef.current.hidden = true;
         if (fallbackRef.current) fallbackRef.current.hidden = true;
       } catch (error) {
-        cleanupViewportGuard();
         root.replaceChildren();
         root.removeAttribute('data-vc-island-mounted');
         root.setAttribute('aria-busy', 'false');
