@@ -1,0 +1,172 @@
+/* Route-level timeline presentation: full-width, frameless, and Chronos-led. */
+
+.main-frame:has(> .codex-timeline-page) {
+  box-sizing: border-box;
+  grid-column: 1 / -1 !important;
+  inline-size: 100%;
+  max-inline-size: none;
+  margin-inline: 0;
+  padding-inline: clamp(1rem, 2.4vw, 3rem);
+}
+
+.main-frame > .codex-timeline-page,
+.main-frame > .codex-timeline-page > .codex-main-pane,
+.main-frame > .codex-timeline-page > .codex-main-pane > main,
+.main-frame > .codex-timeline-page > .codex-main-pane > main > .content-panel,
+.main-frame > .codex-timeline-page > .codex-main-pane > main > .content-panel > .sl-container,
+.main-frame > .codex-timeline-page .sl-markdown-content {
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: none !important;
+  margin-inline: 0;
+}
+
+.main-frame > .codex-timeline-page .sl-markdown-content {
+  padding-inline: 0;
+}
+
+.codex-timeline-page .vc-timeline-shell,
+.codex-timeline-page .vc-timeline-app {
+  --vc-event-ink: #17191b;
+  --vc-event-technology: #a8d8d2;
+  --vc-event-military: #e8b3a0;
+  --vc-event-political: #e4ca91;
+  --vc-event-cultural: #cbb7dc;
+  --vc-event-religious: #e5d7a8;
+  --vc-event-economic: #bfd39f;
+  --vc-event-scientific: #b2cae6;
+  --vc-event-disaster: #e7a19a;
+  --vc-event-resonance: #d1b0e5;
+  --vc-event-myrkild: #b2cea0;
+  --vc-event-naranor: #d9d5c8;
+  --vc-event-exploration: #a1cdd3;
+  --vc-event-social: #dcb8b4;
+  --vc-event-environmental: #b7d0a8;
+  --vc-event-unknown: #c9c4bb;
+  --vc-year-line: color-mix(in srgb, var(--sl-color-gray-4, #858078) 18%, transparent);
+  --vc-year-line-major: color-mix(in srgb, var(--sl-color-gray-3, #aaa49b) 30%, transparent);
+}
+
+/* The application itself is not a card. Its controls and visual modules provide structure. */
+.codex-timeline-page .vc-timeline-app {
+  margin-block: 1.5rem;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.codex-timeline-page .vc-timeline-toolbar,
+.codex-timeline-page .vc-timeline-filters,
+.codex-timeline-page .vc-era-action,
+.codex-timeline-page .vc-timeline-stage,
+.codex-timeline-page .vc-timeline-minimap-wrap,
+.codex-timeline-page .vc-timeline-list li,
+.codex-timeline-page .vc-timeline-details {
+  outline: 1px solid var(--vc-timeline-border);
+  outline-offset: -1px;
+}
+
+.codex-timeline-page .vc-timeline-toolbar,
+.codex-timeline-page .vc-timeline-filters,
+.codex-timeline-page .vc-timeline-minimap-wrap {
+  border: 0;
+  background: color-mix(in srgb, var(--vc-timeline-surface-deep) 82%, transparent);
+}
+
+.codex-timeline-page .vc-timeline-stage {
+  border: 0;
+  background: transparent;
+}
+
+.codex-timeline-page .vc-timeline-minimap {
+  border-top: 0;
+}
+
+/* Chronos/vis-timeline already generates scale-aware vertical divisions.
+   At readable zooms these are annual; wider views automatically step upward. */
+.codex-timeline-page :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-grid.vis-vertical {
+  border-inline-start: 1px solid var(--vc-year-line) !important;
+  border-inline-end: 0 !important;
+}
+
+.codex-timeline-page :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-grid.vis-vertical.vis-major {
+  border-inline-start-color: var(--vc-year-line-major) !important;
+}
+
+/* Category palette. Inline colours supplied by Chronos are intentionally replaced,
+   while its native event, range, point and period geometry remains intact. */
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item {
+  --vc-event-fill: var(--vc-event-unknown);
+  --vc-event-outline: color-mix(in srgb, var(--vc-event-fill) 62%, #3d4144);
+  box-shadow: none !important;
+}
+
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-technology { --vc-event-fill: var(--vc-event-technology); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-military { --vc-event-fill: var(--vc-event-military); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-political { --vc-event-fill: var(--vc-event-political); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-cultural { --vc-event-fill: var(--vc-event-cultural); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-religious { --vc-event-fill: var(--vc-event-religious); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-economic { --vc-event-fill: var(--vc-event-economic); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-scientific { --vc-event-fill: var(--vc-event-scientific); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-disaster { --vc-event-fill: var(--vc-event-disaster); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-resonance { --vc-event-fill: var(--vc-event-resonance); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-myrkild { --vc-event-fill: var(--vc-event-myrkild); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-naranor { --vc-event-fill: var(--vc-event-naranor); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-exploration { --vc-event-fill: var(--vc-event-exploration); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-social { --vc-event-fill: var(--vc-event-social); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-environmental { --vc-event-fill: var(--vc-event-environmental); }
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.category-unknown { --vc-event-fill: var(--vc-event-unknown); }
+
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item:is(.vis-box, .vis-range) {
+  border-color: var(--vc-event-outline) !important;
+  background-color: var(--vc-event-fill) !important;
+  color: var(--vc-event-ink) !important;
+}
+
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item:is(.vis-box, .vis-range) .vis-item-content,
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item:is(.vis-box, .vis-range) a {
+  color: var(--vc-event-ink) !important;
+}
+
+/* Milestones remain native Chronos points rather than being converted into boxes. */
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.vis-point {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--vc-event-fill) !important;
+}
+
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.vis-point .vis-dot {
+  border-color: var(--vc-event-outline) !important;
+  background-color: var(--vc-event-fill) !important;
+}
+
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.vis-point .vis-item-content {
+  border: 1px solid var(--vc-event-outline);
+  background: var(--vc-event-fill);
+  color: var(--vc-event-ink) !important;
+}
+
+.codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item.vis-selected {
+  outline: 2px solid var(--sl-color-white, #f3efe7);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vc-timeline-accent) 30%, transparent) !important;
+}
+
+@media (max-width: 38rem) {
+  .main-frame:has(> .codex-timeline-page) {
+    padding-inline: .75rem;
+  }
+
+  .codex-timeline-page .vc-timeline-app {
+    margin-inline: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  .codex-timeline-page .vc-timeline-canvas .vis-item.vc-timeline-item {
+    forced-color-adjust: auto;
+  }
+}
