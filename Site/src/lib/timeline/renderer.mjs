@@ -195,26 +195,24 @@ function installAnnualYearGrid(root, dataset, timeline) {
 
     const canvas = root.querySelector('[data-vc-canvas]');
     const timelineElement = canvas?.querySelector('.vis-timeline');
-    const backgroundPanel = timelineElement?.querySelector(':scope > .vis-panel.vis-background')
-      ?? canvas?.querySelector('.vis-panel.vis-background');
     const centerPanel = timelineElement?.querySelector(':scope > .vis-panel.vis-center')
       ?? canvas?.querySelector('.vis-panel.vis-center');
-    if (!canvas || canvas.hidden || !backgroundPanel || !centerPanel) return;
+    const itemset = centerPanel?.querySelector('.vis-itemset');
+    if (!canvas || canvas.hidden || !centerPanel || !itemset) return;
 
-    let svg = backgroundPanel.querySelector(':scope > [data-vc-year-grid]');
+    let svg = itemset.querySelector(':scope > [data-vc-year-grid]');
     if (!svg) {
       svg = createYearGridSvg();
-      backgroundPanel.append(svg);
+      itemset.append(svg);
     }
 
-    const backgroundRect = backgroundPanel.getBoundingClientRect();
-    const centerRect = centerPanel.getBoundingClientRect();
-    const width = Math.max(0, centerRect.width);
-    const height = Math.max(0, centerRect.height);
+    const itemsetRect = itemset.getBoundingClientRect();
+    const width = Math.max(0, itemsetRect.width);
+    const height = Math.max(0, itemsetRect.height);
     if (!width || !height) return;
 
-    svg.style.left = `${centerRect.left - backgroundRect.left}px`;
-    svg.style.top = `${centerRect.top - backgroundRect.top}px`;
+    svg.style.left = '0px';
+    svg.style.top = '0px';
     svg.style.width = `${width}px`;
     svg.style.height = `${height}px`;
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
