@@ -1,5 +1,9 @@
 import { ChronosTimeline } from 'chronos-timeline-md';
+import { syntheticDateToAbsoluteDay } from './core.mjs';
 import { mountTimeline as mountNativeTimeline } from './chronos-native-renderer.mjs';
+import { calendarYearBoundaries } from './year-grid.mjs';
+
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 function groupSignature(groups) {
   const values = Array.isArray(groups)
@@ -156,6 +160,119 @@ function installChronosTimelineProxy(chronos, initialResult, originalRenderParse
   return proxy;
 }
 
+function yearPath(boundaries, startDay, span, width, height) {
+  return boundaries.map(({ absoluteDay }) => {
+    const x = Math.min(width, Math.max(0, ((absoluteDay - startDay) / span) * width));
+    return `M${x.toFixed(2)} 0V${height.toFixed(2)}`;
+  }).join(' ');
+}
+
+function createYearGridSvg() {
+  const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
+  svg.setAttribute('class', 'vc-timeline-year-grid');
+  svg.setAttribute('data-vc-year-grid', '');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  svg.setAttribute('preserveAspectRatio', 'none');
+
+  for (const className of ['vc-year-grid-annual', 'vc-year-grid-decade', 'vc-year-grid-century']) {
+    const path = document.createElementNS(SVG_NAMESPACE, 'path');
+    path.setAttribute('class', className);
+    svg.append(path);
+  }
+
+  return svg;
+}
+
+function installAnnualYearGrid(root, dataset, timeline) {
+  let renderFrame;
+  let destroyed = false;
+  const calendarSelect = root.querySelector('[data-vc-calendar]');
+  const listButton = root.querySelector('[data-vc-list]');
+
+  const render = () => {
+    if (destroyed) return;
+
+    const canvas = root.querySelector('[data-vc-canvas]');
+    const timelineElement = canvas?.querySelector('.vis-timeline');
+    const backgroundPanel = timelineElement?.querySelector(':scope > .vis-panel.vis-background')
+      ?? canvas?.querySelector('.vis-panel.vis-background');
+    const centerPanel = timelineElement?.querySelector(':scope > .vis-panel.vis-center')
+      ?? canvas?.querySelector('.vis-panel.vis-center');
+    if (!canvas || canvas.hidden || !backgroundPanel || !centerPanel) return;
+
+    let svg = backgroundPanel.querySelector(':scope > [data-vc-year-grid]');
+    if (!svg) {
+      svg = createYearGridSvg();
+      backgroundPanel.append(svg);
+    }
+
+    const backgroundRect = backgroundPanel.getBoundingClientRect();
+    const centerRect = centerPanel.getBoundingClientRect();
+    const width = Math.max(0, centerRect.width);
+    const height = Math.max(0, centerRect.height);
+    if (!width || !height) return;
+
+    svg.style.left = `${centerRect.left - backgroundRect.left}px`;
+    svg.style.top = `${centerRect.top - backgroundRect.top}px`;
+    svg.style.width = `${width}px`;
+    svg.style.height = `${height}px`;
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+    const range = timeline.getWindow();
+    const startDay = syntheticDateToAbsoluteDay(range.start, dataset.absoluteStartDay);
+    const endDay = syntheticDateToAbsoluteDay(range.end, dataset.absoluteStartDay);
+    const span = Math.max(1, endDay - startDay);
+    const calendarId = calendarSelect?.value ?? dataset.defaultCalendar;
+    const boundaries = calendarYearBoundaries(startDay, endDay, calendarId);
+    const annual = [];
+    const decades = [];
+    const centuries = [];
+
+    for (const boundary of boundaries) {
+      if (boundary.year % 100 === 0) centuries.push(boundary);
+      else if (boundary.year % 10 === 0) decades.push(boundary);
+      else annual.push(boundary);
+    }
+
+    svg.querySelector('.vc-year-grid-annual')?.setAttribute('d', yearPath(annual, startDay, span, width, height));
+    svg.querySelector('.vc-year-grid-decade')?.setAttribute('d', yearPath(decades, startDay, span, width, height));
+    svg.querySelector('.vc-year-grid-century')?.setAttribute('d', yearPath(centuries, startDay, span, width, height));
+    svg.dataset.vcYearLineCount = String(boundaries.length);
+    svg.dataset.vcYearCalendar = calendarId;
+  };
+
+  const scheduleRender = () => {
+    window.cancelAnimationFrame(renderFrame);
+    renderFrame = window.requestAnimationFrame(render);
+  };
+
+  const mutationObserver = new MutationObserver(scheduleRender);
+  mutationObserver.observe(root, { subtree: true, childList: true });
+
+  const resizeObserver = typeof ResizeObserver === 'function'
+    ? new ResizeObserver(scheduleRender)
+    : undefined;
+  resizeObserver?.observe(root);
+
+  timeline.on('rangechange', scheduleRender);
+  timeline.on('rangechanged', scheduleRender);
+  calendarSelect?.addEventListener('change', scheduleRender);
+  listButton?.addEventListener('click', scheduleRender);
+  scheduleRender();
+
+  return () => {
+    destroyed = true;
+    window.cancelAnimationFrame(renderFrame);
+    mutationObserver.disconnect();
+    resizeObserver?.disconnect();
+    timeline.off?.('rangechange', scheduleRender);
+    timeline.off?.('rangechanged', scheduleRender);
+    calendarSelect?.removeEventListener('change', scheduleRender);
+    listButton?.removeEventListener('click', scheduleRender);
+  };
+}
+
 function installTimelineDomGuards(root) {
   let alignmentFrame;
   let destroyed = false;
@@ -249,8 +366,10 @@ function installTimelineDomGuards(root) {
 export function mountTimeline(root, dataset, options) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
   let nativeCleanup;
+  let activeChronos;
 
   ChronosTimeline.prototype.renderParsed = function renderWithChronosLayout(result) {
+    activeChronos = this;
     renderParsedWithoutChronosTooltip(this, result, originalRenderParsed);
     installChronosTimelineProxy(this, result, originalRenderParsed);
   };
@@ -262,7 +381,12 @@ export function mountTimeline(root, dataset, options) {
   }
 
   const cleanupDomGuards = installTimelineDomGuards(root);
+  const cleanupYearGrid = activeChronos?.timeline
+    ? installAnnualYearGrid(root, dataset, activeChronos.timeline)
+    : undefined;
+
   return () => {
+    cleanupYearGrid?.();
     cleanupDomGuards();
     nativeCleanup?.();
   };
