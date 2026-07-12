@@ -88,7 +88,7 @@ test('serializes canonical records through native Chronos syntax and parsing', (
   assert.equal(model.groups[0].content, 'Chronology');
   assert.equal(model.groups[0].order, 0);
   assert.equal(model.groups.at(-1).id, '__vc-timeline-row-end-cap__');
-  assert.equal(model.groups.at(-1).content, '');
+  assert.match(model.groups.at(-1).content, /vc-timeline-row-end-cap-marker/);
   assert.equal(model.groups.at(-1).className, 'vc-timeline-row-end-cap-group');
   assert.equal(model.groups.at(-1).order, 1);
   assert.equal(model.parsed.groups, model.groups);
