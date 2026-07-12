@@ -63,7 +63,7 @@ jobs:
           mkdirSync('timeline-browser-diagnostics', { recursive: true });
 
           async function scrollItemIntoTimelineViewport(page, locator) {
-            const metrics = await locator.evaluate((item) => {
+            const initial = await locator.evaluate((item) => {
               const canvas = item.closest('[data-vc-canvas]');
               if (!canvas) return null;
               const canvasRect = canvas.getBoundingClientRect();
@@ -83,7 +83,12 @@ jobs:
               };
             });
             await page.waitForTimeout(300);
-            return metrics;
+            const itemBox = await locator.boundingBox();
+            const canvasBox = await page.locator('[data-vc-canvas]').boundingBox();
+            const itemInViewport = Boolean(itemBox && canvasBox
+              && itemBox.y >= canvasBox.y
+              && itemBox.y + itemBox.height <= canvasBox.y + canvasBox.height);
+            return { ...initial, itemBox, canvasBox, itemInViewport };
           }
 
           for (const era of eras) {
@@ -248,20 +253,15 @@ jobs:
                 const pathfinder = page.locator('.vis-item.vc-timeline-item', { hasText: 'The Pathfinder Exodus' }).first();
                 await expect(pathfinder).toBeAttached();
                 const scrollMetrics = await scrollItemIntoTimelineViewport(page, pathfinder);
-                expect(scrollMetrics).not.toBeNull();
-                expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
-                await expect.poll(() => pathfinder.evaluate((item) => {
-                  const canvas = item.closest('[data-vc-canvas]');
-                  if (!canvas) return false;
-                  const canvasRect = canvas.getBoundingClientRect();
-                  const itemRect = item.getBoundingClientRect();
-                  return itemRect.top >= canvasRect.top && itemRect.bottom <= canvasRect.bottom;
-                })).toBe(true);
-
                 await page.evaluate(() => {
                   document.documentElement.dataset.theme = 'dark';
                 });
-                await pathfinder.hover();
+                if (scrollMetrics.itemBox) {
+                  await page.mouse.move(
+                    scrollMetrics.itemBox.x + scrollMetrics.itemBox.width / 2,
+                    scrollMetrics.itemBox.y + scrollMetrics.itemBox.height / 2,
+                  );
+                }
                 await page.waitForTimeout(800);
 
                 const tooltipMetrics = await page.evaluate(() => {
@@ -291,6 +291,9 @@ jobs:
                 );
                 await page.screenshot({ path: 'timeline-browser-diagnostics/entropy-axis-tooltip.png', fullPage: true });
 
+                expect(scrollMetrics).not.toBeNull();
+                expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
+                expect(scrollMetrics.itemInViewport).toBe(true);
                 expect(tooltipMetrics.itemTitle).toBeNull();
                 expect(tooltipMetrics.tooltipCount).toBe(1);
                 expect(tooltipMetrics.tooltipText).toContain('11,431');
