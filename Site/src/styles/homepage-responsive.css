@@ -1,0 +1,248 @@
+@media (min-width: 68.76rem) and (hover: hover) and (pointer: fine) {
+  .home-era-gateway:has(.home-era-card:hover) > li:not(:has(.home-era-card:hover)),
+  .home-era-gateway:has(.home-era-card:focus-visible) > li:not(:has(.home-era-card:focus-visible)) {
+    filter: brightness(.56) saturate(.72);
+  }
+
+  .home-era-gateway > li:has(.home-era-card:hover),
+  .home-era-gateway > li:has(.home-era-card:focus-visible) {
+    flex-grow: 1.75;
+  }
+
+  .home-era-card:hover::before,
+  .home-era-card:focus-visible::before {
+    scale: 1.09;
+  }
+}
+
+@media (max-width: 68.75rem) {
+  .home-hero__copy {
+    position: relative;
+    inset: auto;
+    width: auto;
+    padding: clamp(4rem, 10vw, 7rem) var(--home-gutter) clamp(2.5rem, 7vw, 4rem);
+    translate: none;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(125, 83, 42, .18), transparent 60%),
+      #0a0a0c;
+  }
+
+  .home-era-gateway {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .home-era-gateway > li {
+    min-width: 0;
+    transition: none;
+  }
+
+  .home-era-card {
+    min-height: clamp(24rem, 55svh, 34rem);
+    border-block-start: 1px solid rgba(255, 255, 255, .13);
+  }
+
+  .home-era-gateway > li:nth-child(even) .home-era-card {
+    border-inline-end: 0;
+  }
+
+  .home-section__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 44rem) {
+  .home-hero__copy {
+    padding-block-start: clamp(3.25rem, 12vw, 5rem);
+    padding-inline: 1rem;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(2rem, 15.5vw, 6.5rem);
+  }
+
+  .home-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-button {
+    width: 100%;
+  }
+
+  .home-era-gateway {
+    grid-template-columns: 1fr;
+  }
+
+  .home-era-card {
+    min-height: clamp(20rem, 60svh, 28rem);
+    border-inline-end: 0;
+  }
+
+  .home-section {
+    padding-inline: 1rem;
+  }
+
+  .home-tech-timeline {
+    min-width: 52rem;
+  }
+
+  .home-route-card {
+    min-height: 17rem;
+  }
+}
+
+@media (max-width: 22rem) {
+  .home-hero__copy {
+    padding-inline: .75rem;
+  }
+
+  .home-section {
+    padding-inline: .75rem;
+  }
+
+  .home-era-card {
+    padding-inline: .85rem;
+  }
+
+  .home-era-card__tags {
+    letter-spacing: .1em;
+  }
+}
+
+@media (max-height: 38rem) and (min-width: 44.01rem) {
+  .home-hero__copy {
+    position: relative;
+    inset: auto;
+    width: auto;
+    padding: 2.4rem var(--home-gutter) 2rem;
+    translate: none;
+    background: #0a0a0c;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(3.4rem, 9vw, 6.5rem);
+  }
+
+  .home-hero__deck {
+    font-size: 1.1rem;
+  }
+
+  .home-era-gateway,
+  .home-era-card {
+    min-height: 27rem;
+  }
+}
+
+@media (max-height: 28rem) and (max-width: 44rem) {
+  .home-hero__copy {
+    padding-block: 2rem;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(2rem, 14.5vw, 4.8rem);
+  }
+
+  .home-era-card {
+    min-height: 18rem;
+  }
+
+  .home-section {
+    padding-block: 4rem;
+  }
+}
+
+@media (min-width: 160rem) {
+  .home-gateway {
+    --home-content-max: 138rem;
+    --home-reading-max: 82rem;
+  }
+
+  .home-hero {
+    width: min(100%, 170rem);
+  }
+
+  .home-era-card {
+    padding: 3.4rem;
+  }
+
+  .home-era-card__description {
+    max-width: 38ch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-gateway *,
+  .home-gateway *::before,
+  .home-gateway *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+
+  .home-route-card:hover,
+  .home-route-card:focus-visible {
+    translate: 0;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .home-button--secondary {
+    background: #08080a;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .home-gateway {
+    --home-text: #fff;
+    --home-text-soft: #f0ede8;
+    --home-muted: #cbc5bd;
+    --home-line: #8f867b;
+    --home-focus: #fff;
+  }
+
+  .home-era-card::after {
+    background: linear-gradient(180deg, rgba(0, 0, 0, .78), rgba(0, 0, 0, .35) 35%, #000 100%);
+  }
+}
+
+@media (forced-colors: active) {
+  .home-era-card,
+  .home-route-card,
+  .home-timeline {
+    border: 1px solid CanvasText;
+  }
+
+  .home-era-card::before,
+  .home-era-card::after {
+    display: none;
+  }
+
+  .home-button {
+    border: 2px solid ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+
+  .home-button--secondary {
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .home-era-card__number,
+  .home-era-card__action,
+  .home-eyebrow,
+  .home-route-card__symbol {
+    color: LinkText;
+  }
+}
+
+@supports not (overflow: clip) {
+  main:has(.home-gateway),
+  .home-gateway {
+    overflow-x: hidden;
+  }
+}

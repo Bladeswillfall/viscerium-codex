@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import HomeGateway from '../components/home/HomeGateway.astro';
+import '../styles/homepage-base.css';
+import '../styles/homepage-content.css';
+import '../styles/homepage-responsive.css';
+
+const canonEntries = await getCollection('docs', ({ data }) => (
+  data.publish === true
+  && data.status === 'canon'
+  && data.type !== 'category'
+));
+const mappedEvents = canonEntries.filter(({ data }) => data.type === 'event' && Boolean(data.timeline));
+---
+
+<StarlightPage
+  frontmatter={{
+    title: 'VISCERIUM Codex',
+    description: 'One timeline, four eras, infinite stories. Enter the public worldbuilding codex for VISCERIUM.',
+    template: 'splash',
+    pagefind: false,
+  }}
+  hasSidebar={false}
+>
+  <HomeGateway canonEntryCount={canonEntries.length} mappedEventCount={mappedEvents.length} />
+</StarlightPage>
