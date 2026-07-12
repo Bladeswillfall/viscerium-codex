@@ -23,21 +23,19 @@ test('the compatibility proxy forwards every legacy option except the obsolete f
   assert.doesNotMatch(renderer, /if \(isLegacyHostOptionPass\) return undefined/);
 });
 
-test('event hovercards are body-level, narrow, theme-aware and line-clamped', () => {
-  const renderer = read('../src/lib/timeline/renderer.mjs');
+test('one canonical hovercard is body-level, narrow, theme-aware and line-clamped', () => {
   const sync = read('../src/lib/timeline/tooltip-canonical-sync.mjs');
   const styles = read('../src/styles/timeline-viewport.css');
 
-  assert.match(renderer, /function installTimelineHoverTooltip\(root, dataset\)/);
-  assert.match(renderer, /tooltip\.className = 'vis-tooltip vc-timeline-hovercard'/);
-  assert.match(renderer, /document\.body\.append\(tooltip\)/);
+  assert.match(sync, /tooltip\.className = 'vis-tooltip vc-timeline-hovercard is-canonical'/);
+  assert.match(sync, /document\.body\.append\(tooltip\)/);
   assert.match(sync, /document\.elementsFromPoint\(x, y\)/);
   assert.match(sync, /document\.addEventListener\('pointermove', handlePointerMove, true\)/);
   assert.match(sync, /root\.contains\(card\)/);
-  assert.match(styles, /body > \.vc-timeline-hovercard[\s\S]*position: fixed !important/);
+  assert.match(styles, /body > \.vc-timeline-hovercard:not\(\.is-canonical\)[\s\S]*display: none !important/);
+  assert.match(styles, /body > \.vc-timeline-hovercard\.is-canonical[\s\S]*position: fixed !important/);
   assert.match(styles, /max-width: 18rem/);
-  assert.match(styles, /:root\[data-theme='light'\] body > \.vc-timeline-hovercard/);
+  assert.match(styles, /:root\[data-theme='light'\] body > \.vc-timeline-hovercard\.is-canonical/);
   assert.match(styles, /--vc-hovercard-bg: #151310f7/);
   assert.match(styles, /-webkit-line-clamp: 4/);
-  assert.match(styles, /body > \.vis-tooltip:not\(\.vc-timeline-hovercard\)[\s\S]*display: none !important/);
 });
