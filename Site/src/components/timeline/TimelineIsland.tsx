@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'preact/hooks';
 import type { TimelineDataset, TimelineLaneMode } from '../../lib/timeline/types';
+import { installCalendarYearAxisSync } from '../../lib/timeline/year-axis-sync.mjs';
 
 type TimelineIslandOptions = {
   defaultCalendar?: string;
@@ -45,7 +46,12 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
         const { mountTimeline } = await import('../../lib/timeline/renderer.mjs');
         if (cancelled || !mountRef.current) return;
 
-        cleanup = mountTimeline(root, dataset, options);
+        const cleanupTimeline = mountTimeline(root, dataset, options);
+        const cleanupYearAxis = installCalendarYearAxisSync(root, dataset);
+        cleanup = () => {
+          cleanupYearAxis();
+          cleanupTimeline();
+        };
         root.setAttribute('data-vc-island-mounted', 'true');
         root.setAttribute('aria-busy', 'false');
         if (skeletonRef.current) skeletonRef.current.hidden = true;
