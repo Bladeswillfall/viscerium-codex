@@ -22,14 +22,15 @@
   scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
 }
 
-/* Native vis-timeline tooltips are constrained by the canvas and can be clipped.
-   The shared renderer supplies one body-level hovercard instead. */
+/* Native and legacy renderer tooltips are constrained by the canvas or can
+   race the canonical title resolver. Keep one body-level owner only. */
 .vc-timeline-app .vis-tooltip:not(.vc-timeline-hovercard),
-body > .vis-tooltip:not(.vc-timeline-hovercard) {
+body > .vis-tooltip:not(.vc-timeline-hovercard),
+body > .vc-timeline-hovercard:not(.is-canonical) {
   display: none !important;
 }
 
-body > .vc-timeline-hovercard {
+body > .vc-timeline-hovercard.is-canonical {
   --vc-hovercard-bg: #151310f7;
   --vc-hovercard-border: #b8874670;
   --vc-hovercard-text: #f4efe5;
@@ -60,7 +61,7 @@ body > .vc-timeline-hovercard {
   pointer-events: none;
 }
 
-:root[data-theme='light'] body > .vc-timeline-hovercard {
+:root[data-theme='light'] body > .vc-timeline-hovercard.is-canonical {
   --vc-hovercard-bg: #f7f2eafa;
   --vc-hovercard-border: #6f4a2770;
   --vc-hovercard-text: #201d19;
@@ -108,13 +109,13 @@ body > .vc-timeline-hovercard[hidden] {
     block-size: clamp(22rem, 54vh, 30rem);
   }
 
-  body > .vc-timeline-hovercard {
+  body > .vc-timeline-hovercard.is-canonical {
     width: min(16.5rem, calc(100vw - 1rem));
   }
 }
 
 @media (forced-colors: active) {
-  body > .vc-timeline-hovercard {
+  body > .vc-timeline-hovercard.is-canonical {
     border-color: CanvasText;
     color: CanvasText;
     background: Canvas;
