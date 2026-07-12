@@ -82,13 +82,20 @@ jobs:
                 scrollHeight: canvas.scrollHeight,
               };
             });
+            await page.locator('[data-vc-canvas]').scrollIntoViewIfNeeded();
             await page.waitForTimeout(300);
             const itemBox = await locator.boundingBox();
             const canvasBox = await page.locator('[data-vc-canvas]').boundingBox();
+            const viewport = page.viewportSize();
             const itemInViewport = Boolean(itemBox && canvasBox
               && itemBox.y >= canvasBox.y
               && itemBox.y + itemBox.height <= canvasBox.y + canvasBox.height);
-            return { ...initial, itemBox, canvasBox, itemInViewport };
+            const itemInBrowserViewport = Boolean(itemBox && viewport
+              && itemBox.x >= 0
+              && itemBox.y >= 0
+              && itemBox.x + itemBox.width <= viewport.width
+              && itemBox.y + itemBox.height <= viewport.height);
+            return { ...initial, itemBox, canvasBox, itemInViewport, itemInBrowserViewport };
           }
 
           for (const era of eras) {
@@ -294,6 +301,7 @@ jobs:
                 expect(scrollMetrics).not.toBeNull();
                 expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
                 expect(scrollMetrics.itemInViewport).toBe(true);
+                expect(scrollMetrics.itemInBrowserViewport).toBe(true);
                 expect(tooltipMetrics.itemTitle).toBeNull();
                 expect(tooltipMetrics.tooltipCount).toBe(1);
                 expect(tooltipMetrics.tooltipText).toContain('11,431');
