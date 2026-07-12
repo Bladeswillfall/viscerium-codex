@@ -57,7 +57,8 @@ export function installCalendarYearAxisSync(root, dataset) {
 
     const span = Math.max(1, endDay - startDay);
     const key = `${calendarId}:${startDay}:${endDay}:${maximumCount}`;
-    if (axis.dataset.vcYearAxisKey === key) return;
+    const currentTicks = axis.querySelectorAll(':scope > [data-vc-axis-year-boundary="true"]');
+    if (axis.dataset.vcYearAxisKey === key && currentTicks.length === ticks.length) return;
 
     axis.innerHTML = ticks.map(({ year, absoluteDay }) => {
       const left = Math.min(100, Math.max(0, ((absoluteDay - startDay) / span) * 100));
