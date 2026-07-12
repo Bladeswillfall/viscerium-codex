@@ -4,22 +4,18 @@ const BOTTOM_INSET = 20;
 const SETTLE_DURATION_MS = 1_800;
 const SETTLE_INTERVAL_MS = 50;
 
-function visibleEventItems(canvas) {
+function renderedEventItems(canvas) {
   return [...canvas.querySelectorAll(EVENT_ITEM_SELECTOR)].filter((element) => {
     const rect = element.getBoundingClientRect();
-    const style = getComputedStyle(element);
-    return rect.width > 0
-      && rect.height > 0
-      && style.display !== 'none'
-      && style.visibility !== 'hidden';
+    return rect.width > 0 && rect.height > 0;
   });
 }
 
 /**
  * Frame the rendered Chronos cards inside the bounded outer viewport without a
  * permanent padding floor. Chronos can continue positioning cards after its DOM
- * has stopped mutating, so mount and explicit control changes receive a short,
- * cancellable settling window of repeated measurements.
+ * has stopped mutating and may temporarily hide off-screen cards, so measurement
+ * follows every rendered card with real geometry through a short settling window.
  */
 export function installTimelineScrollFraming(root) {
   const canvas = root.querySelector('[data-vc-canvas]');
@@ -64,7 +60,7 @@ export function installTimelineScrollFraming(root) {
   const measure = () => {
     if (destroyed || canvas.hidden) return;
 
-    const items = visibleEventItems(canvas);
+    const items = renderedEventItems(canvas);
     if (!items.length) {
       scheduleSettlingPass();
       return;
