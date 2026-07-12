@@ -3,9 +3,9 @@
  * explicit stacking context, the positioned SVG year grid can escape its
  * background panel and paint over foreground event cards.
  *
- * Keep the canvas/grid at the back, make the centre panel transparent so the
- * grid remains visible in empty space, and place native event geometry above
- * both the grid and translucent era/background items.
+ * Keep the canvas/grid at the back, make every centre-content surface
+ * transparent so the grid remains visible in empty space, and place native
+ * event geometry above both the grid and translucent era/background items.
  */
 .vc-timeline-app .vc-timeline-canvas .vis-timeline > .vis-panel.vis-background {
   z-index: 0 !important;
@@ -14,6 +14,13 @@
 
 .vc-timeline-app .vc-timeline-canvas .vis-timeline > .vis-panel.vis-center {
   z-index: 1 !important;
+  background-color: transparent !important;
+}
+
+/* chronos-native.css gives .vis-content an opaque canvas fill. That child
+   otherwise covers the grid even though its parent centre panel is transparent. */
+.vc-timeline-app .vc-timeline-canvas .vis-timeline > .vis-panel.vis-center > .vis-content,
+.vc-timeline-app .vc-timeline-canvas .vis-timeline > .vis-panel.vis-center > .vis-content > .vis-itemset {
   background-color: transparent !important;
 }
 
