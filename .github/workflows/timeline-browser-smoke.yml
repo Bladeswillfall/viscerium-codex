@@ -62,7 +62,7 @@ jobs:
           const eras = ['citadel', 'smog', 'nearsight', 'entropy'];
           mkdirSync('timeline-browser-diagnostics', { recursive: true });
 
-          async function scrollItemIntoTimelineViewport(locator) {
+          async function scrollItemIntoTimelineViewport(page, locator) {
             const metrics = await locator.evaluate((item) => {
               const canvas = item.closest('[data-vc-canvas]');
               if (!canvas) return null;
@@ -82,7 +82,7 @@ jobs:
                 scrollHeight: canvas.scrollHeight,
               };
             });
-            await locator.page().waitForTimeout(300);
+            await page.waitForTimeout(300);
             return metrics;
           }
 
@@ -247,7 +247,7 @@ jobs:
 
                 const pathfinder = page.locator('.vis-item.vc-timeline-item', { hasText: 'The Pathfinder Exodus' }).first();
                 await expect(pathfinder).toBeAttached();
-                const scrollMetrics = await scrollItemIntoTimelineViewport(pathfinder);
+                const scrollMetrics = await scrollItemIntoTimelineViewport(page, pathfinder);
                 expect(scrollMetrics).not.toBeNull();
                 expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
                 await expect.poll(() => pathfinder.evaluate((item) => {
