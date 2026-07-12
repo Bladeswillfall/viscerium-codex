@@ -43,7 +43,8 @@ function measureViewport(canvas) {
   const timelineRect = timeline?.getBoundingClientRect();
   const canvasStyle = getComputedStyle(canvas);
   const scroller = canvas.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
-  const endCap = scroller?.querySelector(':scope > .vc-timeline-row-end-cap');
+  const spacerLabel = canvas.querySelector('.vis-label.vc-timeline-row-end-cap-group');
+  const spacerGroup = canvas.querySelector('.vis-group.vc-timeline-row-end-cap-group');
   const items = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
     .filter((element) => {
       const rect = element.getBoundingClientRect();
@@ -75,7 +76,9 @@ function measureViewport(canvas) {
     scrollerScrollMaximum: scroller
       ? Math.max(0, scroller.scrollHeight - scroller.clientHeight)
       : 0,
-    endCapHeight: endCap?.getBoundingClientRect().height ?? 0,
+    spacerLabelHeight: spacerLabel?.getBoundingClientRect().height ?? 0,
+    spacerGroupHeight: spacerGroup?.getBoundingClientRect().height ?? 0,
+    spacerLabelText: spacerLabel?.textContent?.trim() ?? null,
     visibleEventCount: intersectingItems.length,
     firstVisibleEventTop: intersectingItems.length
       ? Math.min(...intersectingItems.map(({ top }) => top))
@@ -136,6 +139,7 @@ for (const era of eras) {
           .filter((element) => element.getClientRects().length > 0)
           .map((element) => ({
             text: element.textContent?.trim() ?? '',
+            className: element.className,
             marginTop: getComputedStyle(element).marginTop,
             marginBottom: getComputedStyle(element).marginBottom,
           }))
@@ -152,10 +156,13 @@ for (const era of eras) {
       expect(metrics.canvasOverflowY).toBe('hidden');
       expect(Number(metrics.viewportHeightToken)).toBeCloseTo(metrics.canvasHeight, 0);
       expect(metrics.scrollerScrollMaximum).toBeGreaterThan(20);
-      expect(metrics.endCapHeight).toBeCloseTo(24, 0);
+      expect(metrics.spacerLabelHeight).toBeCloseTo(24, 0);
+      expect(metrics.spacerGroupHeight).toBeCloseTo(24, 0);
+      expect(metrics.spacerLabelText).toBe('');
       expect(metrics.visibleEventCount).toBeGreaterThan(1);
       expect(metrics.firstVisibleEventTop - metrics.canvasTop).toBeLessThanOrEqual(32);
       expect(labels.some(({ text }) => text === 'Veyr Court')).toBe(true);
+      expect(labels.at(-1)?.className).toContain('vc-timeline-row-end-cap-group');
       expect(labels.every(({ marginTop, marginBottom }) => marginTop === '0px' && marginBottom === '0px')).toBe(true);
     }
 
@@ -284,7 +291,8 @@ test('global chronology wheel-scrolls its rows and fully reveals the final card'
   expect(Math.abs(before.timelineHeight - before.canvasHeight)).toBeLessThanOrEqual(2);
   expect(before.canvasScrollHeight).toBeLessThanOrEqual(before.canvasClientHeight + 2);
   expect(before.scrollerScrollMaximum).toBeGreaterThan(20);
-  expect(before.endCapHeight).toBeCloseTo(24, 0);
+  expect(before.spacerLabelHeight).toBeCloseTo(24, 0);
+  expect(before.spacerGroupHeight).toBeCloseTo(24, 0);
   expect(before.visibleEventCount).toBeGreaterThan(1);
   expect(before.firstVisibleEventTop - before.canvasTop).toBeLessThanOrEqual(32);
   expect(afterWheel.scrollerScrollTop).toBeGreaterThan(before.scrollerScrollTop + 20);
