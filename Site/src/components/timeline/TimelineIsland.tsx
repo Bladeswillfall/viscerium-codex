@@ -44,7 +44,7 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
       if (fallbackRef.current) fallbackRef.current.hidden = true;
       if (skeletonRef.current) skeletonRef.current.hidden = false;
 
-      const cleanupViewportGuard = installTimelineViewportOptionGuard(root, options.compact === true);
+      const cleanupViewportGuard = await installTimelineViewportOptionGuard(root, options.compact === true);
 
       try {
         const { mountTimeline } = await import('../../lib/timeline/renderer.mjs');
