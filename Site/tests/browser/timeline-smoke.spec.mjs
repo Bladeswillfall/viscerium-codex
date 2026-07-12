@@ -40,8 +40,6 @@ async function openEra(page, era) {
 function measureViewport(canvas) {
   const canvasRect = canvas.getBoundingClientRect();
   const timeline = canvas.querySelector(':scope > .vis-timeline');
-  const timelineRect = timeline?.getBoundingClientRect();
-  const canvasStyle = getComputedStyle(canvas);
   const scroller = canvas.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
   const spacerItem = canvas.querySelector('.vis-item.vc-timeline-row-end-cap-item');
   const spacerGroup = spacerItem?.closest('.vis-group');
@@ -51,52 +49,42 @@ function measureViewport(canvas) {
       const rect = element.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0;
     });
-  const items = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
+  const allItems = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
     .filter((element) => {
       const rect = element.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0;
+    })
+    .map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { text: element.textContent?.trim() ?? '', top: rect.top, bottom: rect.bottom };
     });
-  const allItemBounds = items.map((element) => {
-    const rect = element.getBoundingClientRect();
-    return {
-      text: element.textContent?.trim() ?? '',
-      top: rect.top,
-      bottom: rect.bottom,
-    };
-  });
-  const intersectingItems = allItemBounds.filter(({ top, bottom }) => (
-    bottom > canvasRect.top && top < canvasRect.bottom
-  ));
+  const visibleItems = allItems.filter(({ top, bottom }) => bottom > canvasRect.top && top < canvasRect.bottom);
+  const scrollMaximum = scroller ? Math.max(0, scroller.scrollHeight - scroller.clientHeight) : 0;
+  const scrollTop = scroller?.scrollTop ?? 0;
+
   return {
     canvasHeight: canvasRect.height,
     canvasClientHeight: canvas.clientHeight,
     canvasScrollHeight: canvas.scrollHeight,
-    canvasOverflowY: canvasStyle.overflowY,
-    timelineHeight: timelineRect?.height ?? 0,
+    canvasOverflowY: getComputedStyle(canvas).overflowY,
+    timelineHeight: timeline?.getBoundingClientRect().height ?? 0,
     viewportHeightToken: canvas.dataset.vcViewportHeight ?? null,
     initialRowScrollToken: canvas.dataset.vcInitialRowScroll ?? null,
     rowRangeToken: canvas.dataset.vcRowScrollRange ?? null,
     scrollerClientHeight: scroller?.clientHeight ?? 0,
     scrollerScrollHeight: scroller?.scrollHeight ?? 0,
-    scrollerScrollTop: scroller?.scrollTop ?? 0,
-    scrollerScrollMaximum: scroller
-      ? Math.max(0, scroller.scrollHeight - scroller.clientHeight)
-      : 0,
+    scrollerScrollTop: scrollTop,
+    scrollerScrollMaximum: scrollMaximum,
+    scrollerScrollRemaining: Math.max(0, scrollMaximum - scrollTop),
     spacerItemHeight: spacerItem?.getBoundingClientRect().height ?? 0,
     spacerGroupHeight: spacerGroupRect?.height ?? 0,
     spacerIsLowestGroup: Boolean(spacerGroupRect && renderedGroups.every((group) => (
       group === spacerGroup || group.getBoundingClientRect().top <= spacerGroupRect.top + 1
     ))),
-    visibleEventCount: intersectingItems.length,
-    firstVisibleEventTop: intersectingItems.length
-      ? Math.min(...intersectingItems.map(({ top }) => top))
-      : null,
-    lastVisibleEventBottom: intersectingItems.length
-      ? Math.max(...intersectingItems.map(({ bottom }) => bottom))
-      : null,
-    lowestRenderedEventBottom: allItemBounds.length
-      ? Math.max(...allItemBounds.map(({ bottom }) => bottom))
-      : null,
+    visibleEventCount: visibleItems.length,
+    firstVisibleEventTop: visibleItems.length ? Math.min(...visibleItems.map(({ top }) => top)) : null,
+    lastVisibleEventBottom: visibleItems.length ? Math.max(...visibleItems.map(({ bottom }) => bottom)) : null,
+    lowestRenderedEventBottom: allItems.length ? Math.max(...allItems.map(({ bottom }) => bottom)) : null,
     canvasTop: canvasRect.top,
     canvasBottom: canvasRect.bottom,
   };
@@ -147,7 +135,6 @@ for (const era of eras) {
           .filter((element) => element.getClientRects().length > 0)
           .map((element) => ({
             text: element.textContent?.trim() ?? '',
-            className: element.className,
             marginTop: getComputedStyle(element).marginTop,
             marginBottom: getComputedStyle(element).marginBottom,
           }))
@@ -164,8 +151,8 @@ for (const era of eras) {
       expect(metrics.canvasOverflowY).toBe('hidden');
       expect(Number(metrics.viewportHeightToken)).toBeCloseTo(metrics.canvasHeight, 0);
       expect(metrics.scrollerScrollMaximum).toBeGreaterThan(20);
-      expect(metrics.spacerItemHeight).toBeCloseTo(24, 0);
-      expect(metrics.spacerGroupHeight).toBeCloseTo(24, 0);
+      expect(metrics.spacerItemHeight).toBeCloseTo(48, 0);
+      expect(metrics.spacerGroupHeight).toBeCloseTo(48, 0);
       expect(metrics.spacerIsLowestGroup).toBe(true);
       expect(metrics.visibleEventCount).toBeGreaterThan(1);
       expect(metrics.firstVisibleEventTop - metrics.canvasTop).toBeLessThanOrEqual(32);
@@ -200,11 +187,7 @@ for (const era of eras) {
           const expected = (centerRect?.left ?? 0) + ((centerRect?.width ?? 0) * percent) / 100;
           return { percent, error: Math.abs(rect.left + rect.width / 2 - expected) };
         });
-        return {
-          rulerLeft: rulerRect?.left ?? 0,
-          centerLeft: centerRect?.left ?? 0,
-          ticks,
-        };
+        return { rulerLeft: rulerRect?.left ?? 0, centerLeft: centerRect?.left ?? 0, ticks };
       });
       expect(axis.centerLeft).toBeGreaterThan(axis.rulerLeft);
       expect(axis.ticks.length).toBeGreaterThan(2);
@@ -262,7 +245,7 @@ for (const era of eras) {
   });
 }
 
-test('global chronology wheel-scrolls its rows and fully reveals the final card', async ({ page }) => {
+test('global chronology starts high, wheel-scrolls downward, and fully reveals its final card', async ({ page }) => {
   const messages = collectErrors(page, 'global');
   await page.goto('http://127.0.0.1:4321/timelines/', { waitUntil: 'networkidle' });
   const globalLink = page.getByRole('link', { name: 'The VISCERIUM Timeline', exact: true }).first();
@@ -297,9 +280,10 @@ test('global chronology wheel-scrolls its rows and fully reveals the final card'
 
   expect(Math.abs(before.timelineHeight - before.canvasHeight)).toBeLessThanOrEqual(2);
   expect(before.canvasScrollHeight).toBeLessThanOrEqual(before.canvasClientHeight + 2);
-  expect(before.scrollerScrollMaximum).toBeGreaterThan(20);
-  expect(before.spacerItemHeight).toBeCloseTo(24, 0);
-  expect(before.spacerGroupHeight).toBeCloseTo(24, 0);
+  expect(before.scrollerScrollMaximum).toBeGreaterThan(40);
+  expect(before.scrollerScrollRemaining).toBeGreaterThan(20);
+  expect(before.spacerItemHeight).toBeCloseTo(48, 0);
+  expect(before.spacerGroupHeight).toBeCloseTo(48, 0);
   expect(before.spacerIsLowestGroup).toBe(true);
   expect(before.visibleEventCount).toBeGreaterThan(1);
   expect(before.firstVisibleEventTop - before.canvasTop).toBeLessThanOrEqual(32);
