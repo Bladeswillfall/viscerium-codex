@@ -4,7 +4,13 @@
   position: relative;
   block-size: clamp(28rem, 58vh, 42rem);
   min-height: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block: .75rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
+  scrollbar-gutter: stable;
 }
 
 .vc-timeline-app.is-compact .vc-timeline-canvas {
@@ -12,7 +18,7 @@
 }
 
 .vc-timeline-app .vc-timeline-canvas > .vis-timeline {
-  max-block-size: 100%;
+  min-block-size: 100%;
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
