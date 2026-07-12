@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'preact/hooks';
 import type { TimelineDataset, TimelineLaneMode } from '../../lib/timeline/types';
-import { installTimelineEventDomIdentity } from '../../lib/timeline/event-dom-identity.mjs';
+import { installTimelineTooltipCanonicalSync } from '../../lib/timeline/tooltip-canonical-sync.mjs';
 import { installCalendarYearAxisSync } from '../../lib/timeline/year-axis-sync.mjs';
 
 type TimelineIslandOptions = {
@@ -48,11 +48,11 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
         if (cancelled || !mountRef.current) return;
 
         const cleanupTimeline = mountTimeline(root, dataset, options);
-        const cleanupEventIdentity = installTimelineEventDomIdentity(root, dataset);
+        const cleanupTooltipSync = installTimelineTooltipCanonicalSync(root, dataset);
         const cleanupYearAxis = installCalendarYearAxisSync(root, dataset);
         cleanup = () => {
           cleanupYearAxis();
-          cleanupEventIdentity();
+          cleanupTooltipSync();
           cleanupTimeline();
         };
         root.setAttribute('data-vc-island-mounted', 'true');
