@@ -17,7 +17,7 @@ function formatEventDate(event, calendarId) {
 /**
  * Own one canonical body-level hovercard. Chronos can place interaction surfaces
  * above a card and can recycle stale DOM identity, so resolve the visible card
- * beneath the pointer by title without mutating vis-timeline internals.
+ * beneath the cursor without mutating vis-timeline internals.
  */
 export function installTimelineTooltipCanonicalSync(root, dataset) {
   let positionFrame;
@@ -61,6 +61,23 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
       if (card) return card;
     }
     return undefined;
+  };
+
+  const cardByGeometry = (x, y) => {
+    const candidates = [...root.querySelectorAll('.vis-item.vc-timeline-item')]
+      .map((card) => ({ card, rect: card.getBoundingClientRect() }))
+      .filter(({ rect }) => (
+        rect.width > 0
+        && rect.height > 0
+        && x >= rect.left
+        && x <= rect.right
+        && y >= rect.top
+        && y <= rect.bottom
+      ))
+      .sort((left, right) => (
+        left.rect.width * left.rect.height - right.rect.width * right.rect.height
+      ));
+    return candidates[0]?.card;
   };
 
   const position = () => {
@@ -117,8 +134,10 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
     schedulePosition();
   };
 
-  const handlePointerMove = (event) => {
-    const card = cardAtPoint(event.clientX, event.clientY);
+  const handleMove = (event) => {
+    const card = cardForTarget(event.target)
+      ?? cardAtPoint(event.clientX, event.clientY)
+      ?? cardByGeometry(event.clientX, event.clientY);
     if (!card) {
       hide();
       return;
@@ -144,7 +163,8 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
     if (activeCard) show(activeCard);
   };
 
-  document.addEventListener('pointermove', handlePointerMove, true);
+  document.addEventListener('pointermove', handleMove, true);
+  document.addEventListener('mousemove', handleMove, true);
   root.addEventListener('pointerleave', handlePointerLeave, true);
   root.addEventListener('focusin', handleFocusIn, true);
   root.addEventListener('focusout', handleFocusOut, true);
@@ -155,7 +175,8 @@ export function installTimelineTooltipCanonicalSync(root, dataset) {
   return () => {
     destroyed = true;
     window.cancelAnimationFrame(positionFrame);
-    document.removeEventListener('pointermove', handlePointerMove, true);
+    document.removeEventListener('pointermove', handleMove, true);
+    document.removeEventListener('mousemove', handleMove, true);
     root.removeEventListener('pointerleave', handlePointerLeave, true);
     root.removeEventListener('focusin', handleFocusIn, true);
     root.removeEventListener('focusout', handleFocusOut, true);
