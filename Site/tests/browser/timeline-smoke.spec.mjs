@@ -45,10 +45,12 @@ function measureViewport(canvas) {
   const scroller = canvas.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
   const spacerItem = canvas.querySelector('.vis-item.vc-timeline-row-end-cap-item');
   const spacerGroup = spacerItem?.closest('.vis-group');
-  const labels = [...canvas.querySelectorAll('.vis-labelset > .vis-label')];
-  const centreGroups = [...canvas.querySelectorAll('.vis-panel.vis-center .vis-group')];
-  const spacerIndex = spacerGroup ? centreGroups.indexOf(spacerGroup) : -1;
-  const spacerLabel = spacerIndex >= 0 ? labels[spacerIndex] : undefined;
+  const spacerGroupRect = spacerGroup?.getBoundingClientRect();
+  const renderedGroups = [...canvas.querySelectorAll('.vis-group')]
+    .filter((element) => {
+      const rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
   const items = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
     .filter((element) => {
       const rect = element.getBoundingClientRect();
@@ -81,11 +83,10 @@ function measureViewport(canvas) {
       ? Math.max(0, scroller.scrollHeight - scroller.clientHeight)
       : 0,
     spacerItemHeight: spacerItem?.getBoundingClientRect().height ?? 0,
-    spacerLabelHeight: spacerLabel?.getBoundingClientRect().height ?? 0,
-    spacerGroupHeight: spacerGroup?.getBoundingClientRect().height ?? 0,
-    spacerIndex,
-    spacerIsLastGroup: spacerIndex >= 0 && spacerIndex === centreGroups.length - 1,
-    spacerIsLastLabel: spacerIndex >= 0 && spacerIndex === labels.length - 1,
+    spacerGroupHeight: spacerGroupRect?.height ?? 0,
+    spacerIsLowestGroup: Boolean(spacerGroupRect && renderedGroups.every((group) => (
+      group === spacerGroup || group.getBoundingClientRect().top <= spacerGroupRect.top + 1
+    ))),
     visibleEventCount: intersectingItems.length,
     firstVisibleEventTop: intersectingItems.length
       ? Math.min(...intersectingItems.map(({ top }) => top))
@@ -164,10 +165,8 @@ for (const era of eras) {
       expect(Number(metrics.viewportHeightToken)).toBeCloseTo(metrics.canvasHeight, 0);
       expect(metrics.scrollerScrollMaximum).toBeGreaterThan(20);
       expect(metrics.spacerItemHeight).toBeCloseTo(24, 0);
-      expect(metrics.spacerLabelHeight).toBeGreaterThan(0);
       expect(metrics.spacerGroupHeight).toBeCloseTo(24, 0);
-      expect(metrics.spacerIsLastGroup).toBe(true);
-      expect(metrics.spacerIsLastLabel).toBe(true);
+      expect(metrics.spacerIsLowestGroup).toBe(true);
       expect(metrics.visibleEventCount).toBeGreaterThan(1);
       expect(metrics.firstVisibleEventTop - metrics.canvasTop).toBeLessThanOrEqual(32);
       expect(labels.some(({ text }) => text === 'Veyr Court')).toBe(true);
@@ -300,10 +299,8 @@ test('global chronology wheel-scrolls its rows and fully reveals the final card'
   expect(before.canvasScrollHeight).toBeLessThanOrEqual(before.canvasClientHeight + 2);
   expect(before.scrollerScrollMaximum).toBeGreaterThan(20);
   expect(before.spacerItemHeight).toBeCloseTo(24, 0);
-  expect(before.spacerLabelHeight).toBeGreaterThan(0);
   expect(before.spacerGroupHeight).toBeCloseTo(24, 0);
-  expect(before.spacerIsLastGroup).toBe(true);
-  expect(before.spacerIsLastLabel).toBe(true);
+  expect(before.spacerIsLowestGroup).toBe(true);
   expect(before.visibleEventCount).toBeGreaterThan(1);
   expect(before.firstVisibleEventTop - before.canvasTop).toBeLessThanOrEqual(32);
   expect(afterWheel.scrollerScrollTop).toBeGreaterThan(before.scrollerScrollTop + 20);
