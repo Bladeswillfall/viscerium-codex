@@ -4,20 +4,15 @@ import { readFileSync } from 'node:fs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('primary timelines use a bounded responsive viewport with vertical scrolling', () => {
+test('timeline rows live inside a bounded vertically scrollable canvas', () => {
   const app = read('../src/components/timeline/TimelineApp.astro');
-  const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const guard = read('../src/lib/timeline/viewport-option-guard.mjs');
+  const styles = read('../src/styles/timeline-viewport.css');
 
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-viewport\.css'/);
-  assert.match(island, /installTimelineViewportOptionGuard\(root, options\.compact === true\)/);
-  assert.match(guard, /const maximum = compact \? 512 : 672/);
-  assert.match(guard, /window\.innerHeight \* viewportShare/);
-  assert.match(guard, /options\.verticalScroll === true/);
-  assert.match(guard, /height: `\$\{height\}px`/);
-  assert.match(guard, /verticalScroll: true/);
-  assert.match(guard, /canvas\.dataset\.vcVerticalScroll = 'true'/);
-  assert.match(guard, /window\.addEventListener\('resize', handleResize/);
+  assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
+  assert.match(styles, /overflow-y: auto/);
+  assert.match(styles, /overscroll-behavior: contain/);
+  assert.match(styles, /\.vc-timeline-app\.is-compact \.vc-timeline-canvas[\s\S]*clamp\(22rem, 48vh, 32rem\)/);
 });
 
 test('the compatibility proxy forwards every legacy option except the obsolete fixed height', () => {
@@ -37,6 +32,7 @@ test('event hovercards are body-level, narrow, theme-aware and line-clamped', ()
   assert.match(renderer, /tooltip\.className = 'vis-tooltip vc-timeline-hovercard'/);
   assert.match(renderer, /document\.body\.append\(tooltip\)/);
   assert.match(sync, /document\.elementsFromPoint\(x, y\)/);
+  assert.match(sync, /document\.addEventListener\('pointermove', handlePointerMove, true\)/);
   assert.match(sync, /root\.contains\(card\)/);
   assert.match(styles, /body > \.vc-timeline-hovercard[\s\S]*position: fixed !important/);
   assert.match(styles, /max-width: 18rem/);
