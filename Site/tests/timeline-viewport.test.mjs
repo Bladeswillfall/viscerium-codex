@@ -25,7 +25,8 @@ test('the Astro island mounts the local Chronos renderer fork without host patch
   assert.doesNotMatch(entry, /ChronosTimeline\.prototype|_handleZoomWorkaround|Proxy\s*\(/);
   assert.doesNotMatch(renderer, /ChronosTimeline\.prototype|_handleZoomWorkaround|MutationObserver|ResizeObserver/);
 
-  assert.match(island, /cleanup = mountTimeline\(root, dataset, options\)/);
+  assert.match(island, /const cleanupTimeline = mountTimeline\(root, dataset, options\)/);
+  assert.match(island, /const cleanupHovercard = installTimelineHovercard\(root, dataset\)/);
   assert.doesNotMatch(island, /prepareTimelineViewportGuard/);
   assert.doesNotMatch(island, /installAdaptiveTimelineGrid/);
   assert.doesNotMatch(island, /installTimelineTooltipContentSync/);
