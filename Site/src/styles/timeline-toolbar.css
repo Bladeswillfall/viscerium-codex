@@ -247,3 +247,66 @@
     color: CanvasText;
   }
 }
+
+/*
+ * Starlight's prose flow can add block margins to adjacent toolbar children.
+ * Reset those margins here so the controls align to the toolbar's own grid.
+ */
+.vc-timeline-toolbar.vc-timeline-toolbar-enhanced {
+  align-content: start;
+  align-items: start;
+  padding-block: .6rem;
+}
+
+.vc-timeline-toolbar.vc-timeline-toolbar-enhanced > *,
+.vc-timeline-toolbar-enhanced .vc-timeline-actions,
+.vc-timeline-toolbar-enhanced .vc-timeline-action-group,
+.vc-timeline-toolbar-enhanced .vc-timeline-action-heading,
+.vc-timeline-toolbar-enhanced .vc-timeline-action-row,
+.vc-timeline-toolbar-enhanced .vc-timeline-command {
+  margin: 0 !important;
+}
+
+.vc-timeline-toolbar-enhanced .vc-timeline-actions {
+  align-self: start;
+  padding-block-start: 0;
+}
+
+.vc-timeline-toolbar-enhanced .vc-timeline-action-group {
+  align-content: start;
+}
+
+.vc-timeline-toolbar-enhanced .vc-timeline-action-row {
+  align-items: flex-end;
+}
+
+.vc-timeline-toolbar-enhanced .vc-timeline-command {
+  height: 3rem;
+  min-height: 3rem;
+  max-height: 3rem;
+  align-self: flex-end;
+}
+
+.vc-timeline-toolbar-enhanced .vc-timeline-action-group.is-view {
+  order: -1;
+}
+
+.vc-timeline-toolbar-enhanced .vc-timeline-action-group.is-view .vc-timeline-action-heading {
+  color: var(--vc-timeline-accent);
+}
+
+.vc-timeline-toolbar-enhanced .vc-timeline-action-group.is-view [data-vc-list] {
+  min-width: 8.75rem;
+  border-color: var(--vc-timeline-accent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 4%, transparent), transparent),
+    color-mix(in srgb, var(--vc-timeline-accent) 20%, var(--vc-timeline-surface-deep));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 7%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--vc-timeline-accent) 22%, transparent);
+}
+
+.vc-timeline-toolbar-enhanced .vc-timeline-action-group.is-view [data-vc-list]:hover,
+.vc-timeline-toolbar-enhanced .vc-timeline-action-group.is-view [data-vc-list][aria-pressed='true'] {
+  background: color-mix(in srgb, var(--vc-timeline-accent) 30%, var(--vc-timeline-surface-deep));
+}
