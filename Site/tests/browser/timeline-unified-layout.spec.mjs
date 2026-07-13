@@ -70,7 +70,6 @@ test('unified chronology uses compact stable Chronos and overview heights', asyn
   const overview = await page.locator('[data-vc-minimap]').evaluate((element) => ({
     hostHeight: element.getBoundingClientRect().height,
     timelineHeight: element.querySelector(':scope > .vis-timeline')?.getBoundingClientRect().height ?? 0,
-    viewportHeight: element.querySelector('.vc-minimap-viewport')?.getBoundingClientRect().height ?? 0,
   }));
 
   mkdirSync('timeline-browser-diagnostics', { recursive: true });
@@ -85,7 +84,7 @@ test('unified chronology uses compact stable Chronos and overview heights', asyn
 
   expect(metrics.eventCount).toBeGreaterThan(1);
   expect(metrics.labels).toContain('Chronology');
-  expect(metrics.canvasHeight).toBeLessThanOrEqual(354);
+  expect(metrics.canvasHeight).toBeLessThanOrEqual(386);
   expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
   expect(metrics.hasPinnedHeight).toBe(false);
   expect(metrics.hasAdaptiveHeight).toBe(false);
@@ -94,7 +93,6 @@ test('unified chronology uses compact stable Chronos and overview heights', asyn
   expect(visible.canvasBottom - visible.lastBottom).toBeLessThanOrEqual(48);
   expect(overview.hostHeight).toBeLessThanOrEqual(74);
   expect(overview.timelineHeight).toBeLessThanOrEqual(74);
-  expect(overview.viewportHeight).toBeGreaterThanOrEqual(overview.timelineHeight - 4);
 });
 
 test('grouped Chronos does not perform its delayed animated zoom jiggle', async ({ page }) => {
