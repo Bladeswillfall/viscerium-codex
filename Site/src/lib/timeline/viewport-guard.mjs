@@ -18,11 +18,11 @@ const REQUIRED_STABLE_LAYOUT_PASSES = 3;
  * orientations at the top so rows begin directly beneath the Codex ruler and
  * overflow only into the timeline's own vertical scroller.
  *
- * Group geometry also settles over several redraws after Chronos mounts or
- * replaces a grouped timeline. Without a short settling cycle, the vertical
- * scroller can retain an early, undersized scroll range until the user first
- * scrolls, leaving the newly revealed final rows unreachable. Repeated redraws
- * stop as soon as the native centre and label panels agree for several passes.
+ * Group geometry also settles lazily after Chronos mounts or replaces a grouped
+ * timeline. vis-timeline does not measure every offscreen group until its native
+ * row scroller reaches those groups, so the initial scroll range can be too
+ * short. Prime that scroller to its current end over a few redraws, allowing the
+ * range to expand, then restore the reader's original relative position.
  */
 export function prepareTimelineViewportGuard(root) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
@@ -33,16 +33,25 @@ export function prepareTimelineViewportGuard(root) {
 
   const getCanvas = () => root.querySelector('[data-vc-canvas]');
 
+  const getRowScroller = () => getCanvas()?.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
+
   const viewportHeight = () => {
     const canvas = getCanvas();
     return Math.max(320, Math.round(canvas?.clientHeight ?? 0));
+  };
+
+  const maximumRowScroll = (scroller) => Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+
+  const scrollRowsTo = (scroller, scrollTop) => {
+    scroller.scrollTop = Math.max(0, Math.min(maximumRowScroll(scroller), scrollTop));
+    scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
   };
 
   const layoutSignature = () => {
     const canvas = getCanvas();
     const centerPanel = canvas?.querySelector('.vis-panel.vis-center');
     const itemset = centerPanel?.querySelector('.vis-itemset');
-    const rowScroller = canvas?.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
+    const rowScroller = getRowScroller();
     if (!centerPanel || !itemset || !rowScroller) return undefined;
 
     return [
@@ -61,14 +70,23 @@ export function prepareTimelineViewportGuard(root) {
     const guard = timeline?.[GUARDED];
     if (!guard || guard.destroyed || guard.settling) return;
 
+    const initialScroller = getRowScroller();
+    const initialMaximum = initialScroller ? maximumRowScroll(initialScroller) : 0;
+    const initialScrollTop = initialScroller?.scrollTop ?? 0;
+
     guard.settling = true;
     guard.settleDeadline = Date.now() + LAYOUT_SETTLE_TIMEOUT_MS;
     guard.previousLayoutSignature = undefined;
     guard.stableLayoutPasses = 0;
+    guard.initialScrollFraction = initialMaximum > 0 ? initialScrollTop / initialMaximum : 0;
     const canvas = getCanvas();
     if (canvas) canvas.dataset.vcLayoutSettled = 'false';
 
     const finish = () => {
+      const rowScroller = getRowScroller();
+      if (rowScroller) {
+        scrollRowsTo(rowScroller, maximumRowScroll(rowScroller) * guard.initialScrollFraction);
+      }
       guard.settling = false;
       guard.settleTimer = undefined;
       guard.settleFrame = undefined;
@@ -100,6 +118,8 @@ export function prepareTimelineViewportGuard(root) {
 
     const runPass = () => {
       if (guard.destroyed) return;
+      const rowScroller = getRowScroller();
+      if (rowScroller) scrollRowsTo(rowScroller, maximumRowScroll(rowScroller));
       guard.originalRedraw();
       window.cancelAnimationFrame(guard.settleFrame);
       guard.settleFrame = window.requestAnimationFrame(measureAfterRedraw);
