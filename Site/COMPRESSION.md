@@ -1,6 +1,6 @@
 # Codex compression
 
-The Codex uses [`@playform/compress`](https://github.com/PlayForm/Compress) as the final Astro integration.
+The Codex uses [`@playform/compress`](https://github.com/PlayForm/Compress) as the final Astro integration. The package and its Sharp runtime are pinned through `Site/package-lock.json`, so `npm ci` installs the same compression stack after every pull.
 
 ## Production builds
 
@@ -38,12 +38,15 @@ The source pass is deliberately conservative:
 
 PlayForm Compress only writes a result when it is smaller than the original. Even so, inspect visual assets and review Git changes before committing.
 
+From the repository root:
+
 ```bash
 git diff --stat
 git status --short -- Vault/Assets Site/public/assets
+git add Vault/Assets Site/public/assets
+git commit -m "chore: compress Codex assets"
+git push
 ```
-
-Then commit and push the reviewed changes through the normal repository workflow.
 
 ## Notes
 
