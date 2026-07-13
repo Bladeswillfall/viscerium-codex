@@ -29,6 +29,24 @@
   scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
 }
 
+/* In grouped views vis-timeline measures each row from both its items and its
+ * label. Give the label a real minimum box so empty/background-only lanes stay
+ * legible, and allow long names to wrap inside their own row rather than paint
+ * across neighbouring rows. */
+.vc-timeline-app .vc-timeline-canvas .vis-labelset > .vis-label {
+  overflow: hidden;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-labelset > .vis-label > .vis-inner {
+  box-sizing: border-box;
+  display: flex;
+  min-block-size: 2rem;
+  align-items: center;
+  padding: .35rem .45rem;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
 .vc-timeline-app .vc-timeline-minimap {
   min-height: 4.5rem;
 }

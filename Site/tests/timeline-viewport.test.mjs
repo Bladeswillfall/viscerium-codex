@@ -39,10 +39,12 @@ test('unified chronology keeps one canonical Chronos group without host remounti
   assert.match(adapter, /groups: \[chronology\]/);
   assert.match(adapter, /groupFor: \(\) => chronology/);
   assert.match(adapter, /\{\$\{cleanChronosText\(group\.label\)/);
+  assert.match(adapter, /parsed\.groups = parsed\.groups\.map\(\(group\) => \(\{ \.\.\.group, heightMode: 'auto' \}\)\)/);
 });
 
 test('the exact fictional-calendar axis and event rows share one stable fixed-height viewport', () => {
   const styles = read('../src/styles/timeline-viewport.css');
+  const stackingStyles = read('../src/styles/timeline-stacking.css');
   const axisStyles = read('../src/styles/chronos-calendar-axis.css');
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
@@ -51,13 +53,17 @@ test('the exact fictional-calendar axis and event rows share one stable fixed-he
   assert.match(styles, /block-size: 22rem/);
   assert.match(styles, /min-height: 4\.5rem/);
   assert.match(styles, /> \.vis-timeline \{[\s\S]*block-size: 100% !important/);
+  assert.match(styles, /\.vis-labelset > \.vis-label > \.vis-inner[\s\S]*min-block-size: 2rem/);
   assert.match(renderer, /height: options\.compact \? '22rem' : '24rem'/);
   assert.doesNotMatch(fork, /delete this\.hostTimelineOptions\.height/);
   assert.match(fork, /maxHeight: '40rem'/);
   assert.match(axisStyles, /\.vc-timeline-canvas \.vis-time-axis[\s\S]*display: block/);
   assert.match(axisStyles, /\.vis-panel\.vis-bottom/);
+  assert.match(axisStyles, /\.vis-panel\.vis-center > \.vis-content[\s\S]*background: transparent !important/);
   assert.match(axisStyles, /\.vis-custom-time\[data-vc-calendar-kind="secondary"\]/);
   assert.match(axisStyles, /\.vc-calendar-time-label/);
+  assert.match(stackingStyles, /Native calendar boundaries live in vis-timeline's vertical background panel/);
+  assert.doesNotMatch(stackingStyles, /vc-calendar-grid-layer/);
   assert.match(fork, /label\.className = 'vc-calendar-time-label'/);
   assert.doesNotMatch(axisStyles, /\.vc-calendar-axis-layer|\.vc-calendar-grid-layer/);
   assert.doesNotMatch(fork, /appendChild\(axisLayer\)|appendChild\(gridLayer\)/);

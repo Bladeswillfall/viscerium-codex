@@ -202,6 +202,12 @@ export function createChronosTimelineModel({
   }
 
   parsed.items = parsed.items.map((item, index) => enrichParsedItem(item, records[index].metadata, formatEventDate));
+  // vis-timeline's fitItems mode deliberately ignores label height whenever a
+  // row contains visible items. That is correct for dense resource charts, but
+  // it lets background-only VISCERIUM lanes collapse to almost zero height and
+  // makes their labels paint over adjacent rows. Keep Chronos's native layout,
+  // but ask each generated group to include its label in the measured height.
+  parsed.groups = parsed.groups.map((group) => ({ ...group, heightMode: 'auto' }));
 
   return {
     source,
