@@ -23,13 +23,14 @@ test('TimelineApp delegates browser behaviour to a client-loaded island', () => 
   assert.match(app, /import TimelineIsland from '\.\/TimelineIsland'/);
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-loading\.css'/);
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-performance\.css'/);
+  assert.match(app, /import '\.\.\/\.\.\/styles\/chronos-calendar-axis\.css'/);
   assert.doesNotMatch(app, /timeline-scroll\.css/);
   assert.match(app, /<TimelineIsland[\s\S]*client:load/);
   assert.match(app, /fallbackEvents=\{fallbackEvents\}/);
   assert.doesNotMatch(app, /<script>|astro:page-load|__visceriumTimelineRuntime|application\/json/);
 });
 
-test('the Preact island owns one native Chronos mount and cleanup while retaining fallback content', () => {
+test('the Preact island owns one forked Chronos mount and cleanup while retaining fallback content', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
 
   assert.match(island, /useEffect\(/);
@@ -72,32 +73,34 @@ test('large timeline runtime bounds graph, list, search and minimap work', () =>
   assert.doesNotMatch(renderer, /\.\.\.dataset\.events\.map\(\(event\) => \(\{[\s\S]*id: `mini:/);
 });
 
-test('group and item changes stay on the existing Chronos instance and skip identical assignments', () => {
+test('group and item changes stay inside one forked Chronos instance', () => {
   const entry = read('../src/lib/timeline/renderer.mjs');
   const nativeRenderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+  const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
   const adapter = read('../src/lib/timeline/chronos-adapter.mjs');
 
-  assert.match(entry, /mountTimeline as mountNativeTimeline/);
-  assert.match(entry, /renderParsedWithStableTopOrientation/);
-  assert.match(entry, /makeTimelineSettersIdempotent/);
-  assert.match(entry, /if \(next === appliedItems\) return/);
-  assert.match(entry, /if \(next === appliedGroups\) return/);
-  assert.match(entry, /finally \{[\s\S]*prototype\.renderParsed = originalRenderParsed/);
-  assert.match(entry, /prototype\._handleZoomWorkaround = originalZoomWorkaround/);
-  assert.doesNotMatch(entry, /Proxy\s*\(|renderParsedWithoutChronosTooltip|remountWithChronos|MutationObserver|ResizeObserver/);
-  assert.match(nativeRenderer, /timeline\.setGroups\(model\.groups\)/);
-  assert.match(nativeRenderer, /timeline\.setItems\(model\.items\)/);
+  assert.match(entry, /export \{ mountTimeline \}/);
+  assert.match(nativeRenderer, /chronos\.updateParsed\(model\.parsed\)/);
   assert.match(nativeRenderer, /laneSelect\.addEventListener\('change'/);
+  assert.match(fork, /updateParsed\(result\)/);
+  assert.match(fork, /nextGroups !== this\.groupModelSignature/);
+  assert.match(fork, /nextItems !== this\.itemModelSignature/);
+  assert.match(fork, /replaceDataSet\(this\.groupsDataSet, groups\)/);
+  assert.match(fork, /replaceDataSet\(this\.itemsDataSet, items\)/);
+  assert.doesNotMatch(entry, /Proxy\s*\(|ChronosTimeline\.prototype|MutationObserver|ResizeObserver/);
   assert.match(adapter, /if \(laneMode === 'unified'\)[\s\S]*groups: \[chronology\]/);
 });
 
-test('Chronos owns item tooltips and canvas geometry without host observers', () => {
+test('the fork owns tooltips, axis formatting and canvas geometry without host observers', () => {
   const entry = read('../src/lib/timeline/renderer.mjs');
   const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const nativeRenderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+  const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+  const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
 
-  assert.match(nativeRenderer, /callbacks: \{[\s\S]*setTooltip:/);
-  assert.match(nativeRenderer, /element\.setAttribute\('title'/);
+  assert.match(renderer, /callbacks: \{[\s\S]*setTooltip:/);
+  assert.match(renderer, /createCalendarAxisFormatter/);
+  assert.match(fork, /#installTooltipBridge\(\)/);
+  assert.match(fork, /format: \{[\s\S]*minorLabels:[\s\S]*majorLabels:/);
   assert.doesNotMatch(entry, /MutationObserver|ResizeObserver|installTimelineHoverTooltip|installTimelineDomGuards/);
   assert.doesNotMatch(island, /MutationObserver|ResizeObserver/);
 });
