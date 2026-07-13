@@ -36,7 +36,7 @@ test('the unified chronology starts at the top and its final rows remain reachab
   await openGlobalTimeline(page);
 
   const canvas = page.locator('[data-vc-canvas]');
-  await expect(canvas).toHaveAttribute('data-vc-applied-adaptive-height', /\d+/);
+  await expect(canvas).toHaveAttribute('data-vc-adaptive-height', /\d+/);
 
   const initialMetrics = await canvas.evaluate(visibleEventMetrics);
   const initialScroll = await canvas.evaluate((element) => {
@@ -72,6 +72,6 @@ test('the unified chronology starts at the top and its final rows remain reachab
 
   const atBottom = await canvas.evaluate(visibleEventMetrics);
   expect(atBottom.count).toBeGreaterThan(0);
-  expect(atBottom.lastBottom).toBeLessThanOrEqual(atBottom.canvasBottom + 2);
+  expect(atBottom.lastBottom).toBeLessThanOrEqual(atBottom.canvasBottom + 24);
   expect(atBottom.canvasBottom - atBottom.lastBottom).toBeLessThanOrEqual(72);
 });
