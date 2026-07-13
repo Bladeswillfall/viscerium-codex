@@ -25,7 +25,20 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: Site/package-lock.json
-      - run: npm ci --silent --no-audit --no-fund
+      - name: Install project dependencies
+        id: install
+        continue-on-error: true
+        run: npm ci --no-audit --no-fund > npm-ci.log 2>&1
         working-directory: Site
+      - name: Upload npm diagnostic
+        if: steps.install.outcome == 'failure'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: npm-ci-diagnostic
+          path: Site/npm-ci.log
+          retention-days: 1
+      - name: Stop after install failure
+        if: steps.install.outcome == 'failure'
+        run: exit 1
       - run: npm run compress:assets
         working-directory: Site
