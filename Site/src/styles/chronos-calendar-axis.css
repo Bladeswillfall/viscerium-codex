@@ -1,0 +1,44 @@
+/*
+ * The VISCERIUM Chronos fork formats vis-timeline's own axis. Keep the labels,
+ * tick marks and grid in the same measured viewport as the event rows.
+ */
+
+.vc-timeline-app .vc-timeline-canvas .vis-time-axis {
+  display: block;
+  font-family: var(--vc-font-ui, ui-sans-serif, system-ui);
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-top {
+  z-index: 4;
+  border-bottom: 1px solid var(--vc-timeline-border-strong) !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--vc-timeline-surface) 95%, transparent),
+    var(--vc-timeline-surface-deep)
+  ) !important;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-time-axis .vis-text {
+  color: var(--vc-timeline-muted) !important;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-time-axis .vis-text.vis-major {
+  color: color-mix(in srgb, var(--vc-timeline-ink) 76%, var(--vc-timeline-muted)) !important;
+  font-size: .72rem;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-grid.vis-vertical.vis-minor {
+  border-color: color-mix(in srgb, var(--vc-timeline-border) 58%, transparent) !important;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-grid.vis-vertical.vis-major {
+  border-color: color-mix(in srgb, var(--vc-timeline-border-strong) 82%, transparent) !important;
+}
+
+/* The overview remains intentionally label-free; it is a density navigator. */
+.vc-timeline-app .vc-timeline-minimap .vis-time-axis {
+  display: none;
+}
