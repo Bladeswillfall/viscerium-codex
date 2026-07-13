@@ -17,6 +17,7 @@ test('the Astro island mounts the local Chronos renderer fork without host patch
   assert.match(fork, /rtl: false/);
   assert.match(fork, /#installCalendarAxis\(\)/);
   assert.match(fork, /this\.axis\.getTicks/);
+  assert.match(fork, /setOptions\(\{ queue: queueOptions \}\)/);
   assert.doesNotMatch(entry, /ChronosTimeline\.prototype|_handleZoomWorkaround|Proxy\s*\(/);
   assert.doesNotMatch(renderer, /ChronosTimeline\.prototype|_handleZoomWorkaround|MutationObserver|ResizeObserver/);
 
@@ -36,19 +37,18 @@ test('unified chronology keeps one canonical Chronos group without host remounti
   assert.match(adapter, /\{\$\{cleanChronosText\(group\.label\)/);
 });
 
-test('the exact fictional-calendar axis and event rows share one native-sized viewport', () => {
+test('the exact fictional-calendar axis and event rows share one stable fixed-height viewport', () => {
   const styles = read('../src/styles/timeline-viewport.css');
   const axisStyles = read('../src/styles/chronos-calendar-axis.css');
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
 
-  assert.match(styles, /min-height: 20rem/);
-  assert.match(styles, /max-height: 40rem/);
-  assert.match(styles, /max-height: 32rem/);
+  assert.match(styles, /block-size: 24rem/);
+  assert.match(styles, /block-size: 22rem/);
   assert.match(styles, /min-height: 4\.5rem/);
-  assert.match(styles, /> \.vis-timeline \{[\s\S]*min-block-size: 20rem[\s\S]*max-block-size: 40rem/);
-  assert.doesNotMatch(styles, /block-size: 100% !important/);
-  assert.match(fork, /delete this\.hostTimelineOptions\.height/);
+  assert.match(styles, /> \.vis-timeline \{[\s\S]*block-size: 100% !important/);
+  assert.match(renderer, /height: options\.compact \? '22rem' : '24rem'/);
+  assert.doesNotMatch(fork, /delete this\.hostTimelineOptions\.height/);
   assert.match(fork, /maxHeight: '40rem'/);
   assert.match(axisStyles, /\.vc-timeline-canvas \.vis-time-axis[\s\S]*display: block/);
   assert.match(axisStyles, /\.vc-calendar-axis-layer/);
