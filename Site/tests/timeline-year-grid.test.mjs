@@ -17,6 +17,7 @@ import {
   selectAdaptiveTimelineScale,
   selectCalendarYearTicks,
 } from '../src/lib/timeline/year-grid.mjs';
+import { formatCalendarAxisLabel } from '../src/lib/timeline/calendar-axis.mjs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const calendar = getCalendar(defaultCalendarId);
@@ -157,14 +158,27 @@ test('adaptive calendar helpers remain available without mounting a competing SV
   assert.doesNotMatch(island, /installCalendarYearAxisSync/);
 });
 
-test('the native renderer owns the single visible fictional-calendar axis', () => {
+test('calendar labels are injected into the native vis-timeline axis', () => {
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
-  const entry = read('../src/lib/timeline/renderer.mjs');
+  const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
+  const axisStyles = read('../src/styles/chronos-calendar-axis.css');
 
-  assert.match(renderer, /function renderAxis\(\)/);
-  assert.match(renderer, /formatAbsoluteDay\(day, state\.calendar, precision\)/);
+  const start = yearStart(120);
+  assert.equal(formatCalendarAxisLabel({
+    absoluteDay: start,
+    calendarId: defaultCalendarId,
+    scale: 'year',
+  }), '120');
+  assert.equal(formatCalendarAxisLabel({
+    absoluteDay: start,
+    calendarId: defaultCalendarId,
+    scale: 'month',
+    major: true,
+  }), '120');
+
+  assert.match(renderer, /createCalendarAxisFormatter/);
   assert.match(renderer, /timeline\.on\('rangechanged'/);
-  assert.match(entry, /mountTimeline as mountNativeTimeline/);
-  assert.match(entry, /renderParsedWithStableTopOrientation/);
-  assert.doesNotMatch(entry, /createYearGridSvg|installAnnualYearGrid|MutationObserver|ResizeObserver/);
+  assert.match(fork, /format:[\s\S]*minorLabels:[\s\S]*majorLabels:/);
+  assert.match(axisStyles, /\.vc-timeline-canvas \.vis-time-axis[\s\S]*display: block/);
+  assert.doesNotMatch(renderer, /data-vc-axis|axisTicks|renderAxis/);
 });
