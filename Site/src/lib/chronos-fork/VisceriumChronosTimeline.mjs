@@ -356,8 +356,20 @@ export class VisceriumChronosTimeline {
       bar.dataset.vcCalendarKind = kind;
       bar.dataset.absoluteDay = String(tick.absoluteDay);
       bar.dataset.unit = tick.unit;
-      if (kind === 'primary' && tick.label) bar.dataset.vcCalendarLabel = tick.label;
-      else delete bar.dataset.vcCalendarLabel;
+      let label = bar.querySelector(':scope > .vc-calendar-time-label');
+      if (kind === 'primary' && tick.label) {
+        bar.dataset.vcCalendarLabel = tick.label;
+        if (!label) {
+          label = this.container.ownerDocument.createElement('span');
+          label.className = 'vc-calendar-time-label';
+          label.setAttribute('aria-hidden', 'true');
+          bar.appendChild(label);
+        }
+        label.textContent = tick.label;
+      } else {
+        delete bar.dataset.vcCalendarLabel;
+        label?.remove();
+      }
       bar.setAttribute('aria-hidden', 'true');
       bar.setAttribute('title', '');
     };
