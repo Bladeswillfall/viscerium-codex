@@ -85,8 +85,12 @@ test('group and item changes stay inside one forked Chronos instance', () => {
   assert.match(fork, /updateParsed\(result\)/);
   assert.match(fork, /nextGroups !== this\.groupModelSignature/);
   assert.match(fork, /nextItems !== this\.itemModelSignature/);
-  assert.match(fork, /replaceDataSet\(this\.groupsDataSet, groups\)/);
-  assert.match(fork, /replaceDataSet\(this\.itemsDataSet, items\)/);
+  assert.match(fork, /stageDataSet\(this\.groupsDataSet, groups\)/);
+  assert.match(fork, /stageDataSet\(this\.itemsDataSet, items\)/);
+  assert.match(fork, /this\.groupsDataSet\.setOptions\(\{ queue: queueOptions \}\)/);
+  assert.match(fork, /this\.itemsDataSet\.setOptions\(\{ queue: queueOptions \}\)/);
+  assert.match(fork, /if \(removedItems\.length\) this\.itemsDataSet\.remove\(removedItems\)/);
+  assert.match(fork, /if \(removedGroups\.length\)[\s\S]*this\.groupsDataSet\.remove\(removedGroups\)/);
   assert.doesNotMatch(entry, /Proxy\s*\(|ChronosTimeline\.prototype|MutationObserver|ResizeObserver/);
   assert.match(adapter, /if \(laneMode === 'unified'\)[\s\S]*groups: \[chronology\]/);
 });
