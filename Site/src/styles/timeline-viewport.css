@@ -1,18 +1,18 @@
 /*
- * Chronos owns the interactive viewport. Keep one stable host with a single
- * native item-margin of clearance; do not resize, pin, scroll or replace its
- * internal panels while the reader is dragging or zooming.
+ * Chronos owns the interactive viewport. Keep one compact, stable host; do not
+ * resize, pin, scroll or replace its internal panels while the reader is
+ * dragging, zooming or changing group modes.
  */
 
 .vc-timeline-app .vc-timeline-canvas {
   position: relative;
-  block-size: 35rem;
+  block-size: 28rem;
   min-height: 20rem;
   overflow: hidden;
 }
 
 .vc-timeline-app.is-compact .vc-timeline-canvas {
-  block-size: 29rem;
+  block-size: 24rem;
 }
 
 .vc-timeline-app .vc-timeline-canvas > .vis-timeline {
@@ -29,6 +29,6 @@
 @media (max-width: 38rem) {
   .vc-timeline-app .vc-timeline-canvas,
   .vc-timeline-app.is-compact .vc-timeline-canvas {
-    block-size: 27rem;
+    block-size: 24rem;
   }
 }
