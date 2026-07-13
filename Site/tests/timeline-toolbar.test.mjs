@@ -18,6 +18,9 @@ test('the timeline island installs a scoped toolbar enhancement after existing b
 
   assert.match(toolbar, /vc-timeline-toolbar/);
   assert.match(toolbar, /vcToolbarEnhanced = 'true'/);
+  assert.match(toolbar, /vc-timeline-toolbar-container/);
+  assert.match(toolbar, /toolbarContainer\.append\(toolbar\)/);
+  assert.match(toolbar, /toolbarContainer\.replaceWith\(toolbar\)/);
   assert.match(toolbar, /createActionGroup\('View'[\s\S]*createActionGroup\('Navigate'[\s\S]*createActionGroup\('Scale'/);
   assert.match(toolbar, /Search titles, factions, locations…/);
   assert.match(toolbar, /Date system/);
@@ -37,11 +40,13 @@ test('the timeline island installs a scoped toolbar enhancement after existing b
   assert.match(styles, /max-width: 38rem/);
   assert.doesNotMatch(styles, /\.vis-(?:timeline|panel|item|group|label|time-axis)/);
 
-  assert.match(containerStyles, /container-name: vc-timeline-app/);
+  assert.match(containerStyles, /vc-timeline-toolbar-container/);
+  assert.match(containerStyles, /container-name: vc-timeline-toolbar/);
   assert.match(containerStyles, /container-type: inline-size/);
-  assert.match(containerStyles, /@container vc-timeline-app \(max-width: 84rem\)/);
+  assert.match(containerStyles, /@container vc-timeline-toolbar \(max-width: 1440px\)/);
   assert.match(containerStyles, /grid-column: 1 \/ -1/);
   assert.match(containerStyles, /flex-wrap: wrap/);
+  assert.doesNotMatch(containerStyles, /\.vc-timeline-app\s*\{/);
   assert.doesNotMatch(containerStyles, /\.vis-(?:timeline|panel|item|group|label|time-axis)/);
 });
 
