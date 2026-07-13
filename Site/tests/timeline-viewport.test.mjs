@@ -32,8 +32,8 @@ test('unified chronology keeps one canonical Chronos group without host remounti
 test('the viewport is stable and does not pin or adapt Chronos internals', () => {
   const styles = read('../src/styles/timeline-viewport.css');
 
-  assert.match(styles, /block-size: 34rem/);
-  assert.match(styles, /block-size: 28rem/);
+  assert.match(styles, /block-size: 35rem/);
+  assert.match(styles, /block-size: 29rem/);
   assert.match(styles, /> \.vis-timeline \{[\s\S]*block-size: 100% !important/);
   assert.doesNotMatch(styles, /vc-pinned-row-height/);
   assert.doesNotMatch(styles, /vc-timeline-hovercard/);
