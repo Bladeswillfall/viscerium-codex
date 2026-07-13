@@ -44,6 +44,20 @@ test('list view reads as an expandable archival chronicle and returns to the gra
 
   const firstRecord = records.first();
   const firstTitle = (await firstRecord.locator('.vc-chronicle-title').textContent())?.trim() ?? '';
+  const rowGeometry = await firstRecord.locator('summary').evaluate((summary) => {
+    const date = summary.querySelector('.vc-chronicle-date')?.getBoundingClientRect();
+    const copy = summary.querySelector('.vc-chronicle-summary-copy')?.getBoundingClientRect();
+    const disclosure = summary.querySelector('.vc-chronicle-disclosure')?.getBoundingClientRect();
+    return {
+      display: getComputedStyle(summary).display,
+      dateWidth: date?.width ?? 0,
+      ordered: Boolean(date && copy && disclosure && date.right <= copy.left && copy.right <= disclosure.left + 1),
+    };
+  });
+  expect(rowGeometry.display).toBe('grid');
+  expect(rowGeometry.dateWidth).toBeGreaterThan(100);
+  expect(rowGeometry.ordered).toBe(true);
+
   await firstRecord.locator('summary').click();
   await expect(firstRecord.locator('.vc-chronicle-entry')).toHaveAttribute('open', '');
   await expect(firstRecord.locator('.vc-chronicle-dossier')).toBeVisible();
@@ -61,7 +75,7 @@ test('list view reads as an expandable archival chronicle and returns to the gra
   await expect(list).toBeHidden();
   await expect(stage).toBeVisible();
   await expect(minimap).toBeVisible();
-  await expect(page.locator('[data-vc-canvas] .vis-item.vc-timeline-item.vis-selected')).toBeVisible();
+  await expect(page.locator('[data-vc-canvas] .vis-item.vc-timeline-item.vis-selected').first()).toBeVisible();
   await expect(page.locator('[data-vc-details]')).toContainText(firstTitle);
 
   await page.locator('[data-vc-close]').click();
