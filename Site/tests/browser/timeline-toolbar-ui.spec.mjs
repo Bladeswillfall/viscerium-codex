@@ -54,6 +54,19 @@ test('chronicle control retains its icon and mode label', async ({ page }) => {
   await expect(toggle.locator('.vc-timeline-command-label')).toHaveText('Chronicle');
 });
 
+test('timeline action buttons use a visible rounded-corner affordance', async ({ page }) => {
+  await openTimeline(page);
+  await page.locator('.vc-timeline-filters > summary').click();
+
+  const controls = page.locator('.vc-timeline-toolbar .vc-timeline-command, .vc-timeline-filter-actions button');
+  await expect(controls).toHaveCount(7);
+  const radii = await controls.evaluateAll((buttons) => buttons.map((button) => (
+    Number.parseFloat(getComputedStyle(button).borderTopLeftRadius)
+  )));
+
+  expect(radii.every((radius) => radius >= 6)).toBe(true);
+});
+
 test('toolbar responds to its own width when the sidebar constrains the content area', async ({ page }) => {
   await page.setViewportSize({ width: 1500, height: 1180 });
   await openTimeline(page);
