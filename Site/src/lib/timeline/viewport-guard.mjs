@@ -68,8 +68,13 @@ export function prepareTimelineViewportGuard(root) {
       if (element) element.style.minHeight = value;
     }
     if (canvas) {
-      if (height > 0) canvas.dataset.vcPinnedRowHeight = String(Math.ceil(height));
-      else delete canvas.dataset.vcPinnedRowHeight;
+      if (height > 0) {
+        canvas.dataset.vcPinnedRowHeight = String(Math.ceil(height));
+        canvas.style.setProperty('--vc-pinned-row-height', value);
+      } else {
+        delete canvas.dataset.vcPinnedRowHeight;
+        canvas.style.removeProperty('--vc-pinned-row-height');
+      }
     }
   };
 
