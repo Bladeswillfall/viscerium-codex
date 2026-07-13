@@ -292,6 +292,12 @@ export default defineConfig({
       },
     }),
     ...(sourceAssetCompressor ? [sourceAssetCompressor] : []),
-    compress({ SVG: false }),
+    compress({
+      HTML: {
+        'html-minifier-terser': {
+          removeAttributeQuotes: false,
+        },
+      },
+    }),
   ],
 });
