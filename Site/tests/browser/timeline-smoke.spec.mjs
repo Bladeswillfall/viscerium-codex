@@ -29,7 +29,21 @@ async function waitForTimeline(page) {
   await expect(page.locator('[data-vc-canvas]')).toBeVisible();
   await expect(page.locator('[data-vc-fallback]')).toBeHidden();
   await expect(page.locator('[data-vc-canvas] > .vis-timeline')).toHaveCount(1);
-  await expect(page.locator('.vis-item.vc-timeline-item').first()).toBeVisible();
+  await expect.poll(() => page.locator('[data-vc-canvas]').evaluate((canvas) => {
+    const bounds = canvas.getBoundingClientRect();
+    return [...canvas.querySelectorAll('.vis-item.vc-timeline-item')].some((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width > 0
+        && rect.height > 0
+        && style.display !== 'none'
+        && style.visibility !== 'hidden'
+        && rect.right > bounds.left
+        && rect.left < bounds.right
+        && rect.bottom > bounds.top
+        && rect.top < bounds.bottom;
+    });
+  })).toBe(true);
   await page.waitForTimeout(500);
 }
 
