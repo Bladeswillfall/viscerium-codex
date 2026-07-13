@@ -164,6 +164,7 @@ test('the native renderer owns the single visible fictional-calendar axis', () =
   assert.match(renderer, /function renderAxis\(\)/);
   assert.match(renderer, /formatAbsoluteDay\(day, state\.calendar, precision\)/);
   assert.match(renderer, /timeline\.on\('rangechanged'/);
-  assert.match(entry, /export \{ mountTimeline \} from '\.\/chronos-native-renderer\.mjs'/);
-  assert.doesNotMatch(entry, /createYearGridSvg|installAnnualYearGrid/);
+  assert.match(entry, /mountTimeline as mountNativeTimeline/);
+  assert.match(entry, /renderParsedWithTopOrientation/);
+  assert.doesNotMatch(entry, /createYearGridSvg|installAnnualYearGrid|MutationObserver|ResizeObserver/);
 });
