@@ -16,9 +16,7 @@ test('the timeline island installs a scoped toolbar enhancement after existing b
 
   assert.match(toolbar, /vc-timeline-toolbar/);
   assert.match(toolbar, /vcToolbarEnhanced = 'true'/);
-  assert.match(toolbar, /createActionGroup\('Navigate'/);
-  assert.match(toolbar, /createActionGroup\('Scale'/);
-  assert.match(toolbar, /createActionGroup\('View'/);
+  assert.match(toolbar, /createActionGroup\('View'[\s\S]*createActionGroup\('Navigate'[\s\S]*createActionGroup\('Scale'/);
   assert.match(toolbar, /Search titles, factions, locations…/);
   assert.match(toolbar, /Date system/);
   assert.match(toolbar, /Arrange rows/);
@@ -30,6 +28,9 @@ test('the timeline island installs a scoped toolbar enhancement after existing b
   assert.match(styles, /vc-timeline-toolbar-enhanced/);
   assert.match(styles, /vc-timeline-action-group/);
   assert.match(styles, /vc-timeline-command/);
+  assert.match(styles, /height: 3rem/);
+  assert.match(styles, /margin: 0 !important/);
+  assert.match(styles, /vc-timeline-action-group\.is-view/);
   assert.match(styles, /pointer-events: none/);
   assert.match(styles, /max-width: 38rem/);
   assert.doesNotMatch(styles, /\.vis-(?:timeline|panel|item|group|label|time-axis)/);
