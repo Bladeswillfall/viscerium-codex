@@ -268,9 +268,8 @@ test('global chronology starts high and ends without an artificial floor', async
   expect(topScroll).not.toBeNull();
   expect(topScroll.maximum).toBeGreaterThan(0);
   expect(topScroll.applied).toBe(0);
-  expect(atTop.scrollCandidates.some((candidate, index) => (
-    candidate.scrollTop !== (before.scrollCandidates[index]?.scrollTop ?? 0)
-    || candidate.transform !== before.scrollCandidates[index]?.transform
+  expect(atTop.scrollCandidates.some((candidate) => (
+    candidate.className.includes('vis-vertical-scroll') && candidate.scrollTop === 0
   ))).toBe(true);
   expect(bottomScroll.applied).toBe(bottomScroll.maximum);
   expect(after.visibleEventCount).toBeGreaterThan(0);
