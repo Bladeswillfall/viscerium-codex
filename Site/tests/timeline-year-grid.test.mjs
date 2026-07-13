@@ -200,7 +200,8 @@ test('the fork draws exact calendar labels and grid lines as native vis-timeline
   assert.match(fork, /timeline\.removeCustomTime\(id\)/);
   assert.match(fork, /dataset\.absoluteDay/);
   assert.match(fork, /dataset\.vcCalendarLabel/);
-  assert.match(axisStyles, /\.vis-custom-time\[data-vc-calendar-kind="primary"\]::after/);
+  assert.match(axisStyles, /\.vc-calendar-time-label/);
+  assert.match(fork, /label\.className = 'vc-calendar-time-label'/);
   assert.match(axisStyles, /\.vis-custom-time\[data-vc-calendar-kind="secondary"\]/);
   assert.doesNotMatch(fork, /appendChild\(axisLayer\)|appendChild\(gridLayer\)/);
   assert.doesNotMatch(renderer, /data-vc-axis|axisTicks|renderAxis/);
