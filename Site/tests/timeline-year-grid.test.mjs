@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   defaultCalendarId,
+  fromAbsoluteDay,
   getCalendar,
   getDaysInYear,
   toAbsoluteDay,
@@ -17,7 +18,13 @@ import {
   selectAdaptiveTimelineScale,
   selectCalendarYearTicks,
 } from '../src/lib/timeline/year-grid.mjs';
+import {
+  createCalendarAxisFormatter,
+  formatCalendarAxisLabel,
+  formatCalendarBoundaryLabel,
+} from '../src/lib/timeline/calendar-axis.mjs';
 
+const DAY_MS = 86_400_000;
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const calendar = getCalendar(defaultCalendarId);
 const firstMonth = calendar.months[0].slug;
@@ -146,25 +153,53 @@ test('supports negative years and retains exact legacy background item classes',
   assert.ok(items.every((item) => item.type === 'background' && item.selectable === false));
 });
 
-test('adaptive calendar helpers remain available without mounting a competing SVG observer', () => {
-  const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const grid = read('../src/lib/timeline/adaptive-time-grid.mjs');
-  const synchroniser = read('../src/lib/timeline/year-axis-sync.mjs');
+test('the fork generates exact Okse boundaries instead of relabeling Gregorian ticks', () => {
+  const originDay = yearStart(120);
+  const toSyntheticDate = (absoluteDay) => new Date((absoluteDay - originDay) * DAY_MS);
+  const fromSyntheticDate = (date) => originDay + Math.round(date.valueOf() / DAY_MS);
+  const axis = createCalendarAxisFormatter({
+    getCalendarId: () => defaultCalendarId,
+    fromSyntheticDate,
+    toSyntheticDate,
+  });
+  const result = axis.getTicks({
+    start: toSyntheticDate(originDay),
+    end: toSyntheticDate(yearStart(122)),
+    width: 1_000,
+  });
 
-  assert.match(grid, /createAdaptiveTimelineTicks\(/);
-  assert.match(synchroniser, /createAdaptiveTimelineTicks\(/);
-  assert.doesNotMatch(island, /installAdaptiveTimelineGrid/);
-  assert.doesNotMatch(island, /installCalendarYearAxisSync/);
+  assert.ok(result.primary.length > 1);
+  assert.ok(result.primary.every((tick) => {
+    const date = fromAbsoluteDay(tick.absoluteDay, defaultCalendarId);
+    if (tick.unit === 'year') return date.month === firstMonth && date.day === 1;
+    if (tick.unit === 'month') return date.day === 1;
+    return true;
+  }));
+  assert.equal(formatCalendarBoundaryLabel({
+    absoluteDay: originDay,
+    calendarId: defaultCalendarId,
+    unit: 'year',
+  }), '120');
+  assert.equal(formatCalendarAxisLabel({
+    absoluteDay: originDay,
+    calendarId: defaultCalendarId,
+    scale: 'year',
+  }), '120');
 });
 
-test('the native renderer owns the single visible fictional-calendar axis', () => {
+test('the fork draws exact calendar labels and grid lines inside vis-timeline panels', () => {
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
-  const entry = read('../src/lib/timeline/renderer.mjs');
+  const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
+  const axisStyles = read('../src/styles/chronos-calendar-axis.css');
 
-  assert.match(renderer, /function renderAxis\(\)/);
-  assert.match(renderer, /formatAbsoluteDay\(day, state\.calendar, precision\)/);
+  assert.match(renderer, /createCalendarAxisFormatter/);
   assert.match(renderer, /timeline\.on\('rangechanged'/);
-  assert.match(entry, /mountTimeline as mountNativeTimeline/);
-  assert.match(entry, /renderParsedWithStableTopOrientation/);
-  assert.doesNotMatch(entry, /createYearGridSvg|installAnnualYearGrid|MutationObserver|ResizeObserver/);
+  assert.match(fork, /this\.axis\.getTicks/);
+  assert.match(fork, /topPanel\.appendChild\(axisLayer\)/);
+  assert.match(fork, /centerPanel\.appendChild\(gridLayer\)/);
+  assert.match(fork, /dataset\.absoluteDay/);
+  assert.match(axisStyles, /\.vc-calendar-axis-tick/);
+  assert.match(axisStyles, /\.vc-calendar-grid-line\.is-primary/);
+  assert.match(axisStyles, /\.vc-calendar-grid-line\.is-secondary/);
+  assert.doesNotMatch(renderer, /data-vc-axis|axisTicks|renderAxis/);
 });

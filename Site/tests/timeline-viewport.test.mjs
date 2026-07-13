@@ -4,21 +4,21 @@ import { readFileSync } from 'node:fs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('the Astro island mounts one stable Chronos renderer without host observers', () => {
+test('the Astro island mounts the local Chronos renderer fork without host patches', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const renderer = read('../src/lib/timeline/renderer.mjs');
+  const entry = read('../src/lib/timeline/renderer.mjs');
+  const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+  const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
 
-  assert.match(renderer, /mountTimeline as mountNativeTimeline/);
-  assert.match(renderer, /renderParsedWithStableTopOrientation/);
-  assert.match(renderer, /orientation: \{[\s\S]*axis: 'top',[\s\S]*item: 'top'/);
-  assert.match(renderer, /refreshGroupedLayoutWithoutZoom/);
-  assert.match(renderer, /_handleZoomWorkaround = refreshGroupedLayoutWithoutZoom/);
-  assert.match(renderer, /timeline\.redraw\?\.\(\)/);
-  assert.match(renderer, /setWindow\(range\.start, range\.end, \{ animation: false \}\)/);
-  assert.match(renderer, /_handleZoomWorkaround = originalZoomWorkaround/);
-  assert.match(renderer, /makeTimelineSettersIdempotent/);
-  assert.doesNotMatch(renderer, /Proxy\s*\(/);
-  assert.doesNotMatch(renderer, /MutationObserver|ResizeObserver/);
+  assert.match(entry, /export \{ mountTimeline \} from '\.\/chronos-native-renderer\.mjs'/);
+  assert.match(renderer, /VisceriumChronosTimeline/);
+  assert.match(fork, /orientation: \{ axis: 'top', item: 'top' \}/);
+  assert.match(fork, /groupHeightMode: 'fitItems'/);
+  assert.match(fork, /rtl: false/);
+  assert.match(fork, /#installCalendarAxis\(\)/);
+  assert.match(fork, /this\.axis\.getTicks/);
+  assert.doesNotMatch(entry, /ChronosTimeline\.prototype|_handleZoomWorkaround|Proxy\s*\(/);
+  assert.doesNotMatch(renderer, /ChronosTimeline\.prototype|_handleZoomWorkaround|MutationObserver|ResizeObserver/);
 
   assert.match(island, /cleanup = mountTimeline\(root, dataset, options\)/);
   assert.doesNotMatch(island, /prepareTimelineViewportGuard/);
@@ -36,15 +36,26 @@ test('unified chronology keeps one canonical Chronos group without host remounti
   assert.match(adapter, /\{\$\{cleanChronosText\(group\.label\)/);
 });
 
-test('the viewport and overview are compact fixed-height surfaces', () => {
+test('the exact fictional-calendar axis and event rows share one native-sized viewport', () => {
   const styles = read('../src/styles/timeline-viewport.css');
+  const axisStyles = read('../src/styles/chronos-calendar-axis.css');
+  const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+  const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
 
-  assert.match(styles, /block-size: 24rem/);
-  assert.match(styles, /block-size: 22rem/);
-  assert.match(styles, /height: 2\.6rem/);
+  assert.match(styles, /min-height: 20rem/);
+  assert.match(styles, /max-height: 40rem/);
+  assert.match(styles, /max-height: 32rem/);
   assert.match(styles, /min-height: 4\.5rem/);
-  assert.match(styles, /> \.vis-timeline \{[\s\S]*block-size: 100% !important/);
-  assert.doesNotMatch(styles, /vc-pinned-row-height/);
-  assert.doesNotMatch(styles, /vc-timeline-hovercard/);
-  assert.doesNotMatch(styles, /data-vc-adaptive-height/);
+  assert.match(styles, /> \.vis-timeline \{[\s\S]*min-block-size: 20rem[\s\S]*max-block-size: 40rem/);
+  assert.doesNotMatch(styles, /block-size: 100% !important/);
+  assert.match(fork, /delete this\.hostTimelineOptions\.height/);
+  assert.match(fork, /maxHeight: '40rem'/);
+  assert.match(axisStyles, /\.vc-timeline-canvas \.vis-time-axis[\s\S]*display: block/);
+  assert.match(axisStyles, /\.vc-calendar-axis-layer/);
+  assert.match(axisStyles, /\.vc-calendar-grid-line\.is-secondary/);
+  assert.match(axisStyles, /\.vc-calendar-grid-line\.is-primary/);
+  assert.match(fork, /topPanel\.appendChild\(axisLayer\)/);
+  assert.match(fork, /centerPanel\.appendChild\(gridLayer\)/);
+  assert.doesNotMatch(renderer, /data-vc-axis|vc-timeline-axis|axisTicks|renderAxis/);
+  assert.doesNotMatch(styles, /vc-pinned-row-height|data-vc-adaptive-height/);
 });

@@ -231,7 +231,8 @@ export function createAdaptiveTimelineTicks({
     .filter(({ absoluteDay }) => !primaryDays.has(absoluteDay));
 
   return {
-    ...scale,
+    primaryScale: scale.primary,
+    secondaryScale: scale.secondary,
     primary,
     secondary,
     labelPrecision: scale.primary.labelPrecision,
