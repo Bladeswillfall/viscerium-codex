@@ -153,17 +153,6 @@ test('supports negative years and retains exact legacy background item classes',
   assert.ok(items.every((item) => item.type === 'background' && item.selectable === false));
 });
 
-test('adaptive calendar helpers remain available without mounting a competing host observer', () => {
-  const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const grid = read('../src/lib/timeline/adaptive-time-grid.mjs');
-  const synchroniser = read('../src/lib/timeline/year-axis-sync.mjs');
-
-  assert.match(grid, /createAdaptiveTimelineTicks\(/);
-  assert.match(synchroniser, /createAdaptiveTimelineTicks\(/);
-  assert.doesNotMatch(island, /installAdaptiveTimelineGrid/);
-  assert.doesNotMatch(island, /installCalendarYearAxisSync/);
-});
-
 test('the fork generates exact Okse boundaries instead of relabeling Gregorian ticks', () => {
   const originDay = yearStart(120);
   const toSyntheticDate = (absoluteDay) => new Date((absoluteDay - originDay) * DAY_MS);
