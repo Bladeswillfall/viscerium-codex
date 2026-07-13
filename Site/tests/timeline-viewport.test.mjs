@@ -26,6 +26,9 @@ test('the bounded canvas delegates row scrolling to the guarded vis-timeline ins
   assert.match(guard, /const isAdaptiveHeightPass/);
   assert.match(guard, /\^\\d\+px\$/);
   assert.match(guard, /const \{ height: _height, minHeight: _minHeight, \.\.\.forwarded \} = options/);
+  assert.match(guard, /data-vc-adaptive-height/);
+  assert.match(guard, /canvas\.style\.blockSize = `\$\{desiredHeight\}px`/);
+  assert.match(guard, /Math\.min\(upperBound, Math\.round\(requestedHeight\)\)/);
 });
 
 test('the compatibility proxy forwards every legacy option except the obsolete fixed height', () => {
