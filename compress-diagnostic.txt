@@ -1,0 +1,160 @@
+(-9.05 KB)	22.17% reduction in //dist/pagefind/pagefind-component-ui.css
+(-183 Bytes)	1.26% reduction in //dist/pagefind/pagefind-ui.css
+✓ Successfully compressed a total of 13 CSS files for 32.85 KB.
+[2m21:57:05[22m [34m[build][39m Waiting for integration [1m"@playform/compress"[22m, hook [1m"astro:build:done"[22m...
+(-1.88 KB)	10.09% reduction in //dist/404.html
+(-3.32 KB)	4.70% reduction in //dist/changelog/index.html
+(-2.08 KB)	8.25% reduction in //dist/index.html
+(-2.79 KB)	5.28% reduction in //dist/contact/index.html
+(-3.82 KB)	5.10% reduction in //dist/eras/index.html
+(-2.8 KB)	5.37% reduction in //dist/demo/index.html
+(-3.09 KB)	4.98% reduction in //dist/graph/index.html
+(-6.74 KB)	4.05% reduction in //dist/calendar/index.html
+(-3.13 KB)	5.12% reduction in //dist/start-here/index.html
+(-2.96 KB)	5.01% reduction in //dist/support/index.html
+(-2.88 KB)	5.39% reduction in //dist/degel-system/index.html
+(-2.86 KB)	5.31% reduction in //dist/tags/index.html
+(-2.73 KB)	5.28% reduction in //dist/timelines/index.html
+(-2.89 KB)	5.22% reduction in //dist/degel-system/crucibus/index.html
+(-2.89 KB)	5.24% reduction in //dist/degel-system/errack/index.html
+(-2.94 KB)	5.24% reduction in //dist/degel-system/degel/index.html
+(-2.89 KB)	5.23% reduction in //dist/degel-system/eye-of-visi/index.html
+(-2.89 KB)	5.23% reduction in //dist/degel-system/eye-of-vordr/index.html
+(-3.45 KB)	4.49% reduction in //dist/degel-system/okse-dominion/index.html
+(-2.81 KB)	5.37% reduction in //dist/demo/starlight/index.html
+(-2.89 KB)	5.23% reduction in //dist/degel-system/the-shards/index.html
+(-3.32 KB)	3.69% reduction in //dist/eras/citadel/index.html
+(-2.81 KB)	5.31% reduction in //dist/maps/example-world/index.html
+(-3.15 KB)	3.66% reduction in //dist/eras/smog/index.html
+(-3.15 KB)	3.65% reduction in //dist/eras/entropy/index.html
+(-3.14 KB)	3.64% reduction in //dist/eras/nearsight/index.html
+(-2.82 KB)	3.68% reduction in //dist/timelines/citadel/index.html
+(-3.09 KB)	5.15% reduction in //dist/tags/example/index.html
+(-2.82 KB)	3.66% reduction in //dist/timelines/entropy/index.html
+(-2.82 KB)	3.65% reduction in //dist/timelines/nearsight/index.html
+(-3.02 KB)	5.19% reduction in //dist/changelog/version/0-1-0/index.html
+(-2.82 KB)	3.68% reduction in //dist/timelines/smog/index.html
+(-2.94 KB)	5.16% reduction in //dist/changelog/version/0-2-0...latest/index.html
+(-3.03 KB)	5.20% reduction in //dist/changelog/version/0-2-0/index.html
+(-3.03 KB)	5.36% reduction in //dist/eras/citadel/events/index.html
+(-3 KB)	5.17% reduction in //dist/changelog/version/0-1-0...latest/index.html
+(-2.78 KB)	5.36% reduction in //dist/demo/starlight/components/index.html
+(-2.77 KB)	5.38% reduction in //dist/eras/citadel/characters/index.html
+(-2.77 KB)	5.39% reduction in //dist/eras/citadel/images/index.html
+(-2.86 KB)	2.79% reduction in //dist/timelines/super/index.html
+(-2.77 KB)	5.39% reduction in //dist/eras/citadel/locations/index.html
+(-2.77 KB)	5.39% reduction in //dist/eras/citadel/maps/index.html
+(-2.77 KB)	5.38% reduction in //dist/eras/citadel/factions/index.html
+(-2.99 KB)	5.32% reduction in //dist/eras/nearsight/events/index.html
+(-6.04 KB)	4.00% reduction in //dist/calendar/okse/index.html
+(-3 KB)	5.33% reduction in //dist/eras/smog/events/index.html
+(-3.05 KB)	5.22% reduction in //dist/eras/citadel/events/the-breaking-of-lorndale/index.html
+(-3 KB)	5.33% reduction in //dist/eras/entropy/events/index.html
+(-11.6 KB)	5.92% reduction in //dist/demo/starlight/components/starlight-component-gallery/index.html
+(-3.37 KB)	5.30% reduction in //dist/eras/citadel/events/example-battle/index.html
+(-3.64 KB)	5.31% reduction in //dist/eras/citadel/characters/example-character/index.html
+(-3.06 KB)	5.22% reduction in //dist/eras/citadel/events/the-ash-winter-pilgrimage/index.html
+(-3.05 KB)	5.23% reduction in //dist/eras/citadel/events/the-first-crowning-at-skallfast/index.html
+(-7.12 KB)	4.12% reduction in //dist/demo/starlight/components/starlight-feature-demo/index.html
+(-3.06 KB)	5.22% reduction in //dist/eras/citadel/events/the-night-of-seven-bells/index.html
+(-3.05 KB)	5.23% reduction in //dist/eras/citadel/events/the-galdyr-compact/index.html
+(-3.06 KB)	5.22% reduction in //dist/eras/citadel/events/the-verigoth-chain-census/index.html
+(-3.05 KB)	5.22% reduction in //dist/eras/citadel/events/the-opening-of-the-bone-road/index.html
+(-3.06 KB)	5.22% reduction in //dist/eras/citadel/events/the-hollow-feast-of-veyr/index.html
+(-3.64 KB)	5.24% reduction in //dist/eras/citadel/factions/example-faction/index.html
+(-3.3 KB)	5.30% reduction in //dist/eras/citadel/images/example-banner/index.html
+(-3.06 KB)	5.23% reduction in //dist/eras/entropy/events/garmir-gate-ignition/index.html
+(-3.47 KB)	5.33% reduction in //dist/eras/citadel/locations/example-city/index.html
+(-3.34 KB)	5.27% reduction in //dist/eras/citadel/maps/example-world-map/index.html
+(-3.06 KB)	5.21% reduction in //dist/eras/citadel/events/the-silence-after-seven-bells/index.html
+(-3.05 KB)	5.23% reduction in //dist/eras/entropy/events/the-abberath-disclosure/index.html
+(-3.05 KB)	5.22% reduction in //dist/eras/entropy/events/the-last-calendar-correction/index.html
+(-3.06 KB)	5.21% reduction in //dist/eras/entropy/events/the-gate-ignition-echo/index.html
+(-3.06 KB)	5.22% reduction in //dist/eras/entropy/events/the-juggernaut-compact/index.html
+(-3.05 KB)	5.23% reduction in //dist/eras/entropy/events/the-vodr-signal-bloom/index.html
+(-3.05 KB)	5.22% reduction in //dist/eras/entropy/events/the-myrkild-amnesty-schism/index.html
+(-3.06 KB)	5.21% reduction in //dist/eras/entropy/events/the-pathfinder-exodus/index.html
+(-3.06 KB)	5.20% reduction in //dist/eras/entropy/events/the-vacuum-siege-of-satol-reach/index.html
+(-3.05 KB)	5.21% reduction in //dist/eras/nearsight/events/first-jade-current-compact-deployment/index.html
+(-3.05 KB)	5.24% reduction in //dist/eras/nearsight/events/formation-of-astu/index.html
+(-3.05 KB)	5.23% reduction in //dist/eras/entropy/events/the-first-confirmed-naranor-relay/index.html
+(-3.05 KB)	5.23% reduction in //dist/eras/nearsight/events/first-aesir-mk-2-fielding/index.html
+(-3.06 KB)	5.23% reduction in //dist/eras/nearsight/events/krg-recovery-at-kraal-nine/index.html
+(-3.06 KB)	5.22% reduction in //dist/eras/nearsight/events/tcsc-bastion-doctrine-adopted/index.html
+(-3.06 KB)	5.21% reduction in //dist/eras/nearsight/events/the-kraal-nine-signal-return/index.html
+(-3.06 KB)	5.21% reduction in //dist/eras/nearsight/events/the-garmir-quarantine/index.html
+(-3.06 KB)	5.20% reduction in //dist/eras/nearsight/events/the-corporate-genetic-bidding-programme/index.html
+(-3.06 KB)	5.21% reduction in //dist/eras/nearsight/events/the-nearsight-blackout/index.html
+(-3.05 KB)	5.22% reduction in //dist/eras/nearsight/events/the-rd-76-dart-plunge-trial/index.html
+(-3.05 KB)	5.23% reduction in //dist/eras/smog/events/the-black-furnace-accord/index.html
+(-3.06 KB)	5.22% reduction in //dist/eras/smog/events/the-brass-lung-winter/index.html
+(-3.05 KB)	5.22% reduction in //dist/eras/smog/events/the-engimanutur-explosion/index.html
+(-3.05 KB)	5.23% reduction in //dist/eras/smog/events/the-grey-armistice/index.html
+(-3.06 KB)	5.23% reduction in //dist/eras/smog/events/the-nine-stack-strike/index.html
+(-3.06 KB)	5.22% reduction in //dist/eras/smog/events/the-first-resonance-meter-standard/index.html
+(-3.05 KB)	5.23% reduction in //dist/eras/smog/events/the-hollowed-labour-panic/index.html
+(-3.05 KB)	5.22% reduction in //dist/eras/smog/events/the-skyhook-demonstration/index.html
+(-3.06 KB)	5.22% reduction in //dist/eras/smog/events/the-trench-line-at-orra-vale/index.html
+(-3.06 KB)	5.22% reduction in //dist/eras/smog/events/the-nine-stack-lockout/index.html
+✓ Successfully compressed a total of 94 HTML files for 302.87 KB.
+(-29 Bytes)	1.15% reduction in //dist/_astro/ec.0vx5m.js
+(-3 Bytes)	0.21% reduction in //dist/_astro/client.DwjlJ6ZU.js
+(-6 Bytes)	0.45% reduction in //dist/_astro/HeadingBadgesMobileTableOfContents.astro_astro_type_script_index_0_lang.VZ1umdrM.js
+(-3 Bytes)	0.16% reduction in //dist/_astro/hooks.module.Dt27NoNf.js
+(-6 Bytes)	0.43% reduction in //dist/_astro/preload-helper.L5lOfJxi.js
+(-7 Bytes)	0.07% reduction in //dist/_astro/preact.module.Bjq9tLsx.js
+(-4 Bytes)	0.05% reduction in //dist/_astro/signals.module.wYqQ9rUq.js
+(-3 Bytes)	0.17% reduction in //dist/_astro/Search.astro_astro_type_script_index_0_lang.C6kXgzSq.js
+(-13.27 KB)	32.94% reduction in //dist/pagefind/pagefind-worker.js
+(-1 Bytes)	0.02% reduction in //dist/_astro/runtime.HEZMLdkz.js
+(-154 Bytes)	1.05% reduction in //dist/pagefind/pagefind-modular-ui.js
+(-155 Bytes)	0.16% reduction in //dist/_astro/ui-core.BVECpTEN.js
+(-12.04 KB)	27.06% reduction in //dist/pagefind/pagefind.js
+(-46 Bytes)	0.52% reduction in //dist/~partytown/partytown-media.js
+(-18.78 KB)	10.96% reduction in //dist/pagefind/pagefind-component-ui.js
+(-24.43 KB)	56.41% reduction in //dist/pagefind/pagefind-highlight.js
+(-48 Bytes)	2.12% reduction in //dist/~partytown/partytown.js
+(-21.49 KB)	18.34% reduction in //dist/pagefind/pagefind-ui.js
+(-98 Bytes)	0.23% reduction in //dist/~partytown/partytown-atomics.js
+(-49 Bytes)	0.11% reduction in //dist/~partytown/partytown-sw.js
+(-1.81 KB)	0.11% reduction in //dist/_astro/renderer.B9G4GPwz.js
+✓ Successfully compressed a total of 21 JavaScript files for 92.42 KB.
+(-862 Bytes)	32.39% reduction in //dist/favicons/viscerium-favicon.svg
+(-862 Bytes)	32.39% reduction in //dist/favicon.svg
+(-2 Bytes)	0.51% reduction in //dist/icons/bluesky.svg
+(-15 Bytes)	6.22% reduction in //dist/icons/edit.svg
+(-15 Bytes)	3.24% reduction in //dist/icons/bug.svg
+(-1 Bytes)	0.44% reduction in //dist/icons/character.svg
+(-10 Bytes)	1.95% reduction in //dist/icons/discord.svg
+(-14 Bytes)	4.53% reduction in //dist/icons/codex.svg
+(-2 Bytes)	0.73% reduction in //dist/icons/event.svg
+(-13 Bytes)	5.02% reduction in //dist/icons/faction.svg
+(-874 Bytes)	33.58% reduction in //dist/favicons/viscerium-mask.svg
+(-1 Bytes)	0.37% reduction in //dist/icons/image.svg
+(-1 Bytes)	0.41% reduction in //dist/icons/home.svg
+(-6 Bytes)	1.19% reduction in //dist/icons/github.svg
+(-9 Bytes)	3.69% reduction in //dist/icons/mail.svg
+(-6 Bytes)	1.69% reduction in //dist/icons/instagram.svg
+(-14 Bytes)	4.58% reduction in //dist/icons/kofi.svg
+(-17 Bytes)	7.02% reduction in //dist/icons/map.svg
+(-2 Bytes)	0.45% reduction in //dist/icons/mastodon.svg
+(-6 Bytes)	2.36% reduction in //dist/icons/status.svg
+(-23 Bytes)	8.16% reduction in //dist/icons/spark.svg
+(-2 Bytes)	0.77% reduction in //dist/icons/location.svg
+(-3 Bytes)	2.03% reduction in //dist/icons/patreon.svg
+(-60 Bytes)	7.47% reduction in //dist/assets/images/missing-image.svg
+(-137 Bytes)	21.99% reduction in //dist/assets/ui/era/e1-heading.svg
+(-10 Bytes)	4.85% reduction in //dist/icons/twitter-x.svg
+(-871 Bytes)	32.45% reduction in //dist/favicons/viscerium-mark.svg
+✓ Successfully compressed a total of 27 SVG files for 3.75 KB.
+[2m21:57:16[22m [34m[build][39m 94 page(s) built in [1m24.14s[22m
+[2m21:57:16[22m [34m[build][39m [1mComplete![22m
+
+> viscerium-codex@0.1.0 postbuild
+> npm run validate:icons && npm run validate:math
+
+
+> viscerium-codex@0.1.0 validate:icons
+> node scripts/validate-icon-output.mjs
+
+Icon output validation failed: Font Awesome stylesheet link is missing from the built Example Faction page
