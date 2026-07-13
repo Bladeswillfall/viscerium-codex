@@ -72,14 +72,18 @@ test('large timeline runtime bounds graph, list, search and minimap work', () =>
   assert.doesNotMatch(renderer, /\.\.\.dataset\.events\.map\(\(event\) => \(\{[\s\S]*id: `mini:/);
 });
 
-test('group changes update the existing native Chronos instance instead of remounting it', () => {
+test('group and item changes stay on the existing Chronos instance and skip identical assignments', () => {
   const entry = read('../src/lib/timeline/renderer.mjs');
   const nativeRenderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const adapter = read('../src/lib/timeline/chronos-adapter.mjs');
 
   assert.match(entry, /mountTimeline as mountNativeTimeline/);
-  assert.match(entry, /renderParsedWithTopOrientation/);
-  assert.match(entry, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
+  assert.match(entry, /renderParsedWithStableTopOrientation/);
+  assert.match(entry, /makeTimelineSettersIdempotent/);
+  assert.match(entry, /if \(next === appliedItems\) return/);
+  assert.match(entry, /if \(next === appliedGroups\) return/);
+  assert.match(entry, /finally \{[\s\S]*prototype\.renderParsed = originalRenderParsed/);
+  assert.match(entry, /prototype\._handleZoomWorkaround = originalZoomWorkaround/);
   assert.doesNotMatch(entry, /Proxy\s*\(|renderParsedWithoutChronosTooltip|remountWithChronos|MutationObserver|ResizeObserver/);
   assert.match(nativeRenderer, /timeline\.setGroups\(model\.groups\)/);
   assert.match(nativeRenderer, /timeline\.setItems\(model\.items\)/);
