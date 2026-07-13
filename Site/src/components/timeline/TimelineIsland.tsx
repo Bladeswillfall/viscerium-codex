@@ -2,8 +2,10 @@ import { useEffect, useRef } from 'preact/hooks';
 import type { TimelineDataset, TimelineLaneMode } from '../../lib/timeline/types';
 import { installTimelineChronicle } from '../../lib/timeline/chronicle-view.mjs';
 import { installTimelineHovercard } from '../../lib/timeline/hovercard.mjs';
+import { installTimelineToolbar } from '../../lib/timeline/toolbar-ui.mjs';
 import '../../styles/timeline-chronicle.css';
 import '../../styles/timeline-chronicle-layout.css';
+import '../../styles/timeline-toolbar.css';
 
 type TimelineIslandOptions = {
   defaultCalendar?: string;
@@ -53,11 +55,18 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
         const cleanupHovercard = installTimelineHovercard(root, dataset);
         try {
           const cleanupChronicle = installTimelineChronicle(root, dataset);
-          cleanup = () => {
+          try {
+            const cleanupToolbar = installTimelineToolbar(root);
+            cleanup = () => {
+              cleanupToolbar();
+              cleanupChronicle();
+              cleanupHovercard();
+              cleanupTimeline();
+            };
+          } catch (error) {
             cleanupChronicle();
-            cleanupHovercard();
-            cleanupTimeline();
-          };
+            throw error;
+          }
         } catch (error) {
           cleanupHovercard();
           cleanupTimeline();
