@@ -11,7 +11,8 @@ test('Chronos owns timeline stacking without an injected SVG layer', () => {
 
   assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-stacking\.css'/);
   assert.match(renderer, /mountTimeline as mountNativeTimeline/);
-  assert.match(renderer, /renderParsedWithTopOrientation/);
+  assert.match(renderer, /renderParsedWithStableTopOrientation/);
+  assert.match(renderer, /makeTimelineSettersIdempotent/);
   assert.doesNotMatch(renderer, /data-vc-year-grid|createYearGridSvg|itemset\.append|MutationObserver|ResizeObserver/);
   assert.match(styles, /\.vis-itemset > \.vis-background[\s\S]*z-index:\s*0 !important/);
   assert.match(styles, /\.vis-itemset > \.vis-foreground[\s\S]*z-index:\s*2 !important/);

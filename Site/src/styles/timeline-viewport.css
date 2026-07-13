@@ -4,15 +4,19 @@
  * dragging, zooming or changing group modes.
  */
 
+.vc-timeline-app .vc-timeline-axis {
+  height: 2.6rem;
+}
+
 .vc-timeline-app .vc-timeline-canvas {
   position: relative;
-  block-size: 31rem;
+  block-size: 24rem;
   min-height: 20rem;
   overflow: hidden;
 }
 
 .vc-timeline-app.is-compact .vc-timeline-canvas {
-  block-size: 27rem;
+  block-size: 22rem;
 }
 
 .vc-timeline-app .vc-timeline-canvas > .vis-timeline {
@@ -26,9 +30,18 @@
   scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
 }
 
+.vc-timeline-app .vc-timeline-minimap {
+  min-height: 4.5rem;
+}
+
+.vc-timeline-app .vc-timeline-minimap > .vis-timeline {
+  height: 4.5rem !important;
+  min-height: 4.5rem !important;
+}
+
 @media (max-width: 38rem) {
   .vc-timeline-app .vc-timeline-canvas,
   .vc-timeline-app.is-compact .vc-timeline-canvas {
-    block-size: 27rem;
+    block-size: 22rem;
   }
 }
