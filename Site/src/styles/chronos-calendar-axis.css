@@ -11,7 +11,7 @@
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-bottom {
-  z-index: 4;
+  z-index: 1;
   min-height: 2.5rem;
   border-top: 1px solid var(--vc-timeline-border-strong) !important;
   background: transparent !important;
@@ -25,11 +25,18 @@
   border-color: transparent !important;
 }
 
-/* CustomTime bars live in vis-timeline's vertical background panel. Let their
- * labels extend into the native bottom axis while the lines remain behind the
- * event canvas. */
+/* CustomTime bars live in vis-timeline's vertical background panel. Keep that
+ * panel between the bottom axis and the event canvas: labels remain visible in
+ * the axis, while event cards still paint above the calendar lines. */
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-background.vis-vertical {
+  z-index: 2;
   overflow: visible !important;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-left,
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-right {
+  z-index: 3;
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-custom-time[data-vc-calendar-kind] {
@@ -48,7 +55,7 @@
   border-color: color-mix(in srgb, var(--vc-timeline-border-strong) 82%, transparent);
 }
 
-.vc-timeline-app .vc-timeline-canvas .vis-custom-time[data-vc-calendar-kind="primary"]::after {
+.vc-timeline-app .vc-timeline-canvas .vc-calendar-time-label {
   position: absolute;
   top: calc(100% + .55rem);
   left: 0;
@@ -56,7 +63,6 @@
   max-width: 12rem;
   translate: -50% 0;
   color: var(--vc-timeline-muted);
-  content: attr(data-vc-calendar-label);
   font: 800 .68rem/1.15 var(--vc-font-ui, ui-sans-serif, system-ui);
   letter-spacing: .04em;
   text-align: center;
