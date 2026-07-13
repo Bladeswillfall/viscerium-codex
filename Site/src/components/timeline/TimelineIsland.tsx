@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'preact/hooks';
 import type { TimelineDataset, TimelineLaneMode } from '../../lib/timeline/types';
+import { installTimelineHovercard } from '../../lib/timeline/hovercard.mjs';
 
 type TimelineIslandOptions = {
   defaultCalendar?: string;
@@ -45,7 +46,18 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
         const { mountTimeline } = await import('../../lib/timeline/renderer.mjs');
         if (cancelled || !mountRef.current) return;
 
-        cleanup = mountTimeline(root, dataset, options);
+        const cleanupTimeline = mountTimeline(root, dataset, options);
+        try {
+          const cleanupHovercard = installTimelineHovercard(root, dataset);
+          cleanup = () => {
+            cleanupHovercard();
+            cleanupTimeline();
+          };
+        } catch (error) {
+          cleanupTimeline();
+          throw error;
+        }
+
         root.setAttribute('data-vc-island-mounted', 'true');
         root.setAttribute('aria-busy', 'false');
         if (skeletonRef.current) skeletonRef.current.hidden = true;

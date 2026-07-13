@@ -30,13 +30,16 @@ test('TimelineApp delegates browser behaviour to a client-loaded island', () => 
   assert.doesNotMatch(app, /<script>|astro:page-load|__visceriumTimelineRuntime|application\/json/);
 });
 
-test('the Preact island owns one forked Chronos mount and cleanup while retaining fallback content', () => {
+test('the Preact island owns one forked Chronos mount, one hovercard and ordered cleanup', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
 
   assert.match(island, /useEffect\(/);
   assert.match(island, /useRef<HTMLDivElement>/);
+  assert.match(island, /import \{ installTimelineHovercard \} from '\.\.\/\.\.\/lib\/timeline\/hovercard\.mjs'/);
   assert.match(island, /await import\('\.\.\/\.\.\/lib\/timeline\/renderer\.mjs'\)/);
-  assert.match(island, /cleanup = mountTimeline\(root, dataset, options\)/);
+  assert.match(island, /const cleanupTimeline = mountTimeline\(root, dataset, options\)/);
+  assert.match(island, /const cleanupHovercard = installTimelineHovercard\(root, dataset\)/);
+  assert.match(island, /cleanup = \(\) => \{[\s\S]*cleanupHovercard\(\);[\s\S]*cleanupTimeline\(\);/);
   assert.match(island, /return \(\) => \{[\s\S]*cleanup\?\.\(\)/);
   assert.match(island, /class="vc-timeline-fallback"/);
   assert.match(island, /data-vc-timeline-skeleton/);
@@ -95,17 +98,26 @@ test('group and item changes stay inside one forked Chronos instance', () => {
   assert.match(adapter, /if \(laneMode === 'unified'\)[\s\S]*groups: \[chronology\]/);
 });
 
-test('the fork owns tooltips, axis formatting and canvas geometry without host observers', () => {
+test('the fork owns axis and geometry while the site owns one non-layout hovercard', () => {
   const entry = read('../src/lib/timeline/renderer.mjs');
   const island = read('../src/components/timeline/TimelineIsland.tsx');
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
+  const hovercard = read('../src/lib/timeline/hovercard.mjs');
+  const viewportStyles = read('../src/styles/timeline-viewport.css');
 
   assert.match(renderer, /callbacks: \{[\s\S]*setTooltip:/);
   assert.match(renderer, /createCalendarAxisFormatter/);
   assert.match(fork, /#installTooltipBridge\(\)/);
   assert.match(fork, /format: \{[\s\S]*minorLabels:[\s\S]*majorLabels:/);
-  assert.doesNotMatch(entry, /MutationObserver|ResizeObserver|installTimelineHoverTooltip|installTimelineDomGuards/);
+  assert.match(island, /installTimelineHovercard\(root, dataset\)/);
+  assert.match(hovercard, /tooltip\.className = 'vis-tooltip vc-timeline-hovercard'/);
+  assert.match(hovercard, /document\.body\.append\(tooltip\)/);
+  assert.match(hovercard, /attributeFilter: \['title'\]/);
+  assert.match(hovercard, /queueMicrotask\(\(\) => stripNativeTitle\(activeItem\)\)/);
+  assert.match(viewportStyles, /body > \.vis-tooltip:not\(\.vc-timeline-hovercard\)/);
+  assert.match(viewportStyles, /:root\[data-theme='light'\] body > \.vc-timeline-hovercard/);
+  assert.doesNotMatch(entry, /MutationObserver|ResizeObserver|installTimelineDomGuards/);
   assert.doesNotMatch(island, /MutationObserver|ResizeObserver/);
 });
 
