@@ -82,7 +82,7 @@ test('group changes update the existing native Chronos instance instead of remou
   assert.match(nativeRenderer, /timeline\.setGroups\(model\.groups\)/);
   assert.match(nativeRenderer, /timeline\.setItems\(model\.items\)/);
   assert.match(nativeRenderer, /laneSelect\.addEventListener\('change'/);
-  assert.match(adapter, /if \(laneMode === 'unified'\)[\s\S]*groups: \[\]/);
+  assert.match(adapter, /if \(laneMode === 'unified'\)[\s\S]*groups: \[chronology\]/);
 });
 
 test('Chronos owns item tooltips and canvas geometry without host observers', () => {
