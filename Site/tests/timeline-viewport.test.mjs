@@ -19,16 +19,18 @@ test('the bounded canvas delegates row scrolling to the guarded vis-timeline ins
   assert.doesNotMatch(styles, /vc-timeline-scroll-tail/);
   assert.match(styles, /\.vc-timeline-app\.is-compact \.vc-timeline-canvas[\s\S]*clamp\(22rem, 48vh, 32rem\)/);
   assert.match(guard, /const getCanvas = \(\) => root\.querySelector\('\[data-vc-canvas\]'\)/);
-  assert.match(guard, /const canvas = getCanvas\(\);[\s\S]*Math\.max\(320, Math\.round\(canvas\?\.clientHeight \?\? 0\)\)/);
+  assert.match(guard, /Math\.max\(MIN_CANVAS_HEIGHT, Math\.round\(canvas\?\.clientHeight \?\? 0\)\)/);
   assert.match(guard, /observeCanvas\(\);[\s\S]*applyViewportHeight\(timeline\)/);
   assert.match(guard, /height: `\$\{height\}px`/);
   assert.match(guard, /orientation: \{[\s\S]*axis: 'top',[\s\S]*item: 'top'/);
   assert.match(guard, /const isAdaptiveHeightPass/);
   assert.match(guard, /\^\\d\+px\$/);
   assert.match(guard, /const \{ height: _height, minHeight: _minHeight, \.\.\.forwarded \} = options/);
-  assert.match(guard, /data-vc-adaptive-height/);
+  assert.match(guard, /const eventExtent = extentWithin\(eventItems, itemset\)/);
+  assert.match(guard, /labels\.length > 1 \? extentWithin\(labels, labelset\) : 0/);
+  assert.match(guard, /Math\.min\(upperBound, Math\.ceil\(contentHeight \+ BOTTOM_ROW_INSET\)\)/);
   assert.match(guard, /canvas\.style\.blockSize = `\$\{desiredHeight\}px`/);
-  assert.match(guard, /Math\.min\(upperBound, Math\.round\(requestedHeight\)\)/);
+  assert.doesNotMatch(guard, /data-vc-adaptive-height/);
 });
 
 test('the compatibility proxy forwards every legacy option except the obsolete fixed height', () => {
