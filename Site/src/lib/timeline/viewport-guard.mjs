@@ -4,6 +4,7 @@ const GUARDED = Symbol('visceriumTimelineViewportGuard');
 const LAYOUT_SETTLE_INTERVAL_MS = 50;
 const LAYOUT_SETTLE_TIMEOUT_MS = 1_000;
 const REQUIRED_STABLE_LAYOUT_PASSES = 3;
+const BOTTOM_ROW_INSET = 32;
 
 /**
  * Chronos creates the raw vis-timeline instance before the site renderer wraps
@@ -23,7 +24,8 @@ const REQUIRED_STABLE_LAYOUT_PASSES = 3;
  * row scroller reaches those groups, and it can discard that discovered height
  * when returned to the top. Prime the scroller over several redraws, record the
  * largest measured native content height, pin that height inside vis-timeline,
- * then restore the reader's original relative position.
+ * then restore the reader's original relative position. A small measured tail
+ * keeps the final card and its native item margin clear of the clipped edge.
  */
 export function prepareTimelineViewportGuard(root) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
@@ -123,7 +125,8 @@ export function prepareTimelineViewportGuard(root) {
 
     const finish = () => {
       if (guard.destroyed || generation !== guard.settleGeneration) return;
-      const pinnedHeight = Math.max(guard.maximumMeasuredContentHeight, measuredContentHeight());
+      const pinnedHeight = Math.max(guard.maximumMeasuredContentHeight, measuredContentHeight())
+        + BOTTOM_ROW_INSET;
       setPinnedContentHeight(pinnedHeight);
       const { rowScroller } = getTimelineParts();
       if (rowScroller) {
