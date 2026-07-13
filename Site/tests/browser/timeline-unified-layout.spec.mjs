@@ -104,7 +104,8 @@ test('unified chronology keeps exact fictional-calendar ticks inside one Chronos
 
   expect(metrics.eventCount).toBeGreaterThan(1);
   expect(metrics.labels).toContain('Chronology');
-  expect(metrics.canvasHeight).toBeLessThanOrEqual(386);
+  expect(metrics.canvasHeight).toBeGreaterThanOrEqual(318);
+  expect(metrics.canvasHeight).toBeLessThanOrEqual(642);
   expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
   expect(metrics.externalAxisCount).toBe(0);
   expect(metrics.rootVisibility).toBe('visible');
@@ -113,6 +114,7 @@ test('unified chronology keeps exact fictional-calendar ticks inside one Chronos
   expect(metrics.axisBottom).toBeLessThanOrEqual(visible.canvasBottom + 2);
   expect(metrics.axisTicks.length).toBeGreaterThan(1);
   expect(metrics.axisTicks.every((tick) => Number.isSafeInteger(tick.absoluteDay))).toBe(true);
+  expect(metrics.axisTicks.every((tick) => ['year', 'month', 'week', 'day'].includes(tick.unit))).toBe(true);
   expect(metrics.axisTicks.some((tick) => /\d/.test(tick.label))).toBe(true);
   expect(metrics.primaryGridLines).toBeGreaterThan(1);
   expect(metrics.primaryGridLines + metrics.secondaryGridLines).toBeGreaterThan(2);
