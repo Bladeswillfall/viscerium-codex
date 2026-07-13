@@ -17,12 +17,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           show-progress: false
+          persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '24'
           cache: npm
@@ -74,7 +75,7 @@ jobs:
 
       - name: Install Obsidian plugin dependencies
         working-directory: Tools/obsidian-viscerium-timelines
-        run: npm install --no-audit --no-fund
+        run: npm install --package-lock=false --no-audit --no-fund
 
       - name: Build Obsidian plugin
         working-directory: Tools/obsidian-viscerium-timelines
@@ -92,7 +93,7 @@ jobs:
             echo "$marker"
             echo '## Timeline verification passed'
             echo
-            echo 'Unit tests, static Astro build and Chronos-backed Obsidian plugin build passed on Node 24 with npm ci.'
+            echo 'Unit tests, static Astro build and Chronos-backed Obsidian plugin build passed on Node 24.'
             echo
             echo '### Synthetic compiler benchmark'
             echo
