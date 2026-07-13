@@ -296,6 +296,7 @@ export default defineConfig({
       HTML: {
         'html-minifier-terser': {
           removeAttributeQuotes: false,
+          sortClassName: false,
         },
       },
     }),
