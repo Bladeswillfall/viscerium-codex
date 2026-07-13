@@ -8,9 +8,11 @@ test('the timeline island installs a scoped toolbar enhancement after existing b
   const island = read('../src/components/timeline/TimelineIsland.tsx');
   const toolbar = read('../src/lib/timeline/toolbar-ui.mjs');
   const styles = read('../src/styles/timeline-toolbar.css');
+  const containerStyles = read('../src/styles/timeline-toolbar-container.css');
 
   assert.match(island, /installTimelineToolbar/);
   assert.match(island, /timeline-toolbar\.css/);
+  assert.match(island, /timeline-toolbar-container\.css/);
   assert.match(island, /const cleanupToolbar = installTimelineToolbar\(root\)/);
   assert.match(island, /cleanupToolbar\(\);[\s\S]*cleanupChronicle\(\);[\s\S]*cleanupHovercard\(\);[\s\S]*cleanupTimeline\(\);/);
 
@@ -34,6 +36,13 @@ test('the timeline island installs a scoped toolbar enhancement after existing b
   assert.match(styles, /pointer-events: none/);
   assert.match(styles, /max-width: 38rem/);
   assert.doesNotMatch(styles, /\.vis-(?:timeline|panel|item|group|label|time-axis)/);
+
+  assert.match(containerStyles, /container-name: vc-timeline-app/);
+  assert.match(containerStyles, /container-type: inline-size/);
+  assert.match(containerStyles, /@container vc-timeline-app \(max-width: 84rem\)/);
+  assert.match(containerStyles, /grid-column: 1 \/ -1/);
+  assert.match(containerStyles, /flex-wrap: wrap/);
+  assert.doesNotMatch(containerStyles, /\.vis-(?:timeline|panel|item|group|label|time-axis)/);
 });
 
 test('toolbar buttons retain visible labels, icons and accessible names', () => {
