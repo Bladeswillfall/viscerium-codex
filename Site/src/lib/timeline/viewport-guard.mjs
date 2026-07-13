@@ -26,12 +26,19 @@ const BOTTOM_ROW_INSET = 32;
  * largest measured native content height, pin that height inside vis-timeline,
  * then restore the reader's original relative position. A small measured tail
  * keeps the final card and its native item margin clear of the clipped edge.
+ *
+ * The renderer still calculates the natural content height. Mirror that value
+ * onto the outer canvas, capped at its original CSS viewport, so short timelines
+ * collapse around their cards instead of leaving a large empty floor. Longer
+ * timelines remain bounded and use vis-timeline's native row scroller.
  */
 export function prepareTimelineViewportGuard(root) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
   const activeTimelines = new Set();
   let resizeObserver;
+  let adaptiveHeightObserver;
   let observedCanvas;
+  let maximumCanvasHeight;
   let restored = false;
 
   const getCanvas = () => root.querySelector('[data-vc-canvas]');
@@ -182,22 +189,6 @@ export function prepareTimelineViewportGuard(root) {
     runPass();
   };
 
-  const observeCanvas = () => {
-    const canvas = getCanvas();
-    if (!canvas || canvas === observedCanvas || typeof ResizeObserver !== 'function') return;
-
-    resizeObserver?.disconnect();
-    observedCanvas = canvas;
-    resizeObserver = new ResizeObserver(() => {
-      const height = viewportHeight();
-      for (const timeline of activeTimelines) {
-        const guard = timeline?.[GUARDED];
-        if (guard?.appliedViewportHeight !== height) applyViewportHeight(timeline);
-      }
-    });
-    resizeObserver.observe(canvas);
-  };
-
   const applyViewportHeight = (timeline) => {
     const guard = timeline?.[GUARDED];
     if (!guard || guard.destroyed) return;
@@ -217,6 +208,52 @@ export function prepareTimelineViewportGuard(root) {
     });
     if (canvas) canvas.dataset.vcViewportHeight = String(height);
     settleTimelineLayout(timeline);
+  };
+
+  const applyAdaptiveCanvasHeight = () => {
+    const canvas = getCanvas();
+    const requestedHeight = Number(canvas?.dataset.vcAdaptiveHeight);
+    if (!canvas || !Number.isFinite(requestedHeight) || requestedHeight <= 0) return;
+
+    const upperBound = Math.max(320, maximumCanvasHeight ?? canvas.clientHeight);
+    const desiredHeight = Math.max(320, Math.min(upperBound, Math.round(requestedHeight)));
+    if (Math.abs(canvas.clientHeight - desiredHeight) < 2) return;
+
+    canvas.style.blockSize = `${desiredHeight}px`;
+    canvas.dataset.vcAppliedAdaptiveHeight = String(desiredHeight);
+    for (const timeline of activeTimelines) applyViewportHeight(timeline);
+  };
+
+  const observeCanvas = () => {
+    const canvas = getCanvas();
+    if (!canvas || canvas === observedCanvas) return;
+
+    resizeObserver?.disconnect();
+    adaptiveHeightObserver?.disconnect();
+    observedCanvas = canvas;
+    maximumCanvasHeight = Math.max(320, Math.round(canvas.clientHeight));
+
+    if (typeof ResizeObserver === 'function') {
+      resizeObserver = new ResizeObserver(() => {
+        const height = viewportHeight();
+        for (const timeline of activeTimelines) {
+          const guard = timeline?.[GUARDED];
+          if (guard?.appliedViewportHeight !== height) applyViewportHeight(timeline);
+        }
+      });
+      resizeObserver.observe(canvas);
+    }
+
+    adaptiveHeightObserver = new MutationObserver((mutations) => {
+      if (mutations.some((mutation) => mutation.attributeName === 'data-vc-adaptive-height')) {
+        applyAdaptiveCanvasHeight();
+      }
+    });
+    adaptiveHeightObserver.observe(canvas, {
+      attributes: true,
+      attributeFilter: ['data-vc-adaptive-height'],
+    });
+    applyAdaptiveCanvasHeight();
   };
 
   const guardTimeline = (timeline) => {
@@ -295,6 +332,11 @@ export function prepareTimelineViewportGuard(root) {
     cleanup() {
       restorePrototype();
       resizeObserver?.disconnect();
+      adaptiveHeightObserver?.disconnect();
+      if (observedCanvas) {
+        observedCanvas.style.removeProperty('block-size');
+        delete observedCanvas.dataset.vcAppliedAdaptiveHeight;
+      }
       for (const timeline of activeTimelines) {
         const guard = timeline?.[GUARDED];
         if (!guard) continue;
