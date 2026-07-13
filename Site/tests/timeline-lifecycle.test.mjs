@@ -29,21 +29,20 @@ test('TimelineApp delegates browser behaviour to a client-loaded island', () => 
   assert.doesNotMatch(app, /<script>|astro:page-load|__visceriumTimelineRuntime|application\/json/);
 });
 
-test('the Preact island owns Chronos mount and cleanup while retaining fallback content', () => {
+test('the Preact island owns one native Chronos mount and cleanup while retaining fallback content', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
 
   assert.match(island, /useEffect\(/);
   assert.match(island, /useRef<HTMLDivElement>/);
   assert.match(island, /await import\('\.\.\/\.\.\/lib\/timeline\/renderer\.mjs'\)/);
-  assert.match(island, /const cleanupTimeline = mountTimeline\(root, dataset, options\)/);
-  assert.match(island, /const cleanupYearAxis = installCalendarYearAxisSync\(root, dataset\)/);
-  assert.match(island, /cleanup = \(\) => \{[\s\S]*cleanupYearAxis\(\);[\s\S]*cleanupTimeline\(\);/);
+  assert.match(island, /cleanup = mountTimeline\(root, dataset, options\)/);
   assert.match(island, /return \(\) => \{[\s\S]*cleanup\?\.\(\)/);
   assert.match(island, /class="vc-timeline-fallback"/);
   assert.match(island, /data-vc-timeline-skeleton/);
   assert.match(island, /root\.setAttribute\('aria-busy', 'true'\)/);
   assert.match(island, /fallbackRef\.current\.hidden = true/);
   assert.match(island, /skeletonRef\.current\.hidden = false/);
+  assert.doesNotMatch(island, /prepareTimelineViewportGuard|installAdaptiveTimelineGrid|installCalendarYearAxisSync|installTimelineTooltipContentSync/);
   assert.doesNotMatch(island, /astro:page-load|astro:before-swap|customElements|MutationObserver/);
 });
 
@@ -73,47 +72,28 @@ test('large timeline runtime bounds graph, list, search and minimap work', () =>
   assert.doesNotMatch(renderer, /\.\.\.dataset\.events\.map\(\(event\) => \(\{[\s\S]*id: `mini:/);
 });
 
-test('group changes remount through Chronos behind a stable site-facing timeline handle', () => {
+test('group changes update the existing native Chronos instance instead of remounting it', () => {
   const entry = read('../src/lib/timeline/renderer.mjs');
-  const performanceStyles = read('../src/styles/timeline-performance.css');
+  const nativeRenderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+  const adapter = read('../src/lib/timeline/chronos-adapter.mjs');
 
-  assert.match(entry, /function installChronosTimelineProxy\(chronos, initialResult, originalRenderParsed\)/);
-  assert.match(entry, /proxy = new Proxy\(/);
-  assert.match(entry, /const listeners = new Map\(\)/);
-  assert.match(entry, /function groupSignature\(groups\)/);
-  assert.match(entry, /pendingGroups = groups/);
-  assert.match(entry, /remountWithChronos\(items, pendingGroups\)/);
-  assert.match(entry, /renderParsedWithoutChronosTooltip\(chronos/);
-  assert.match(entry, /const visibleWindow = target\?\.getWindow\?\.\(\)/);
-  assert.match(entry, /target\.setWindow\(visibleWindow\.start, visibleWindow\.end/);
-  assert.match(entry, /attachExternalListeners\(\)/);
-  assert.match(entry, /chronos\.timeline = proxy/);
-  assert.match(entry, /const result = target\.setItems\(items\)/);
-  assert.match(entry, /installChronosTimelineProxy\(this, result, originalRenderParsed\)/);
-  assert.match(entry, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
-  assert.doesNotMatch(entry, /maxHeight:|groupHeightMode:/);
-  assert.doesNotMatch(performanceStyles, /:has\(|min-height: 58rem/);
+  assert.match(entry, /export \{ mountTimeline \} from '\.\/chronos-native-renderer\.mjs'/);
+  assert.doesNotMatch(entry, /Proxy\s*\(|ChronosTimeline\.prototype|renderParsedWithoutChronosTooltip|remountWithChronos/);
+  assert.match(nativeRenderer, /timeline\.setGroups\(model\.groups\)/);
+  assert.match(nativeRenderer, /timeline\.setItems\(model\.items\)/);
+  assert.match(nativeRenderer, /laneSelect\.addEventListener\('change'/);
+  assert.match(adapter, /if \(laneMode === 'unified'\)[\s\S]*groups: \[\]/);
 });
 
-test('the site ruler follows Chronos centre geometry and item hover has one canonical tooltip owner', () => {
+test('Chronos owns item tooltips and canvas geometry without host observers', () => {
   const entry = read('../src/lib/timeline/renderer.mjs');
+  const island = read('../src/components/timeline/TimelineIsland.tsx');
+  const nativeRenderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
 
-  assert.match(entry, /function renderParsedWithoutChronosTooltip\(chronos, result, originalRenderParsed\)/);
-  assert.match(entry, /chronos\._setupTooltip = \(\) => \{\}/);
-  assert.match(entry, /originalRenderParsed\.call\(chronos, result\)/);
-  assert.match(entry, /delete chronos\._setupTooltip/);
-  assert.match(entry, /function installTimelineDomGuards\(root\)/);
-  assert.match(entry, /querySelector\('\[data-vc-canvas\] \.vis-panel\.vis-center'\)/);
-  assert.match(entry, /const startOffset = Math\.max\(0, centerRect\.left - axisRect\.left\)/);
-  assert.match(entry, /tick\.dataset\.vcAxisPercent/);
-  assert.match(entry, /usableWidth \* percent/);
-  assert.match(entry, /querySelectorAll\('\.vis-item\[title\], \.vis-item \[title\]'\)/);
-  assert.match(entry, /item\.querySelectorAll\?\.\('\[title\]'\)/);
-  assert.match(entry, /attributeFilter: \['title'\]/);
-  assert.match(entry, /root\.addEventListener\('pointerover', handlePointerOver, true\)/);
-  assert.match(entry, /new ResizeObserver\(scheduleAlignment\)/);
-  assert.match(entry, /const cleanupDomGuards = installTimelineDomGuards\(root\)/);
-  assert.match(entry, /cleanupDomGuards\(\)/);
+  assert.match(nativeRenderer, /callbacks: \{[\s\S]*setTooltip:/);
+  assert.match(nativeRenderer, /element\.setAttribute\('title'/);
+  assert.doesNotMatch(entry, /MutationObserver|ResizeObserver|installTimelineHoverTooltip|installTimelineDomGuards/);
+  assert.doesNotMatch(island, /MutationObserver|ResizeObserver/);
 });
 
 test('canonical timeline pages explicitly omit the right sidebar and release content width constraints', () => {
