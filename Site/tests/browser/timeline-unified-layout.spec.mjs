@@ -62,17 +62,12 @@ test('unified chronology keeps one stable native Chronos group', async ({ page }
       hasAdaptiveHeight: element.hasAttribute('data-vc-applied-adaptive-height'),
     };
   });
-
-  const initialVisible = await canvas.evaluate(visibleItemMetrics);
-  await canvas.hover();
-  await page.mouse.wheel(0, 1_200);
-  await page.waitForTimeout(300);
-  const afterWheel = await canvas.evaluate(visibleItemMetrics);
+  const visible = await canvas.evaluate(visibleItemMetrics);
 
   mkdirSync('timeline-browser-diagnostics', { recursive: true });
   writeFileSync(
     'timeline-browser-diagnostics/unified-native-layout.json',
-    JSON.stringify({ metrics, initialVisible, afterWheel }, null, 2),
+    JSON.stringify({ metrics, visible }, null, 2),
   );
   await page.screenshot({
     path: 'timeline-browser-diagnostics/unified-native-layout.png',
@@ -84,9 +79,7 @@ test('unified chronology keeps one stable native Chronos group', async ({ page }
   expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
   expect(metrics.hasPinnedHeight).toBe(false);
   expect(metrics.hasAdaptiveHeight).toBe(false);
-  expect(afterWheel.count).toBeGreaterThan(0);
-  if (initialVisible.lastBottom > initialVisible.canvasBottom + 2) {
-    expect(Math.abs(afterWheel.firstTop - initialVisible.firstTop)).toBeGreaterThan(2);
-    expect(afterWheel.lastBottom).toBeLessThanOrEqual(afterWheel.canvasBottom + 2);
-  }
+  expect(visible.count).toBeGreaterThan(0);
+  expect(visible.lastBottom).toBeLessThanOrEqual(visible.canvasBottom + 2);
+  expect(visible.canvasBottom - visible.lastBottom).toBeLessThanOrEqual(72);
 });
