@@ -1,27 +1,26 @@
 /*
- * The forked Chronos renderer owns one complete viewport, including the exact
- * fictional-calendar axis. Let vis-timeline grow with its rows until Chronos's
- * native maximum, then use its internal scrolling for denser group views.
+ * The forked Chronos renderer owns one complete, stable viewport. Group and
+ * filter changes may alter the internal row stack, but must not move the rest
+ * of the page. Dense modes use vis-timeline's native vertical scrolling.
  */
 
 .vc-timeline-app .vc-timeline-canvas {
   position: relative;
+  block-size: 24rem;
   min-height: 20rem;
-  max-height: 40rem;
+  max-height: 24rem;
   overflow: hidden;
 }
 
 .vc-timeline-app.is-compact .vc-timeline-canvas {
-  max-height: 32rem;
+  block-size: 22rem;
+  max-height: 22rem;
 }
 
 .vc-timeline-app .vc-timeline-canvas > .vis-timeline {
-  min-block-size: 20rem;
-  max-block-size: 40rem;
-}
-
-.vc-timeline-app.is-compact .vc-timeline-canvas > .vis-timeline {
-  max-block-size: 32rem;
+  block-size: 100% !important;
+  min-block-size: 100%;
+  max-block-size: 100%;
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
@@ -41,9 +40,8 @@
 
 @media (max-width: 38rem) {
   .vc-timeline-app .vc-timeline-canvas,
-  .vc-timeline-app.is-compact .vc-timeline-canvas,
-  .vc-timeline-app .vc-timeline-canvas > .vis-timeline,
-  .vc-timeline-app.is-compact .vc-timeline-canvas > .vis-timeline {
-    max-height: 32rem;
+  .vc-timeline-app.is-compact .vc-timeline-canvas {
+    block-size: 22rem;
+    max-height: 22rem;
   }
 }
