@@ -112,9 +112,9 @@ export function installTimelineToolbar(root) {
   syncViewButton();
 
   actions.replaceChildren(
+    createActionGroup('View', 'is-view', [list]),
     createActionGroup('Navigate', 'is-navigation', [previous, next]),
     createActionGroup('Scale', 'is-scale', [zoomOut, zoomIn, reset]),
-    createActionGroup('View', 'is-view', [list]),
   );
 
   let viewSyncQueued = false;
