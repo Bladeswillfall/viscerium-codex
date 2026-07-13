@@ -124,7 +124,10 @@ test('native fictional-calendar lines remain visible through the event canvas', 
   expect(metrics.bars.length).toBeGreaterThan(3);
   expect(metrics.bars.some((bar) => bar.kind === 'primary')).toBe(true);
   expect(metrics.bars.some((bar) => bar.kind === 'secondary')).toBe(true);
-  expect(metrics.bars.every((bar) => bar.top <= metrics.centerTop + 2)).toBe(true);
+  // vis-timeline insets its vertical-background component by the internal item
+  // margin. The bars should begin inside that native inset and still cover the
+  // complete event rows plus the bottom axis.
+  expect(metrics.bars.every((bar) => bar.top <= metrics.centerTop + 24)).toBe(true);
   expect(metrics.bars.every((bar) => bar.bottom >= metrics.centerBottom - 2)).toBe(true);
   expect(metrics.bars.every((bar) => bar.borderWidth !== '0px' && !/rgba?\([^)]*,\s*0\)$/.test(bar.borderColor))).toBe(true);
 });
