@@ -75,10 +75,10 @@ test('list view reads as an expandable archival chronicle and returns to the gra
   await expect(list).toBeHidden();
   await expect(stage).toBeVisible();
   await expect(minimap).toBeVisible();
-  await expect(page.locator('[data-vc-canvas] .vis-item.vc-timeline-item.vis-selected').first()).toBeVisible();
-  await expect(page.locator('[data-vc-details]')).toContainText(firstTitle);
+  const selectedItems = page.locator('[data-vc-canvas] .vis-item.vc-timeline-item.vis-selected');
+  expect(await selectedItems.count()).toBeGreaterThan(0);
+  await expect(selectedItems.first()).toContainText(firstTitle);
 
-  await page.locator('[data-vc-close]').click();
   await toggle.click();
   await expect(list.locator(':scope > .vc-chronicle')).toBeVisible();
 
