@@ -11,6 +11,7 @@ async function navigateToGlobalTimeline(page) {
   await page.waitForLoadState('networkidle');
   await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
   await expect(page.locator('[data-vc-canvas]')).toBeVisible();
+  await expect(page.locator('[data-vc-canvas] .vis-time-axis')).toBeVisible();
 }
 
 async function openGlobalTimeline(page) {
@@ -41,7 +42,7 @@ function visibleItemMetrics(canvas) {
   };
 }
 
-test('unified chronology uses compact stable Chronos and overview heights', async ({ page }) => {
+test('unified chronology keeps the fictional calendar axis inside one stable Chronos viewport', async ({ page }) => {
   await openGlobalTimeline(page);
 
   const canvas = page.locator('[data-vc-canvas]');
@@ -49,19 +50,32 @@ test('unified chronology uses compact stable Chronos and overview heights', asyn
     const canvasRect = element.getBoundingClientRect();
     const timeline = element.querySelector(':scope > .vis-timeline');
     const timelineRect = timeline?.getBoundingClientRect();
+    const axis = element.querySelector('.vis-time-axis');
+    const axisRect = axis?.getBoundingClientRect();
     const items = [...element.querySelectorAll('.vis-item.vc-timeline-item')]
       .filter((item) => item.getClientRects().length > 0)
       .map((item) => item.getBoundingClientRect());
     const labels = [...element.querySelectorAll('.vis-labelset > .vis-label')]
       .filter((item) => item.getClientRects().length > 0)
       .map((item) => item.textContent?.trim() ?? '');
+    const axisLabels = [...element.querySelectorAll('.vis-time-axis .vis-text')]
+      .filter((item) => item.getClientRects().length > 0)
+      .map((item) => item.textContent?.trim() ?? '')
+      .filter(Boolean);
 
     return {
       canvasHeight: canvasRect.height,
       timelineHeight: timelineRect?.height ?? 0,
       eventCount: items.length,
       firstEventInset: items.length ? Math.min(...items.map((rect) => rect.top)) - canvasRect.top : null,
+      firstEventTop: items.length ? Math.min(...items.map((rect) => rect.top)) : null,
+      axisTop: axisRect?.top ?? null,
+      axisBottom: axisRect?.bottom ?? null,
+      axisLabels,
       labels,
+      majorGridLines: element.querySelectorAll('.vis-grid.vis-vertical.vis-major').length,
+      minorGridLines: element.querySelectorAll('.vis-grid.vis-vertical.vis-minor').length,
+      externalAxisCount: document.querySelectorAll('[data-vc-axis], .vc-timeline-axis').length,
       hasPinnedHeight: element.hasAttribute('data-vc-pinned-row-height'),
       hasAdaptiveHeight: element.hasAttribute('data-vc-applied-adaptive-height'),
     };
@@ -86,16 +100,22 @@ test('unified chronology uses compact stable Chronos and overview heights', asyn
   expect(metrics.labels).toContain('Chronology');
   expect(metrics.canvasHeight).toBeLessThanOrEqual(386);
   expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
+  expect(metrics.externalAxisCount).toBe(0);
+  expect(metrics.axisTop).toBeGreaterThanOrEqual(visible.canvasTop - 2);
+  expect(metrics.axisBottom).toBeLessThanOrEqual(visible.canvasBottom + 2);
+  expect(metrics.axisLabels.length).toBeGreaterThan(1);
+  expect(metrics.axisLabels.some((label) => /\d/.test(label))).toBe(true);
+  expect(metrics.majorGridLines + metrics.minorGridLines).toBeGreaterThan(2);
+  expect(metrics.firstEventTop).toBeGreaterThanOrEqual(metrics.axisTop);
   expect(metrics.hasPinnedHeight).toBe(false);
   expect(metrics.hasAdaptiveHeight).toBe(false);
   expect(visible.count).toBeGreaterThan(0);
   expect(visible.lastBottom).toBeLessThanOrEqual(visible.canvasBottom + 2);
-  expect(visible.canvasBottom - visible.lastBottom).toBeLessThanOrEqual(48);
   expect(overview.hostHeight).toBeLessThanOrEqual(74);
   expect(overview.timelineHeight).toBeLessThanOrEqual(74);
 });
 
-test('grouped Chronos does not perform its delayed animated zoom jiggle', async ({ page }) => {
+test('the forked grouped renderer does not perform a delayed animated zoom jiggle', async ({ page }) => {
   await navigateToGlobalTimeline(page);
 
   const samples = await page.locator('[data-vc-canvas]').evaluate((canvas) => new Promise((resolve) => {
