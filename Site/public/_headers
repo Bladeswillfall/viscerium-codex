@@ -15,5 +15,5 @@
 https://viscerium-codex.pages.dev/*
   X-Robots-Tag: noindex
 
-https://*.viscerium-codex.pages.dev/*
+https://:version.viscerium-codex.pages.dev/*
   X-Robots-Tag: noindex
