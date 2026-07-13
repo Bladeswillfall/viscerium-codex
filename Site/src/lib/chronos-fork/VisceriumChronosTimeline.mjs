@@ -350,7 +350,8 @@ export class VisceriumChronosTimeline {
       if (this.calendarTickIds.has(id)) this.timeline.setCustomTime(tick.date, id);
       else this.timeline.addCustomTime(tick.date, id);
 
-      const bar = this.container.querySelector(`.vis-custom-time.${id}`);
+      const component = this.timeline.customTimes?.find((item) => item.options?.id === id);
+      const bar = component?.bar ?? this.container.querySelector(`.vis-custom-time.${id}`);
       if (!bar) return;
       bar.dataset.vcCalendarKind = kind;
       bar.dataset.absoluteDay = String(tick.absoluteDay);
