@@ -14,7 +14,7 @@ async function openGlobalTimeline(page) {
 function visibleEventMetrics(canvas) {
   const canvasRect = canvas.getBoundingClientRect();
   const items = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
-    .map((element) => ({ element, rect: element.getBoundingClientRect() }))
+    .map((element) => ({ rect: element.getBoundingClientRect() }))
     .filter(({ rect }) => (
       rect.width > 0
       && rect.height > 0
@@ -36,17 +36,17 @@ test('the unified chronology starts at the top and its final rows remain reachab
   await openGlobalTimeline(page);
 
   const canvas = page.locator('[data-vc-canvas]');
-  const initial = await canvas.evaluate((element) => {
-    const metrics = visibleEventMetrics(element);
+  const initialMetrics = await canvas.evaluate(visibleEventMetrics);
+  const initialScroll = await canvas.evaluate((element) => {
     const scroller = element.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
     return {
-      ...metrics,
       scrollTop: scroller?.scrollTop ?? null,
       scrollMaximum: scroller
         ? Math.max(0, scroller.scrollHeight - scroller.clientHeight)
         : null,
     };
   });
+  const initial = { ...initialMetrics, ...initialScroll };
 
   expect(initial.count).toBeGreaterThan(1);
   expect(initial.scrollTop).toBe(0);
