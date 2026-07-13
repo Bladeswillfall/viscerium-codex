@@ -4,14 +4,17 @@ import { readFileSync } from 'node:fs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('the Astro island mounts the native renderer without host redraw machinery', () => {
+test('the Astro island mounts one stable Chronos renderer without host observers', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
   const renderer = read('../src/lib/timeline/renderer.mjs');
 
   assert.match(renderer, /mountTimeline as mountNativeTimeline/);
-  assert.match(renderer, /renderParsedWithTopOrientation/);
+  assert.match(renderer, /renderParsedWithStableTopOrientation/);
   assert.match(renderer, /orientation: \{[\s\S]*axis: 'top',[\s\S]*item: 'top'/);
-  assert.match(renderer, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
+  assert.match(renderer, /suppressGroupedZoomJiggle/);
+  assert.match(renderer, /_handleZoomWorkaround = suppressGroupedZoomJiggle/);
+  assert.match(renderer, /_handleZoomWorkaround = originalZoomWorkaround/);
+  assert.match(renderer, /makeTimelineSettersIdempotent/);
   assert.doesNotMatch(renderer, /Proxy\s*\(/);
   assert.doesNotMatch(renderer, /MutationObserver|ResizeObserver/);
 
@@ -31,12 +34,15 @@ test('unified chronology keeps one canonical Chronos group without host remounti
   assert.match(adapter, /\{\$\{cleanChronosText\(group\.label\)/);
 });
 
-test('the viewport is stable and does not pin or adapt Chronos internals', () => {
+test('the viewport and overview are compact fixed-height surfaces', () => {
   const styles = read('../src/styles/timeline-viewport.css');
 
-  assert.match(styles, /block-size: 31rem/);
-  assert.match(styles, /block-size: 27rem/);
+  assert.match(styles, /block-size: 22rem/);
+  assert.match(styles, /block-size: 20rem/);
+  assert.match(styles, /height: 2\.6rem/);
+  assert.match(styles, /min-height: 4\.5rem/);
   assert.match(styles, /> \.vis-timeline \{[\s\S]*block-size: 100% !important/);
+  assert.match(styles, /\.vc-minimap-viewport \{[\s\S]*height: 100% !important/);
   assert.doesNotMatch(styles, /vc-pinned-row-height/);
   assert.doesNotMatch(styles, /vc-timeline-hovercard/);
   assert.doesNotMatch(styles, /data-vc-adaptive-height/);
