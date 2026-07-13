@@ -67,7 +67,7 @@ function fixture() {
   };
 }
 
-test('serializes unified records through native ungrouped Chronos syntax and parsing', () => {
+test('serializes canonical records through native Chronos syntax and parsing', () => {
   const dataset = fixture();
   const model = createChronosTimelineModel({
     dataset,
@@ -76,19 +76,19 @@ test('serializes unified records through native ungrouped Chronos syntax and par
 
   assert.match(model.source, /> NOTODAY/);
   assert.match(model.source, /> ORDERBY start/);
-  assert.match(model.source, /@ \[[^\]]+\] #orange CITADEL/);
-  assert.match(model.source, /- \[[^\]]+\] #orange First event \| A point event\./);
-  assert.match(model.source, /\* \[[^\]]+\] #purple Landmark point/);
-  assert.doesNotMatch(model.source, /\{Chronology\}/);
+  assert.match(model.source, /@ \[[^\]]+\] #orange \{Chronology\} CITADEL/);
+  assert.match(model.source, /- \[[^\]]+\] #orange \{Chronology\} First event \| A point event\./);
+  assert.match(model.source, /\* \[[^\]]+\] #purple \{Chronology\} Landmark point/);
 
-  assert.equal(model.groups.length, 0);
+  assert.equal(model.groups.length, 1);
+  assert.equal(model.groups[0].content, 'Chronology');
   assert.equal(model.parsed.groups, model.groups);
   assert.equal(model.parsed.markers.length, 0);
   assert.equal(model.parsed.flags.noToday, true);
 
   const first = model.items.find((item) => item.id === 'event-a');
   assert.equal(first.type, undefined);
-  assert.equal(first.group, undefined);
+  assert.equal(first.group, model.groups[0].id);
   assert.equal(syntheticDateToAbsoluteDay(first.start), 10);
   assert.match(first.className, /is-link/);
   assert.match(first.className, /importance-major/);
@@ -107,7 +107,7 @@ test('serializes unified records through native ungrouped Chronos syntax and par
   assert.equal(syntheticDateToAbsoluteDay(milestone.start), 30);
   assert.match(milestone.className, /certainty-legendary/);
 
-  const era = model.items.find((item) => item.id === 'era:citadel:unified');
+  const era = model.items.find((item) => item.id.startsWith('era:citadel:'));
   assert.equal(era.type, 'background');
   assert.equal(syntheticDateToAbsoluteDay(era.start), 0);
   assert.equal(syntheticDateToAbsoluteDay(era.end), 51);
