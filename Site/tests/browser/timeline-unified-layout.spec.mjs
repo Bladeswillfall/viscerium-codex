@@ -11,7 +11,7 @@ async function navigateToGlobalTimeline(page) {
   await page.waitForLoadState('networkidle');
   await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
   await expect(page.locator('[data-vc-canvas]')).toBeVisible();
-  await expect(page.locator('[data-vc-canvas] .vc-calendar-axis-tick').first()).toBeVisible();
+  await expect(page.locator('[data-vc-canvas] .vis-custom-time[data-vc-calendar-kind="primary"]').first()).toBeVisible();
   await expect(page.locator('[data-vc-canvas] .vis-item.vc-timeline-item').first()).toBeVisible();
 }
 
@@ -43,7 +43,7 @@ function visibleItemMetrics(canvas) {
   };
 }
 
-test('unified chronology keeps exact fictional-calendar ticks inside one Chronos viewport', async ({ page }) => {
+test('unified chronology keeps exact fictional-calendar ticks inside one bottom Chronos axis', async ({ page }) => {
   await openGlobalTimeline(page);
 
   const canvas = page.locator('[data-vc-canvas]');
@@ -51,7 +51,7 @@ test('unified chronology keeps exact fictional-calendar ticks inside one Chronos
     const canvasRect = element.getBoundingClientRect();
     const timeline = element.querySelector(':scope > .vis-timeline');
     const timelineRect = timeline?.getBoundingClientRect();
-    const axis = element.querySelector('.vc-calendar-axis-layer');
+    const axis = element.querySelector('.vis-panel.vis-bottom');
     const axisRect = axis?.getBoundingClientRect();
     const items = [...element.querySelectorAll('.vis-item.vc-timeline-item')]
       .filter((item) => item.getClientRects().length > 0)
@@ -59,10 +59,11 @@ test('unified chronology keeps exact fictional-calendar ticks inside one Chronos
     const labels = [...element.querySelectorAll('.vis-labelset > .vis-label')]
       .filter((item) => item.getClientRects().length > 0)
       .map((item) => item.textContent?.trim() ?? '');
-    const axisTicks = [...element.querySelectorAll('.vc-calendar-axis-tick')]
+    const axisTicks = [...element.querySelectorAll('.vis-custom-time[data-vc-calendar-kind="primary"]')]
       .filter((item) => item.getClientRects().length > 0)
       .map((item) => ({
-        label: item.textContent?.trim() ?? '',
+        label: item.dataset.vcCalendarLabel ?? '',
+        renderedLabel: getComputedStyle(item, '::after').content,
         absoluteDay: Number(item.dataset.absoluteDay),
         unit: item.dataset.unit,
       }));
@@ -72,13 +73,14 @@ test('unified chronology keeps exact fictional-calendar ticks inside one Chronos
       timelineHeight: timelineRect?.height ?? 0,
       eventCount: items.length,
       firstEventTop: items.length ? Math.min(...items.map((rect) => rect.top)) : null,
+      lastEventBottom: items.length ? Math.max(...items.map((rect) => rect.bottom)) : null,
       axisTop: axisRect?.top ?? null,
       axisBottom: axisRect?.bottom ?? null,
       axisTicks,
       labels,
-      primaryGridLines: element.querySelectorAll('.vc-calendar-grid-line.is-primary').length,
-      secondaryGridLines: element.querySelectorAll('.vc-calendar-grid-line.is-secondary').length,
-      externalAxisCount: document.querySelectorAll('[data-vc-axis], .vc-timeline-axis').length,
+      primaryGridLines: element.querySelectorAll('.vis-custom-time[data-vc-calendar-kind="primary"]').length,
+      secondaryGridLines: element.querySelectorAll('.vis-custom-time[data-vc-calendar-kind="secondary"]').length,
+      externalAxisCount: document.querySelectorAll('[data-vc-axis], .vc-timeline-axis, .vc-calendar-axis-layer').length,
       nativeLabelsVisible: [...element.querySelectorAll('.vis-time-axis .vis-text')]
         .some((item) => getComputedStyle(item).visibility !== 'hidden'),
       rootVisibility: timeline ? getComputedStyle(timeline).visibility : null,
@@ -110,21 +112,78 @@ test('unified chronology keeps exact fictional-calendar ticks inside one Chronos
   expect(metrics.externalAxisCount).toBe(0);
   expect(metrics.rootVisibility).toBe('visible');
   expect(metrics.nativeLabelsVisible).toBe(false);
-  expect(metrics.axisTop).toBeGreaterThanOrEqual(visible.canvasTop - 2);
+  expect(metrics.axisTop).toBeGreaterThan(visible.canvasTop);
   expect(metrics.axisBottom).toBeLessThanOrEqual(visible.canvasBottom + 2);
   expect(metrics.axisTicks.length).toBeGreaterThan(1);
   expect(metrics.axisTicks.every((tick) => Number.isSafeInteger(tick.absoluteDay))).toBe(true);
   expect(metrics.axisTicks.every((tick) => ['year', 'month', 'week', 'day'].includes(tick.unit))).toBe(true);
   expect(metrics.axisTicks.some((tick) => /\d/.test(tick.label))).toBe(true);
+  expect(metrics.axisTicks.every((tick) => tick.renderedLabel !== 'none')).toBe(true);
   expect(metrics.primaryGridLines).toBeGreaterThan(1);
   expect(metrics.primaryGridLines + metrics.secondaryGridLines).toBeGreaterThan(2);
-  expect(metrics.firstEventTop).toBeGreaterThanOrEqual(metrics.axisTop);
+  expect(metrics.lastEventBottom).toBeLessThanOrEqual(metrics.axisTop + 2);
   expect(metrics.hasPinnedHeight).toBe(false);
   expect(metrics.hasAdaptiveHeight).toBe(false);
   expect(visible.count).toBeGreaterThan(0);
   expect(visible.lastBottom).toBeLessThanOrEqual(visible.canvasBottom + 2);
   expect(overview.hostHeight).toBeLessThanOrEqual(74);
   expect(overview.timelineHeight).toBeLessThanOrEqual(74);
+});
+
+test('calendar lines remain locked to event geometry throughout a horizontal drag', async ({ page }) => {
+  await openGlobalTimeline(page);
+  const canvas = page.locator('[data-vc-canvas]');
+  await canvas.scrollIntoViewIfNeeded();
+
+  await canvas.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    const centre = bounds.left + bounds.width / 2;
+    const nearest = (selector) => [...element.querySelectorAll(selector)]
+      .filter((node) => node.getClientRects().length > 0)
+      .sort((left, right) => (
+        Math.abs(left.getBoundingClientRect().left - centre)
+        - Math.abs(right.getBoundingClientRect().left - centre)
+      ))[0];
+    const eventItem = nearest('.vis-item.vc-timeline-item');
+    const calendarLine = nearest('.vis-custom-time[data-vc-calendar-kind="primary"]');
+    if (!eventItem || !calendarLine) throw new Error('A visible event and calendar line are required.');
+
+    const samples = [];
+    let active = true;
+    const sample = () => {
+      if (!active) return;
+      samples.push(eventItem.getBoundingClientRect().left - calendarLine.getBoundingClientRect().left);
+      requestAnimationFrame(sample);
+    };
+    window.__vcCalendarPanProbe = {
+      samples,
+      stop() { active = false; },
+    };
+    requestAnimationFrame(sample);
+  });
+
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error('Timeline canvas has no bounding box.');
+  const startX = box.x + box.width * 0.58;
+  const y = box.y + box.height * 0.55;
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  await page.mouse.move(startX - 180, y, { steps: 24 });
+  const samples = await page.evaluate(() => {
+    window.__vcCalendarPanProbe.stop();
+    return window.__vcCalendarPanProbe.samples;
+  });
+  await page.mouse.up();
+
+  const spread = samples.length ? Math.max(...samples) - Math.min(...samples) : Number.POSITIVE_INFINITY;
+  writeFileSync(
+    'timeline-browser-diagnostics/calendar-pan-lockstep.json',
+    JSON.stringify({ samples, spread }, null, 2),
+  );
+  await page.screenshot({ path: 'timeline-browser-diagnostics/calendar-pan-lockstep.png', fullPage: true });
+
+  expect(samples.length).toBeGreaterThan(5);
+  expect(spread).toBeLessThanOrEqual(2);
 });
 
 test('the forked grouped renderer does not perform a delayed animated zoom jiggle', async ({ page }) => {
