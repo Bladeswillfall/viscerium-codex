@@ -8,8 +8,8 @@ import { DataSet, Timeline } from 'vis-timeline/standalone';
  * https://github.com/clairefro/chronos-timeline-md/blob/e26587822aa902214848479c346380fe96afd476/src/core/ChronosTimeline.ts
  *
  * The Chronos parser and default stylesheet remain upstream dependencies. This
- * fork owns only the renderer boundary so the host can provide a fictional
- * calendar axis without hiding or rebuilding vis-timeline's native axis.
+ * fork owns the renderer boundary so the host can provide exact fictional-
+ * calendar ticks without replacing vis-timeline's event viewport.
  */
 
 function collectionValues(collection) {
@@ -100,6 +100,10 @@ export class VisceriumChronosTimeline {
     this.itemModelSignature = '';
     this.groupModelSignature = '';
     this.refitButton = undefined;
+    this.calendarAxisLayer = undefined;
+    this.calendarGridLayer = undefined;
+    this.calendarAxisFrame = undefined;
+    this.calendarAxisSubscriptions = [];
 
     const documentRef = container.ownerDocument ?? globalThis.document;
     if (documentRef) {
@@ -151,6 +155,7 @@ export class VisceriumChronosTimeline {
     this.#addMarkers(markers);
     this.#installTooltipBridge();
     this.#createRefitButton();
+    this.#installCalendarAxis();
 
     if (!flags?.defaultView?.start || !flags?.defaultView?.end) {
       requestAnimationFrame(() => this.timeline?.fit({ animation: false }));
@@ -182,11 +187,16 @@ export class VisceriumChronosTimeline {
       changed = true;
     }
 
-    if (changed) this.timeline.redraw();
+    if (changed) {
+      this.timeline.redraw();
+      this.#scheduleCalendarAxis();
+    }
   }
 
   redraw() {
     this.timeline?.redraw();
+    this.axis.resetScale?.();
+    this.#scheduleCalendarAxis();
   }
 
   #timelineOptions(flags) {
@@ -199,6 +209,7 @@ export class VisceriumChronosTimeline {
       minHeight: '20rem',
       align: this.settings.align,
       clickToUse: this.settings.clickToUse,
+      rtl: false,
       orientation: { axis: 'top', item: 'top' },
       groupHeightMode: 'fitItems',
       stack: true,
@@ -261,7 +272,96 @@ export class VisceriumChronosTimeline {
     this.refitButton = button;
   }
 
+  #installCalendarAxis() {
+    if (!this.timeline || typeof this.axis.getTicks !== 'function') return;
+    const topPanel = this.container.querySelector('.vis-panel.vis-top');
+    const centerPanel = this.container.querySelector('.vis-panel.vis-center');
+    if (!topPanel || !centerPanel) return;
+
+    const documentRef = this.container.ownerDocument;
+    const axisLayer = documentRef.createElement('div');
+    axisLayer.className = 'vc-calendar-axis-layer';
+    axisLayer.setAttribute('aria-hidden', 'true');
+    const gridLayer = documentRef.createElement('div');
+    gridLayer.className = 'vc-calendar-grid-layer';
+    gridLayer.setAttribute('aria-hidden', 'true');
+    topPanel.appendChild(axisLayer);
+    centerPanel.appendChild(gridLayer);
+    this.calendarAxisLayer = axisLayer;
+    this.calendarGridLayer = gridLayer;
+
+    const schedule = () => this.#scheduleCalendarAxis();
+    for (const eventName of ['rangechange', 'rangechanged', 'changed']) {
+      this.timeline.on(eventName, schedule);
+      this.calendarAxisSubscriptions.push([eventName, schedule]);
+    }
+    this.#scheduleCalendarAxis();
+  }
+
+  #scheduleCalendarAxis() {
+    if (!this.timeline || !this.calendarAxisLayer || !this.calendarGridLayer) return;
+    if (this.calendarAxisFrame !== undefined) cancelAnimationFrame(this.calendarAxisFrame);
+    this.calendarAxisFrame = requestAnimationFrame(() => {
+      this.calendarAxisFrame = undefined;
+      this.#drawCalendarAxis();
+    });
+  }
+
+  #drawCalendarAxis() {
+    if (!this.timeline || !this.calendarAxisLayer || !this.calendarGridLayer) return;
+    const centerPanel = this.calendarGridLayer.parentElement;
+    const width = centerPanel?.getBoundingClientRect().width ?? 0;
+    if (width <= 0) return;
+
+    const range = this.timeline.getWindow();
+    const startMs = range.start.valueOf();
+    const endMs = range.end.valueOf();
+    const spanMs = Math.max(1, endMs - startMs);
+    const ticks = this.axis.getTicks({ start: range.start, end: range.end, width });
+    const documentRef = this.container.ownerDocument;
+    const axisFragment = documentRef.createDocumentFragment();
+    const gridFragment = documentRef.createDocumentFragment();
+
+    const addTick = (tick, kind) => {
+      const left = ((tick.date.valueOf() - startMs) / spanMs) * 100;
+      if (!Number.isFinite(left) || left < -0.1 || left > 100.1) return;
+
+      const line = documentRef.createElement('span');
+      line.className = `vc-calendar-grid-line is-${kind}`;
+      line.style.left = `${left}%`;
+      line.dataset.absoluteDay = String(tick.absoluteDay);
+      line.dataset.unit = tick.unit;
+      gridFragment.appendChild(line);
+
+      if (kind === 'primary' && tick.label) {
+        const label = documentRef.createElement('span');
+        label.className = 'vc-calendar-axis-tick';
+        label.style.left = `${left}%`;
+        label.dataset.absoluteDay = String(tick.absoluteDay);
+        label.dataset.unit = tick.unit;
+        label.textContent = tick.label;
+        axisFragment.appendChild(label);
+      }
+    };
+
+    for (const tick of ticks.secondary) addTick(tick, 'secondary');
+    for (const tick of ticks.primary) addTick(tick, 'primary');
+    this.calendarAxisLayer.replaceChildren(axisFragment);
+    this.calendarGridLayer.replaceChildren(gridFragment);
+    this.calendarAxisLayer.dataset.scale = ticks.scaleKey;
+  }
+
   destroy() {
+    if (this.calendarAxisFrame !== undefined) cancelAnimationFrame(this.calendarAxisFrame);
+    this.calendarAxisFrame = undefined;
+    for (const [eventName, handler] of this.calendarAxisSubscriptions) {
+      this.timeline?.off(eventName, handler);
+    }
+    this.calendarAxisSubscriptions = [];
+    this.calendarAxisLayer?.remove();
+    this.calendarGridLayer?.remove();
+    this.calendarAxisLayer = undefined;
+    this.calendarGridLayer = undefined;
     this.refitButton?.remove();
     this.refitButton = undefined;
     this.timeline?.destroy();
