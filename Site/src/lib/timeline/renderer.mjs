@@ -61,18 +61,25 @@ function makeTimelineSettersIdempotent(timeline, initialItems, initialGroups) {
 /**
  * Chronos owns the live vis-timeline instance and every interaction after mount.
  * Chronos 1.1.0 does not expose vis-timeline's orientation in its public settings,
- * and its grouped-timeline workaround deliberately performs an animated zoom-out/
- * zoom-in shortly after mount. Apply the missing orientation synchronously, suppress
- * that visible jiggle during creation, and make later model assignments idempotent.
- * No observer, remount or redraw loop is installed.
+ * and its grouped-timeline workaround performs an animated zoom-out/zoom-in after
+ * creation. Preserve the layout correction as one non-animated refresh, apply the
+ * missing top orientation synchronously, and skip identical later model assignments.
+ * No observer, remount or redraw loop remains active.
  */
 export function mountTimeline(root, dataset, options) {
   const prototype = ChronosTimeline.prototype;
   const originalRenderParsed = prototype.renderParsed;
   const originalZoomWorkaround = prototype._handleZoomWorkaround;
+  let groupedRefreshHandle;
 
-  function suppressGroupedZoomJiggle() {
-    // Chronos's delayed 1.02x animated zoom workaround is visible as a canvas jump.
+  function refreshGroupedLayoutWithoutZoom(timeline, groups) {
+    if (!groups?.length || typeof window === 'undefined') return;
+    groupedRefreshHandle = window.setTimeout(() => {
+      if (!timeline?.getWindow) return;
+      timeline.redraw?.();
+      const range = timeline.getWindow();
+      timeline.setWindow(range.start, range.end, { animation: false });
+    }, 150);
   }
 
   function renderParsedWithStableTopOrientation(result) {
@@ -88,17 +95,30 @@ export function mountTimeline(root, dataset, options) {
 
   prototype.renderParsed = renderParsedWithStableTopOrientation;
   if (typeof originalZoomWorkaround === 'function') {
-    prototype._handleZoomWorkaround = suppressGroupedZoomJiggle;
+    prototype._handleZoomWorkaround = refreshGroupedLayoutWithoutZoom;
   }
 
+  let cleanup;
   try {
-    return mountNativeTimeline(root, dataset, options);
+    cleanup = mountNativeTimeline(root, dataset, options);
+  } catch (error) {
+    if (groupedRefreshHandle !== undefined && typeof window !== 'undefined') {
+      window.clearTimeout(groupedRefreshHandle);
+    }
+    throw error;
   } finally {
     if (prototype.renderParsed === renderParsedWithStableTopOrientation) {
       prototype.renderParsed = originalRenderParsed;
     }
-    if (prototype._handleZoomWorkaround === suppressGroupedZoomJiggle) {
+    if (prototype._handleZoomWorkaround === refreshGroupedLayoutWithoutZoom) {
       prototype._handleZoomWorkaround = originalZoomWorkaround;
     }
   }
+
+  return () => {
+    if (groupedRefreshHandle !== undefined && typeof window !== 'undefined') {
+      window.clearTimeout(groupedRefreshHandle);
+    }
+    cleanup?.();
+  };
 }
