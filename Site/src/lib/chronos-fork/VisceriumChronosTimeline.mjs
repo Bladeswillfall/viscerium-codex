@@ -63,6 +63,19 @@ function fallbackTooltip(element, text) {
   element?.setAttribute?.('title', String(text ?? ''));
 }
 
+function calendarTickId(tick, kind) {
+  const sign = tick.absoluteDay < 0 ? 'n' : 'p';
+  return `vc-calendar-${kind}-${tick.unit}-${sign}${Math.abs(tick.absoluteDay)}`;
+}
+
+function calendarTickSignature(ticks) {
+  return [
+    ticks.scaleKey,
+    ...ticks.secondary.map((tick) => `${calendarTickId(tick, 'secondary')}:${tick.date.valueOf()}`),
+    ...ticks.primary.map((tick) => `${calendarTickId(tick, 'primary')}:${tick.date.valueOf()}:${tick.label ?? ''}`),
+  ].join('|');
+}
+
 function refitIcon() {
   return `
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -104,8 +117,8 @@ export class VisceriumChronosTimeline {
     this.itemModelSignature = '';
     this.groupModelSignature = '';
     this.refitButton = undefined;
-    this.calendarAxisLayer = undefined;
-    this.calendarGridLayer = undefined;
+    this.calendarTickIds = new Set();
+    this.calendarTickModelSignature = '';
     this.calendarAxisFrame = undefined;
     this.calendarAxisSubscriptions = [];
 
@@ -213,12 +226,12 @@ export class VisceriumChronosTimeline {
     }
 
     this.timeline.redraw();
-    this.#scheduleCalendarAxis();
   }
 
   redraw() {
     this.timeline?.redraw();
     this.axis.resetScale?.();
+    this.calendarTickModelSignature = '';
     this.#scheduleCalendarAxis();
   }
 
@@ -234,7 +247,7 @@ export class VisceriumChronosTimeline {
       align: this.settings.align,
       clickToUse: this.settings.clickToUse,
       rtl: false,
-      orientation: { axis: 'top', item: 'top' },
+      orientation: { axis: 'bottom', item: 'top' },
       groupHeightMode: 'fitItems',
       stack: true,
       stackSubgroups: true,
@@ -299,81 +312,63 @@ export class VisceriumChronosTimeline {
 
   #installCalendarAxis() {
     if (!this.timeline || typeof this.axis.getTicks !== 'function') return;
-    const topPanel = this.container.querySelector('.vis-panel.vis-top');
-    const centerPanel = this.container.querySelector('.vis-panel.vis-center');
-    if (!topPanel || !centerPanel) return;
 
-    const documentRef = this.container.ownerDocument;
-    const axisLayer = documentRef.createElement('div');
-    axisLayer.className = 'vc-calendar-axis-layer';
-    axisLayer.setAttribute('aria-hidden', 'true');
-    const gridLayer = documentRef.createElement('div');
-    gridLayer.className = 'vc-calendar-grid-layer';
-    gridLayer.setAttribute('aria-hidden', 'true');
-    topPanel.appendChild(axisLayer);
-    centerPanel.appendChild(gridLayer);
-    this.calendarAxisLayer = axisLayer;
-    this.calendarGridLayer = gridLayer;
-
-    const schedule = () => this.#scheduleCalendarAxis();
-    for (const eventName of ['rangechange', 'rangechanged', 'changed']) {
-      this.timeline.on(eventName, schedule);
-      this.calendarAxisSubscriptions.push([eventName, schedule]);
-    }
+    // Calendar boundaries are native CustomTime components. vis-timeline moves
+    // them in the same redraw as event items, so labels and lines cannot trail
+    // behind a pan or zoom. The visible tick set is refreshed only after the
+    // interaction settles.
+    const sync = () => this.#syncCalendarAxis();
+    this.timeline.on('rangechanged', sync);
+    this.calendarAxisSubscriptions.push(['rangechanged', sync]);
     this.#scheduleCalendarAxis();
   }
 
   #scheduleCalendarAxis() {
-    if (!this.timeline || !this.calendarAxisLayer || !this.calendarGridLayer) return;
+    if (!this.timeline) return;
     if (this.calendarAxisFrame !== undefined) cancelAnimationFrame(this.calendarAxisFrame);
     this.calendarAxisFrame = requestAnimationFrame(() => {
       this.calendarAxisFrame = undefined;
-      this.#drawCalendarAxis();
+      this.#syncCalendarAxis();
     });
   }
 
-  #drawCalendarAxis() {
-    if (!this.timeline || !this.calendarAxisLayer || !this.calendarGridLayer) return;
-    const centerPanel = this.calendarGridLayer.parentElement;
+  #syncCalendarAxis() {
+    if (!this.timeline || typeof this.axis.getTicks !== 'function') return;
+    const centerPanel = this.container.querySelector('.vis-panel.vis-center');
     const width = centerPanel?.getBoundingClientRect().width ?? 0;
     if (width <= 0) return;
 
     const range = this.timeline.getWindow();
-    const startMs = range.start.valueOf();
-    const endMs = range.end.valueOf();
-    const spanMs = Math.max(1, endMs - startMs);
     const ticks = this.axis.getTicks({ start: range.start, end: range.end, width });
-    const documentRef = this.container.ownerDocument;
-    const axisFragment = documentRef.createDocumentFragment();
-    const gridFragment = documentRef.createDocumentFragment();
+    const signature = calendarTickSignature(ticks);
+    if (signature === this.calendarTickModelSignature) return;
 
-    const addTick = (tick, kind) => {
-      const left = ((tick.date.valueOf() - startMs) / spanMs) * 100;
-      if (!Number.isFinite(left) || left < -0.1 || left > 100.1) return;
+    const nextTickIds = new Set();
+    const syncTick = (tick, kind) => {
+      const id = calendarTickId(tick, kind);
+      nextTickIds.add(id);
+      if (this.calendarTickIds.has(id)) this.timeline.setCustomTime(tick.date, id);
+      else this.timeline.addCustomTime(tick.date, id);
 
-      const line = documentRef.createElement('span');
-      line.className = `vc-calendar-grid-line is-${kind}`;
-      line.style.left = `${left}%`;
-      line.dataset.absoluteDay = String(tick.absoluteDay);
-      line.dataset.unit = tick.unit;
-      gridFragment.appendChild(line);
-
-      if (kind === 'primary' && tick.label) {
-        const label = documentRef.createElement('span');
-        label.className = 'vc-calendar-axis-tick';
-        label.style.left = `${left}%`;
-        label.dataset.absoluteDay = String(tick.absoluteDay);
-        label.dataset.unit = tick.unit;
-        label.textContent = tick.label;
-        axisFragment.appendChild(label);
-      }
+      const bar = this.container.querySelector(`.vis-custom-time.${id}`);
+      if (!bar) return;
+      bar.dataset.vcCalendarKind = kind;
+      bar.dataset.absoluteDay = String(tick.absoluteDay);
+      bar.dataset.unit = tick.unit;
+      if (kind === 'primary' && tick.label) bar.dataset.vcCalendarLabel = tick.label;
+      else delete bar.dataset.vcCalendarLabel;
+      bar.setAttribute('aria-hidden', 'true');
+      bar.setAttribute('title', '');
     };
 
-    for (const tick of ticks.secondary) addTick(tick, 'secondary');
-    for (const tick of ticks.primary) addTick(tick, 'primary');
-    this.calendarAxisLayer.replaceChildren(axisFragment);
-    this.calendarGridLayer.replaceChildren(gridFragment);
-    this.calendarAxisLayer.dataset.scale = ticks.scaleKey;
+    for (const tick of ticks.secondary) syncTick(tick, 'secondary');
+    for (const tick of ticks.primary) syncTick(tick, 'primary');
+    for (const id of this.calendarTickIds) {
+      if (!nextTickIds.has(id)) this.timeline.removeCustomTime(id);
+    }
+
+    this.calendarTickIds = nextTickIds;
+    this.calendarTickModelSignature = signature;
   }
 
   destroy() {
@@ -383,10 +378,8 @@ export class VisceriumChronosTimeline {
       this.timeline?.off(eventName, handler);
     }
     this.calendarAxisSubscriptions = [];
-    this.calendarAxisLayer?.remove();
-    this.calendarGridLayer?.remove();
-    this.calendarAxisLayer = undefined;
-    this.calendarGridLayer = undefined;
+    this.calendarTickIds.clear();
+    this.calendarTickModelSignature = '';
     this.refitButton?.remove();
     this.refitButton = undefined;
     this.timeline?.destroy();
