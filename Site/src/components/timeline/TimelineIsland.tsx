@@ -1,9 +1,5 @@
 import { useEffect, useRef } from 'preact/hooks';
 import type { TimelineDataset, TimelineLaneMode } from '../../lib/timeline/types';
-import { installAdaptiveTimelineGrid } from '../../lib/timeline/adaptive-time-grid.mjs';
-import { installTimelineTooltipContentSync } from '../../lib/timeline/tooltip-content-sync.mjs';
-import { prepareTimelineViewportGuard } from '../../lib/timeline/viewport-guard.mjs';
-import { installCalendarYearAxisSync } from '../../lib/timeline/year-axis-sync.mjs';
 
 type TimelineIslandOptions = {
   defaultCalendar?: string;
@@ -45,31 +41,16 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
       if (fallbackRef.current) fallbackRef.current.hidden = true;
       if (skeletonRef.current) skeletonRef.current.hidden = false;
 
-      let viewportGuard: ReturnType<typeof prepareTimelineViewportGuard> | undefined;
-
       try {
         const { mountTimeline } = await import('../../lib/timeline/renderer.mjs');
         if (cancelled || !mountRef.current) return;
 
-        viewportGuard = prepareTimelineViewportGuard(root);
-        const cleanupTimeline = mountTimeline(root, dataset, options);
-        viewportGuard.restorePrototype();
-        const cleanupTooltipContent = installTimelineTooltipContentSync(root, dataset);
-        const cleanupYearAxis = installCalendarYearAxisSync(root, dataset);
-        const cleanupAdaptiveTimeGrid = installAdaptiveTimelineGrid(root, dataset);
-        cleanup = () => {
-          cleanupAdaptiveTimeGrid();
-          cleanupYearAxis();
-          cleanupTooltipContent();
-          cleanupTimeline();
-          viewportGuard?.cleanup();
-        };
+        cleanup = mountTimeline(root, dataset, options);
         root.setAttribute('data-vc-island-mounted', 'true');
         root.setAttribute('aria-busy', 'false');
         if (skeletonRef.current) skeletonRef.current.hidden = true;
         if (fallbackRef.current) fallbackRef.current.hidden = true;
       } catch (error) {
-        viewportGuard?.cleanup();
         root.replaceChildren();
         root.removeAttribute('data-vc-island-mounted');
         root.setAttribute('aria-busy', 'false');

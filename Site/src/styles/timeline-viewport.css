@@ -1,28 +1,23 @@
-/* Bounded timeline viewport and unclipped event hovercards. */
+/*
+ * Chronos owns the interactive viewport. Keep one compact, stable host; do not
+ * resize, pin, scroll or replace its internal panels while the reader is
+ * dragging, zooming or changing group modes.
+ */
 
 .vc-timeline-app .vc-timeline-canvas {
   position: relative;
-  block-size: clamp(28rem, 58vh, 42rem);
-  min-height: 0;
+  block-size: 31rem;
+  min-height: 20rem;
   overflow: hidden;
 }
 
 .vc-timeline-app.is-compact .vc-timeline-canvas {
-  block-size: clamp(22rem, 48vh, 32rem);
+  block-size: 27rem;
 }
 
 .vc-timeline-app .vc-timeline-canvas > .vis-timeline {
+  block-size: 100% !important;
   max-block-size: 100%;
-}
-
-/* vis-timeline virtualises grouped rows and may replace these nodes while the
-   user scrolls. Keep the fully measured native row height on every replacement
-   so the bottom of the internal scroll range cannot collapse again. */
-.vc-timeline-app .vc-timeline-canvas[data-vc-pinned-row-height] .vis-panel.vis-center > .vis-content,
-.vc-timeline-app .vc-timeline-canvas[data-vc-pinned-row-height] .vis-panel.vis-center > .vis-content > .vis-itemset,
-.vc-timeline-app .vc-timeline-canvas[data-vc-pinned-row-height] .vis-panel.vis-left.vis-vertical-scroll > .vis-content,
-.vc-timeline-app .vc-timeline-canvas[data-vc-pinned-row-height] .vis-panel.vis-left.vis-vertical-scroll > .vis-content > .vis-labelset {
-  min-block-size: var(--vc-pinned-row-height) !important;
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
@@ -31,105 +26,9 @@
   scrollbar-color: var(--vc-timeline-border-strong) var(--vc-timeline-surface-deep);
 }
 
-/* Native vis-timeline tooltips remain clipped to the canvas. The renderer owns
-   one body-level VISCERIUM hovercard instead. */
-.vc-timeline-app .vis-tooltip:not(.vc-timeline-hovercard),
-body > .vis-tooltip:not(.vc-timeline-hovercard) {
-  display: none !important;
-}
-
-body > .vc-timeline-hovercard {
-  --vc-hovercard-bg: #151310f7;
-  --vc-hovercard-border: #b8874670;
-  --vc-hovercard-text: #f4efe5;
-  --vc-hovercard-muted: #c2bbb0;
-  --vc-hovercard-accent: #f1d29b;
-  --vc-hovercard-shadow: #000000a6;
-
-  position: fixed !important;
-  z-index: 2147483000 !important;
-  display: grid !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  width: min(18rem, calc(100vw - 1rem)) !important;
-  max-width: 18rem !important;
-  gap: .3rem;
-  margin: 0 !important;
-  padding: .72rem .82rem !important;
-  overflow: hidden !important;
-  border: 1px solid var(--vc-hovercard-border) !important;
-  border-radius: 0 !important;
-  color: var(--vc-hovercard-text) !important;
-  background: var(--vc-hovercard-bg) !important;
-  background-color: var(--vc-hovercard-bg) !important;
-  box-shadow: 0 .75rem 2.5rem var(--vc-hovercard-shadow) !important;
-  backdrop-filter: blur(10px);
-  font-family: var(--vc-font-ui, ui-sans-serif, system-ui) !important;
-  line-height: 1.35;
-  white-space: normal !important;
-  pointer-events: none;
-}
-
-:root[data-theme='light'] body > .vc-timeline-hovercard {
-  --vc-hovercard-bg: #f7f2eafa;
-  --vc-hovercard-border: #6f4a2770;
-  --vc-hovercard-text: #201d19;
-  --vc-hovercard-muted: #5f574d;
-  --vc-hovercard-accent: #6d431d;
-  --vc-hovercard-shadow: #37261433;
-}
-
-body > .vc-timeline-hovercard[hidden] {
-  display: none !important;
-}
-
-.vc-timeline-hovercard-date {
-  color: var(--vc-hovercard-accent) !important;
-  font-size: .68rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-
-.vc-timeline-hovercard-title {
-  overflow: hidden;
-  color: var(--vc-hovercard-text) !important;
-  font-family: var(--vc-font-display, Cinzel, serif);
-  font-size: .9rem;
-  font-weight: 400;
-  line-height: 1.25;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.vc-timeline-hovercard-description {
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--vc-hovercard-muted) !important;
-  font-size: .78rem;
-  line-height: 1.35;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
-}
-
 @media (max-width: 38rem) {
-  .vc-timeline-app .vc-timeline-canvas {
-    block-size: clamp(22rem, 54vh, 30rem);
-  }
-
-  body > .vc-timeline-hovercard {
-    width: min(16.5rem, calc(100vw - 1rem)) !important;
-  }
-}
-
-@media (forced-colors: active) {
-  body > .vc-timeline-hovercard {
-    border-color: CanvasText !important;
-    color: CanvasText !important;
-    background: Canvas !important;
-    box-shadow: none !important;
-    backdrop-filter: none;
-    forced-color-adjust: none;
+  .vc-timeline-app .vc-timeline-canvas,
+  .vc-timeline-app.is-compact .vc-timeline-canvas {
+    block-size: 27rem;
   }
 }

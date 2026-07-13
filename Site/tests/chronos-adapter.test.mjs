@@ -147,7 +147,6 @@ test('sanitizes parser delimiters while retaining canonical metadata', () => {
   assert.equal(item.cLink, '/first/');
 });
 
-
 test('maps distant VISCERIUM dates into Chronos four-digit parser years', () => {
   const dataset = fixture();
   const shift = 3_360_000;

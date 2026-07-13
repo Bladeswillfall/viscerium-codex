@@ -146,31 +146,25 @@ test('supports negative years and retains exact legacy background item classes',
   assert.ok(items.every((item) => item.type === 'background' && item.selectable === false));
 });
 
-test('the timeline island mounts one adaptive SVG grid on every timeline', () => {
+test('adaptive calendar helpers remain available without mounting a competing SVG observer', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
   const grid = read('../src/lib/timeline/adaptive-time-grid.mjs');
-  const styles = read('../src/styles/timeline-adaptive-grid.css');
-  const app = read('../src/components/timeline/TimelineApp.astro');
-
-  assert.match(island, /installAdaptiveTimelineGrid\(root, dataset\)/);
-  assert.match(grid, /createAdaptiveTimelineTicks\(/);
-  assert.match(grid, /data-vc-time-grid/);
-  assert.match(grid, /vc-time-grid-secondary/);
-  assert.match(grid, /vc-time-grid-primary/);
-  assert.match(grid, /new MutationObserver\(scheduleRender\)/);
-  assert.match(styles, /\.vc-timeline-year-grid[\s\S]*display: none !important/);
-  assert.match(styles, /\.vc-time-grid-secondary/);
-  assert.match(styles, /\.vc-time-grid-primary/);
-  assert.match(app, /timeline-adaptive-grid\.css/);
-});
-
-test('the site axis labels use the same adaptive tick calculation as the grid', () => {
   const synchroniser = read('../src/lib/timeline/year-axis-sync.mjs');
 
+  assert.match(grid, /createAdaptiveTimelineTicks\(/);
   assert.match(synchroniser, /createAdaptiveTimelineTicks\(/);
-  assert.match(synchroniser, /previousScaleKey/);
-  assert.match(synchroniser, /ticks\.labelPrecision/);
-  assert.match(synchroniser, /data-vc-axis-time-boundary/);
-  assert.match(synchroniser, /data-vc-axis-scale/);
-  assert.match(synchroniser, /data-vc-axis-absolute-day/);
+  assert.doesNotMatch(island, /installAdaptiveTimelineGrid/);
+  assert.doesNotMatch(island, /installCalendarYearAxisSync/);
+});
+
+test('the native renderer owns the single visible fictional-calendar axis', () => {
+  const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+  const entry = read('../src/lib/timeline/renderer.mjs');
+
+  assert.match(renderer, /function renderAxis\(\)/);
+  assert.match(renderer, /formatAbsoluteDay\(day, state\.calendar, precision\)/);
+  assert.match(renderer, /timeline\.on\('rangechanged'/);
+  assert.match(entry, /mountTimeline as mountNativeTimeline/);
+  assert.match(entry, /renderParsedWithTopOrientation/);
+  assert.doesNotMatch(entry, /createYearGridSvg|installAnnualYearGrid|MutationObserver|ResizeObserver/);
 });
