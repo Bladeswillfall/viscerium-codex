@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import degelSystemMap from '../../data/degel-system-map.mjs';
 import '../../styles/degel-system.css';
+import '../../styles/degel-system-layout.css';
 
 const publishedEntries = await getCollection('docs', ({ data }) => (
   data.publish === true
@@ -102,7 +103,7 @@ function objectId(slug) {
       >
         <svg class="degel-system-map__guides" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
           {degelSystemMap.guides.map((guide) => (
-            <path d={`M -12 ${guide.y} Q 50 ${guide.y - 4.5} 112 ${guide.y}`} vector-effect="non-scaling-stroke" />
+            <path d={`M -12 ${guide.y} Q 50 ${guide.y + 4.5} 112 ${guide.y}`} vector-effect="non-scaling-stroke" />
           ))}
         </svg>
 
