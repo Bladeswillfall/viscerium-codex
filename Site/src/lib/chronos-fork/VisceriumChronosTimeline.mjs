@@ -91,7 +91,8 @@ export class VisceriumChronosTimeline {
     this.callbacks = callbacks;
     this.cssRootClass = cssRootClass;
     this.axis = axis;
-    this.hostTimelineOptions = timelineOptions;
+    this.hostTimelineOptions = { ...timelineOptions };
+    delete this.hostTimelineOptions.height;
     this.setTooltip = callbacks.setTooltip ?? fallbackTooltip;
     this.timeline = undefined;
     this.itemsDataSet = undefined;
@@ -207,6 +208,7 @@ export class VisceriumChronosTimeline {
       selectable: true,
       multiselect: false,
       minHeight: '20rem',
+      maxHeight: '40rem',
       align: this.settings.align,
       clickToUse: this.settings.clickToUse,
       rtl: false,
