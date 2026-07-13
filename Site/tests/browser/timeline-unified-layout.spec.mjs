@@ -1,4 +1,7 @@
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
+
+test.use({ viewport: { width: 1174, height: 1320 } });
 
 async function openGlobalTimeline(page) {
   await page.goto('http://127.0.0.1:4321/timelines/', { waitUntil: 'networkidle' });
@@ -60,6 +63,16 @@ test('the unified chronology starts at the top and its final rows remain reachab
     };
   });
   const initial = { ...initialMetrics, ...initialScroll };
+
+  mkdirSync('timeline-browser-diagnostics', { recursive: true });
+  writeFileSync(
+    'timeline-browser-diagnostics/unified-content-fit.json',
+    JSON.stringify(initial, null, 2),
+  );
+  await page.screenshot({
+    path: 'timeline-browser-diagnostics/unified-content-fit.png',
+    fullPage: true,
+  });
 
   expect(initial.count).toBeGreaterThan(1);
   expect(initial.totalCount).toBeGreaterThan(1);
