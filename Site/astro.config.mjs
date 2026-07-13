@@ -4,6 +4,7 @@ import partytown from '@astrojs/partytown';
 import preact from '@astrojs/preact';
 import sitemap from '@astrojs/sitemap';
 import starlight from '@astrojs/starlight';
+import compress from '@playform/compress';
 import starlightAutoSidebar from 'starlight-auto-sidebar';
 import { starlightBasePath } from 'starlight-base-path';
 import starlightChangelogs, { makeChangelogsSidebarLinks } from 'starlight-changelogs';
@@ -16,6 +17,49 @@ import starlightTelescope from 'starlight-telescope';
 import starlightUiTweaks from 'starlight-ui-tweaks';
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
+
+const compressSourceAssets = process.env.CODEX_COMPRESS_SOURCE_ASSETS === '1';
+const sourceAssetCompressor = compressSourceAssets
+  ? compress({
+      Path: ['../Vault/Assets'],
+      CSS: false,
+      HTML: false,
+      JavaScript: false,
+      JSON: false,
+      SVG: false,
+      Map: {
+        Image: '**/*.{avif,gif,png,tiff,webp}',
+      },
+      Image: {
+        sharp: {
+          avif: {
+            chromaSubsampling: '4:4:4',
+            effort: 9,
+            lossless: true,
+          },
+          gif: {
+            effort: 10,
+          },
+          png: {
+            compressionLevel: 9,
+            palette: false,
+          },
+          tiff: {
+            compression: 'lzw',
+          },
+          webp: {
+            effort: 6,
+            lossless: true,
+          },
+          sharp: {
+            failOn: 'error',
+            sequentialRead: true,
+            unlimited: true,
+          },
+        },
+      },
+    })
+  : undefined;
 
 const feedHead = [
   {
@@ -247,5 +291,7 @@ export default defineConfig({
         forward: ['dataLayer.push'],
       },
     }),
+    ...(sourceAssetCompressor ? [sourceAssetCompressor] : []),
+    compress(),
   ],
 });
