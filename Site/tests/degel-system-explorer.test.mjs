@@ -45,5 +45,5 @@ test('Degel category page mounts the explorer and suppresses the generated table
 
   assert.match(pageTitle, /<DegelSystemExplorer \/>/);
   assert.match(twoColumn, /codex-degel-system-page/);
-  assert.match(twoColumn, /!isDegelSystemIndex && starlightRoute\.toc/);
+  assert.match(twoColumn, /starlightRoute\.toc && !isDegelSystemIndex/);
 });
