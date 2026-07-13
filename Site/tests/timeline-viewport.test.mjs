@@ -36,16 +36,20 @@ test('unified chronology keeps one canonical Chronos group without host remounti
   assert.match(adapter, /\{\$\{cleanChronosText\(group\.label\)/);
 });
 
-test('the exact fictional-calendar axis and event rows share one compact viewport', () => {
+test('the exact fictional-calendar axis and event rows share one native-sized viewport', () => {
   const styles = read('../src/styles/timeline-viewport.css');
   const axisStyles = read('../src/styles/chronos-calendar-axis.css');
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
 
-  assert.match(styles, /block-size: 24rem/);
-  assert.match(styles, /block-size: 22rem/);
+  assert.match(styles, /min-height: 20rem/);
+  assert.match(styles, /max-height: 40rem/);
+  assert.match(styles, /max-height: 32rem/);
   assert.match(styles, /min-height: 4\.5rem/);
-  assert.match(styles, /> \.vis-timeline \{[\s\S]*block-size: 100% !important/);
+  assert.match(styles, /> \.vis-timeline \{[\s\S]*min-block-size: 20rem[\s\S]*max-block-size: 40rem/);
+  assert.doesNotMatch(styles, /block-size: 100% !important/);
+  assert.match(fork, /delete this\.hostTimelineOptions\.height/);
+  assert.match(fork, /maxHeight: '40rem'/);
   assert.match(axisStyles, /\.vc-timeline-canvas \.vis-time-axis[\s\S]*display: block/);
   assert.match(axisStyles, /\.vc-calendar-axis-layer/);
   assert.match(axisStyles, /\.vc-calendar-grid-line\.is-secondary/);
