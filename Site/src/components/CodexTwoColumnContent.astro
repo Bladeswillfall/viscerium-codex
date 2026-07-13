@@ -18,7 +18,7 @@ const isDegelSystemIndex = String(slugPath).replace(/^\/+|\/+$/g, '') === 'degel
   data-degel-system-page={isDegelSystemIndex || undefined}
 >
   <div class="main-pane codex-main-pane">
-    {!timelinePage && !isDegelSystemIndex && starlightRoute.toc && (
+    {!timelinePage && starlightRoute.toc && !isDegelSystemIndex && (
       <aside class="right-sidebar-container">
         <div class="right-sidebar">
           <slot name="right-sidebar" />
