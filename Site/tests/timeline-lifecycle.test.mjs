@@ -77,8 +77,10 @@ test('group changes update the existing native Chronos instance instead of remou
   const nativeRenderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const adapter = read('../src/lib/timeline/chronos-adapter.mjs');
 
-  assert.match(entry, /export \{ mountTimeline \} from '\.\/chronos-native-renderer\.mjs'/);
-  assert.doesNotMatch(entry, /Proxy\s*\(|ChronosTimeline\.prototype|renderParsedWithoutChronosTooltip|remountWithChronos/);
+  assert.match(entry, /mountTimeline as mountNativeTimeline/);
+  assert.match(entry, /renderParsedWithTopOrientation/);
+  assert.match(entry, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
+  assert.doesNotMatch(entry, /Proxy\s*\(|renderParsedWithoutChronosTooltip|remountWithChronos|MutationObserver|ResizeObserver/);
   assert.match(nativeRenderer, /timeline\.setGroups\(model\.groups\)/);
   assert.match(nativeRenderer, /timeline\.setItems\(model\.items\)/);
   assert.match(nativeRenderer, /laneSelect\.addEventListener\('change'/);
