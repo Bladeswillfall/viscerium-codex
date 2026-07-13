@@ -335,7 +335,6 @@ export class VisceriumChronosTimeline {
   #syncCalendarAxis() {
     if (!this.timeline || typeof this.axis.getTicks !== 'function') return;
     const centerPanel = this.container.querySelector('.vis-panel.vis-center');
-    const bottomPanel = this.container.querySelector('.vis-panel.vis-bottom');
     const width = centerPanel?.getBoundingClientRect().width ?? 0;
     if (width <= 0) return;
 
@@ -357,15 +356,6 @@ export class VisceriumChronosTimeline {
       bar.dataset.vcCalendarKind = kind;
       bar.dataset.absoluteDay = String(tick.absoluteDay);
       bar.dataset.unit = tick.unit;
-      const barRect = bar.getBoundingClientRect();
-      const axisRect = bottomPanel?.getBoundingClientRect();
-      if (axisRect && Number.isFinite(barRect.top)) {
-        const labelInset = Math.max(6, Math.min(12, axisRect.height * 0.2));
-        bar.style.setProperty(
-          '--vc-calendar-label-top',
-          `${axisRect.top - barRect.top + labelInset}px`,
-        );
-      }
       let label = bar.querySelector(':scope > .vc-calendar-time-label');
       if (kind === 'primary' && tick.label) {
         bar.dataset.vcCalendarLabel = tick.label;
