@@ -67,11 +67,13 @@ function chronosDate(absoluteDay, syntheticOriginDay) {
 }
 
 function buildGroups(events, laneMode) {
+  // Unified is Chronos's native ungrouped mode. Creating a fake one-row group
+  // triggers Chronos's grouped-layout zoom workaround and an unnecessary label
+  // column, which is visible as a jump/flicker during mount and interaction.
   if (laneMode === 'unified') {
-    const chronology = { key: 'chronology', label: 'Chronology' };
     return {
-      groups: [chronology],
-      groupFor: () => chronology,
+      groups: [],
+      groupFor: () => undefined,
     };
   }
 
@@ -86,8 +88,7 @@ function buildGroups(events, laneMode) {
   }));
 
   if (!groups.length) {
-    const chronology = { key: 'chronology', label: 'Chronology' };
-    return { groups: [chronology], groupFor: () => chronology };
+    return { groups: [], groupFor: () => undefined };
   }
 
   const byKey = new Map(groups.map((group) => [group.key, group]));
@@ -115,23 +116,28 @@ function eventLine(event, laneMode, groupFor, syntheticOriginDay) {
   const range = end ? `${start}~${end}` : start;
   const title = cleanChronosText(event.title) || 'Untitled event';
   const description = cleanChronosText(event.description);
+  const groupToken = group ? ` {${cleanChronosText(group.label).replace(/}/g, '')}}` : '';
   return {
-    line: `${prefix} [${range}] #${color} {${cleanChronosText(group.label).replace(/}/g, '')}} ${title}${description ? ` | ${description}` : ''}`,
+    line: `${prefix} [${range}] #${color}${groupToken} ${title}${description ? ` | ${description}` : ''}`,
     metadata: { kind: 'event', event, group },
   };
 }
 
 function eraLines(dataset, groups, syntheticOriginDay) {
-  return dataset.eras.flatMap((era) => groups.map((group, index) => ({
-    line: `@ [${chronosDate(era.absoluteStartDay, syntheticOriginDay)}~${chronosDate(era.absoluteEndDay + 1, syntheticOriginDay)}] #${ERA_COLORS[era.id] ?? 'blue'} {${cleanChronosText(group.label).replace(/}/g, '')}} ${index === 0 ? cleanChronosText(era.title) : '&nbsp;'}`,
-    metadata: { kind: 'era', era, group, showLabel: index === 0 },
-  })));
+  const targetGroups = groups.length ? groups : [undefined];
+  return dataset.eras.flatMap((era) => targetGroups.map((group, index) => {
+    const groupToken = group ? ` {${cleanChronosText(group.label).replace(/}/g, '')}}` : '';
+    return {
+      line: `@ [${chronosDate(era.absoluteStartDay, syntheticOriginDay)}~${chronosDate(era.absoluteEndDay + 1, syntheticOriginDay)}] #${ERA_COLORS[era.id] ?? 'blue'}${groupToken} ${index === 0 ? cleanChronosText(era.title) : '&nbsp;'}`,
+      metadata: { kind: 'era', era, group, showLabel: index === 0 },
+    };
+  }));
 }
 
 function enrichParsedItem(item, metadata, formatEventDate) {
   if (metadata.kind === 'era') {
     const { era, group, showLabel } = metadata;
-    item.id = `era:${era.id}:${cssToken(group.key)}`;
+    item.id = `era:${era.id}:${cssToken(group?.key ?? 'unified')}`;
     item.content = showLabel ? era.title : '';
     item.className = [item.className, 'vc-era-band', `era-${cssToken(era.id)}`, cssToken(era.visualToken)]
       .filter(Boolean)
