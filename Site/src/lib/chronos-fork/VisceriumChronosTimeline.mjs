@@ -47,12 +47,16 @@ function groupSignature(groups) {
   ].join('\u001f')).join('\u001e');
 }
 
-function replaceDataSet(dataSet, values) {
+function stageDataSet(dataSet, values) {
   const next = collectionValues(values);
   const nextIds = new Set(next.map((item) => item.id));
   const removed = dataSet.getIds().filter((id) => !nextIds.has(id));
-  if (removed.length) dataSet.remove(removed);
   if (next.length) dataSet.update(next);
+  return removed;
+}
+
+function flushDataSet(dataSet) {
+  dataSet.flush?.();
 }
 
 function fallbackTooltip(element, text) {
@@ -92,7 +96,6 @@ export class VisceriumChronosTimeline {
     this.cssRootClass = cssRootClass;
     this.axis = axis;
     this.hostTimelineOptions = { ...timelineOptions };
-    delete this.hostTimelineOptions.height;
     this.setTooltip = callbacks.setTooltip ?? fallbackTooltip;
     this.timeline = undefined;
     this.itemsDataSet = undefined;
@@ -153,6 +156,12 @@ export class VisceriumChronosTimeline {
       ? new Timeline(this.container, this.itemsDataSet, this.groupsDataSet, options)
       : new Timeline(this.container, this.itemsDataSet, options);
 
+    // Queue subsequent model changes so a group switch or range refresh is
+    // committed as one browser paint instead of a visible remove-then-add gap.
+    const queueOptions = { delay: null, max: Number.POSITIVE_INFINITY };
+    this.itemsDataSet.setOptions({ queue: queueOptions });
+    this.groupsDataSet.setOptions({ queue: queueOptions });
+
     this.#addMarkers(markers);
     this.#installTooltipBridge();
     this.#createRefitButton();
@@ -173,25 +182,38 @@ export class VisceriumChronosTimeline {
     const groups = collectionValues(result?.groups);
     const nextItems = itemSignature(items);
     const nextGroups = groupSignature(groups);
-    let changed = false;
+    const groupsChanged = nextGroups !== this.groupModelSignature;
+    const itemsChanged = nextItems !== this.itemModelSignature;
 
-    if (nextGroups !== this.groupModelSignature) {
+    if (!groupsChanged && !itemsChanged) return;
+
+    let removedGroups = [];
+    if (groupsChanged) {
+      // Make destination groups available before any item is reassigned.
+      removedGroups = stageDataSet(this.groupsDataSet, groups);
+      flushDataSet(this.groupsDataSet);
       this.groupModelSignature = nextGroups;
-      replaceDataSet(this.groupsDataSet, groups);
-      changed = true;
     }
 
-    if (nextItems !== this.itemModelSignature) {
+    if (itemsChanged) {
+      // Upsert destination items before removing stale ones. The queue flush
+      // prevents vis-timeline from painting the transient empty dataset.
+      const removedItems = stageDataSet(this.itemsDataSet, items);
+      if (removedItems.length) this.itemsDataSet.remove(removedItems);
+      flushDataSet(this.itemsDataSet);
       this.itemModelSignature = nextItems;
       this.items = items;
-      replaceDataSet(this.itemsDataSet, items);
-      changed = true;
     }
 
-    if (changed) {
-      this.timeline.redraw();
-      this.#scheduleCalendarAxis();
+    if (removedGroups.length) {
+      // Old groups remain valid until every surviving item points at its new
+      // group, so grouped-to-unified changes never pass through missing rows.
+      this.groupsDataSet.remove(removedGroups);
+      flushDataSet(this.groupsDataSet);
     }
+
+    this.timeline.redraw();
+    this.#scheduleCalendarAxis();
   }
 
   redraw() {
