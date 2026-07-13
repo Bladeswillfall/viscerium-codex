@@ -20,14 +20,13 @@ test('the Astro island mounts the native renderer without host redraw machinery'
   assert.doesNotMatch(island, /installCalendarYearAxisSync/);
 });
 
-test('unified chronology uses Chronos native ungrouped mode', () => {
+test('unified chronology keeps one canonical Chronos group without host remounting', () => {
   const adapter = read('../src/lib/timeline/chronos-adapter.mjs');
 
-  assert.match(adapter, /if \(laneMode === 'unified'\)[\s\S]*groups: \[\]/);
-  assert.match(adapter, /groupFor: \(\) => undefined/);
-  assert.match(adapter, /const groupToken = group \? ` \{\$\{cleanChronosText\(group\.label\)/);
-  assert.match(adapter, /const targetGroups = groups\.length \? groups : \[undefined\]/);
-  assert.match(adapter, /group\?\.key \?\? 'unified'/);
+  assert.match(adapter, /if \(laneMode === 'unified'\)[\s\S]*const chronology = \{ key: 'chronology', label: 'Chronology' \}/);
+  assert.match(adapter, /groups: \[chronology\]/);
+  assert.match(adapter, /groupFor: \(\) => chronology/);
+  assert.match(adapter, /\{\$\{cleanChronosText\(group\.label\)/);
 });
 
 test('the viewport is stable and does not pin or adapt Chronos internals', () => {
