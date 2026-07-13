@@ -64,12 +64,23 @@ test('unified chronology keeps one stable native Chronos group', async ({ page }
   });
 
   const bottomScroll = await canvas.evaluate((element) => {
-    const scroller = element.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
-    if (!scroller) return null;
-    const maximum = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
-    scroller.scrollTop = maximum;
-    scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
-    return { maximum, applied: scroller.scrollTop };
+    const candidates = [element, ...element.querySelectorAll('*')]
+      .map((candidate) => ({
+        candidate,
+        maximum: Math.max(0, candidate.scrollHeight - candidate.clientHeight),
+      }))
+      .filter(({ maximum }) => maximum > 2)
+      .sort((left, right) => right.maximum - left.maximum);
+    const selected = candidates[0];
+    if (!selected) return null;
+    selected.candidate.scrollTop = selected.maximum;
+    selected.candidate.dispatchEvent(new Event('scroll', { bubbles: true }));
+    return {
+      maximum: selected.maximum,
+      applied: selected.candidate.scrollTop,
+      className: selected.candidate.className,
+      tagName: selected.candidate.tagName,
+    };
   });
   await page.waitForTimeout(300);
   const bottomMetrics = await canvas.evaluate(visibleItemMetrics);
