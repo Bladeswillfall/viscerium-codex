@@ -12,7 +12,7 @@ test('the Preact island enhances only the existing timeline list panel', () => {
 
   assert.match(island, /installTimelineChronicle/);
   assert.match(island, /import '\.\.\/\.\.\/styles\/timeline-chronicle\.css'/);
-  assert.match(island, /const cleanupChronicle = \(\) => \{\}/);
+  assert.match(island, /let cleanupChronicle = \(\) => \{\}/);
   assert.match(island, /cleanupChronicle\(\);[\s\S]*cleanupHovercard\(\);[\s\S]*cleanupTimeline\(\);/);
 
   assert.match(chronicle, /root\.querySelector\('\[data-vc-list-panel\]'\)/);
