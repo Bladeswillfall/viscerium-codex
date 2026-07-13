@@ -39,6 +39,13 @@ test('Degel system explorer exposes equivalent map and list views with accessibi
   assert.match(component, /loading="lazy"/);
 });
 
+test('Degel orbit guides bow toward the outer system', async () => {
+  const component = await readFile(new URL('../src/components/degel-system/DegelSystemExplorer.astro', import.meta.url), 'utf8');
+
+  assert.match(component, /guide\.y \+ 4\.5/);
+  assert.doesNotMatch(component, /guide\.y - 4\.5/);
+});
+
 test('Degel category page mounts the explorer and suppresses the generated table of contents', async () => {
   const pageTitle = await readFile(new URL('../src/components/CodexPageTitle.astro', import.meta.url), 'utf8');
   const twoColumn = await readFile(new URL('../src/components/CodexTwoColumnContent.astro', import.meta.url), 'utf8');
@@ -46,4 +53,15 @@ test('Degel category page mounts the explorer and suppresses the generated table
   assert.match(pageTitle, /<DegelSystemExplorer \/>/);
   assert.match(twoColumn, /codex-degel-system-page/);
   assert.match(twoColumn, /starlightRoute\.toc && !isDegelSystemIndex/);
+});
+
+test('Degel category releases the explorer from Starlight article width limits', async () => {
+  const component = await readFile(new URL('../src/components/degel-system/DegelSystemExplorer.astro', import.meta.url), 'utf8');
+  const layout = await readFile(new URL('../src/styles/degel-system-layout.css', import.meta.url), 'utf8');
+
+  assert.match(component, /degel-system-layout\.css/);
+  assert.match(layout, /codex-two-column-content\.codex-degel-system-page/);
+  assert.match(layout, /> \.codex-main-pane > main > \.content-panel > \.sl-container/);
+  assert.match(layout, /max-inline-size: none !important/);
+  assert.match(layout, /inline-size: 100% !important/);
 });
