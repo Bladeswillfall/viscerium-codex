@@ -1,19 +1,13 @@
 /*
- * The explicit calendar grid lives inside vis-timeline's itemset so all three
- * chronology layers share one stacking context:
- *
- *   0 — native era/background bands
- *   1 — exact annual SVG grid
- *   2 — native foreground event geometry
- *
- * Event cards and selected states remain explicitly higher for resilience
- * against Chronos/vis-timeline redraws.
+ * The fork places its exact calendar grid directly inside vis-timeline's centre
+ * panel. Native background bands remain below it and event geometry remains
+ * above it, all inside the same Chronos stacking context.
  */
 .vc-timeline-app .vc-timeline-canvas .vis-itemset > .vis-background {
   z-index: 0 !important;
 }
 
-.vc-timeline-app .vc-timeline-canvas .vis-itemset > .vc-timeline-year-grid {
+.vc-timeline-app .vc-timeline-canvas .vc-calendar-grid-layer {
   z-index: 1 !important;
 }
 
