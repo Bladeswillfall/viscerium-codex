@@ -6,6 +6,7 @@ import { installTimelineToolbar } from '../../lib/timeline/toolbar-ui.mjs';
 import '../../styles/timeline-chronicle.css';
 import '../../styles/timeline-chronicle-layout.css';
 import '../../styles/timeline-toolbar.css';
+import '../../styles/timeline-toolbar-container.css';
 
 type TimelineIslandOptions = {
   defaultCalendar?: string;
