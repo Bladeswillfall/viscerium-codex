@@ -105,7 +105,7 @@ export function createCalendarAxisFormatter({
         width,
         previousScaleKey,
       });
-      previousScaleKey = ticks.primary.key;
+      previousScaleKey = ticks.primaryScale.key;
 
       const syntheticDateFor = (absoluteDay) => (
         typeof toSyntheticDate === 'function'
@@ -128,9 +128,11 @@ export function createCalendarAxisFormatter({
       });
 
       return {
-        scaleKey: ticks.primary.key,
-        primary: ticks.primary.map((boundary) => mapTick(boundary, ticks.primary, 'primary')),
-        secondary: ticks.secondary.map((boundary) => mapTick(boundary, ticks.secondary, 'secondary')),
+        scaleKey: ticks.primaryScale.key,
+        primary: ticks.primary.map((boundary) => mapTick(boundary, ticks.primaryScale, 'primary')),
+        secondary: ticks.secondaryScale
+          ? ticks.secondary.map((boundary) => mapTick(boundary, ticks.secondaryScale, 'secondary'))
+          : [],
       };
     },
   };
