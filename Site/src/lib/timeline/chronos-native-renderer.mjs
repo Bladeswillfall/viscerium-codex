@@ -1,5 +1,5 @@
-import { ChronosTimeline } from 'chronos-timeline-md';
 import { DataSet, Timeline } from 'vis-timeline/standalone';
+import { VisceriumChronosTimeline } from '../chronos-fork/VisceriumChronosTimeline.mjs';
 import { calendars, defaultCalendarId, formatAbsoluteDay } from '../calendar/runtime.mjs';
 import {
   IMPORTANCE_LEVELS,
@@ -17,6 +17,7 @@ import {
   timelineEventSearchText,
   updateTimelineUrl,
 } from './core.mjs';
+import { createCalendarAxisFormatter } from './calendar-axis.mjs';
 import { createChronosTimelineModel } from './chronos-adapter.mjs';
 
 const VIEWPORT_BUFFER_FACTOR = 1.25;
@@ -80,8 +81,7 @@ function renderTemplate(dataset, options, instanceId) {
       ${options.showFilters ? `<details class="vc-timeline-filters" data-vc-filters><summary>Filters</summary><div class="vc-timeline-filter-grid"><fieldset><legend>Importance</legend>${checkboxList('importance', IMPORTANCE_LEVELS, importanceLabels)}</fieldset><fieldset><legend>Categories</legend>${categories.length ? checkboxList('categories', categories) : '<p>No categories.</p>'}</fieldset>${eraOptions.length ? `<fieldset><legend>Eras</legend>${checkboxList('eras', eraOptions)}</fieldset>` : ''}<div class="vc-timeline-filter-actions"><button type="button" data-vc-clear>Clear filters</button></div></div></details>` : ''}
       <div class="vc-era-strip" aria-label="Era ranges">${dataset.eras.map((era) => `<span class="vc-era-action era-${cssToken(era.id)}"><button type="button" data-vc-era="${escapeHtml(era.id)}">${escapeHtml(era.title)}</button><a href="${escapeHtml(era.href)}" aria-label="Open ${escapeHtml(era.title)} article">Article</a></span>`).join('')}</div>
       <div class="vc-timeline-stage">
-        <div class="vc-timeline-axis" data-vc-axis aria-hidden="true"></div>
-        <div class="vc-timeline-canvas vc-chronos-host" data-vc-canvas tabindex="0" aria-label="Interactive Chronos timeline. Use the list view for complete keyboard navigation."></div>
+        <div class="vc-timeline-canvas vc-chronos-host" data-vc-canvas tabindex="0" aria-label="Interactive Chronos timeline with native fictional-calendar axis. Use the list view for complete keyboard navigation."></div>
       </div>
       ${options.showMinimap ? `<details class="vc-timeline-minimap-wrap" data-vc-minimap-wrap open><summary>Overview</summary><div class="vc-timeline-minimap" data-vc-minimap aria-label="Timeline overview"></div></details>` : ''}
       <div class="vc-timeline-status" data-vc-status role="status" aria-live="polite"></div>
@@ -90,20 +90,8 @@ function renderTemplate(dataset, options, instanceId) {
         <button type="button" class="vc-timeline-detail-close" data-vc-close aria-label="Close event details">×</button>
         <div data-vc-detail-body></div>
       </aside>
-      ${options.showLegend ? `<div class="vc-timeline-legend" aria-label="Timeline legend"><span class="importance-landmark">Landmark</span><span class="importance-major">Major</span><span class="importance-standard">Standard</span><span class="certainty-approximate">Approximate</span><span class="certainty-disputed">Disputed</span><span class="certainty-legendary">Legendary</span><span class="vc-chronos-credit">Native Chronos UI</span></div>` : ''}
+      ${options.showLegend ? `<div class="vc-timeline-legend" aria-label="Timeline legend"><span class="importance-landmark">Landmark</span><span class="importance-major">Major</span><span class="importance-standard">Standard</span><span class="certainty-approximate">Approximate</span><span class="certainty-disputed">Disputed</span><span class="certainty-legendary">Legendary</span><span class="vc-chronos-credit">VISCERIUM Chronos fork</span></div>` : ''}
     </section>`;
-}
-
-function axisTicks(startDay, endDay, count = 6) {
-  const span = Math.max(1, endDay - startDay);
-  const candidates = [1, 7, 28, 84, 182, 365, 730, 1_825, 3_650, 18_250, 36_500, 182_500];
-  const raw = span / Math.max(2, count - 1);
-  const step = candidates.find((candidate) => candidate >= raw) ?? Math.ceil(raw / 365) * 365;
-  const first = Math.ceil(startDay / step) * step;
-  const ticks = [];
-  for (let day = first; day <= endDay; day += step) ticks.push(day);
-  if (!ticks.length || ticks[0] > startDay + span * 0.2) ticks.unshift(startDay);
-  return ticks;
 }
 
 function chronosSettings() {
@@ -143,7 +131,6 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
   root.dataset.enhanced = 'true';
 
   const canvas = root.querySelector('[data-vc-canvas]');
-  const axis = root.querySelector('[data-vc-axis]');
   const status = root.querySelector('[data-vc-status]');
   const details = root.querySelector('[data-vc-details]');
   const detailBody = root.querySelector('[data-vc-detail-body]');
@@ -260,7 +247,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
   let listDirty = true;
   let searchDebounceHandle;
 
-  const chronos = new ChronosTimeline({
+  const chronos = new VisceriumChronosTimeline({
     container: canvas,
     settings: chronosSettings(),
     callbacks: {
@@ -272,6 +259,18 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
       },
     },
     cssRootClass: 'vc-chronos-core',
+    axis: createCalendarAxisFormatter({
+      getCalendarId: () => state.calendar,
+      fromSyntheticDate,
+    }),
+    timelineOptions: {
+      height: options.compact ? '22rem' : '24rem',
+      minHeight: '20rem',
+      zoomKey: 'ctrlKey',
+      zoomMin: 86_400_000,
+      zoomMax: Math.max(86_400_000, (dataset.absoluteEndDay - dataset.absoluteStartDay + 365) * 86_400_000),
+      tooltip: { followMouse: true, overflowMethod: 'cap' },
+    },
   });
 
   const initialModel = createChronosTimelineModel({
@@ -284,22 +283,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
   });
   chronos.renderParsed(initialModel.parsed);
   const timeline = chronos.timeline;
-  if (!timeline) throw new Error('Chronos did not create a timeline instance.');
-  timeline.setOptions({
-    height: options.compact ? '28rem' : '34rem',
-    minHeight: '20rem',
-    stack: true,
-    stackSubgroups: true,
-    showCurrentTime: false,
-    horizontalScroll: true,
-    verticalScroll: true,
-    zoomKey: 'ctrlKey',
-    zoomMin: 86_400_000,
-    zoomMax: Math.max(86_400_000, (dataset.absoluteEndDay - dataset.absoluteStartDay + 365) * 86_400_000),
-    selectable: true,
-    multiselect: false,
-    tooltip: { followMouse: true, overflowMethod: 'cap' },
-  });
+  if (!timeline) throw new Error('The VISCERIUM Chronos fork did not create a timeline instance.');
 
   let minimap;
   let minimapItems;
@@ -371,25 +355,15 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
       visibleStartDay,
       visibleEndDay,
     });
-    timeline.setGroups(model.groups);
-    timeline.setItems(model.items);
+    chronos.updateParsed(model.parsed);
     status.textContent = `${renderedEvents.length} nearby events rendered; ${matchingEvents.length} match the current view rules out of ${dataset.events.length}.`;
     if (filtersChanged || thresholdChanged) renderList(true);
   }
 
-  function renderAxis() {
+  function syncViewportState() {
     const range = timeline.getWindow();
-    const startDay = fromSyntheticDate(range.start);
-    const endDay = fromSyntheticDate(range.end);
-    const span = Math.max(1, endDay - startDay);
-    const ticks = axisTicks(startDay, endDay, window.innerWidth < 640 ? 3 : 6);
-    axis.innerHTML = ticks.map((day) => {
-      const left = Math.min(100, Math.max(0, ((day - startDay) / span) * 100));
-      const precision = span > 3_000 ? 'year' : span > 180 ? 'month' : 'day';
-      return `<span style="left:${left}%">${escapeHtml(formatAbsoluteDay(day, state.calendar, precision))}</span>`;
-    }).join('');
-    state.visibleStartDay = startDay;
-    state.visibleEndDay = endDay;
+    state.visibleStartDay = fromSyntheticDate(range.start);
+    state.visibleEndDay = fromSyntheticDate(range.end);
     if (minimapItems) {
       minimapItems.update({
         id: 'viewport',
@@ -505,7 +479,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
 
     minimapItems = new DataSet();
     minimap = new Timeline(minimapElement, minimapItems, {
-      height: '8rem',
+      height: '4.5rem',
       stack: false,
       showCurrentTime: false,
       showMajorLabels: false,
@@ -555,7 +529,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
       toSyntheticDate(dataset.absoluteEndDay),
       { animation: false },
     );
-    renderAxis();
+    syncViewportState();
   }
 
   function scheduleMinimap() {
@@ -568,7 +542,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
   }
 
   timeline.on('rangechanged', () => {
-    renderAxis();
+    syncViewportState();
     refreshItems();
     syncUrl();
   });
@@ -590,10 +564,11 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     }
     const windowRange = timeline.getWindow();
     refreshItems({ force: true });
-    renderAxis();
+    chronos.redraw();
     renderList(true);
     if (state.selected) renderDetails(eventById.get(state.selected));
     timeline.setWindow(windowRange.start, windowRange.end, { animation: false });
+    syncViewportState();
     syncUrl();
   });
   searchInput.addEventListener('input', scheduleSearch);
@@ -618,10 +593,10 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     const visible = listPanel.hidden;
     listPanel.hidden = !visible;
     canvas.hidden = visible;
-    axis.hidden = visible;
     event.currentTarget.setAttribute('aria-pressed', String(visible));
     event.currentTarget.textContent = visible ? 'Graph view' : 'List view';
     if (visible && listDirty) renderList(true);
+    if (!visible) chronos.redraw();
   });
   listPanel.addEventListener('click', (event) => {
     const selectButton = event.target.closest?.('[data-vc-select-event]');
@@ -651,7 +626,7 @@ export function mountTimeline(root, dataset, suppliedOptions = {}) {
     { animation: false },
   );
   status.textContent = `${renderedEvents.length} nearby events rendered; ${matchingEvents.length} match the current view rules out of ${dataset.events.length}.`;
-  renderAxis();
+  syncViewportState();
   scheduleMinimap();
   if (state.selected && eventById.has(state.selected)) {
     selectEvent(state.selected, false);
