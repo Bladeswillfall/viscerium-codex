@@ -35,23 +35,33 @@
 
 /*
  * Starlight's article rhythm applies sibling spacing inside markdown content.
- * Native vis-timeline groups are also sibling block elements, so that prose
- * rule inserts a 1rem gap between every label and group. vis-timeline measures
- * its centre and label panels before those host margins are reconciled, which
- * bottom-aligns the centre by the accumulated gap and clips the final rows.
- * Chronos and vis-timeline both assume zero external margins on these nodes.
+ * Every vis-timeline structural layer and event item participates in its own
+ * absolute-positioned layout; a host prose margin changes the painted geometry
+ * without changing vis-timeline's measurements. The resulting 1rem offsets
+ * produce fake row gaps and clip the final item. Keep that rhythm completely
+ * outside the Chronos renderer boundary.
  */
 .vc-timeline-app .chronos-timeline-container :is(
+  .vis-itemset > .vis-background,
+  .vis-itemset > .vis-foreground,
+  .vis-itemset > .vis-axis,
   .vis-labelset > .vis-label,
   .vis-foreground > .vis-group,
   .vis-background > .vis-group,
-  .vis-axis > .vis-group
+  .vis-axis > .vis-group,
+  .vis-group > .vis-item,
+  .vis-item > .vis-item-content
 ),
 .vc-chronos-embed .chronos-timeline-container :is(
+  .vis-itemset > .vis-background,
+  .vis-itemset > .vis-foreground,
+  .vis-itemset > .vis-axis,
   .vis-labelset > .vis-label,
   .vis-foreground > .vis-group,
   .vis-background > .vis-group,
-  .vis-axis > .vis-group
+  .vis-axis > .vis-group,
+  .vis-group > .vis-item,
+  .vis-item > .vis-item-content
 ) {
   margin: 0 !important;
 }
