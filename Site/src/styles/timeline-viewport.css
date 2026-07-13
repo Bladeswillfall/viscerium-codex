@@ -1,12 +1,8 @@
 /*
- * Chronos owns the interactive viewport. Keep one compact, stable host; do not
- * resize, pin, scroll or replace its internal panels while the reader is
- * dragging, zooming or changing group modes.
+ * The forked Chronos renderer owns one stable viewport, including its native
+ * fictional-calendar axis. Do not resize or pin internal panels while the
+ * reader is dragging, zooming or changing group modes.
  */
-
-.vc-timeline-app .vc-timeline-axis {
-  height: 2.6rem;
-}
 
 .vc-timeline-app .vc-timeline-canvas {
   position: relative;
