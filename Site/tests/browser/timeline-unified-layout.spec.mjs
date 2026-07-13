@@ -11,7 +11,8 @@ async function navigateToGlobalTimeline(page) {
   await page.waitForLoadState('networkidle');
   await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
   await expect(page.locator('[data-vc-canvas]')).toBeVisible();
-  await expect(page.locator('[data-vc-canvas] .vis-time-axis.vis-foreground')).toBeVisible();
+  await expect(page.locator('[data-vc-canvas] .vc-calendar-axis-tick').first()).toBeVisible();
+  await expect(page.locator('[data-vc-canvas] .vis-item.vc-timeline-item').first()).toBeVisible();
 }
 
 async function openGlobalTimeline(page) {
@@ -42,7 +43,7 @@ function visibleItemMetrics(canvas) {
   };
 }
 
-test('unified chronology keeps the fictional calendar axis inside one stable Chronos viewport', async ({ page }) => {
+test('unified chronology keeps exact fictional-calendar ticks inside one Chronos viewport', async ({ page }) => {
   await openGlobalTimeline(page);
 
   const canvas = page.locator('[data-vc-canvas]');
@@ -50,7 +51,7 @@ test('unified chronology keeps the fictional calendar axis inside one stable Chr
     const canvasRect = element.getBoundingClientRect();
     const timeline = element.querySelector(':scope > .vis-timeline');
     const timelineRect = timeline?.getBoundingClientRect();
-    const axis = element.querySelector('.vis-time-axis.vis-foreground');
+    const axis = element.querySelector('.vc-calendar-axis-layer');
     const axisRect = axis?.getBoundingClientRect();
     const items = [...element.querySelectorAll('.vis-item.vc-timeline-item')]
       .filter((item) => item.getClientRects().length > 0)
@@ -58,24 +59,29 @@ test('unified chronology keeps the fictional calendar axis inside one stable Chr
     const labels = [...element.querySelectorAll('.vis-labelset > .vis-label')]
       .filter((item) => item.getClientRects().length > 0)
       .map((item) => item.textContent?.trim() ?? '');
-    const axisLabels = [...element.querySelectorAll('.vis-time-axis.vis-foreground .vis-text')]
+    const axisTicks = [...element.querySelectorAll('.vc-calendar-axis-tick')]
       .filter((item) => item.getClientRects().length > 0)
-      .map((item) => item.textContent?.trim() ?? '')
-      .filter(Boolean);
+      .map((item) => ({
+        label: item.textContent?.trim() ?? '',
+        absoluteDay: Number(item.dataset.absoluteDay),
+        unit: item.dataset.unit,
+      }));
 
     return {
       canvasHeight: canvasRect.height,
       timelineHeight: timelineRect?.height ?? 0,
       eventCount: items.length,
-      firstEventInset: items.length ? Math.min(...items.map((rect) => rect.top)) - canvasRect.top : null,
       firstEventTop: items.length ? Math.min(...items.map((rect) => rect.top)) : null,
       axisTop: axisRect?.top ?? null,
       axisBottom: axisRect?.bottom ?? null,
-      axisLabels,
+      axisTicks,
       labels,
-      majorGridLines: element.querySelectorAll('.vis-grid.vis-vertical.vis-major').length,
-      minorGridLines: element.querySelectorAll('.vis-grid.vis-vertical.vis-minor').length,
+      primaryGridLines: element.querySelectorAll('.vc-calendar-grid-line.is-primary').length,
+      secondaryGridLines: element.querySelectorAll('.vc-calendar-grid-line.is-secondary').length,
       externalAxisCount: document.querySelectorAll('[data-vc-axis], .vc-timeline-axis').length,
+      nativeLabelsVisible: [...element.querySelectorAll('.vis-time-axis .vis-text')]
+        .some((item) => getComputedStyle(item).visibility !== 'hidden'),
+      rootVisibility: timeline ? getComputedStyle(timeline).visibility : null,
       hasPinnedHeight: element.hasAttribute('data-vc-pinned-row-height'),
       hasAdaptiveHeight: element.hasAttribute('data-vc-applied-adaptive-height'),
     };
@@ -101,11 +107,15 @@ test('unified chronology keeps the fictional calendar axis inside one stable Chr
   expect(metrics.canvasHeight).toBeLessThanOrEqual(386);
   expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
   expect(metrics.externalAxisCount).toBe(0);
+  expect(metrics.rootVisibility).toBe('visible');
+  expect(metrics.nativeLabelsVisible).toBe(false);
   expect(metrics.axisTop).toBeGreaterThanOrEqual(visible.canvasTop - 2);
   expect(metrics.axisBottom).toBeLessThanOrEqual(visible.canvasBottom + 2);
-  expect(metrics.axisLabels.length).toBeGreaterThan(1);
-  expect(metrics.axisLabels.some((label) => /\d/.test(label))).toBe(true);
-  expect(metrics.majorGridLines + metrics.minorGridLines).toBeGreaterThan(2);
+  expect(metrics.axisTicks.length).toBeGreaterThan(1);
+  expect(metrics.axisTicks.every((tick) => Number.isSafeInteger(tick.absoluteDay))).toBe(true);
+  expect(metrics.axisTicks.some((tick) => /\d/.test(tick.label))).toBe(true);
+  expect(metrics.primaryGridLines).toBeGreaterThan(1);
+  expect(metrics.primaryGridLines + metrics.secondaryGridLines).toBeGreaterThan(2);
   expect(metrics.firstEventTop).toBeGreaterThanOrEqual(metrics.axisTop);
   expect(metrics.hasPinnedHeight).toBe(false);
   expect(metrics.hasAdaptiveHeight).toBe(false);
