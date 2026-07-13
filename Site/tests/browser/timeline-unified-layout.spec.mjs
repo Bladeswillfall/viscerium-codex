@@ -11,7 +11,7 @@ async function navigateToGlobalTimeline(page) {
   await page.waitForLoadState('networkidle');
   await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
   await expect(page.locator('[data-vc-canvas]')).toBeVisible();
-  await expect(page.locator('[data-vc-canvas] .vis-time-axis')).toBeVisible();
+  await expect(page.locator('[data-vc-canvas] .vis-time-axis.vis-foreground')).toBeVisible();
 }
 
 async function openGlobalTimeline(page) {
@@ -50,7 +50,7 @@ test('unified chronology keeps the fictional calendar axis inside one stable Chr
     const canvasRect = element.getBoundingClientRect();
     const timeline = element.querySelector(':scope > .vis-timeline');
     const timelineRect = timeline?.getBoundingClientRect();
-    const axis = element.querySelector('.vis-time-axis');
+    const axis = element.querySelector('.vis-time-axis.vis-foreground');
     const axisRect = axis?.getBoundingClientRect();
     const items = [...element.querySelectorAll('.vis-item.vc-timeline-item')]
       .filter((item) => item.getClientRects().length > 0)
@@ -58,7 +58,7 @@ test('unified chronology keeps the fictional calendar axis inside one stable Chr
     const labels = [...element.querySelectorAll('.vis-labelset > .vis-label')]
       .filter((item) => item.getClientRects().length > 0)
       .map((item) => item.textContent?.trim() ?? '');
-    const axisLabels = [...element.querySelectorAll('.vis-time-axis .vis-text')]
+    const axisLabels = [...element.querySelectorAll('.vis-time-axis.vis-foreground .vis-text')]
       .filter((item) => item.getClientRects().length > 0)
       .map((item) => item.textContent?.trim() ?? '')
       .filter(Boolean);
