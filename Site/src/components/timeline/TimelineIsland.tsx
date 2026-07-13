@@ -49,18 +49,15 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
         if (cancelled || !mountRef.current) return;
 
         const cleanupTimeline = mountTimeline(root, dataset, options);
-        let cleanupHovercard = () => {};
-        let cleanupChronicle = () => {};
+        const cleanupHovercard = installTimelineHovercard(root, dataset);
         try {
-          cleanupHovercard = installTimelineHovercard(root, dataset);
-          cleanupChronicle = installTimelineChronicle(root, dataset);
+          const cleanupChronicle = installTimelineChronicle(root, dataset);
           cleanup = () => {
             cleanupChronicle();
             cleanupHovercard();
             cleanupTimeline();
           };
         } catch (error) {
-          cleanupChronicle();
           cleanupHovercard();
           cleanupTimeline();
           throw error;
