@@ -10,13 +10,13 @@
 
 .vc-timeline-app .vc-timeline-canvas {
   position: relative;
-  block-size: 22rem;
-  min-height: 18rem;
+  block-size: 24rem;
+  min-height: 20rem;
   overflow: hidden;
 }
 
 .vc-timeline-app.is-compact .vc-timeline-canvas {
-  block-size: 20rem;
+  block-size: 22rem;
 }
 
 .vc-timeline-app .vc-timeline-canvas > .vis-timeline {
@@ -39,15 +39,9 @@
   min-height: 4.5rem !important;
 }
 
-.vc-timeline-app .vc-timeline-minimap .vis-item.vc-minimap-viewport {
-  top: 0 !important;
-  height: 100% !important;
-  box-sizing: border-box;
-}
-
 @media (max-width: 38rem) {
   .vc-timeline-app .vc-timeline-canvas,
   .vc-timeline-app.is-compact .vc-timeline-canvas {
-    block-size: 20rem;
+    block-size: 22rem;
   }
 }
