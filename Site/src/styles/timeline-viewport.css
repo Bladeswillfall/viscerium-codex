@@ -6,9 +6,9 @@
 
 .vc-timeline-app .vc-timeline-canvas {
   position: relative;
-  block-size: 24rem;
+  block-size: 27rem;
   min-height: 20rem;
-  max-height: 24rem;
+  max-height: 27rem;
   overflow: hidden;
 }
 
