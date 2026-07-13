@@ -27,20 +27,22 @@ jobs:
       run:
         working-directory: Site
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: Site/package-lock.json
       - name: Install project dependencies
-        run: npm ci --silent
+        run: npm ci --silent --no-audit --no-fund
       - name: Build static Codex
         run: npm run build
       - name: Install browser test runtime
         run: |
-          npm install --no-save --legacy-peer-deps @playwright/test@1.55.0
-          npx playwright install chromium
+          npm install --no-save --package-lock=false --legacy-peer-deps --no-audit --no-fund @playwright/test@1.55.0
+          npx --no-install playwright install chromium
       - name: Start Astro preview
         run: |
           npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/viscerium-preview.log 2>&1 &
@@ -58,17 +60,18 @@ jobs:
         run: |
           mkdir -p timeline-browser-diagnostics
           set -o pipefail
-          npx playwright test tests/browser/timeline-*.spec.mjs --reporter=line --workers=1 2>&1 \
+          npx --no-install playwright test tests/browser/timeline-*.spec.mjs --reporter=line --workers=1 2>&1 \
             | tee timeline-browser-diagnostics/playwright.log
       - name: Show Astro preview log
         if: always()
         run: cat /tmp/viscerium-preview.log || true
       - name: Upload browser diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: timeline-browser-smoke
           path: |
             Site/timeline-browser-diagnostics
             Site/test-results
           if-no-files-found: ignore
+          retention-days: 7

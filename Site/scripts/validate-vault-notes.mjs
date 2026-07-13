@@ -8,9 +8,20 @@ const siteRoot = process.cwd();
 const requiredPublicFields = ['title', 'description'];
 const iconFields = ['icon', 'sidebarIcon', 'titleIcon'];
 const allowedStatuses = new Set(['canon']);
+const forbiddenActiveTag = /<\s*\/?\s*(?:script|iframe|object|embed|base)\b/i;
+const inlineEventHandler = /<[^>]*\son[a-z][\w:-]*\s*=/i;
+const unsafeUrlScheme = /(?:\b(?:href|src|action|formaction)\s*=\s*["']?\s*|\]\(\s*)(?:javascript:|data\s*:\s*text\/html)/i;
+const remoteMdxModule = /^\s*(?:import\s+(?:[^'"\n]+\s+from\s+)?|export[^\n]*\s+from\s+)["'](?:https?:|data:|javascript:)/im;
+const remoteDynamicImport = /\bimport\s*\(\s*["'](?:https?:|data:|javascript:)/i;
 
 function relative(file) {
   return path.relative(siteRoot, file).replace(/\\/g, '/');
+}
+
+function executableSurface(content) {
+  return String(content ?? '')
+    .replace(/(`{3,}|~{3,})[\s\S]*?\1/g, '')
+    .replace(/`[^`\n]*`/g, '');
 }
 
 export function validateVaultNotes(manifest) {
@@ -25,6 +36,22 @@ export function validateVaultNotes(manifest) {
     if (spec === undefined || spec === null || spec === '') return;
     if (typeof spec !== 'string' || !parseIconSpec(spec)) {
       fail(`Invalid ${label} icon specification in ${relative(file)}: ${JSON.stringify(spec)}`);
+    }
+  }
+
+  function validateActiveContent(content, file) {
+    const surface = executableSurface(content);
+    if (forbiddenActiveTag.test(surface)) {
+      fail(`Published note contains a forbidden active HTML tag: ${relative(file)}`);
+    }
+    if (inlineEventHandler.test(surface)) {
+      fail(`Published note contains an inline HTML event handler: ${relative(file)}`);
+    }
+    if (unsafeUrlScheme.test(surface)) {
+      fail(`Published note contains a javascript: or data:text/html URL: ${relative(file)}`);
+    }
+    if (remoteMdxModule.test(surface) || remoteDynamicImport.test(surface)) {
+      fail(`Published note imports executable MDX code from a remote URL: ${relative(file)}`);
     }
   }
 
@@ -45,6 +72,8 @@ export function validateVaultNotes(manifest) {
     for (const match of content.matchAll(/^\s{0,3}#{1,6}\s+\[icon:([^\]]+)\]/gim)) {
       validateIcon(match[1], 'heading shortcode', file);
     }
+
+    validateActiveContent(content, file);
   }
 
   if (!failed) console.log(`Validated ${manifest.records.length} vault source note(s).`);

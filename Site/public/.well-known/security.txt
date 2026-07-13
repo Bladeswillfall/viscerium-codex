@@ -1,0 +1,5 @@
+Contact: https://github.com/Bladeswillfall/viscerium-codex/security/advisories/new
+Policy: https://github.com/Bladeswillfall/viscerium-codex/security/policy
+Canonical: https://codex.viscerium.co.uk/.well-known/security.txt
+Preferred-Languages: en
+Expires: 2027-07-13T23:59:59Z
