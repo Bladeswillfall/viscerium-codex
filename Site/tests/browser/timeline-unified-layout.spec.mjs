@@ -61,12 +61,19 @@ test('unified chronology keeps exact fictional-calendar ticks inside one bottom 
       .map((item) => item.textContent?.trim() ?? '');
     const axisTicks = [...element.querySelectorAll('.vis-custom-time[data-vc-calendar-kind="primary"]')]
       .filter((item) => item.getClientRects().length > 0)
-      .map((item) => ({
-        label: item.dataset.vcCalendarLabel ?? '',
-        renderedLabel: getComputedStyle(item, '::after').content,
-        absoluteDay: Number(item.dataset.absoluteDay),
-        unit: item.dataset.unit,
-      }));
+      .map((item) => {
+        const labelElement = item.querySelector(':scope > .vc-calendar-time-label');
+        const labelRect = labelElement?.getBoundingClientRect();
+        return {
+          label: item.dataset.vcCalendarLabel ?? '',
+          renderedLabel: labelElement?.textContent?.trim() ?? '',
+          labelTop: labelRect?.top ?? null,
+          labelBottom: labelRect?.bottom ?? null,
+          labelVisibility: labelElement ? getComputedStyle(labelElement).visibility : null,
+          absoluteDay: Number(item.dataset.absoluteDay),
+          unit: item.dataset.unit,
+        };
+      });
 
     return {
       canvasHeight: canvasRect.height,
@@ -118,7 +125,10 @@ test('unified chronology keeps exact fictional-calendar ticks inside one bottom 
   expect(metrics.axisTicks.every((tick) => Number.isSafeInteger(tick.absoluteDay))).toBe(true);
   expect(metrics.axisTicks.every((tick) => ['year', 'month', 'week', 'day'].includes(tick.unit))).toBe(true);
   expect(metrics.axisTicks.some((tick) => /\d/.test(tick.label))).toBe(true);
-  expect(metrics.axisTicks.every((tick) => tick.renderedLabel !== 'none')).toBe(true);
+  expect(metrics.axisTicks.every((tick) => tick.renderedLabel === tick.label)).toBe(true);
+  expect(metrics.axisTicks.every((tick) => tick.labelVisibility === 'visible')).toBe(true);
+  expect(metrics.axisTicks.every((tick) => tick.labelTop >= metrics.axisTop - 2)).toBe(true);
+  expect(metrics.axisTicks.every((tick) => tick.labelBottom <= metrics.axisBottom + 2)).toBe(true);
   expect(metrics.primaryGridLines).toBeGreaterThan(1);
   expect(metrics.primaryGridLines + metrics.secondaryGridLines).toBeGreaterThan(2);
   expect(metrics.lastEventBottom).toBeLessThanOrEqual(metrics.axisTop + 2);
