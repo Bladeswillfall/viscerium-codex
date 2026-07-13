@@ -16,7 +16,7 @@ async function openGlobalTimeline(page) {
   await page.waitForTimeout(600);
 }
 
-test('unified chronology is a native ungrouped Chronos timeline', async ({ page }) => {
+test('unified chronology keeps one stable native Chronos group', async ({ page }) => {
   await openGlobalTimeline(page);
 
   const metrics = await page.locator('[data-vc-canvas]').evaluate((canvas) => {
@@ -52,8 +52,7 @@ test('unified chronology is a native ungrouped Chronos timeline', async ({ page 
   });
 
   expect(metrics.eventCount).toBeGreaterThan(1);
-  expect(metrics.labels).toEqual([]);
-  expect(metrics.firstEventInset).toBeLessThan(96);
+  expect(metrics.labels).toContain('Chronology');
   expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
   expect(metrics.hasPinnedHeight).toBe(false);
   expect(metrics.hasAdaptiveHeight).toBe(false);
