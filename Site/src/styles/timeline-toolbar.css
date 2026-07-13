@@ -152,6 +152,10 @@
   line-height: 1;
 }
 
+.vc-timeline-toolbar-enhanced .vc-timeline-command > :is(.vc-timeline-control-icon, .vc-timeline-command-label) {
+  pointer-events: none;
+}
+
 .vc-timeline-toolbar-enhanced [data-vc-list] {
   border-color: color-mix(in srgb, var(--vc-timeline-accent) 58%, var(--vc-timeline-border-strong));
   background: color-mix(in srgb, var(--vc-timeline-accent) 8%, var(--vc-timeline-surface-deep));
