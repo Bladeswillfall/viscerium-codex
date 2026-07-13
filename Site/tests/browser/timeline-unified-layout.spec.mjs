@@ -36,6 +36,8 @@ test('the unified chronology starts at the top and its final rows remain reachab
   await openGlobalTimeline(page);
 
   const canvas = page.locator('[data-vc-canvas]');
+  await expect(canvas).toHaveAttribute('data-vc-applied-adaptive-height', /\d+/);
+
   const initialMetrics = await canvas.evaluate(visibleEventMetrics);
   const initialScroll = await canvas.evaluate((element) => {
     const scroller = element.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
@@ -51,6 +53,9 @@ test('the unified chronology starts at the top and its final rows remain reachab
   expect(initial.count).toBeGreaterThan(1);
   expect(initial.scrollTop).toBe(0);
   expect(initial.firstTop - initial.canvasTop).toBeLessThan(Math.min(96, initial.canvasHeight * 0.2));
+  if ((initial.scrollMaximum ?? 0) <= 2) {
+    expect(initial.canvasBottom - initial.lastBottom).toBeLessThanOrEqual(72);
+  }
 
   const bottomScroll = await canvas.evaluate((element) => {
     const scroller = element.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
