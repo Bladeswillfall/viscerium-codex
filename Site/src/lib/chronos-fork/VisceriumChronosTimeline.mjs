@@ -53,7 +53,6 @@ function replaceDataSet(dataSet, values) {
   const removed = dataSet.getIds().filter((id) => !nextIds.has(id));
   if (removed.length) dataSet.remove(removed);
   if (next.length) dataSet.update(next);
-  dataSet.flush?.();
 }
 
 function fallbackTooltip(element, text) {
@@ -141,8 +140,8 @@ export class VisceriumChronosTimeline {
     this.items = items;
     this.itemModelSignature = itemSignature(items);
     this.groupModelSignature = groupSignature(groups);
-    this.itemsDataSet = new DataSet(items, { queue: true });
-    this.groupsDataSet = new DataSet(groups, { queue: true });
+    this.itemsDataSet = new DataSet(items);
+    this.groupsDataSet = new DataSet(groups);
 
     const options = this.#timelineOptions(flags);
     this.timeline = groups.length
