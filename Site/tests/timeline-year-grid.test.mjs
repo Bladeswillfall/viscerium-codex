@@ -187,7 +187,7 @@ test('the fork generates exact Okse boundaries instead of relabeling Gregorian t
   }), '120');
 });
 
-test('the fork draws exact calendar labels and grid lines inside vis-timeline panels', () => {
+test('the fork draws exact calendar labels and grid lines as native vis-timeline components', () => {
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
   const axisStyles = read('../src/styles/chronos-calendar-axis.css');
@@ -195,11 +195,14 @@ test('the fork draws exact calendar labels and grid lines inside vis-timeline pa
   assert.match(renderer, /createCalendarAxisFormatter/);
   assert.match(renderer, /timeline\.on\('rangechanged'/);
   assert.match(fork, /this\.axis\.getTicks/);
-  assert.match(fork, /topPanel\.appendChild\(axisLayer\)/);
-  assert.match(fork, /centerPanel\.appendChild\(gridLayer\)/);
+  assert.match(fork, /timeline\.addCustomTime\(tick\.date, id\)/);
+  assert.match(fork, /timeline\.setCustomTime\(tick\.date, id\)/);
+  assert.match(fork, /timeline\.removeCustomTime\(id\)/);
   assert.match(fork, /dataset\.absoluteDay/);
-  assert.match(axisStyles, /\.vc-calendar-axis-tick/);
-  assert.match(axisStyles, /\.vc-calendar-grid-line\.is-primary/);
-  assert.match(axisStyles, /\.vc-calendar-grid-line\.is-secondary/);
+  assert.match(fork, /dataset\.vcCalendarLabel/);
+  assert.match(axisStyles, /\.vc-calendar-time-label/);
+  assert.match(fork, /label\.className = 'vc-calendar-time-label'/);
+  assert.match(axisStyles, /\.vis-custom-time\[data-vc-calendar-kind="secondary"\]/);
+  assert.doesNotMatch(fork, /appendChild\(axisLayer\)|appendChild\(gridLayer\)/);
   assert.doesNotMatch(renderer, /data-vc-axis|axisTicks|renderAxis/);
 });

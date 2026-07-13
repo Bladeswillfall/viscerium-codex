@@ -12,11 +12,15 @@ test('the Astro island mounts the local Chronos renderer fork without host patch
 
   assert.match(entry, /export \{ mountTimeline \} from '\.\/chronos-native-renderer\.mjs'/);
   assert.match(renderer, /VisceriumChronosTimeline/);
-  assert.match(fork, /orientation: \{ axis: 'top', item: 'top' \}/);
+  assert.match(fork, /orientation: \{ axis: 'bottom', item: 'top' \}/);
   assert.match(fork, /groupHeightMode: 'fitItems'/);
   assert.match(fork, /rtl: false/);
   assert.match(fork, /#installCalendarAxis\(\)/);
   assert.match(fork, /this\.axis\.getTicks/);
+  assert.match(fork, /timeline\.addCustomTime\(tick\.date, id\)/);
+  assert.match(fork, /timeline\.removeCustomTime\(id\)/);
+  assert.match(fork, /timeline\.on\('rangechanged', sync\)/);
+  assert.doesNotMatch(fork, /timeline\.on\('rangechange', sync\)/);
   assert.match(fork, /setOptions\(\{ queue: queueOptions \}\)/);
   assert.doesNotMatch(entry, /ChronosTimeline\.prototype|_handleZoomWorkaround|Proxy\s*\(/);
   assert.doesNotMatch(renderer, /ChronosTimeline\.prototype|_handleZoomWorkaround|MutationObserver|ResizeObserver/);
@@ -51,11 +55,12 @@ test('the exact fictional-calendar axis and event rows share one stable fixed-he
   assert.doesNotMatch(fork, /delete this\.hostTimelineOptions\.height/);
   assert.match(fork, /maxHeight: '40rem'/);
   assert.match(axisStyles, /\.vc-timeline-canvas \.vis-time-axis[\s\S]*display: block/);
-  assert.match(axisStyles, /\.vc-calendar-axis-layer/);
-  assert.match(axisStyles, /\.vc-calendar-grid-line\.is-secondary/);
-  assert.match(axisStyles, /\.vc-calendar-grid-line\.is-primary/);
-  assert.match(fork, /topPanel\.appendChild\(axisLayer\)/);
-  assert.match(fork, /centerPanel\.appendChild\(gridLayer\)/);
+  assert.match(axisStyles, /\.vis-panel\.vis-bottom/);
+  assert.match(axisStyles, /\.vis-custom-time\[data-vc-calendar-kind="secondary"\]/);
+  assert.match(axisStyles, /\.vc-calendar-time-label/);
+  assert.match(fork, /label\.className = 'vc-calendar-time-label'/);
+  assert.doesNotMatch(axisStyles, /\.vc-calendar-axis-layer|\.vc-calendar-grid-layer/);
+  assert.doesNotMatch(fork, /appendChild\(axisLayer\)|appendChild\(gridLayer\)/);
   assert.doesNotMatch(renderer, /data-vc-axis|vc-timeline-axis|axisTicks|renderAxis/);
   assert.doesNotMatch(styles, /vc-pinned-row-height|data-vc-adaptive-height/);
 });
