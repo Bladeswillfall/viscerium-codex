@@ -243,6 +243,7 @@ export class VisceriumChronosTimeline {
       showMinorLabels: true,
       horizontalScroll: true,
       verticalScroll: true,
+      margin: { item: { horizontal: 8, vertical: 5 }, axis: 8 },
       format: {
         minorLabels: (date, scale, step) => this.axis.formatMinorLabel?.(date, scale, step) ?? '',
         majorLabels: (date, scale, step) => this.axis.formatMajorLabel?.(date, scale, step) ?? '',
