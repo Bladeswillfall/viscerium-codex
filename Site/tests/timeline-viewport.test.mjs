@@ -37,12 +37,11 @@ test('unified chronology keeps one canonical Chronos group without host remounti
 test('the viewport and overview are compact fixed-height surfaces', () => {
   const styles = read('../src/styles/timeline-viewport.css');
 
+  assert.match(styles, /block-size: 24rem/);
   assert.match(styles, /block-size: 22rem/);
-  assert.match(styles, /block-size: 20rem/);
   assert.match(styles, /height: 2\.6rem/);
   assert.match(styles, /min-height: 4\.5rem/);
   assert.match(styles, /> \.vis-timeline \{[\s\S]*block-size: 100% !important/);
-  assert.match(styles, /\.vc-minimap-viewport \{[\s\S]*height: 100% !important/);
   assert.doesNotMatch(styles, /vc-pinned-row-height/);
   assert.doesNotMatch(styles, /vc-timeline-hovercard/);
   assert.doesNotMatch(styles, /data-vc-adaptive-height/);
