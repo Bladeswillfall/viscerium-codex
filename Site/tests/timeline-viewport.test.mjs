@@ -11,8 +11,10 @@ test('the Astro island mounts one stable Chronos renderer without host observers
   assert.match(renderer, /mountTimeline as mountNativeTimeline/);
   assert.match(renderer, /renderParsedWithStableTopOrientation/);
   assert.match(renderer, /orientation: \{[\s\S]*axis: 'top',[\s\S]*item: 'top'/);
-  assert.match(renderer, /suppressGroupedZoomJiggle/);
-  assert.match(renderer, /_handleZoomWorkaround = suppressGroupedZoomJiggle/);
+  assert.match(renderer, /refreshGroupedLayoutWithoutZoom/);
+  assert.match(renderer, /_handleZoomWorkaround = refreshGroupedLayoutWithoutZoom/);
+  assert.match(renderer, /timeline\.redraw\?\.\(\)/);
+  assert.match(renderer, /setWindow\(range\.start, range\.end, \{ animation: false \}\)/);
   assert.match(renderer, /_handleZoomWorkaround = originalZoomWorkaround/);
   assert.match(renderer, /makeTimelineSettersIdempotent/);
   assert.doesNotMatch(renderer, /Proxy\s*\(/);
