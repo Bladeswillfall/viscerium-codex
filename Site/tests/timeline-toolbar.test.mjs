@@ -15,7 +15,7 @@ test('the timeline island installs a scoped toolbar enhancement after existing b
   assert.match(island, /cleanupToolbar\(\);[\s\S]*cleanupChronicle\(\);[\s\S]*cleanupHovercard\(\);[\s\S]*cleanupTimeline\(\);/);
 
   assert.match(toolbar, /root\.querySelector\('\.vc-timeline-toolbar'\)/);
-  assert.match(toolbar, /data\.vcToolbarEnhanced = 'true'/);
+  assert.match(toolbar, /toolbar\.dataset\.vcToolbarEnhanced = 'true'/);
   assert.match(toolbar, /createActionGroup\('Navigate'/);
   assert.match(toolbar, /createActionGroup\('Scale'/);
   assert.match(toolbar, /createActionGroup\('View'/);
