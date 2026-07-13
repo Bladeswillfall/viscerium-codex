@@ -292,6 +292,6 @@ export default defineConfig({
       },
     }),
     ...(sourceAssetCompressor ? [sourceAssetCompressor] : []),
-    compress(),
+    compress({ SVG: false }),
   ],
 });
