@@ -159,6 +159,20 @@ npm run build
 
 Use `npm run dev:sync` when you want to sync notes and start the local site in one command.
 
+## Compression
+
+`@playform/compress` runs last in the Astro integration list, so every `npm run build` compresses the generated `Site/dist/` deployment output.
+
+To losslessly compress supported tracked raster assets and then rebuild the synchronized public copies:
+
+```bash
+cd Site
+npm ci
+npm run compress:assets
+```
+
+Review the resulting asset changes before committing and pushing them. JPEG and source SVG files are intentionally not rewritten by this command to avoid cumulative image degradation or changes to authored SVG IDs and masks. See [`Site/COMPRESSION.md`](Site/COMPRESSION.md) for the complete workflow.
+
 ## Cloudflare Pages settings
 
 ```text
@@ -189,6 +203,7 @@ Installed Astro integrations are configured in `Site/astro.config.mjs`:
 
 - `@astrojs/sitemap` generates the site map from the canonical `site` value. Set `SITE_URL` before production launch so generated URLs use the real domain.
 - `@astrojs/partytown` moves supported third-party scripts off the main thread. It currently forwards `dataLayer.push` so the GA4 placeholder can work once it is properly enabled.
+- `@playform/compress` minifies and compresses the generated static build output after the other integrations finish.
 
 GA4 is intentionally placeholder-only. The code path exists, but it will not emit tracking scripts while the Measurement ID is still `G-XXXXXXXXXX`.
 
