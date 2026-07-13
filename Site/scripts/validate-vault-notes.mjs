@@ -11,7 +11,8 @@ const allowedStatuses = new Set(['canon']);
 const forbiddenActiveTag = /<\s*\/?\s*(?:script|iframe|object|embed|base)\b/i;
 const inlineEventHandler = /<[^>]*\son[a-z][\w:-]*\s*=/i;
 const unsafeUrlScheme = /(?:\b(?:href|src|action|formaction)\s*=\s*["']?\s*|\]\(\s*)(?:javascript:|data\s*:\s*text\/html)/i;
-const remoteMdxModule = /^\s*(?:import|export)\b[^\n]*\bfrom\s*["'](?:https?:|data:|javascript:)/im;
+const remoteMdxModule = /^\s*(?:import\s+(?:[^'"\n]+\s+from\s+)?|export[^\n]*\s+from\s+)["'](?:https?:|data:|javascript:)/im;
+const remoteDynamicImport = /\bimport\s*\(\s*["'](?:https?:|data:|javascript:)/i;
 
 function relative(file) {
   return path.relative(siteRoot, file).replace(/\\/g, '/');
@@ -49,7 +50,7 @@ export function validateVaultNotes(manifest) {
     if (unsafeUrlScheme.test(surface)) {
       fail(`Published note contains a javascript: or data:text/html URL: ${relative(file)}`);
     }
-    if (remoteMdxModule.test(surface)) {
+    if (remoteMdxModule.test(surface) || remoteDynamicImport.test(surface)) {
       fail(`Published note imports executable MDX code from a remote URL: ${relative(file)}`);
     }
   }
