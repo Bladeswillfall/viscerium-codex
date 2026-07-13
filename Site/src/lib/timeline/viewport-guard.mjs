@@ -7,6 +7,13 @@ const GUARDED = Symbol('visceriumTimelineViewportGuard');
  * it in a compatibility proxy. Intercept that creation point so the raw
  * timeline uses the bounded canvas height and ignores the later adaptive pixel
  * heights that previously caused the canvas/timeline feedback loop.
+ *
+ * vis-timeline defaults both its axis and items to bottom orientation. That is
+ * a poor fit for the Codex's separate ruler above the canvas: a tall unified
+ * group is laid out from its lower edge, leaving a large empty ceiling and
+ * pushing its final event rows below the clipped viewport. Keep both native
+ * orientations at the top so rows begin directly beneath the Codex ruler and
+ * overflow only into the timeline's own vertical scroller.
  */
 export function prepareTimelineViewportGuard(root) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
@@ -44,6 +51,10 @@ export function prepareTimelineViewportGuard(root) {
       height: `${height}px`,
       minHeight: `${height}px`,
       verticalScroll: true,
+      orientation: {
+        axis: 'top',
+        item: 'top',
+      },
     });
     if (canvas) canvas.dataset.vcViewportHeight = String(height);
   };
