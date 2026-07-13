@@ -4,12 +4,13 @@
  */
 
 .vc-timeline-app .vc-timeline-canvas .vis-time-axis {
-  display: block;
+  display: block !important;
   font-family: var(--vc-font-ui, ui-sans-serif, system-ui);
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-top {
   z-index: 4;
+  min-height: 2.5rem;
   border-bottom: 1px solid var(--vc-timeline-border-strong) !important;
   background: linear-gradient(
     180deg,
@@ -40,5 +41,5 @@
 
 /* The overview remains intentionally label-free; it is a density navigator. */
 .vc-timeline-app .vc-timeline-minimap .vis-time-axis {
-  display: none;
+  display: none !important;
 }
