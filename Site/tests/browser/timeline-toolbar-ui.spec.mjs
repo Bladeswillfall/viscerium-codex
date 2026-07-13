@@ -55,9 +55,11 @@ test('chronicle control retains its icon and mode label', async ({ page }) => {
 });
 
 test('toolbar responds to its own width when the sidebar constrains the content area', async ({ page }) => {
-  await page.setViewportSize({ width: 1798, height: 1180 });
+  await page.setViewportSize({ width: 1500, height: 1180 });
   await openTimeline(page);
-  const toolbar = page.locator('.vc-timeline-toolbar[data-vc-toolbar-enhanced="true"]');
+  const container = page.locator('[data-vc-toolbar-container="true"]');
+  const toolbar = container.locator('.vc-timeline-toolbar[data-vc-toolbar-enhanced="true"]');
+  await expect(container).toBeVisible();
   const geometry = await toolbar.evaluate((element) => {
     const toolbarBox = element.getBoundingClientRect();
     const actions = element.querySelector('.vc-timeline-actions')?.getBoundingClientRect();
