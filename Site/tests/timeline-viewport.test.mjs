@@ -4,61 +4,39 @@ import { readFileSync } from 'node:fs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('the bounded canvas delegates row scrolling to the guarded vis-timeline instance', () => {
-  const app = read('../src/components/timeline/TimelineApp.astro');
-  const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const guard = read('../src/lib/timeline/viewport-guard.mjs');
-  const styles = read('../src/styles/timeline-viewport.css');
-
-  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-viewport\.css'/);
-  assert.match(island, /prepareTimelineViewportGuard\(root\)/);
-  assert.match(island, /viewportGuard\.restorePrototype\(\)/);
-  assert.match(styles, /\.vc-timeline-app \.vc-timeline-canvas \{[\s\S]*block-size: clamp\(28rem, 58vh, 42rem\)/);
-  assert.match(styles, /overflow: hidden/);
-  assert.doesNotMatch(styles, /padding-block-end/);
-  assert.doesNotMatch(styles, /vc-timeline-scroll-tail/);
-  assert.match(styles, /\.vc-timeline-app\.is-compact \.vc-timeline-canvas[\s\S]*clamp\(22rem, 48vh, 32rem\)/);
-  assert.match(guard, /const getCanvas = \(\) => root\.querySelector\('\[data-vc-canvas\]'\)/);
-  assert.match(guard, /Math\.max\(MIN_CANVAS_HEIGHT, Math\.round\(canvas\?\.clientHeight \?\? 0\)\)/);
-  assert.match(guard, /observeCanvas\(\);[\s\S]*applyViewportHeight\(timeline\)/);
-  assert.match(guard, /height: `\$\{height\}px`/);
-  assert.match(guard, /orientation: \{[\s\S]*axis: 'top',[\s\S]*item: 'top'/);
-  assert.match(guard, /const isAdaptiveHeightPass/);
-  assert.match(guard, /\^\\d\+px\$/);
-  assert.match(guard, /const \{ height: _height, minHeight: _minHeight, \.\.\.forwarded \} = options/);
-  assert.match(guard, /const eventExtent = extentWithin\(eventItems, itemset\)/);
-  assert.match(guard, /labels\.length > 1 \? extentWithin\(labels, labelset\) : 0/);
-  assert.match(guard, /Math\.min\(upperBound, Math\.ceil\(contentHeight \+ BOTTOM_ROW_INSET\)\)/);
-  assert.match(guard, /canvas\.style\.blockSize = `\$\{desiredHeight\}px`/);
-  assert.doesNotMatch(guard, /data-vc-adaptive-height/);
-});
-
-test('the compatibility proxy forwards every legacy option except the obsolete fixed height', () => {
-  const renderer = read('../src/lib/timeline/renderer.mjs');
-
-  assert.match(renderer, /const \{ height: _legacyFixedHeight, \.\.\.forwardedOptions \} = nextOptions/);
-  assert.match(renderer, /return target\.setOptions\(forwardedOptions\)/);
-  assert.doesNotMatch(renderer, /if \(isLegacyHostOptionPass\) return undefined/);
-});
-
-test('the renderer owns one body-level hovercard and visible card text corrects recycled identity', () => {
+test('the Astro island mounts the native renderer without host redraw machinery', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
   const renderer = read('../src/lib/timeline/renderer.mjs');
-  const sync = read('../src/lib/timeline/tooltip-content-sync.mjs');
+
+  assert.match(renderer, /export \{ mountTimeline \} from '\.\/chronos-native-renderer\.mjs'/);
+  assert.doesNotMatch(renderer, /Proxy\s*\(/);
+  assert.doesNotMatch(renderer, /MutationObserver/);
+  assert.doesNotMatch(renderer, /ChronosTimeline\.prototype/);
+
+  assert.match(island, /cleanup = mountTimeline\(root, dataset, options\)/);
+  assert.doesNotMatch(island, /prepareTimelineViewportGuard/);
+  assert.doesNotMatch(island, /installAdaptiveTimelineGrid/);
+  assert.doesNotMatch(island, /installTimelineTooltipContentSync/);
+  assert.doesNotMatch(island, /installCalendarYearAxisSync/);
+});
+
+test('unified chronology uses Chronos native ungrouped mode', () => {
+  const adapter = read('../src/lib/timeline/chronos-adapter.mjs');
+
+  assert.match(adapter, /if \(laneMode === 'unified'\)[\s\S]*groups: \[\]/);
+  assert.match(adapter, /groupFor: \(\) => undefined/);
+  assert.match(adapter, /const groupToken = group \? ` \{\$\{cleanChronosText\(group\.label\)/);
+  assert.match(adapter, /const targetGroups = groups\.length \? groups : \[undefined\]/);
+  assert.match(adapter, /group\?\.key \?\? 'unified'/);
+});
+
+test('the viewport is stable and does not pin or adapt Chronos internals', () => {
   const styles = read('../src/styles/timeline-viewport.css');
 
-  assert.match(renderer, /function installTimelineHoverTooltip\(root, dataset\)/);
-  assert.match(renderer, /tooltip\.className = 'vis-tooltip vc-timeline-hovercard'/);
-  assert.match(renderer, /document\.body\.append\(tooltip\)/);
-  assert.match(renderer, /root\.addEventListener\('pointerover', handlePointerOver, true\)/);
-  assert.match(island, /installTimelineTooltipContentSync\(root, dataset\)/);
-  assert.match(sync, /const visibleText = normaliseVisibleText\(item\?\.textContent\)/);
-  assert.match(sync, /tooltip\.querySelector\('\.vc-timeline-hovercard-title'\)\.textContent = event\.title/);
-  assert.match(sync, /window\.requestAnimationFrame\(sync\)/);
-  assert.match(styles, /body > \.vc-timeline-hovercard[\s\S]*position: fixed !important/);
-  assert.match(styles, /max-width: 18rem !important/);
-  assert.match(styles, /:root\[data-theme='light'\] body > \.vc-timeline-hovercard/);
-  assert.match(styles, /background-color: var\(--vc-hovercard-bg\) !important/);
-  assert.match(styles, /color: var\(--vc-hovercard-text\) !important/);
-  assert.match(styles, /-webkit-line-clamp: 4/);
+  assert.match(styles, /block-size: 34rem/);
+  assert.match(styles, /block-size: 28rem/);
+  assert.match(styles, /> \.vis-timeline \{[\s\S]*block-size: 100% !important/);
+  assert.doesNotMatch(styles, /vc-pinned-row-height/);
+  assert.doesNotMatch(styles, /vc-timeline-hovercard/);
+  assert.doesNotMatch(styles, /data-vc-adaptive-height/);
 });
