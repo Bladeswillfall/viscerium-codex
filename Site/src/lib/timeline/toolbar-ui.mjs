@@ -12,7 +12,7 @@ const icons = {
 };
 
 function icon(name) {
-  return `<svg class="vc-timeline-control-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name] ?? ''}</svg>`;
+  return `<svg class="vc-timeline-control-icon" data-vc-toolbar-icon="${name}" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name] ?? ''}</svg>`;
 }
 
 function decorateField(control, iconName, label, hint) {
@@ -28,9 +28,16 @@ function decorateField(control, iconName, label, hint) {
 function decorateButton(button, iconName, label, title) {
   if (!button) return;
   button.classList.add('vc-timeline-command');
-  button.innerHTML = `${icon(iconName)}<span class="vc-timeline-command-label">${label}</span>`;
-  button.setAttribute('aria-label', title);
-  button.setAttribute('title', title);
+
+  const currentIcon = button.querySelector(':scope > .vc-timeline-control-icon');
+  const currentLabel = button.querySelector(':scope > .vc-timeline-command-label');
+  const contentMatches = currentIcon?.dataset.vcToolbarIcon === iconName
+    && currentLabel?.textContent === label;
+  if (!contentMatches) {
+    button.innerHTML = `${icon(iconName)}<span class="vc-timeline-command-label">${label}</span>`;
+  }
+  if (button.getAttribute('aria-label') !== title) button.setAttribute('aria-label', title);
+  if (button.getAttribute('title') !== title) button.setAttribute('title', title);
 }
 
 function createActionGroup(label, className, buttons) {
@@ -110,13 +117,24 @@ export function installTimelineToolbar(root) {
     createActionGroup('View', 'is-view', [list]),
   );
 
-  const handleListClick = () => {
-    queueMicrotask(() => queueMicrotask(syncViewButton));
+  let viewSyncQueued = false;
+  const scheduleViewSync = () => {
+    if (viewSyncQueued) return;
+    viewSyncQueued = true;
+    queueMicrotask(() => {
+      viewSyncQueued = false;
+      syncViewButton();
+    });
   };
-  list?.addEventListener('click', handleListClick);
+  const viewObserver = list ? new MutationObserver(scheduleViewSync) : null;
+  viewObserver?.observe(list, {
+    childList: true,
+    attributes: true,
+    attributeFilter: ['aria-pressed'],
+  });
 
   return () => {
-    list?.removeEventListener('click', handleListClick);
+    viewObserver?.disconnect();
     toolbar.classList.remove('vc-timeline-toolbar-enhanced');
     delete toolbar.dataset.vcToolbarEnhanced;
   };
