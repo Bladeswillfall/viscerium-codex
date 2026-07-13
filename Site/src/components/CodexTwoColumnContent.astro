@@ -2,6 +2,8 @@
 const { starlightRoute } = Astro.locals;
 const eraStyle = starlightRoute.entry.data.eraStyle;
 const timelinePage = starlightRoute.entry.data.timelinePage === true;
+const slugPath = starlightRoute.entry.data.slug ?? starlightRoute.entry.id.replace(/\.(md|mdx)$/, '');
+const isDegelSystemIndex = String(slugPath).replace(/^\/+|\/+$/g, '') === 'degel-system';
 ---
 
 <div
@@ -9,12 +11,14 @@ const timelinePage = starlightRoute.entry.data.timelinePage === true;
     "codex-two-column-content lg:sl-flex",
     eraStyle && `era-style-${eraStyle}`,
     timelinePage && "codex-timeline-page",
+    isDegelSystemIndex && "codex-degel-system-page",
   ]}
   data-era-style={eraStyle}
   data-timeline-page={timelinePage || undefined}
+  data-degel-system-page={isDegelSystemIndex || undefined}
 >
   <div class="main-pane codex-main-pane">
-    {!timelinePage && starlightRoute.toc && (
+    {!timelinePage && !isDegelSystemIndex && starlightRoute.toc && (
       <aside class="right-sidebar-container">
         <div class="right-sidebar">
           <slot name="right-sidebar" />
