@@ -7,6 +7,8 @@ import {
 } from '../calendar/runtime.mjs';
 import { createAdaptiveTimelineTicks } from './year-grid.mjs';
 
+const DAY_MS = 86_400_000;
+
 function abbreviate(value, maximum = 7) {
   const text = String(value ?? '');
   return text.length <= maximum ? text : `${text.slice(0, maximum - 1)}.`;
@@ -105,9 +107,14 @@ export function createCalendarAxisFormatter({
       });
       previousScaleKey = ticks.primary.key;
 
+      const syntheticDateFor = (absoluteDay) => (
+        typeof toSyntheticDate === 'function'
+          ? toSyntheticDate(absoluteDay)
+          : new Date(start.valueOf() + (absoluteDay - startDay) * DAY_MS)
+      );
       const mapTick = (boundary, scale, kind) => ({
         absoluteDay: boundary.absoluteDay,
-        date: toSyntheticDate(boundary.absoluteDay),
+        date: syntheticDateFor(boundary.absoluteDay),
         unit: scale.unit,
         interval: scale.interval,
         kind,
