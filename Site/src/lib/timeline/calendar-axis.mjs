@@ -5,6 +5,7 @@ import {
   getIntercalaryDay,
   getMonth,
 } from '../calendar/runtime.mjs';
+import { createAdaptiveTimelineTicks } from './year-grid.mjs';
 
 function abbreviate(value, maximum = 7) {
   const text = String(value ?? '');
@@ -63,10 +64,21 @@ export function formatCalendarAxisLabel({
   return `${resolved.day} ${resolved.monthShort}`;
 }
 
+export function formatCalendarBoundaryLabel({ absoluteDay, calendarId, unit }) {
+  const resolved = resolveAxisDate(absoluteDay, calendarId);
+  if (unit === 'year') return resolved.year;
+  if (unit === 'month') return `${resolved.monthShort} ${resolved.year}`;
+  if (unit === 'week') return `${resolved.day} ${resolved.monthShort}`;
+  return `${resolved.day} ${resolved.monthShort}`;
+}
+
 export function createCalendarAxisFormatter({
   getCalendarId,
   fromSyntheticDate,
+  toSyntheticDate,
 }) {
+  let previousScaleKey;
+
   const format = (date, scale, major) => formatCalendarAxisLabel({
     absoluteDay: fromSyntheticDate(date),
     calendarId: getCalendarId(),
@@ -77,5 +89,42 @@ export function createCalendarAxisFormatter({
   return {
     formatMinorLabel: (date, scale) => format(date, scale, false),
     formatMajorLabel: (date, scale) => format(date, scale, true),
+    resetScale() {
+      previousScaleKey = undefined;
+    },
+    getTicks({ start, end, width }) {
+      const calendarId = getCalendarId();
+      const startDay = fromSyntheticDate(start);
+      const endDay = fromSyntheticDate(end);
+      const ticks = createAdaptiveTimelineTicks({
+        startDay,
+        endDay,
+        calendarId,
+        width,
+        previousScaleKey,
+      });
+      previousScaleKey = ticks.primary.key;
+
+      const mapTick = (boundary, scale, kind) => ({
+        absoluteDay: boundary.absoluteDay,
+        date: toSyntheticDate(boundary.absoluteDay),
+        unit: scale.unit,
+        interval: scale.interval,
+        kind,
+        label: kind === 'primary'
+          ? formatCalendarBoundaryLabel({
+            absoluteDay: boundary.absoluteDay,
+            calendarId,
+            unit: scale.unit,
+          })
+          : '',
+      });
+
+      return {
+        scaleKey: ticks.primary.key,
+        primary: ticks.primary.map((boundary) => mapTick(boundary, ticks.primary, 'primary')),
+        secondary: ticks.secondary.map((boundary) => mapTick(boundary, ticks.secondary, 'secondary')),
+      };
+    },
   };
 }
