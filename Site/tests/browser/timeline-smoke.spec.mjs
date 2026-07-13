@@ -24,11 +24,69 @@ function collectErrors(page, label) {
   return messages;
 }
 
+async function captureStartupLayout(page) {
+  await page.waitForTimeout(350);
+  const snapshot = await page.locator('[data-vc-canvas]').evaluate((canvas) => {
+    const rectOf = (element) => {
+      if (!element) return null;
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+        display: style.display,
+        visibility: style.visibility,
+        overflow: style.overflow,
+        transform: style.transform,
+        position: style.position,
+      };
+    };
+
+    return {
+      canvas: rectOf(canvas),
+      timeline: rectOf(canvas.querySelector(':scope > .vis-timeline')),
+      topPanel: rectOf(canvas.querySelector('.vis-panel.vis-top')),
+      leftPanel: rectOf(canvas.querySelector('.vis-panel.vis-left')),
+      centerPanel: rectOf(canvas.querySelector('.vis-panel.vis-center')),
+      itemset: rectOf(canvas.querySelector('.vis-itemset')),
+      foreground: rectOf(canvas.querySelector('.vis-itemset > .vis-foreground')),
+      groupRects: [...canvas.querySelectorAll('.vis-foreground > .vis-group')].map(rectOf),
+      labels: [...canvas.querySelectorAll('.vis-labelset > .vis-label')].map((element) => ({
+        text: element.textContent?.trim(),
+        rect: rectOf(element),
+      })),
+      items: [...canvas.querySelectorAll('.vis-item.vc-timeline-item')].map((element) => ({
+        id: element.getAttribute('data-id'),
+        className: element.className,
+        inlineStyle: element.getAttribute('style'),
+        text: element.textContent?.trim(),
+        rect: rectOf(element),
+      })),
+      allVisItems: canvas.querySelectorAll('.vis-item').length,
+      eventItems: canvas.querySelectorAll('.vis-item.vc-timeline-item').length,
+      foregroundAxis: rectOf(canvas.querySelector('.vis-time-axis.vis-foreground')),
+      axisTexts: [...canvas.querySelectorAll('.vis-time-axis .vis-text')].map((element) => ({
+        text: element.textContent?.trim(),
+        rect: rectOf(element),
+      })),
+    };
+  });
+  const slug = new URL(page.url()).pathname.replace(/^\/+|\/+$/g, '').replace(/[^a-z0-9]+/gi, '-') || 'root';
+  writeFileSync(`timeline-browser-diagnostics/startup-${slug}.json`, JSON.stringify(snapshot, null, 2));
+  console.log(`[startup-layout:${slug}] ${JSON.stringify(snapshot)}`);
+  return snapshot;
+}
+
 async function waitForTimeline(page) {
   await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
   await expect(page.locator('[data-vc-canvas]')).toBeVisible();
   await expect(page.locator('[data-vc-fallback]')).toBeHidden();
   await expect(page.locator('[data-vc-canvas] > .vis-timeline')).toHaveCount(1);
+  await captureStartupLayout(page);
   await expect.poll(() => page.locator('[data-vc-canvas]').evaluate((canvas) => {
     const bounds = canvas.getBoundingClientRect();
     return [...canvas.querySelectorAll('.vis-item.vc-timeline-item')].some((element) => {
