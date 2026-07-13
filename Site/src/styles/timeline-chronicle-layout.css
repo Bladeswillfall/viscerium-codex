@@ -1,0 +1,84 @@
+/*
+ * The Chronicle lives inside Starlight article prose, whose summary/button rules
+ * are intentionally broad. Reassert only the Chronicle's own row geometry here.
+ */
+
+.vc-timeline-list .vc-chronicle-entry > summary {
+  display: grid !important;
+  grid-template-columns: minmax(8.5rem, 11rem) 2.3rem minmax(0, 1fr) max-content !important;
+  list-style: none !important;
+}
+
+.vc-timeline-list .vc-chronicle-entry > summary::marker,
+.vc-timeline-list .vc-chronicle-entry > summary::-webkit-details-marker {
+  display: none !important;
+  content: '';
+}
+
+.vc-timeline-list .vc-chronicle-date {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  width: auto;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.vc-timeline-list .vc-chronicle-marker {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.vc-timeline-list .vc-chronicle-summary-copy {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.vc-timeline-list .vc-chronicle-disclosure {
+  grid-column: 4;
+  grid-row: 1;
+  align-self: start;
+}
+
+.vc-timeline-app .vc-timeline-list .vc-chronicle-actions button {
+  display: inline-flex;
+  width: auto;
+  height: auto;
+  min-height: 2.45rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: .65rem .8rem;
+  text-align: center;
+}
+
+@media (max-width: 38rem) {
+  .vc-timeline-list .vc-chronicle-entry > summary {
+    grid-template-columns: 2.1rem minmax(0, 1fr) max-content !important;
+  }
+
+  .vc-timeline-list .vc-chronicle-date {
+    grid-column: 2 / -1;
+    grid-row: 1;
+  }
+
+  .vc-timeline-list .vc-chronicle-marker {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .vc-timeline-list .vc-chronicle-summary-copy {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .vc-timeline-list .vc-chronicle-disclosure {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .vc-timeline-app .vc-timeline-list .vc-chronicle-actions button {
+    width: 100%;
+  }
+}
