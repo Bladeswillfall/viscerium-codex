@@ -16,19 +16,41 @@ async function openGlobalTimeline(page) {
   await page.waitForTimeout(600);
 }
 
+function visibleItemMetrics(canvas) {
+  const canvasRect = canvas.getBoundingClientRect();
+  const items = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
+    .map((element) => element.getBoundingClientRect())
+    .filter((rect) => (
+      rect.width > 0
+      && rect.height > 0
+      && rect.right > canvasRect.left
+      && rect.left < canvasRect.right
+      && rect.bottom > canvasRect.top
+      && rect.top < canvasRect.bottom
+    ));
+  return {
+    canvasTop: canvasRect.top,
+    canvasBottom: canvasRect.bottom,
+    count: items.length,
+    firstTop: items.length ? Math.min(...items.map((rect) => rect.top)) : null,
+    lastBottom: items.length ? Math.max(...items.map((rect) => rect.bottom)) : null,
+  };
+}
+
 test('unified chronology keeps one stable native Chronos group', async ({ page }) => {
   await openGlobalTimeline(page);
 
-  const metrics = await page.locator('[data-vc-canvas]').evaluate((canvas) => {
-    const canvasRect = canvas.getBoundingClientRect();
-    const timeline = canvas.querySelector(':scope > .vis-timeline');
+  const canvas = page.locator('[data-vc-canvas]');
+  const metrics = await canvas.evaluate((element) => {
+    const canvasRect = element.getBoundingClientRect();
+    const timeline = element.querySelector(':scope > .vis-timeline');
     const timelineRect = timeline?.getBoundingClientRect();
-    const items = [...canvas.querySelectorAll('.vis-item.vc-timeline-item')]
-      .filter((element) => element.getClientRects().length > 0)
-      .map((element) => element.getBoundingClientRect());
-    const labels = [...canvas.querySelectorAll('.vis-labelset > .vis-label')]
-      .filter((element) => element.getClientRects().length > 0)
-      .map((element) => element.textContent?.trim() ?? '');
+    const items = [...element.querySelectorAll('.vis-item.vc-timeline-item')]
+      .filter((item) => item.getClientRects().length > 0)
+      .map((item) => item.getBoundingClientRect());
+    const labels = [...element.querySelectorAll('.vis-labelset > .vis-label')]
+      .filter((item) => item.getClientRects().length > 0)
+      .map((item) => item.textContent?.trim() ?? '');
 
     return {
       canvasHeight: canvasRect.height,
@@ -36,15 +58,26 @@ test('unified chronology keeps one stable native Chronos group', async ({ page }
       eventCount: items.length,
       firstEventInset: items.length ? Math.min(...items.map((rect) => rect.top)) - canvasRect.top : null,
       labels,
-      hasPinnedHeight: canvas.hasAttribute('data-vc-pinned-row-height'),
-      hasAdaptiveHeight: canvas.hasAttribute('data-vc-applied-adaptive-height'),
+      hasPinnedHeight: element.hasAttribute('data-vc-pinned-row-height'),
+      hasAdaptiveHeight: element.hasAttribute('data-vc-applied-adaptive-height'),
     };
   });
+
+  const bottomScroll = await canvas.evaluate((element) => {
+    const scroller = element.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
+    if (!scroller) return null;
+    const maximum = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+    scroller.scrollTop = maximum;
+    scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
+    return { maximum, applied: scroller.scrollTop };
+  });
+  await page.waitForTimeout(300);
+  const bottomMetrics = await canvas.evaluate(visibleItemMetrics);
 
   mkdirSync('timeline-browser-diagnostics', { recursive: true });
   writeFileSync(
     'timeline-browser-diagnostics/unified-native-layout.json',
-    JSON.stringify(metrics, null, 2),
+    JSON.stringify({ metrics, bottomScroll, bottomMetrics }, null, 2),
   );
   await page.screenshot({
     path: 'timeline-browser-diagnostics/unified-native-layout.png',
@@ -56,4 +89,9 @@ test('unified chronology keeps one stable native Chronos group', async ({ page }
   expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
   expect(metrics.hasPinnedHeight).toBe(false);
   expect(metrics.hasAdaptiveHeight).toBe(false);
+  expect(bottomScroll).not.toBeNull();
+  expect(bottomScroll.applied).toBe(bottomScroll.maximum);
+  expect(bottomMetrics.count).toBeGreaterThan(0);
+  expect(bottomMetrics.lastBottom).toBeLessThanOrEqual(bottomMetrics.canvasBottom + 2);
+  expect(bottomMetrics.canvasBottom - bottomMetrics.lastBottom).toBeLessThanOrEqual(72);
 });
