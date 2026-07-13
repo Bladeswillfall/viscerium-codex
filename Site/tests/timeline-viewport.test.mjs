@@ -43,7 +43,7 @@ test('the exact fictional-calendar axis and event rows share one stable fixed-he
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
 
-  assert.match(styles, /block-size: 24rem/);
+  assert.match(styles, /block-size: 27rem/);
   assert.match(styles, /block-size: 22rem/);
   assert.match(styles, /min-height: 4\.5rem/);
   assert.match(styles, /> \.vis-timeline \{[\s\S]*block-size: 100% !important/);
