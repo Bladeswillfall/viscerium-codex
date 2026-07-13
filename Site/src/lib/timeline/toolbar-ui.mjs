@@ -73,6 +73,12 @@ export function installTimelineToolbar(root) {
   const grouping = toolbar?.querySelector('[data-vc-lane]');
   if (!toolbar || !actions || !calendar || !search || !grouping) return () => {};
 
+  const toolbarContainer = document.createElement('div');
+  toolbarContainer.className = 'vc-timeline-toolbar-container';
+  toolbarContainer.dataset.vcToolbarContainer = 'true';
+  toolbar.before(toolbarContainer);
+  toolbarContainer.append(toolbar);
+
   toolbar.classList.add('vc-timeline-toolbar-enhanced');
   toolbar.dataset.vcToolbarEnhanced = 'true';
 
@@ -137,5 +143,6 @@ export function installTimelineToolbar(root) {
     viewObserver?.disconnect();
     toolbar.classList.remove('vc-timeline-toolbar-enhanced');
     delete toolbar.dataset.vcToolbarEnhanced;
+    if (toolbarContainer.isConnected) toolbarContainer.replaceWith(toolbar);
   };
 }

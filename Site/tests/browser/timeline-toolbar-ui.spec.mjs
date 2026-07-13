@@ -54,6 +54,50 @@ test('chronicle control retains its icon and mode label', async ({ page }) => {
   await expect(toggle.locator('.vc-timeline-command-label')).toHaveText('Chronicle');
 });
 
+test('toolbar responds to its own width when the sidebar constrains the content area', async ({ page }) => {
+  await page.setViewportSize({ width: 1500, height: 1180 });
+  await openTimeline(page);
+  const container = page.locator('[data-vc-toolbar-container="true"]');
+  const toolbar = container.locator('.vc-timeline-toolbar[data-vc-toolbar-enhanced="true"]');
+  await expect(container).toBeVisible();
+  const geometry = await toolbar.evaluate((element) => {
+    const toolbarBox = element.getBoundingClientRect();
+    const actions = element.querySelector('.vc-timeline-actions')?.getBoundingClientRect();
+    const fields = [...element.querySelectorAll('.vc-timeline-toolbar-field')]
+      .map((field) => field.getBoundingClientRect());
+    const commands = [...element.querySelectorAll('.vc-timeline-command')]
+      .map((button) => button.getBoundingClientRect());
+    let overlapCount = 0;
+    for (let index = 0; index < commands.length; index += 1) {
+      for (let other = index + 1; other < commands.length; other += 1) {
+        const first = commands[index];
+        const second = commands[other];
+        const overlapsX = Math.min(first.right, second.right) - Math.max(first.left, second.left) > 1;
+        const overlapsY = Math.min(first.bottom, second.bottom) - Math.max(first.top, second.top) > 1;
+        if (overlapsX && overlapsY) overlapCount += 1;
+      }
+    }
+    const fieldsBottom = Math.max(...fields.map((field) => field.bottom));
+    return {
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+      actionsOnOwnRow: Boolean(actions && actions.top >= fieldsBottom - 1),
+      allCommandsContained: commands.every((button) => (
+        button.left >= toolbarBox.left - 1
+        && button.right <= toolbarBox.right + 1
+        && button.top >= toolbarBox.top - 1
+        && button.bottom <= toolbarBox.bottom + 1
+      )),
+      overlapCount,
+    };
+  });
+
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+  expect(geometry.actionsOnOwnRow).toBe(true);
+  expect(geometry.allCommandsContained).toBe(true);
+  expect(geometry.overlapCount).toBe(0);
+});
+
 test('toolbar avoids horizontal overflow at compact width', async ({ page }) => {
   await page.setViewportSize({ width: 720, height: 980 });
   await openTimeline(page);
