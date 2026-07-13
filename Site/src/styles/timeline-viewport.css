@@ -15,6 +15,16 @@
   max-block-size: 100%;
 }
 
+/* vis-timeline virtualises grouped rows and may replace these nodes while the
+   user scrolls. Keep the fully measured native row height on every replacement
+   so the bottom of the internal scroll range cannot collapse again. */
+.vc-timeline-app .vc-timeline-canvas[data-vc-pinned-row-height] .vis-panel.vis-center > .vis-content,
+.vc-timeline-app .vc-timeline-canvas[data-vc-pinned-row-height] .vis-panel.vis-center > .vis-content > .vis-itemset,
+.vc-timeline-app .vc-timeline-canvas[data-vc-pinned-row-height] .vis-panel.vis-left.vis-vertical-scroll > .vis-content,
+.vc-timeline-app .vc-timeline-canvas[data-vc-pinned-row-height] .vis-panel.vis-left.vis-vertical-scroll > .vis-content > .vis-labelset {
+  min-block-size: var(--vc-pinned-row-height) !important;
+}
+
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-left {
   scrollbar-width: thin;

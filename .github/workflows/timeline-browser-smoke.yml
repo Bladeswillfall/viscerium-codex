@@ -53,8 +53,8 @@ jobs:
           done
           cat /tmp/viscerium-preview.log
           exit 1
-      - name: Run timeline browser smoke test
-        run: npx playwright test tests/browser/timeline-smoke.spec.mjs --reporter=line --workers=1
+      - name: Run timeline browser smoke tests
+        run: npx playwright test tests/browser/timeline-*.spec.mjs --reporter=line --workers=1
       - name: Show Astro preview log
         if: always()
         run: cat /tmp/viscerium-preview.log || true

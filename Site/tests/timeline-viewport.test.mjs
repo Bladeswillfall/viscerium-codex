@@ -22,6 +22,7 @@ test('the bounded canvas delegates row scrolling to the guarded vis-timeline ins
   assert.match(guard, /const canvas = getCanvas\(\);[\s\S]*Math\.max\(320, Math\.round\(canvas\?\.clientHeight \?\? 0\)\)/);
   assert.match(guard, /observeCanvas\(\);[\s\S]*applyViewportHeight\(timeline\)/);
   assert.match(guard, /height: `\$\{height\}px`/);
+  assert.match(guard, /orientation: \{[\s\S]*axis: 'top',[\s\S]*item: 'top'/);
   assert.match(guard, /const isAdaptiveHeightPass/);
   assert.match(guard, /\^\\d\+px\$/);
   assert.match(guard, /const \{ height: _height, minHeight: _minHeight, \.\.\.forwarded \} = options/);
