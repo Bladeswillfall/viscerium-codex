@@ -57,10 +57,10 @@ test('the exact fictional-calendar axis and event rows share one stable fixed-he
   assert.match(axisStyles, /\.vc-timeline-canvas \.vis-time-axis[\s\S]*display: block/);
   assert.match(axisStyles, /\.vis-panel\.vis-bottom/);
   assert.match(axisStyles, /\.vis-custom-time\[data-vc-calendar-kind="secondary"\]/);
-  assert.match(axisStyles, /\.vis-custom-time\[data-vc-calendar-kind="primary"\]::after/);
-  assert.match(axisStyles, /content: attr\(data-vc-calendar-label\)/);
+  assert.match(axisStyles, /\.vc-calendar-time-label/);
+  assert.match(fork, /label\.className = 'vc-calendar-time-label'/);
   assert.doesNotMatch(axisStyles, /\.vc-calendar-axis-layer|\.vc-calendar-grid-layer/);
   assert.doesNotMatch(fork, /appendChild\(axisLayer\)|appendChild\(gridLayer\)/);
   assert.doesNotMatch(renderer, /data-vc-axis|vc-timeline-axis|axisTicks|renderAxis/);
-  assert.doesNotMatch(styles, /vc-pinned-row-height|data-vc-applied-adaptive-height/);
+  assert.doesNotMatch(styles, /vc-pinned-row-height|data-vc-adaptive-height/);
 });
