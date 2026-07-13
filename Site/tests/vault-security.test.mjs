@@ -52,6 +52,9 @@ test('published notes reject active HTML and unsafe URL schemes', async (t) => {
     ['Markdown javascript URL', '[Open](javascript:alert(1))'],
     ['HTML data document', '<a href="data:text/html,<script>alert(1)</script>">Open</a>'],
     ['remote MDX module', "import Widget from 'https://example.com/widget.js';"],
+    ['remote MDX side-effect import', "import 'https://example.com/widget.js';"],
+    ['remote MDX re-export', "export { Widget } from 'https://example.com/widget.js';"],
+    ['remote dynamic import', "const Widget = import('https://example.com/widget.js');"],
   ];
 
   for (const [name, content] of cases) {
