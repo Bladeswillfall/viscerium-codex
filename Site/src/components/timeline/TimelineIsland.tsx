@@ -7,6 +7,7 @@ import '../../styles/timeline-chronicle.css';
 import '../../styles/timeline-chronicle-layout.css';
 import '../../styles/timeline-toolbar.css';
 import '../../styles/timeline-toolbar-container.css';
+import '../../styles/timeline-buttons.css';
 
 type TimelineIslandOptions = {
   defaultCalendar?: string;
