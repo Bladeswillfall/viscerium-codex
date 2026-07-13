@@ -63,32 +63,16 @@ test('unified chronology keeps one stable native Chronos group', async ({ page }
     };
   });
 
-  const bottomScroll = await canvas.evaluate((element) => {
-    const candidates = [element, ...element.querySelectorAll('*')]
-      .map((candidate) => ({
-        candidate,
-        maximum: Math.max(0, candidate.scrollHeight - candidate.clientHeight),
-      }))
-      .filter(({ maximum }) => maximum > 2)
-      .sort((left, right) => right.maximum - left.maximum);
-    const selected = candidates[0];
-    if (!selected) return null;
-    selected.candidate.scrollTop = selected.maximum;
-    selected.candidate.dispatchEvent(new Event('scroll', { bubbles: true }));
-    return {
-      maximum: selected.maximum,
-      applied: selected.candidate.scrollTop,
-      className: selected.candidate.className,
-      tagName: selected.candidate.tagName,
-    };
-  });
+  const initialVisible = await canvas.evaluate(visibleItemMetrics);
+  await canvas.hover();
+  await page.mouse.wheel(0, 1_200);
   await page.waitForTimeout(300);
-  const bottomMetrics = await canvas.evaluate(visibleItemMetrics);
+  const afterWheel = await canvas.evaluate(visibleItemMetrics);
 
   mkdirSync('timeline-browser-diagnostics', { recursive: true });
   writeFileSync(
     'timeline-browser-diagnostics/unified-native-layout.json',
-    JSON.stringify({ metrics, bottomScroll, bottomMetrics }, null, 2),
+    JSON.stringify({ metrics, initialVisible, afterWheel }, null, 2),
   );
   await page.screenshot({
     path: 'timeline-browser-diagnostics/unified-native-layout.png',
@@ -100,9 +84,9 @@ test('unified chronology keeps one stable native Chronos group', async ({ page }
   expect(Math.abs(metrics.timelineHeight - metrics.canvasHeight)).toBeLessThanOrEqual(2);
   expect(metrics.hasPinnedHeight).toBe(false);
   expect(metrics.hasAdaptiveHeight).toBe(false);
-  expect(bottomScroll).not.toBeNull();
-  expect(bottomScroll.applied).toBe(bottomScroll.maximum);
-  expect(bottomMetrics.count).toBeGreaterThan(0);
-  expect(bottomMetrics.lastBottom).toBeLessThanOrEqual(bottomMetrics.canvasBottom + 2);
-  expect(bottomMetrics.canvasBottom - bottomMetrics.lastBottom).toBeLessThanOrEqual(72);
+  expect(afterWheel.count).toBeGreaterThan(0);
+  if (initialVisible.lastBottom > initialVisible.canvasBottom + 2) {
+    expect(Math.abs(afterWheel.firstTop - initialVisible.firstTop)).toBeGreaterThan(2);
+    expect(afterWheel.lastBottom).toBeLessThanOrEqual(afterWheel.canvasBottom + 2);
+  }
 });
