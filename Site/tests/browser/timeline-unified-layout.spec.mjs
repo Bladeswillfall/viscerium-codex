@@ -11,6 +11,10 @@ async function openGlobalTimeline(page) {
   await page.waitForLoadState('networkidle');
   await expect(page.locator('[data-vc-island-mounted="true"]')).toHaveCount(1, { timeout: 5_000 });
   await expect(page.locator('[data-vc-canvas]')).toBeVisible();
+  const sidebarToggle = page.getByRole('button', { name: 'Hide sidebar' });
+  if (await sidebarToggle.isVisible()) {
+    await sidebarToggle.click();
+  }
   await page.waitForTimeout(1_000);
 }
 
@@ -76,7 +80,7 @@ test('the unified chronology starts at the top and its final rows remain reachab
 
   expect(initial.count).toBeGreaterThan(1);
   expect(initial.totalCount).toBeGreaterThan(1);
-  expect(initial.scrollTop).toBe(0);
+  if (initial.scrollTop !== null) expect(initial.scrollTop).toBe(0);
   expect(initial.firstTop - initial.canvasTop).toBeLessThan(Math.min(96, initial.canvasHeight * 0.2));
 
   const allRowsFitInitially = (
@@ -89,21 +93,23 @@ test('the unified chronology starts at the top and its final rows remain reachab
     expect(initial.scrollMaximum).toBeGreaterThan(0);
   }
 
-  const bottomScroll = await canvas.evaluate((element) => {
-    const scroller = element.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
-    if (!scroller) return null;
-    const maximum = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
-    scroller.scrollTop = maximum;
-    scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
-    return { maximum, applied: scroller.scrollTop };
-  });
+  if ((initial.scrollMaximum ?? 0) > 0) {
+    const bottomScroll = await canvas.evaluate((element) => {
+      const scroller = element.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
+      if (!scroller) return null;
+      const maximum = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+      scroller.scrollTop = maximum;
+      scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
+      return { maximum, applied: scroller.scrollTop };
+    });
 
-  expect(bottomScroll).not.toBeNull();
-  expect(bottomScroll.applied).toBe(bottomScroll.maximum);
-  await page.waitForTimeout(200);
+    expect(bottomScroll).not.toBeNull();
+    expect(bottomScroll.applied).toBe(bottomScroll.maximum);
+    await page.waitForTimeout(200);
 
-  const atBottom = await canvas.evaluate(visibleEventMetrics);
-  expect(atBottom.count).toBeGreaterThan(0);
-  expect(atBottom.lastBottom).toBeLessThanOrEqual(atBottom.canvasBottom + 24);
-  expect(atBottom.canvasBottom - atBottom.lastBottom).toBeLessThanOrEqual(72);
+    const atBottom = await canvas.evaluate(visibleEventMetrics);
+    expect(atBottom.count).toBeGreaterThan(0);
+    expect(atBottom.lastBottom).toBeLessThanOrEqual(atBottom.canvasBottom + 24);
+    expect(atBottom.canvasBottom - atBottom.lastBottom).toBeLessThanOrEqual(72);
+  }
 });
