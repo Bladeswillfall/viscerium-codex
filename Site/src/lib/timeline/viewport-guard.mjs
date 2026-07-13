@@ -20,9 +20,10 @@ const REQUIRED_STABLE_LAYOUT_PASSES = 3;
  *
  * Group geometry also settles lazily after Chronos mounts or replaces a grouped
  * timeline. vis-timeline does not measure every offscreen group until its native
- * row scroller reaches those groups, so the initial scroll range can be too
- * short. Prime that scroller to its current end over a few redraws, allowing the
- * range to expand, then restore the reader's original relative position.
+ * row scroller reaches those groups, and it can discard that discovered height
+ * when returned to the top. Prime the scroller over several redraws, record the
+ * largest measured native content height, pin that height inside vis-timeline,
+ * then restore the reader's original relative position.
  */
 export function prepareTimelineViewportGuard(root) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
@@ -33,7 +34,18 @@ export function prepareTimelineViewportGuard(root) {
 
   const getCanvas = () => root.querySelector('[data-vc-canvas]');
 
-  const getRowScroller = () => getCanvas()?.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
+  const getTimelineParts = () => {
+    const canvas = getCanvas();
+    const centerPanel = canvas?.querySelector('.vis-panel.vis-center');
+    const centerContent = centerPanel?.querySelector(':scope > .vis-content');
+    const itemset = centerContent?.querySelector(':scope > .vis-itemset')
+      ?? centerPanel?.querySelector('.vis-itemset');
+    const rowScroller = canvas?.querySelector('.vis-panel.vis-left.vis-vertical-scroll');
+    const rowContent = rowScroller?.querySelector(':scope > .vis-content');
+    const labelset = rowContent?.querySelector(':scope > .vis-labelset')
+      ?? rowScroller?.querySelector('.vis-labelset');
+    return { canvas, centerPanel, centerContent, itemset, rowScroller, rowContent, labelset };
+  };
 
   const viewportHeight = () => {
     const canvas = getCanvas();
@@ -47,11 +59,31 @@ export function prepareTimelineViewportGuard(root) {
     scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
   };
 
+  const setPinnedContentHeight = (height) => {
+    const { canvas, centerContent, itemset, rowContent, labelset } = getTimelineParts();
+    const value = height > 0 ? `${Math.ceil(height)}px` : '';
+    for (const element of [centerContent, itemset, rowContent, labelset]) {
+      if (element) element.style.minHeight = value;
+    }
+    if (canvas) {
+      if (height > 0) canvas.dataset.vcPinnedRowHeight = String(Math.ceil(height));
+      else delete canvas.dataset.vcPinnedRowHeight;
+    }
+  };
+
+  const measuredContentHeight = () => {
+    const { itemset, rowScroller, rowContent, labelset } = getTimelineParts();
+    return Math.max(
+      0,
+      itemset?.clientHeight ?? 0,
+      rowScroller?.scrollHeight ?? 0,
+      rowContent?.clientHeight ?? 0,
+      labelset?.clientHeight ?? 0,
+    );
+  };
+
   const layoutSignature = () => {
-    const canvas = getCanvas();
-    const centerPanel = canvas?.querySelector('.vis-panel.vis-center');
-    const itemset = centerPanel?.querySelector('.vis-itemset');
-    const rowScroller = getRowScroller();
+    const { centerPanel, itemset, rowScroller } = getTimelineParts();
     if (!centerPanel || !itemset || !rowScroller) return undefined;
 
     return [
@@ -68,22 +100,32 @@ export function prepareTimelineViewportGuard(root) {
 
   const settleTimelineLayout = (timeline) => {
     const guard = timeline?.[GUARDED];
-    if (!guard || guard.destroyed || guard.settling) return;
+    if (!guard || guard.destroyed) return;
 
-    const initialScroller = getRowScroller();
+    window.clearTimeout(guard.settleTimer);
+    window.cancelAnimationFrame(guard.settleFrame);
+    guard.settleGeneration += 1;
+    const generation = guard.settleGeneration;
+
+    const initialScroller = getTimelineParts().rowScroller;
     const initialMaximum = initialScroller ? maximumRowScroll(initialScroller) : 0;
     const initialScrollTop = initialScroller?.scrollTop ?? 0;
 
+    setPinnedContentHeight(0);
     guard.settling = true;
     guard.settleDeadline = Date.now() + LAYOUT_SETTLE_TIMEOUT_MS;
     guard.previousLayoutSignature = undefined;
     guard.stableLayoutPasses = 0;
+    guard.maximumMeasuredContentHeight = 0;
     guard.initialScrollFraction = initialMaximum > 0 ? initialScrollTop / initialMaximum : 0;
     const canvas = getCanvas();
     if (canvas) canvas.dataset.vcLayoutSettled = 'false';
 
     const finish = () => {
-      const rowScroller = getRowScroller();
+      if (guard.destroyed || generation !== guard.settleGeneration) return;
+      const pinnedHeight = Math.max(guard.maximumMeasuredContentHeight, measuredContentHeight());
+      setPinnedContentHeight(pinnedHeight);
+      const { rowScroller } = getTimelineParts();
       if (rowScroller) {
         scrollRowsTo(rowScroller, maximumRowScroll(rowScroller) * guard.initialScrollFraction);
       }
@@ -95,8 +137,12 @@ export function prepareTimelineViewportGuard(root) {
     };
 
     const measureAfterRedraw = () => {
-      if (guard.destroyed) return;
+      if (guard.destroyed || generation !== guard.settleGeneration) return;
 
+      guard.maximumMeasuredContentHeight = Math.max(
+        guard.maximumMeasuredContentHeight,
+        measuredContentHeight(),
+      );
       const signature = layoutSignature();
       if (signature && signature === guard.previousLayoutSignature) {
         guard.stableLayoutPasses += 1;
@@ -117,8 +163,8 @@ export function prepareTimelineViewportGuard(root) {
     };
 
     const runPass = () => {
-      if (guard.destroyed) return;
-      const rowScroller = getRowScroller();
+      if (guard.destroyed || generation !== guard.settleGeneration) return;
+      const { rowScroller } = getTimelineParts();
       if (rowScroller) scrollRowsTo(rowScroller, maximumRowScroll(rowScroller));
       guard.originalRedraw();
       window.cancelAnimationFrame(guard.settleFrame);
@@ -135,7 +181,11 @@ export function prepareTimelineViewportGuard(root) {
     resizeObserver?.disconnect();
     observedCanvas = canvas;
     resizeObserver = new ResizeObserver(() => {
-      for (const timeline of activeTimelines) applyViewportHeight(timeline);
+      const height = viewportHeight();
+      for (const timeline of activeTimelines) {
+        const guard = timeline?.[GUARDED];
+        if (guard?.appliedViewportHeight !== height) applyViewportHeight(timeline);
+      }
     });
     resizeObserver.observe(canvas);
   };
@@ -146,6 +196,8 @@ export function prepareTimelineViewportGuard(root) {
 
     const canvas = getCanvas();
     const height = viewportHeight();
+    if (guard.appliedViewportHeight === height) return;
+    guard.appliedViewportHeight = height;
     guard.originalSetOptions({
       height: `${height}px`,
       minHeight: `${height}px`,
@@ -171,8 +223,10 @@ export function prepareTimelineViewportGuard(root) {
       originalSetItems,
       originalRedraw,
       originalDestroy,
+      appliedViewportHeight: undefined,
       destroyed: false,
       settling: false,
+      settleGeneration: 0,
       settleTimer: undefined,
       settleFrame: undefined,
     };
@@ -201,6 +255,7 @@ export function prepareTimelineViewportGuard(root) {
 
     timeline.destroy = () => {
       guard.destroyed = true;
+      guard.settleGeneration += 1;
       window.clearTimeout(guard.settleTimer);
       window.cancelAnimationFrame(guard.settleFrame);
       activeTimelines.delete(timeline);
@@ -235,6 +290,7 @@ export function prepareTimelineViewportGuard(root) {
       for (const timeline of activeTimelines) {
         const guard = timeline?.[GUARDED];
         if (!guard) continue;
+        guard.settleGeneration += 1;
         window.clearTimeout(guard.settleTimer);
         window.cancelAnimationFrame(guard.settleFrame);
       }
