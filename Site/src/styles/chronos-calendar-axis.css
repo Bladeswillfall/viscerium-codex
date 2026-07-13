@@ -25,12 +25,19 @@
   border-color: transparent !important;
 }
 
-/* CustomTime bars live in vis-timeline's vertical background panel. Keep that
- * panel between the bottom axis and the event canvas: labels remain visible in
- * the axis, while event cards still paint above the calendar lines. */
+/* CustomTime bars live in vis-timeline's vertical background panel. The centre
+ * viewport must remain transparent so those native bars can be seen through it;
+ * era bands and event items still paint in their normal layers above the canvas
+ * background. */
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-background.vis-vertical {
   z-index: 2;
   overflow: visible !important;
+}
+
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center > .vis-content,
+.vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center .vis-itemset {
+  background: transparent !important;
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-panel.vis-center,
