@@ -8,10 +8,12 @@ test('the Astro island mounts the native renderer without host redraw machinery'
   const island = read('../src/components/timeline/TimelineIsland.tsx');
   const renderer = read('../src/lib/timeline/renderer.mjs');
 
-  assert.match(renderer, /export \{ mountTimeline \} from '\.\/chronos-native-renderer\.mjs'/);
+  assert.match(renderer, /mountTimeline as mountNativeTimeline/);
+  assert.match(renderer, /renderParsedWithTopOrientation/);
+  assert.match(renderer, /orientation: \{[\s\S]*axis: 'top',[\s\S]*item: 'top'/);
+  assert.match(renderer, /finally \{[\s\S]*ChronosTimeline\.prototype\.renderParsed = originalRenderParsed/);
   assert.doesNotMatch(renderer, /Proxy\s*\(/);
-  assert.doesNotMatch(renderer, /MutationObserver/);
-  assert.doesNotMatch(renderer, /ChronosTimeline\.prototype/);
+  assert.doesNotMatch(renderer, /MutationObserver|ResizeObserver/);
 
   assert.match(island, /cleanup = mountTimeline\(root, dataset, options\)/);
   assert.doesNotMatch(island, /prepareTimelineViewportGuard/);
@@ -32,8 +34,8 @@ test('unified chronology keeps one canonical Chronos group without host remounti
 test('the viewport is stable and does not pin or adapt Chronos internals', () => {
   const styles = read('../src/styles/timeline-viewport.css');
 
-  assert.match(styles, /block-size: 35rem/);
-  assert.match(styles, /block-size: 29rem/);
+  assert.match(styles, /block-size: 28rem/);
+  assert.match(styles, /block-size: 24rem/);
   assert.match(styles, /> \.vis-timeline \{[\s\S]*block-size: 100% !important/);
   assert.doesNotMatch(styles, /vc-pinned-row-height/);
   assert.doesNotMatch(styles, /vc-timeline-hovercard/);
