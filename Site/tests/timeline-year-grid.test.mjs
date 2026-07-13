@@ -165,6 +165,6 @@ test('the native renderer owns the single visible fictional-calendar axis', () =
   assert.match(renderer, /formatAbsoluteDay\(day, state\.calendar, precision\)/);
   assert.match(renderer, /timeline\.on\('rangechanged'/);
   assert.match(entry, /mountTimeline as mountNativeTimeline/);
-  assert.match(entry, /renderParsedWithTopOrientation/);
+  assert.match(entry, /renderParsedWithStableTopOrientation/);
   assert.doesNotMatch(entry, /createYearGridSvg|installAnnualYearGrid|MutationObserver|ResizeObserver/);
 });
