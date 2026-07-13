@@ -57,7 +57,7 @@
 
 .vc-timeline-app .vc-timeline-canvas .vc-calendar-time-label {
   position: absolute;
-  top: calc(100% + .55rem);
+  top: var(--vc-calendar-label-top, calc(100% - 3.4rem));
   left: 0;
   z-index: 6;
   max-width: 12rem;
