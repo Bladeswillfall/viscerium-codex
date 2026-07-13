@@ -40,7 +40,7 @@ jobs:
       - name: Install browser test runtime
         run: |
           npm install --no-save --legacy-peer-deps @playwright/test@1.55.0
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
       - name: Start Astro preview
         run: |
           npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/viscerium-preview.log 2>&1 &
