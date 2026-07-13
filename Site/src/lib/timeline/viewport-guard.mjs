@@ -4,6 +4,7 @@ const GUARDED = Symbol('visceriumTimelineViewportGuard');
 const LAYOUT_SETTLE_INTERVAL_MS = 50;
 const LAYOUT_SETTLE_TIMEOUT_MS = 1_000;
 const REQUIRED_STABLE_LAYOUT_PASSES = 3;
+const MIN_CANVAS_HEIGHT = 280;
 const BOTTOM_ROW_INSET = 32;
 
 /**
@@ -23,22 +24,23 @@ const BOTTOM_ROW_INSET = 32;
  * timeline. vis-timeline does not measure every offscreen group until its native
  * row scroller reaches those groups, and it can discard that discovered height
  * when returned to the top. Prime the scroller over several redraws, record the
- * largest measured native content height, pin that height inside vis-timeline,
- * then restore the reader's original relative position. A small measured tail
- * keeps the final card and its native item margin clear of the clipped edge.
+ * actual card/label extent, pin only that height inside vis-timeline, then
+ * restore the reader's original relative position.
  *
- * The renderer still calculates the natural content height. Mirror that value
- * onto the outer canvas, capped at its original CSS viewport, so short timelines
- * collapse around their cards instead of leaving a large empty floor. Longer
- * timelines remain bounded and use vis-timeline's native row scroller.
+ * The outer canvas is then fitted to that same measured extent, capped at its
+ * original CSS viewport. This deliberately ignores renderer minimum-height
+ * hints: those hints were keeping the canvas at roughly 420px even when the
+ * cards occupied substantially less space, which simply moved the original
+ * empty gap from above the events to below them.
  */
 export function prepareTimelineViewportGuard(root) {
   const originalRenderParsed = ChronosTimeline.prototype.renderParsed;
   const activeTimelines = new Set();
   let resizeObserver;
-  let adaptiveHeightObserver;
   let observedCanvas;
   let maximumCanvasHeight;
+  let canvasMeasureFrame;
+  let canvasSettleFrame;
   let restored = false;
 
   const getCanvas = () => root.querySelector('[data-vc-canvas]');
@@ -58,7 +60,7 @@ export function prepareTimelineViewportGuard(root) {
 
   const viewportHeight = () => {
     const canvas = getCanvas();
-    return Math.max(320, Math.round(canvas?.clientHeight ?? 0));
+    return Math.max(MIN_CANVAS_HEIGHT, Math.round(canvas?.clientHeight ?? 0));
   };
 
   const maximumRowScroll = (scroller) => Math.max(0, scroller.scrollHeight - scroller.clientHeight);
@@ -66,6 +68,43 @@ export function prepareTimelineViewportGuard(root) {
   const scrollRowsTo = (scroller, scrollTop) => {
     scroller.scrollTop = Math.max(0, Math.min(maximumRowScroll(scroller), scrollTop));
     scroller.dispatchEvent(new Event('scroll', { bubbles: true }));
+  };
+
+  const visibleElements = (elements) => [...elements].filter((element) => {
+    const rect = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    return rect.width > 0
+      && rect.height > 0
+      && style.display !== 'none'
+      && style.visibility !== 'hidden';
+  });
+
+  const extentWithin = (elements, container) => {
+    if (!container || !elements.length) return 0;
+    const containerRect = container.getBoundingClientRect();
+    return elements.reduce((extent, element) => (
+      Math.max(extent, element.getBoundingClientRect().bottom - containerRect.top)
+    ), 0);
+  };
+
+  const measuredContentHeight = () => {
+    const { itemset, labelset } = getTimelineParts();
+    if (!itemset) return 0;
+
+    const eventItems = visibleElements(
+      itemset.querySelectorAll('.vis-item.vc-timeline-item'),
+    );
+    const eventExtent = extentWithin(eventItems, itemset);
+
+    // A unified chronology has one label stretched to the itemset's minimum
+    // height, so using that label would recreate the empty floor. Multiple
+    // labels represent real grouped rows and are safe to include.
+    const labels = labelset
+      ? visibleElements(labelset.querySelectorAll('.vis-label'))
+      : [];
+    const labelExtent = labels.length > 1 ? extentWithin(labels, labelset) : 0;
+
+    return Math.max(0, eventExtent, labelExtent);
   };
 
   const setPinnedContentHeight = (height) => {
@@ -85,17 +124,6 @@ export function prepareTimelineViewportGuard(root) {
     }
   };
 
-  const measuredContentHeight = () => {
-    const { itemset, rowScroller, rowContent, labelset } = getTimelineParts();
-    return Math.max(
-      0,
-      itemset?.clientHeight ?? 0,
-      rowScroller?.scrollHeight ?? 0,
-      rowContent?.clientHeight ?? 0,
-      labelset?.clientHeight ?? 0,
-    );
-  };
-
   const layoutSignature = () => {
     const { centerPanel, itemset, rowScroller } = getTimelineParts();
     if (!centerPanel || !itemset || !rowScroller) return undefined;
@@ -109,7 +137,41 @@ export function prepareTimelineViewportGuard(root) {
       rowScroller.scrollHeight,
       itemset.querySelectorAll('.vis-foreground > .vis-group').length,
       itemset.querySelectorAll('.vis-item.vc-timeline-item').length,
+      Math.round(measuredContentHeight()),
     ].join(':');
+  };
+
+  const applyMeasuredCanvasHeight = () => {
+    const canvas = getCanvas();
+    if (!canvas || canvas.hidden) return;
+    if ([...activeTimelines].some((timeline) => timeline?.[GUARDED]?.settling)) return;
+
+    const contentHeight = measuredContentHeight();
+    if (contentHeight <= 0) return;
+
+    const upperBound = Math.max(
+      MIN_CANVAS_HEIGHT,
+      maximumCanvasHeight ?? Math.round(canvas.clientHeight),
+    );
+    const desiredHeight = Math.max(
+      MIN_CANVAS_HEIGHT,
+      Math.min(upperBound, Math.ceil(contentHeight + BOTTOM_ROW_INSET)),
+    );
+
+    canvas.dataset.vcMeasuredContentHeight = String(Math.ceil(contentHeight));
+    canvas.dataset.vcAppliedAdaptiveHeight = String(desiredHeight);
+    if (Math.abs(canvas.clientHeight - desiredHeight) < 2) return;
+
+    canvas.style.blockSize = `${desiredHeight}px`;
+    for (const timeline of activeTimelines) applyViewportHeight(timeline);
+  };
+
+  const scheduleMeasuredCanvasHeight = () => {
+    window.cancelAnimationFrame(canvasMeasureFrame);
+    window.cancelAnimationFrame(canvasSettleFrame);
+    canvasMeasureFrame = window.requestAnimationFrame(() => {
+      canvasSettleFrame = window.requestAnimationFrame(applyMeasuredCanvasHeight);
+    });
   };
 
   const settleTimelineLayout = (timeline) => {
@@ -149,6 +211,7 @@ export function prepareTimelineViewportGuard(root) {
       guard.settleFrame = undefined;
       const currentCanvas = getCanvas();
       if (currentCanvas) currentCanvas.dataset.vcLayoutSettled = 'true';
+      scheduleMeasuredCanvasHeight();
     };
 
     const measureAfterRedraw = () => {
@@ -210,28 +273,13 @@ export function prepareTimelineViewportGuard(root) {
     settleTimelineLayout(timeline);
   };
 
-  const applyAdaptiveCanvasHeight = () => {
-    const canvas = getCanvas();
-    const requestedHeight = Number(canvas?.dataset.vcAdaptiveHeight);
-    if (!canvas || !Number.isFinite(requestedHeight) || requestedHeight <= 0) return;
-
-    const upperBound = Math.max(320, maximumCanvasHeight ?? canvas.clientHeight);
-    const desiredHeight = Math.max(320, Math.min(upperBound, Math.round(requestedHeight)));
-    if (Math.abs(canvas.clientHeight - desiredHeight) < 2) return;
-
-    canvas.style.blockSize = `${desiredHeight}px`;
-    canvas.dataset.vcAppliedAdaptiveHeight = String(desiredHeight);
-    for (const timeline of activeTimelines) applyViewportHeight(timeline);
-  };
-
   const observeCanvas = () => {
     const canvas = getCanvas();
     if (!canvas || canvas === observedCanvas) return;
 
     resizeObserver?.disconnect();
-    adaptiveHeightObserver?.disconnect();
     observedCanvas = canvas;
-    maximumCanvasHeight = Math.max(320, Math.round(canvas.clientHeight));
+    maximumCanvasHeight = Math.max(MIN_CANVAS_HEIGHT, Math.round(canvas.clientHeight));
 
     if (typeof ResizeObserver === 'function') {
       resizeObserver = new ResizeObserver(() => {
@@ -240,20 +288,12 @@ export function prepareTimelineViewportGuard(root) {
           const guard = timeline?.[GUARDED];
           if (guard?.appliedViewportHeight !== height) applyViewportHeight(timeline);
         }
+        scheduleMeasuredCanvasHeight();
       });
       resizeObserver.observe(canvas);
     }
 
-    adaptiveHeightObserver = new MutationObserver((mutations) => {
-      if (mutations.some((mutation) => mutation.attributeName === 'data-vc-adaptive-height')) {
-        applyAdaptiveCanvasHeight();
-      }
-    });
-    adaptiveHeightObserver.observe(canvas, {
-      attributes: true,
-      attributeFilter: ['data-vc-adaptive-height'],
-    });
-    applyAdaptiveCanvasHeight();
+    scheduleMeasuredCanvasHeight();
   };
 
   const guardTimeline = (timeline) => {
@@ -298,11 +338,14 @@ export function prepareTimelineViewportGuard(root) {
       return result;
     };
 
+    timeline.on('changed', scheduleMeasuredCanvasHeight);
+
     timeline.destroy = () => {
       guard.destroyed = true;
       guard.settleGeneration += 1;
       window.clearTimeout(guard.settleTimer);
       window.cancelAnimationFrame(guard.settleFrame);
+      timeline.off?.('changed', scheduleMeasuredCanvasHeight);
       activeTimelines.delete(timeline);
       return originalDestroy();
     };
@@ -332,10 +375,12 @@ export function prepareTimelineViewportGuard(root) {
     cleanup() {
       restorePrototype();
       resizeObserver?.disconnect();
-      adaptiveHeightObserver?.disconnect();
+      window.cancelAnimationFrame(canvasMeasureFrame);
+      window.cancelAnimationFrame(canvasSettleFrame);
       if (observedCanvas) {
         observedCanvas.style.removeProperty('block-size');
         delete observedCanvas.dataset.vcAppliedAdaptiveHeight;
+        delete observedCanvas.dataset.vcMeasuredContentHeight;
       }
       for (const timeline of activeTimelines) {
         const guard = timeline?.[GUARDED];
@@ -343,6 +388,7 @@ export function prepareTimelineViewportGuard(root) {
         guard.settleGeneration += 1;
         window.clearTimeout(guard.settleTimer);
         window.cancelAnimationFrame(guard.settleFrame);
+        timeline.off?.('changed', scheduleMeasuredCanvasHeight);
       }
       activeTimelines.clear();
     },
