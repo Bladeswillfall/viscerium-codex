@@ -17,6 +17,7 @@
     "generate:maps": "node scripts/generate-map-data.mjs",
     "generate:timelines": "node scripts/generate-timeline-data.mjs",
     "benchmark:timelines": "node scripts/benchmark-timelines.mjs",
+    "compress:assets": "node scripts/compress-source-assets.mjs",
     "test:unit": "node --test tests/*.test.mjs",
     "prebuild": "node scripts/build-content.mjs --mode=build",
     "build": "astro build",
@@ -63,11 +64,15 @@
     "vis-util": "^5.0.1",
     "xss": "^1.0.0"
   },
+  "devDependencies": {
+    "@playform/compress": "0.2.3"
+  },
   "engines": {
     "node": ">=22.16.0"
   },
   "allowScripts": {
     "sharp@0.34.5": true,
+    "sharp@0.35.3": true,
     "esbuild@0.28.1": true
   }
 }
