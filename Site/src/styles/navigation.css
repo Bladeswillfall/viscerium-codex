@@ -235,14 +235,15 @@
     }
 
     /*
-      Target one stable Starlight root. Previous rules targeted both the outer
-      navigation and an inner pane, so nested fixed elements could fight over
-      width, transforms, scrolling, and pointer events.
+      Target the actual Starlight pane rather than styling both the wrapper and
+      pane as independent fixed overlays. Starlight controls this element with
+      --sl-sidebar-visibility, so visibility must be restored explicitly too.
     */
     #starlight__sidebar {
       --sl-sidebar-width: var(--codex-sidebar-overlay-width);
       position: fixed !important;
       z-index: 60;
+      visibility: visible !important;
       inset-block-start: var(--sl-nav-height, 3.5rem);
       inset-block-end: 0;
       inset-inline-start: 0;
@@ -259,20 +260,8 @@
         box-shadow .2s ease;
     }
 
-    /* Neutralise obsolete pane-level collapse rules left in older shared CSS. */
-    #starlight__sidebar .sidebar-pane {
-      position: static;
-      inset: auto;
-      inline-size: auto;
-      max-inline-size: none;
-      overflow: visible;
-      transform: none !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
-      box-shadow: none;
-    }
-
     html.codex-sidebar-collapsed #starlight__sidebar {
+      visibility: hidden !important;
       transform: translateX(-110%) !important;
       opacity: 0 !important;
       pointer-events: none !important;
