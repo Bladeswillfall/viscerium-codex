@@ -59,6 +59,7 @@ const isHomepage = Astro.url.pathname === '/';
     const storageKey = 'viscerium-sidebar-collapsed';
     const root = document.documentElement;
     const runtime = window.__visceriumSidebar ??= {};
+    const desktopQuery = window.matchMedia('(min-width: 800px)');
 
     const readStoredState = () => {
       try {
@@ -87,10 +88,13 @@ const isHomepage = Astro.url.pathname === '/';
     runtime.sync = () => {
       const button = document.querySelector('[data-codex-sidebar-toggle]');
       const sidebar = document.getElementById('starlight__sidebar');
+      const hasDesktopSidebar = Boolean(sidebar && desktopQuery.matches);
+
+      root.toggleAttribute('data-codex-desktop-sidebar', hasDesktopSidebar);
 
       if (!button) return;
 
-      if (!sidebar) {
+      if (!hasDesktopSidebar) {
         button.hidden = true;
         root.classList.remove('codex-sidebar-collapsed');
         return;
@@ -111,6 +115,11 @@ const isHomepage = Astro.url.pathname === '/';
     if (!runtime.pageLoadBound) {
       document.addEventListener('astro:page-load', runtime.sync);
       runtime.pageLoadBound = true;
+    }
+
+    if (!runtime.desktopQueryBound) {
+      desktopQuery.addEventListener('change', runtime.sync);
+      runtime.desktopQueryBound = true;
     }
 
     runtime.sync();
