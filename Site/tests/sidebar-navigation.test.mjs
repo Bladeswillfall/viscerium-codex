@@ -39,12 +39,16 @@ test('homepage opts into the sidebar and preserves its rail clearance', () => {
   assert.match(homepage, /padding-inline-start: var\(--codex-sidebar-overlay-width\) !important/);
 });
 
-test('mobile page table of contents is collapsed at the desktop breakpoint', () => {
+test('mobile page table of contents is owned by the responsive runtime', () => {
+  const footer = read('../src/components/StarlightFooter.astro');
   const navigation = read('../src/styles/navigation.css');
 
   assert.match(navigation, /@media \(min-width: 800px\)/);
   assert.match(navigation, /--sl-mobile-toc-height: 0rem/);
-  assert.match(navigation, /#starlight__mobile-toc\s*\{[\s\S]*block-size: 0 !important/);
-  assert.match(navigation, /#starlight__on-this-page--mobile\s*\{[\s\S]*visibility: hidden !important/);
-  assert.match(navigation, /#starlight__on-this-page--mobile ~ \.dropdown\s*\{[\s\S]*display: none !important/);
+  assert.match(footer, /document\.getElementById\('starlight__on-this-page--mobile'\)/);
+  assert.match(footer, /summary\?\.closest\('nav'\)/);
+  assert.match(footer, /navigation\.style\.setProperty\('display', 'none', 'important'\)/);
+  assert.match(footer, /navigation\.style\.removeProperty\('display'\)/);
+  assert.match(footer, /new MutationObserver\(\(\) => runtime\.syncMobileToc\(\)\)/);
+  assert.match(footer, /runtime\.mobileTocObserver\.observe\(document\.body, \{ childList: true, subtree: true \}\)/);
 });
