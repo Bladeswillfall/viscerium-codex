@@ -39,13 +39,12 @@ test('homepage opts into the sidebar and preserves its rail clearance', () => {
   assert.match(homepage, /padding-inline-start: var\(--codex-sidebar-overlay-width\) !important/);
 });
 
-test('mobile page table of contents is suppressed at the desktop breakpoint', () => {
+test('mobile page table of contents is collapsed at the desktop breakpoint', () => {
   const navigation = read('../src/styles/navigation.css');
 
   assert.match(navigation, /@media \(min-width: 800px\)/);
-  assert.match(navigation, /mobile-starlight-toc,/);
-  assert.match(navigation, /#starlight__mobile-toc,/);
-  assert.match(navigation, /nav:has\(#starlight__on-this-page--mobile\),/);
-  assert.match(navigation, /#starlight__on-this-page--mobile,/);
+  assert.match(navigation, /--sl-mobile-toc-height: 0rem/);
+  assert.match(navigation, /#starlight__mobile-toc\s*\{[\s\S]*block-size: 0 !important/);
+  assert.match(navigation, /#starlight__on-this-page--mobile\s*\{[\s\S]*visibility: hidden !important/);
   assert.match(navigation, /#starlight__on-this-page--mobile ~ \.dropdown\s*\{[\s\S]*display: none !important/);
 });
