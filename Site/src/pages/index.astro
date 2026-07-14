@@ -65,3 +65,74 @@ const homepageStats = {
     }
   }
 </style>
+
+<!--
+  Critical mobile geometry is kept inline as a fail-safe. The decorative homepage
+  styles can remain cached independently, but a stale or omitted responsive asset
+  must never leave the four desktop era columns underneath the centred hero copy.
+-->
+<style is:inline>
+  @media (max-width: 68.75rem) {
+    .home-hero__copy {
+      position: relative !important;
+      inset: auto !important;
+      width: auto !important;
+      padding: clamp(4rem, 10vw, 7rem) var(--home-gutter) clamp(2.5rem, 7vw, 4rem) !important;
+      translate: none !important;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(125, 83, 42, .18), transparent 60%),
+        #0a0a0c !important;
+    }
+
+    .home-era-gateway {
+      min-height: 0 !important;
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      overflow: visible !important;
+    }
+
+    .home-era-gateway > li {
+      min-width: 0 !important;
+      width: 100% !important;
+      transition: none !important;
+    }
+
+    .home-era-card {
+      min-height: clamp(24rem, 55svh, 34rem) !important;
+      border-block-start: 1px solid rgba(255, 255, 255, .13);
+    }
+
+    .home-era-gateway > li:nth-child(even) .home-era-card {
+      border-inline-end: 0;
+    }
+  }
+
+  @media (max-width: 44rem) {
+    .home-hero__copy {
+      padding-block-start: clamp(3.25rem, 12vw, 5rem) !important;
+      padding-inline: 1rem !important;
+    }
+
+    .home-hero h1 {
+      font-size: clamp(2rem, 15.5vw, 6.5rem) !important;
+    }
+
+    .home-actions {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+
+    .home-button {
+      width: 100% !important;
+    }
+
+    .home-era-gateway {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .home-era-card {
+      min-height: clamp(20rem, 60svh, 28rem) !important;
+      border-inline-end: 0 !important;
+    }
+  }
+</style>
