@@ -308,7 +308,10 @@ html[data-codex-desktop-sidebar] .codex-page-sidebar .sl-container {
 
 @media (min-width: 800px) {
   mobile-starlight-toc,
-  #starlight__mobile-toc {
+  #starlight__mobile-toc,
+  nav:has(#starlight__on-this-page--mobile),
+  #starlight__on-this-page--mobile,
+  #starlight__on-this-page--mobile ~ .dropdown {
     display: none !important;
   }
 }
