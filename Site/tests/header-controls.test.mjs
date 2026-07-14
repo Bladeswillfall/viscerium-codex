@@ -25,11 +25,17 @@ test('the Codex header renders the native search field and owned theme toggle', 
   assert.match(header, /data-codex-header-search/);
   assert.match(header, /data-codex-header-controls/);
 
+  assert.match(header, /window\.matchMedia\('\(min-width: 800px\)'\)/);
+  assert.match(header, /root\.toggleAttribute\('data-codex-wide-header', desktopQuery\.matches\)/);
+  assert.match(header, /desktopQuery\.addEventListener\('change', runtime\.sync\)/);
+  assert.match(header, /document\.addEventListener\('astro:page-load', runtime\.sync\)/);
+
   assert.match(headerCss, /\.codex-header-search button\[data-open-modal\]/);
-  assert.match(headerCss, /@media \(min-width: 800px\)/);
+  assert.match(headerCss, /html\[data-codex-wide-header\] \.codex-header-search/);
   assert.match(headerCss, /min-width:\s*14rem !important/);
   assert.match(headerCss, /> span\s*\{[\s\S]*display:\s*block !important/);
   assert.match(headerCss, /> kbd\s*\{[\s\S]*display:\s*flex !important/);
+  assert.doesNotMatch(headerCss, /@media/);
 
   assert.match(themeToggle, /data-codex-theme-toggle/);
   assert.match(themeToggle, /localStorage\.setItem\(storageKey, nextTheme\)/);
