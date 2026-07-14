@@ -1,9 +1,9 @@
 /*
   Persistent top-ribbon controls.
 
-  Keep this file unlayered. Astro 7 currently emits the base rules from component-local
-  styles but loses the responsive header rules after the Starlight/Ion cascade is built.
-  The global customCss pipeline is already the stable source of responsive site geometry.
+  Keep this file unlayered. Astro 7 currently emits the base rules but drops the
+  responsive media block from the built Starlight stylesheet. CodexHeader therefore
+  owns a matchMedia-backed root attribute and these selectors consume that state.
 */
 .codex-header {
   display: grid;
@@ -108,44 +108,42 @@
   outline-offset: 2px;
 }
 
-@media (min-width: 800px) {
-  .codex-header {
-    grid-template-columns: minmax(12rem, 1fr) minmax(16rem, 34rem) auto;
-    gap: 1rem;
-  }
+html[data-codex-wide-header] .codex-header {
+  grid-template-columns: minmax(12rem, 1fr) minmax(16rem, 34rem) auto;
+  gap: 1rem;
+}
 
-  .codex-header .title-wrapper {
-    max-width: none;
-  }
+html[data-codex-wide-header] .codex-header .title-wrapper {
+  max-width: none;
+}
 
-  .codex-header-search {
-    width: 100% !important;
-    min-width: 14rem !important;
-    justify-content: center;
-  }
+html[data-codex-wide-header] .codex-header-search {
+  width: 100% !important;
+  min-width: 14rem !important;
+  justify-content: center;
+}
 
-  .codex-header-search site-search {
-    display: contents;
-  }
+html[data-codex-wide-header] .codex-header-search site-search {
+  display: contents;
+}
 
-  .codex-header-search button[data-open-modal] {
-    width: 100% !important;
-    min-width: 14rem !important;
-    max-width: none !important;
-    justify-content: flex-start !important;
-    padding-inline: .85rem .65rem !important;
-  }
+html[data-codex-wide-header] .codex-header-search button[data-open-modal] {
+  width: 100% !important;
+  min-width: 14rem !important;
+  max-width: none !important;
+  justify-content: flex-start !important;
+  padding-inline: .85rem .65rem !important;
+}
 
-  .codex-header-search button[data-open-modal] > span {
-    display: block !important;
-  }
+html[data-codex-wide-header] .codex-header-search button[data-open-modal] > span {
+  display: block !important;
+}
 
-  .codex-header-search button[data-open-modal] > kbd {
-    display: flex !important;
-    margin-inline-start: auto !important;
-  }
+html[data-codex-wide-header] .codex-header-search button[data-open-modal] > kbd {
+  display: flex !important;
+  margin-inline-start: auto !important;
+}
 
-  .codex-header .social-icons {
-    display: flex;
-  }
+html[data-codex-wide-header] .codex-header .social-icons {
+  display: flex;
 }
