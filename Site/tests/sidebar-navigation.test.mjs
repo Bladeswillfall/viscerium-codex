@@ -42,5 +42,8 @@ test('homepage opts into the sidebar and preserves its rail clearance', () => {
 test('mobile page table of contents is suppressed at the desktop breakpoint', () => {
   const navigation = read('../src/styles/navigation.css');
 
-  assert.match(navigation, /@media \(min-width: 800px\)[\s\S]*mobile-starlight-toc\s*\{[\s\S]*display: none !important/);
+  assert.match(
+    navigation,
+    /@media \(min-width: 800px\)[\s\S]*mobile-starlight-toc,[\s\S]*#starlight__mobile-toc\s*\{[\s\S]*display: none !important/,
+  );
 });
