@@ -27,7 +27,7 @@ const homepageStats = {
     template: 'splash',
     pagefind: false,
   }}
-  hasSidebar={false}
+  hasSidebar={true}
 >
   <HomeGateway {...homepageStats} />
 </StarlightPage>
@@ -39,8 +39,8 @@ const homepageStats = {
     padding-inline: 0 !important;
   }
 
-  html:not(.codex-sidebar-collapsed) .main-frame:has(.home-gateway) {
-    padding-inline-start: 0 !important;
+  html[data-codex-desktop-sidebar]:not(.codex-sidebar-collapsed) .main-frame:has(.home-gateway) {
+    padding-inline-start: var(--codex-sidebar-overlay-width) !important;
   }
 
   .main-frame:has(.home-gateway) > .codex-two-column-content {
