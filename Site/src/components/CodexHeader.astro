@@ -140,7 +140,7 @@ const shouldRenderSearch =
       outline-offset: 2px;
     }
 
-    @media (min-width: 50rem) {
+    @media (min-width: 800px) {
       .codex-header {
         grid-template-columns: minmax(12rem, 1fr) minmax(16rem, 34rem) auto;
         gap: 1rem;
@@ -182,7 +182,7 @@ const shouldRenderSearch =
     to its mobile icon-only width after the Ion layer has rendered. Keep this critical header
     geometry unlayered so the desktop field cannot be silently reduced by future upgrades.
   */
-  @media (min-width: 50rem) {
+  @media (min-width: 800px) {
     .codex-header-search {
       width: 100% !important;
       min-width: 14rem !important;
