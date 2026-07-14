@@ -23,6 +23,12 @@ Styles are loaded in the order declared in `Site/astro.config.mjs`. Astro/Vite p
 
 These feature files remain separate because their selectors, components, and maintenance cycles are distinct. Combining them would make human navigation worse while providing little or no production loading benefit after bundling.
 
+## Progressive colour output
+
+Author CSS in stable HEX, RGB/RGBA, HSL/HSLA, Display-P3, or OKLCH values as appropriate. `Site/plugins/progressive-css-colors.mjs` keeps the authored declaration as the compatibility fallback, then emits a support-gated Display-P3 declaration and a final OKLCH declaration. The transform covers first-party styles, checked-in Starlight theme styles, Astro component style blocks, custom properties, gradients, shadows, and `color-mix()` interpolation spaces.
+
+Because the OKLCH tier is emitted last, it is the preferred rendering path where supported. Browsers without OKLCH fall back to Display-P3 where available, then to the original HEX/RGB-compatible declaration.
+
 ## Placement rules
 
 1. Put shared colours and surfaces in tokens, not feature selectors.

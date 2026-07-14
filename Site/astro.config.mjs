@@ -15,6 +15,7 @@ import starlightSidebarSwipe from 'starlight-sidebar-swipe';
 import starlightTags from 'starlight-tags';
 import starlightTelescope from 'starlight-telescope';
 import starlightUiTweaks from 'starlight-ui-tweaks';
+import { progressiveCssColors } from './plugins/progressive-css-colors.mjs';
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
 
@@ -234,6 +235,9 @@ const sidebar = [
 
 export default defineConfig({
   site: siteConfig.site,
+  vite: {
+    plugins: [progressiveCssColors()],
+  },
   integrations: [
     preact(),
     starlight({
