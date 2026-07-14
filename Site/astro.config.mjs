@@ -252,6 +252,7 @@ export default defineConfig({
         './src/styles/codex-ui.css',
         './src/styles/custom.css',
         './src/styles/navigation.css',
+        './src/styles/header-controls.css',
         './src/styles/graph.css',
         './src/styles/timelines.css',
         './src/styles/maps.css',
