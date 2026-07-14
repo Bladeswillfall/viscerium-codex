@@ -190,7 +190,6 @@
     display: none;
   }
 
-  /* Sidebar toggle presentation and state live here, not in general article CSS. */
   .codex-sidebar-toggle {
     position: fixed;
     z-index: 1000;
@@ -224,81 +223,75 @@
     outline-offset: 3px;
   }
 
-  /* Desktop overlay behaviour for the left navigation. */
-  @media (min-width: 800px) {
-    :root {
-      --codex-sidebar-overlay-width: 18rem;
-    }
-
-    html:not(.codex-sidebar-collapsed) {
-      --sl-sidebar-width: 0rem;
-    }
-
-    .sidebar > starlight-menu-button {
-      display: none;
-    }
-
-    /*
-      Target the actual Starlight pane rather than styling both the wrapper and
-      pane as independent fixed overlays. Use the concrete 800px boundary that
-      the intended 50rem breakpoint represents so the overlay cannot remain in
-      Starlight's mobile state at normal desktop widths.
-    */
-    #starlight__sidebar {
-      --sl-sidebar-width: var(--codex-sidebar-overlay-width);
-      position: fixed !important;
-      z-index: 60;
-      visibility: visible !important;
-      inset-block-start: var(--sl-nav-height, 3.5rem);
-      inset-block-end: 0;
-      inset-inline-start: 0;
-      width: var(--codex-sidebar-overlay-width) !important;
-      inline-size: var(--codex-sidebar-overlay-width) !important;
-      max-inline-size: calc(100vw - 3.75rem);
-      overflow-y: auto;
-      transform: translateX(0) !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
-      box-shadow: 1rem 0 2.5rem rgba(0, 0, 0, .32);
-      transition:
-        transform .2s ease,
-        opacity .2s ease,
-        box-shadow .2s ease;
-    }
-
-    html.codex-sidebar-collapsed #starlight__sidebar {
-      visibility: hidden !important;
-      transform: translateX(-110%) !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-      box-shadow: none;
-    }
-
-    html:not(.codex-sidebar-collapsed) .codex-sidebar-toggle {
-      inset-inline-start: calc(var(--codex-sidebar-overlay-width) + .75rem);
-    }
-
-    html.codex-sidebar-collapsed .codex-sidebar-toggle {
-      inset-inline-start: .75rem;
-    }
-
-    .right-sidebar-panel .sl-container,
-    .codex-page-sidebar .sl-container {
-      inline-size: 100% !important;
-      max-inline-size: none !important;
-    }
-  }
-
-  @media (max-width: 799.98px) {
-    .codex-sidebar-toggle {
-      display: none;
-    }
-  }
-
   @media (prefers-reduced-motion: no-preference) {
     .sidebar-content a:hover .codex-icon,
     .sidebar-content summary:hover .codex-icon {
       transform: translateY(-1px);
     }
   }
+}
+
+/*
+  The overlay state is intentionally unlayered. Starlight's sidebar pane is
+  component-scoped inside its own cascade layer; keeping these critical layout
+  declarations outside a layer ensures the Codex state wins without relying on
+  brittle selector or stylesheet ordering.
+*/
+html[data-codex-desktop-sidebar] {
+  --codex-sidebar-overlay-width: 18rem;
+  --sl-sidebar-width: 0rem;
+}
+
+html[data-codex-desktop-sidebar] .sidebar > starlight-menu-button {
+  display: none;
+}
+
+html[data-codex-desktop-sidebar] #starlight__sidebar {
+  --sl-sidebar-width: var(--codex-sidebar-overlay-width);
+  position: fixed;
+  z-index: 60;
+  visibility: visible;
+  inset-block-start: var(--sl-nav-height, 3.5rem);
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  width: var(--codex-sidebar-overlay-width);
+  inline-size: var(--codex-sidebar-overlay-width);
+  max-inline-size: calc(100vw - 3.75rem);
+  overflow-y: auto;
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+  box-shadow: 1rem 0 2.5rem rgba(0, 0, 0, .32);
+  transition:
+    transform .2s ease,
+    opacity .2s ease,
+    visibility 0s linear 0s,
+    box-shadow .2s ease;
+}
+
+html[data-codex-desktop-sidebar].codex-sidebar-collapsed #starlight__sidebar {
+  visibility: hidden;
+  transform: translateX(-110%);
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: none;
+  transition-delay: 0s, 0s, .2s, 0s;
+}
+
+html[data-codex-desktop-sidebar]:not(.codex-sidebar-collapsed) .codex-sidebar-toggle {
+  inset-inline-start: calc(var(--codex-sidebar-overlay-width) + .75rem);
+}
+
+html[data-codex-desktop-sidebar].codex-sidebar-collapsed .codex-sidebar-toggle {
+  inset-inline-start: .75rem;
+}
+
+html:not([data-codex-desktop-sidebar]) .codex-sidebar-toggle {
+  display: none;
+}
+
+html[data-codex-desktop-sidebar] .right-sidebar-panel .sl-container,
+html[data-codex-desktop-sidebar] .codex-page-sidebar .sl-container {
+  inline-size: 100%;
+  max-inline-size: none;
 }
