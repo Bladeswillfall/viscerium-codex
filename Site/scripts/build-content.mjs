@@ -5,6 +5,7 @@ import { generateTimelineData, reportTimelineError } from './generate-timeline-d
 import { validateGeneratedContent } from './validate-content.mjs';
 import { generateGraph } from './generate-graph.mjs';
 import { generateMapData } from './generate-map-data.mjs';
+import { materializeDegelPlaceholders } from './materialize-degel-placeholders.mjs';
 import { syncContributorAvatars } from './sync-contributor-avatars.mjs';
 
 const modeArgument = process.argv.find((value) => value.startsWith('--mode='));
@@ -16,6 +17,8 @@ if (!validModes.has(mode)) {
   process.exitCode = 1;
 } else {
   try {
+    await materializeDegelPlaceholders();
+
     const vault = await loadVaultContent({ refresh: true });
     if (!validateVaultNotes(vault)) throw new Error('Vault source validation failed.');
 
