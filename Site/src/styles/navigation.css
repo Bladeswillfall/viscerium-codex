@@ -307,7 +307,8 @@ html[data-codex-desktop-sidebar] .codex-page-sidebar .sl-container {
 }
 
 @media (min-width: 800px) {
-  mobile-starlight-toc {
+  mobile-starlight-toc,
+  #starlight__mobile-toc {
     display: none !important;
   }
 }
