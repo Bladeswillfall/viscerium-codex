@@ -54,6 +54,23 @@ test('the Telescope plugin retains a visible top-ribbon mount', () => {
   assert.match(headerCss, /\.codex-header \.telescope__trigger-btn/);
 });
 
+test('the top ribbon is visually flat, centred and free of GitHub branding', () => {
+  const header = read('../src/components/CodexHeader.astro');
+  const headerCss = read('../src/styles/header-controls.css');
+  const themeToggle = read('../src/components/CodexThemeToggle.astro');
+
+  assert.doesNotMatch(header, /SocialIcons/);
+  assert.doesNotMatch(header, /social-icons/);
+  assert.doesNotMatch(headerCss, /linear-gradient/);
+  assert.doesNotMatch(themeToggle, /linear-gradient/);
+  assert.match(
+    headerCss,
+    /grid-template-columns:\s*minmax\(0,\s*1fr\)\s+minmax\(16rem,\s*34rem\)\s+minmax\(0,\s*1fr\)/
+  );
+  assert.match(headerCss, /\.codex-header-search\s*\{[\s\S]*justify-self:\s*center/);
+  assert.match(headerCss, /\.codex-header-controls\s*\{[\s\S]*justify-self:\s*end/);
+});
+
 test('theme controls are not duplicated inside the sidebar', () => {
   const sidebar = read('../src/components/IonSidebar.astro');
 
