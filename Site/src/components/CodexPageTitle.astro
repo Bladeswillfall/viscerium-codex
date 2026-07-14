@@ -1,6 +1,7 @@
 ---
 import CalendarDateBadge from './calendar/CalendarDateBadge.astro';
 import CodexIcon from './CodexIcon.astro';
+import DegelSystemExplorer from './degel-system/DegelSystemExplorer.astro';
 
 const { starlightRoute } = Astro.locals;
 const entry = starlightRoute.entry.data;
@@ -32,6 +33,8 @@ const headerDescriptionId = headerDescription ? 'codex-header-image-description'
 const headerClass = entry.type === 'image' ? 'codex-header-image codex-header-image-artwork' : 'codex-header-image';
 const titleIcon = entry.titleIcon ?? entry.icon;
 const slugPath = entry.slug ?? starlightRoute.entry.id.replace(/\.(md|mdx)$/, '');
+const normalisedSlugPath = String(slugPath).replace(/^\/+|\/+$/g, '');
+const isDegelSystemIndex = normalisedSlugPath === 'degel-system';
 const breadcrumbParts = slugPath === 'index' ? [] : String(slugPath).split('/').filter(Boolean);
 const breadcrumbs = breadcrumbParts.map((part, index) => {
   const href = `/${breadcrumbParts.slice(0, index + 1).join('/')}/`;
@@ -71,6 +74,7 @@ const breadcrumbs = breadcrumbParts.map((part, index) => {
     ))}
   </nav>
 )}
+{isDegelSystemIndex && <DegelSystemExplorer />}
 
 <style>
   @layer starlight.core {
