@@ -116,10 +116,32 @@ test('top ribbon owns the Ion search, Telescope and colour-mode controls', async
     const style = getComputedStyle(element);
     const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
     const headerStyle = header ? getComputedStyle(header) : null;
+    const matchingRules = [];
+
+    const inspectRules = (rules, source, media = []) => {
+      for (const rule of Array.from(rules ?? [])) {
+        const nextMedia = rule instanceof CSSMediaRule ? [...media, rule.conditionText] : media;
+        if (rule instanceof CSSStyleRule && /codex-header-search|data-open-modal/.test(rule.selectorText)) {
+          matchingRules.push({ source, media: nextMedia, cssText: rule.cssText });
+        }
+        if ('cssRules' in rule) {
+          try {
+            inspectRules(rule.cssRules, source, nextMedia);
+          } catch {}
+        }
+      }
+    };
+
+    for (const sheet of Array.from(document.styleSheets)) {
+      try {
+        inspectRules(sheet.cssRules, sheet.href ?? 'inline');
+      } catch {}
+    }
 
     return {
       viewportWidth: window.innerWidth,
-      desktopQuery: matchMedia('(min-width: 50rem)').matches,
+      desktopQueryRem: matchMedia('(min-width: 50rem)').matches,
+      desktopQueryPx: matchMedia('(min-width: 800px)').matches,
       rootFontSize: getComputedStyle(document.documentElement).fontSize,
       button: {
         width: element.getBoundingClientRect().width,
@@ -146,6 +168,7 @@ test('top ribbon owns the Ion search, Telescope and colour-mode controls', async
         : null,
       textDisplay: text ? getComputedStyle(text).display : null,
       shortcutDisplay: shortcut ? getComputedStyle(shortcut).display : null,
+      matchingRules,
     };
   });
   console.log(`[header-controls] ${JSON.stringify(headerDiagnostics)}`);
