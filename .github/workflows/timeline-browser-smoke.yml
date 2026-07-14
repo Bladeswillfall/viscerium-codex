@@ -55,12 +55,15 @@ jobs:
           done
           cat /tmp/viscerium-preview.log
           exit 1
-      - name: Run timeline browser smoke tests
+      - name: Run timeline and sidebar browser smoke tests
         shell: bash
         run: |
           mkdir -p timeline-browser-diagnostics
           set -o pipefail
-          npx --no-install playwright test tests/browser/timeline-*.spec.mjs --reporter=line --workers=1 2>&1 \
+          npx --no-install playwright test \
+            tests/browser/timeline-*.spec.mjs \
+            tests/browser/sidebar-navigation.spec.mjs \
+            --reporter=line --workers=1 2>&1 \
             | tee timeline-browser-diagnostics/playwright.log
       - name: Show Astro preview log
         if: always()
