@@ -36,3 +36,25 @@ const shouldRenderSearch =
     <LanguageSelect />
   </div>
 </div>
+
+<script is:inline>
+  (() => {
+    const runtimeKey = '__visceriumHeaderRuntime';
+    const root = document.documentElement;
+    const runtime = window[runtimeKey] ?? (window[runtimeKey] = {});
+    const desktopQuery = runtime.desktopQuery ?? window.matchMedia('(min-width: 800px)');
+
+    runtime.desktopQuery = desktopQuery;
+    runtime.sync = () => {
+      root.toggleAttribute('data-codex-wide-header', desktopQuery.matches);
+    };
+
+    if (!runtime.bound) {
+      desktopQuery.addEventListener('change', runtime.sync);
+      document.addEventListener('astro:page-load', runtime.sync);
+      runtime.bound = true;
+    }
+
+    runtime.sync();
+  })();
+</script>
