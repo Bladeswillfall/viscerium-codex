@@ -96,7 +96,7 @@ test('homepage renders the restored desktop navigation rail', async ({ page }) =
   expect(geometry.homeLeft).toBeGreaterThanOrEqual(geometry.sidebarRight - 1);
 });
 
-test('top ribbon owns the Ion search, Telescope and colour-mode controls', async ({ page }) => {
+test('top ribbon owns flat, centred search, Telescope and colour-mode controls', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/start-here/', { waitUntil: 'networkidle' });
 
   const searchButton = page.locator('[data-codex-header-search] button[data-open-modal]');
@@ -107,9 +107,37 @@ test('top ribbon owns the Ion search, Telescope and colour-mode controls', async
   await expect(telescopeButton).toBeVisible();
   await expect(themeButton).toBeVisible();
   await expect(page.locator('#starlight__sidebar starlight-theme-select')).toHaveCount(0);
+  await expect(page.locator('.codex-header .social-icons')).toHaveCount(0);
+  await expect(page.locator('.codex-header a[href*="github.com"]')).toHaveCount(0);
 
-  const searchWidth = await searchButton.evaluate((element) => element.getBoundingClientRect().width);
-  expect(searchWidth).toBeGreaterThan(200);
+  const ribbon = await page.evaluate(() => {
+    const header = document.querySelector('.codex-header');
+    const search = document.querySelector('[data-codex-header-search] button[data-open-modal]');
+    const telescope = document.querySelector('.right-group telescope-search .telescope__trigger-btn');
+    const theme = document.querySelector('[data-codex-theme-toggle]');
+
+    if (!(header instanceof HTMLElement) || !(search instanceof HTMLElement)) {
+      throw new Error('Missing Codex header or search control');
+    }
+
+    const headerRect = header.getBoundingClientRect();
+    const searchRect = search.getBoundingClientRect();
+    const centerDelta = Math.abs(
+      (searchRect.left + searchRect.width / 2) - (headerRect.left + headerRect.width / 2)
+    );
+
+    return {
+      searchWidth: searchRect.width,
+      centerDelta,
+      backgroundImages: [search, telescope, theme]
+        .filter((element) => element instanceof HTMLElement)
+        .map((element) => getComputedStyle(element).backgroundImage),
+    };
+  });
+
+  expect(ribbon.searchWidth).toBeGreaterThan(200);
+  expect(ribbon.centerDelta).toBeLessThan(2);
+  expect(ribbon.backgroundImages).toEqual(['none', 'none', 'none']);
 
   const initialTheme = await page.locator('html').getAttribute('data-theme');
   await themeButton.click();
