@@ -269,6 +269,16 @@ html[data-codex-desktop-sidebar] #starlight__sidebar {
     box-shadow .2s ease;
 }
 
+/* Keep the document outside the open rail's hit area. */
+html[data-codex-desktop-sidebar]:not(.codex-sidebar-collapsed) .main-frame {
+  box-sizing: border-box;
+  padding-inline-start: var(--codex-sidebar-overlay-width);
+}
+
+html[data-codex-desktop-sidebar].codex-sidebar-collapsed .main-frame {
+  padding-inline-start: 0;
+}
+
 html[data-codex-desktop-sidebar].codex-sidebar-collapsed #starlight__sidebar {
   visibility: hidden;
   transform: translateX(-110%);
