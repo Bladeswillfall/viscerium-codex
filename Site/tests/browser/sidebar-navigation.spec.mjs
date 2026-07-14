@@ -96,6 +96,27 @@ test('homepage renders the restored desktop navigation rail', async ({ page }) =
   expect(geometry.homeLeft).toBeGreaterThanOrEqual(geometry.sidebarRight - 1);
 });
 
+test('top ribbon owns the Ion search, Telescope and colour-mode controls', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4321/start-here/', { waitUntil: 'networkidle' });
+
+  const searchButton = page.locator('[data-codex-header-search] button[data-open-modal]');
+  const telescopeButton = page.locator('.right-group telescope-search .telescope__trigger-btn');
+  const themeButton = page.locator('[data-codex-theme-toggle]');
+
+  await expect(searchButton).toBeVisible();
+  await expect(telescopeButton).toBeVisible();
+  await expect(themeButton).toBeVisible();
+  await expect(page.locator('#starlight__sidebar starlight-theme-select')).toHaveCount(0);
+
+  const searchWidth = await searchButton.evaluate((element) => element.getBoundingClientRect().width);
+  expect(searchWidth).toBeGreaterThan(200);
+
+  const initialTheme = await page.locator('html').getAttribute('data-theme');
+  await themeButton.click();
+  await expect.poll(() => page.locator('html').getAttribute('data-theme')).not.toBe(initialTheme);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('starlight-theme'))).not.toBe(initialTheme);
+});
+
 test('mobile On this page control only appears below the desktop breakpoint', async ({ page }) => {
   const mobileToc = page.locator('#starlight__on-this-page--mobile');
 
