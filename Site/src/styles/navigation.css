@@ -305,3 +305,9 @@ html[data-codex-desktop-sidebar] .codex-page-sidebar .sl-container {
   inline-size: 100%;
   max-inline-size: none;
 }
+
+@media (min-width: 800px) {
+  mobile-starlight-toc {
+    display: none !important;
+  }
+}
