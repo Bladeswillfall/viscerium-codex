@@ -4,7 +4,6 @@ import config from 'virtual:starlight/user-config';
 import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
 import Search from 'virtual:starlight/components/Search';
 import SiteTitle from 'virtual:starlight/components/SiteTitle';
-import SocialIcons from 'virtual:starlight/components/SocialIcons';
 import CodexThemeToggle from './CodexThemeToggle.astro';
 
 /**
@@ -29,9 +28,6 @@ const shouldRenderSearch =
     Keep this class stable: it is part of the plugin integration contract.
   -->
   <div class="right-group codex-header-controls print:hidden" data-codex-header-controls>
-    <div class="social-icons sl-flex">
-      <SocialIcons />
-    </div>
     <CodexThemeToggle />
     <LanguageSelect />
   </div>
