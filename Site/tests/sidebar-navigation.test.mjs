@@ -4,12 +4,13 @@ import { readFileSync } from 'node:fs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('desktop sidebar overlay targets one stable Starlight root', () => {
+test('desktop sidebar overlay targets one stable Starlight pane', () => {
   const navigation = read('../src/styles/navigation.css');
 
   assert.match(navigation, /#starlight__sidebar\s*\{/);
+  assert.match(navigation, /visibility: visible !important/);
   assert.match(navigation, /html\.codex-sidebar-collapsed #starlight__sidebar\s*\{/);
-  assert.match(navigation, /#starlight__sidebar \.sidebar-pane\s*\{/);
+  assert.match(navigation, /visibility: hidden !important/);
   assert.doesNotMatch(navigation, /:is\(nav\.sidebar-print-hide, \.sidebar-pane\)/);
   assert.match(navigation, /pointer-events: none !important/);
   assert.match(navigation, /transform: translateX\(-110%\) !important/);
