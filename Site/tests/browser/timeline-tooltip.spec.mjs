@@ -26,10 +26,23 @@ async function readHoverState(page, item) {
         && rect.height > 0;
     };
 
+    const toSrgbBytes = (color) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1;
+      canvas.height = 1;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      context.clearRect(0, 0, 1, 1);
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      return [...context.getImageData(0, 0, 1, 1).data];
+    };
+
     const cards = [...document.querySelectorAll('body > .vc-timeline-hovercard')].filter(visible);
     const nativeTooltips = [...document.querySelectorAll('.vis-tooltip:not(.vc-timeline-hovercard)')].filter(visible);
     const card = cards[0];
     const style = card ? getComputedStyle(card) : null;
+    const background = style?.backgroundColor ?? '';
+    const color = style?.color ?? '';
     return {
       cardCount: cards.length,
       nativeTooltipCount: nativeTooltips.length,
@@ -39,11 +52,21 @@ async function readHoverState(page, item) {
       date: card?.querySelector('.vc-timeline-hovercard-date')?.textContent ?? '',
       title: card?.querySelector('.vc-timeline-hovercard-title')?.textContent ?? '',
       description: card?.querySelector('.vc-timeline-hovercard-description')?.textContent ?? '',
-      background: style?.backgroundColor ?? '',
-      color: style?.color ?? '',
+      background,
+      backgroundSrgb: background ? toSrgbBytes(background) : [],
+      color,
+      colorSrgb: color ? toSrgbBytes(color) : [],
+      supportsOklch: CSS.supports('color', 'oklch(50% 0.1 120)'),
       position: style?.position ?? '',
     };
   }, await item.elementHandle());
+}
+
+function expectSrgbClose(actual, expected, tolerance = 2) {
+  expect(actual).toHaveLength(4);
+  for (const [index, value] of expected.entries()) {
+    expect(Math.abs(actual[index] - value)).toBeLessThanOrEqual(tolerance);
+  }
 }
 
 test('event hover uses one VISCERIUM hovercard in dark and light themes', async ({ page }) => {
@@ -79,17 +102,24 @@ test('event hover uses one VISCERIUM hovercard in dark and light themes', async 
   expect(dark.title).toBe('The Pathfinder Exodus');
   expect(dark.description.length).toBeGreaterThan(20);
   expect(dark.text).not.toMatch(/2030|2036/);
-  expect(dark.background).toMatch(/21,\s*19,\s*16/);
-  expect(dark.color).toMatch(/244,\s*239,\s*229/);
+  expectSrgbClose(dark.backgroundSrgb, [21, 19, 16]);
+  expectSrgbClose(dark.colorSrgb, [244, 239, 229]);
   expect(dark.position).toBe('fixed');
 
   expect(light.cardCount).toBe(1);
   expect(light.nativeTooltipCount).toBe(0);
   expect(light.titleAttributeCount).toBe(0);
   expect(light.title).toBe('The Pathfinder Exodus');
-  expect(light.background).toMatch(/247,\s*242,\s*234/);
-  expect(light.color).toMatch(/32,\s*29,\s*25/);
+  expectSrgbClose(light.backgroundSrgb, [247, 242, 234]);
+  expectSrgbClose(light.colorSrgb, [32, 29, 25]);
   expect(light.background).not.toBe(dark.background);
+
+  if (dark.supportsOklch && light.supportsOklch) {
+    expect(dark.background).toMatch(/^oklch\(/);
+    expect(dark.color).toMatch(/^oklch\(/);
+    expect(light.background).toMatch(/^oklch\(/);
+    expect(light.color).toMatch(/^oklch\(/);
+  }
 
   await page.locator('[data-vc-search]').hover();
   await expect(page.locator('body > .vc-timeline-hovercard:not([hidden])')).toHaveCount(0);
