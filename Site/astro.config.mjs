@@ -243,6 +243,7 @@ export default defineConfig({
     starlight({
       title: siteConfig.title,
       description: siteConfig.description,
+      pagefind: true,
       customCss: [
         './vendor/starlight-ion-theme/styles/layers.css',
         './vendor/starlight-ion-theme/styles/theme.css',
@@ -263,6 +264,7 @@ export default defineConfig({
         './src/styles/era-styles.css',
       ],
       components: {
+        Header: './src/components/CodexHeader.astro',
         Sidebar: './src/components/IonSidebar.astro',
         Footer: './src/components/StarlightFooter.astro',
         PageSidebar: './src/components/CodexPageSidebar.astro',
