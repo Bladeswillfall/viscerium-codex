@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
-  <title id="title">Missing image placeholder</title>
-  <desc id="desc">A placeholder shown when a referenced codex image is missing from the vault assets.</desc>
-  <rect width="1200" height="675" fill="#161819"/>
-  <rect x="36" y="36" width="1128" height="603" fill="none" stroke="#7f8a8d" stroke-width="6" stroke-dasharray="24 18"/>
-  <path d="M312 457l146-155 104 112 68-72 258 115H312z" fill="#343a3d"/>
-  <circle cx="782" cy="218" r="54" fill="#4b5558"/>
-  <text x="600" y="550" fill="#d8dedf" font-family="Arial, Helvetica, sans-serif" font-size="56" text-anchor="middle">Missing image</text>
+  <title id="title">Missing image</title>
+  <desc id="desc">A placeholder generated during codex sync when a referenced vault image is missing.</desc>
+  <rect width="1200" height="675" fill="#151515"/>
+  <path d="M0 0h1200v675H0z" fill="none" stroke="#4a4a4a" stroke-width="24"/>
+  <path d="M330 420 475 285l105 105 70-70 220 230H300z" fill="#2f2f2f" stroke="#777" stroke-width="10"/>
+  <circle cx="800" cy="215" r="55" fill="#3b3b3b" stroke="#777" stroke-width="10"/>
+  <text x="600" y="590" fill="#d8d8d8" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="52" font-weight="700" text-anchor="middle">Missing image</text>
 </svg>

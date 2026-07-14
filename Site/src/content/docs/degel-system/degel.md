@@ -6,5 +6,6 @@ status: canon
 slug: degel-system/degel
 type: article
 sourcePath: "Degel System/Degel.md"
+updated: "2026-07-06T17:12:04+01:00"
 ---
 

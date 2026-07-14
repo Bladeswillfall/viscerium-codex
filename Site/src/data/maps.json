@@ -2,7 +2,7 @@
   "example-world": {
     "id": "example-world",
     "title": "Example World Map",
-    "description": "A sample interactive map.",
+    "description": "A sample interactive map metadata page with marker guidance for public location notes.",
     "image": "/assets/maps/example-world.webp",
     "width": 2000,
     "height": 1200,
@@ -10,7 +10,7 @@
     "markers": [
       {
         "title": "Example City",
-        "description": "A sample city with coordinates on the example world map.",
+        "description": "A sample city with generated map marker data, faction links, tags, and public layout guidance.",
         "x": 52,
         "y": 41,
         "marker": "city",

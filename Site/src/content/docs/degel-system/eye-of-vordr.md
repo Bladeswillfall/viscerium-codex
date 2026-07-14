@@ -6,5 +6,6 @@ status: canon
 slug: degel-system/eye-of-vordr
 type: article
 sourcePath: "Degel System/Eye of Vordr.md"
+updated: "2026-07-06T17:12:04+01:00"
 ---
 

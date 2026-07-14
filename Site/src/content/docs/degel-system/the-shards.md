@@ -6,5 +6,6 @@ status: canon
 slug: degel-system/the-shards
 type: article
 sourcePath: "Degel System/The Shards.md"
+updated: "2026-07-06T17:15:32+01:00"
 ---
 
