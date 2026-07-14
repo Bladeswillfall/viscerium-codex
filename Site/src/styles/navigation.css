@@ -305,3 +305,33 @@ html[data-codex-desktop-sidebar] .codex-page-sidebar .sl-container {
   inline-size: 100%;
   max-inline-size: none;
 }
+
+@media (min-width: 800px) {
+  :root {
+    --sl-mobile-toc-height: 0rem;
+  }
+
+  mobile-starlight-toc,
+  #starlight__mobile-toc {
+    block-size: 0 !important;
+    min-block-size: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+  }
+
+  #starlight__on-this-page--mobile {
+    visibility: hidden !important;
+    block-size: 0 !important;
+    min-block-size: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  #starlight__on-this-page--mobile ~ .dropdown {
+    display: none !important;
+  }
+}

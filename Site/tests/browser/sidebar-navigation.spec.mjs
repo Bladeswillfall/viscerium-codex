@@ -67,3 +67,42 @@ test('left navigation opens, collapses, persists and restores', async ({ page })
     return `${style.visibility}:${style.opacity}:${style.pointerEvents}`;
   })).toBe('visible:1:auto');
 });
+
+test('homepage renders the restored desktop navigation rail', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4321/', { waitUntil: 'networkidle' });
+  await page.evaluate(() => {
+    localStorage.removeItem('viscerium-sidebar-collapsed');
+  });
+  await page.reload({ waitUntil: 'networkidle' });
+
+  const sidebar = page.locator('#starlight__sidebar');
+  const homeGateway = page.locator('.home-gateway');
+
+  await expect(sidebar).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Hide sidebar' })).toBeVisible();
+  await expect(homeGateway).toBeVisible();
+  expect(await sidebar.getByRole('link').count()).toBeGreaterThan(3);
+
+  const geometry = await page.evaluate(() => {
+    const sidebarRect = document.getElementById('starlight__sidebar')?.getBoundingClientRect();
+    const homeRect = document.querySelector('.home-gateway')?.getBoundingClientRect();
+    return {
+      sidebarRight: sidebarRect?.right ?? 0,
+      homeLeft: homeRect?.left ?? 0,
+    };
+  });
+
+  expect(geometry.sidebarRight).toBeGreaterThan(200);
+  expect(geometry.homeLeft).toBeGreaterThanOrEqual(geometry.sidebarRight - 1);
+});
+
+test('mobile On this page control only appears below the desktop breakpoint', async ({ page }) => {
+  const mobileToc = page.locator('#starlight__on-this-page--mobile');
+
+  await page.goto('http://127.0.0.1:4321/start-here/', { waitUntil: 'networkidle' });
+  await expect(mobileToc).toBeHidden();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload({ waitUntil: 'networkidle' });
+  await expect(mobileToc).toBeVisible();
+});
