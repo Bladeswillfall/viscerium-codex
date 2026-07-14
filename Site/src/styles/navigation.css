@@ -225,7 +225,7 @@
   }
 
   /* Desktop overlay behaviour for the left navigation. */
-  @media (min-width: 50rem) {
+  @media (min-width: 800px) {
     :root {
       --codex-sidebar-overlay-width: 18rem;
     }
@@ -234,10 +234,15 @@
       --sl-sidebar-width: 0rem;
     }
 
+    .sidebar > starlight-menu-button {
+      display: none;
+    }
+
     /*
       Target the actual Starlight pane rather than styling both the wrapper and
-      pane as independent fixed overlays. Starlight controls this element with
-      --sl-sidebar-visibility, so visibility must be restored explicitly too.
+      pane as independent fixed overlays. Use the concrete 800px boundary that
+      the intended 50rem breakpoint represents so the overlay cannot remain in
+      Starlight's mobile state at normal desktop widths.
     */
     #starlight__sidebar {
       --sl-sidebar-width: var(--codex-sidebar-overlay-width);
@@ -247,7 +252,8 @@
       inset-block-start: var(--sl-nav-height, 3.5rem);
       inset-block-end: 0;
       inset-inline-start: 0;
-      inline-size: var(--codex-sidebar-overlay-width);
+      width: var(--codex-sidebar-overlay-width) !important;
+      inline-size: var(--codex-sidebar-overlay-width) !important;
       max-inline-size: calc(100vw - 3.75rem);
       overflow-y: auto;
       transform: translateX(0) !important;
@@ -283,7 +289,7 @@
     }
   }
 
-  @media (max-width: 49.999rem) {
+  @media (max-width: 799.98px) {
     .codex-sidebar-toggle {
       display: none;
     }
