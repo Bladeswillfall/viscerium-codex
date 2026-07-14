@@ -85,12 +85,27 @@ const isHomepage = Astro.url.pathname === '/';
       if (icon) icon.textContent = collapsed ? '☰' : '←';
     };
 
+    runtime.syncMobileToc = () => {
+      const summary = document.getElementById('starlight__on-this-page--mobile');
+      const navigation = summary?.closest('nav');
+      if (!navigation) return;
+
+      if (desktopQuery.matches) {
+        navigation.style.setProperty('display', 'none', 'important');
+        navigation.setAttribute('aria-hidden', 'true');
+      } else {
+        navigation.style.removeProperty('display');
+        navigation.removeAttribute('aria-hidden');
+      }
+    };
+
     runtime.sync = () => {
       const button = document.querySelector('[data-codex-sidebar-toggle]');
       const sidebar = document.getElementById('starlight__sidebar');
       const hasDesktopSidebar = Boolean(sidebar && desktopQuery.matches);
 
       root.toggleAttribute('data-codex-desktop-sidebar', hasDesktopSidebar);
+      runtime.syncMobileToc();
 
       if (!button) return;
 
@@ -120,6 +135,11 @@ const isHomepage = Astro.url.pathname === '/';
     if (!runtime.desktopQueryBound) {
       desktopQuery.addEventListener('change', runtime.sync);
       runtime.desktopQueryBound = true;
+    }
+
+    if (!runtime.mobileTocObserver) {
+      runtime.mobileTocObserver = new MutationObserver(() => runtime.syncMobileToc());
+      runtime.mobileTocObserver.observe(document.body, { childList: true, subtree: true });
     }
 
     runtime.sync();
