@@ -1,3 +1,5 @@
+@import './degel-system-art.css';
+
 @layer starlight.core {
   .main-frame > .codex-two-column-content.codex-degel-system-page {
     inline-size: 100%;
