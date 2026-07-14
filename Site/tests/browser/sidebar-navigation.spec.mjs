@@ -97,11 +97,12 @@ test('homepage renders the restored desktop navigation rail', async ({ page }) =
 });
 
 test('mobile On this page control only appears below the desktop breakpoint', async ({ page }) => {
+  const mobileToc = page.locator('mobile-starlight-toc nav[aria-label="On this page"]');
+
   await page.goto('http://127.0.0.1:4321/start-here/', { waitUntil: 'networkidle' });
-  const mobileToc = page.locator('mobile-starlight-toc');
   await expect(mobileToc).toBeHidden();
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload({ waitUntil: 'networkidle' });
-  await expect(page.locator('mobile-starlight-toc')).toBeVisible();
+  await expect(mobileToc).toBeVisible();
 });
