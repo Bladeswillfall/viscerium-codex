@@ -12,6 +12,11 @@
     white-space: nowrap !important;
   }
 
+  /* Component display rules must never override the native hidden state. */
+  :where(.codex-comments [hidden]) {
+    display: none !important;
+  }
+
   .sl-markdown-content a {
     text-decoration-line: underline;
     text-decoration-thickness: .08em;
