@@ -108,8 +108,48 @@ test('top ribbon owns the Ion search, Telescope and colour-mode controls', async
   await expect(themeButton).toBeVisible();
   await expect(page.locator('#starlight__sidebar starlight-theme-select')).toHaveCount(0);
 
-  const searchWidth = await searchButton.evaluate((element) => element.getBoundingClientRect().width);
-  expect(searchWidth).toBeGreaterThan(200);
+  const headerDiagnostics = await searchButton.evaluate((element) => {
+    const wrapper = element.closest('[data-codex-header-search]');
+    const header = element.closest('.codex-header');
+    const text = element.querySelector('span');
+    const shortcut = element.querySelector('kbd');
+    const style = getComputedStyle(element);
+    const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
+    const headerStyle = header ? getComputedStyle(header) : null;
+
+    return {
+      viewportWidth: window.innerWidth,
+      desktopQuery: matchMedia('(min-width: 50rem)').matches,
+      rootFontSize: getComputedStyle(document.documentElement).fontSize,
+      button: {
+        width: element.getBoundingClientRect().width,
+        cssWidth: style.width,
+        minWidth: style.minWidth,
+        maxWidth: style.maxWidth,
+        display: style.display,
+        paddingInline: `${style.paddingInlineStart} ${style.paddingInlineEnd}`,
+      },
+      wrapper: wrapper
+        ? {
+            width: wrapper.getBoundingClientRect().width,
+            cssWidth: wrapperStyle?.width,
+            minWidth: wrapperStyle?.minWidth,
+            display: wrapperStyle?.display,
+          }
+        : null,
+      header: header
+        ? {
+            width: header.getBoundingClientRect().width,
+            display: headerStyle?.display,
+            gridTemplateColumns: headerStyle?.gridTemplateColumns,
+          }
+        : null,
+      textDisplay: text ? getComputedStyle(text).display : null,
+      shortcutDisplay: shortcut ? getComputedStyle(shortcut).display : null,
+    };
+  });
+  console.log(`[header-controls] ${JSON.stringify(headerDiagnostics)}`);
+  expect(headerDiagnostics.button.width).toBeGreaterThan(200);
 
   const initialTheme = await page.locator('html').getAttribute('data-theme');
   await themeButton.click();
