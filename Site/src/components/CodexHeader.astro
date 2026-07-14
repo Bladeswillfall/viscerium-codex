@@ -176,4 +176,34 @@ const shouldRenderSearch =
       }
     }
   }
+
+  /*
+    Starlight's responsive utility classes currently collapse the native Search button back
+    to its mobile icon-only width after the Ion layer has rendered. Keep this critical header
+    geometry unlayered so the desktop field cannot be silently reduced by future upgrades.
+  */
+  @media (min-width: 50rem) {
+    .codex-header-search {
+      width: 100% !important;
+      min-width: 14rem !important;
+    }
+
+    .codex-header-search button[data-open-modal] {
+      display: flex !important;
+      width: 100% !important;
+      max-width: none !important;
+      min-width: 14rem !important;
+      justify-content: flex-start !important;
+      padding-inline: .85rem .65rem !important;
+    }
+
+    .codex-header-search button[data-open-modal] > span {
+      display: block !important;
+    }
+
+    .codex-header-search button[data-open-modal] > kbd {
+      display: flex !important;
+      margin-inline-start: auto !important;
+    }
+  }
 </style>
