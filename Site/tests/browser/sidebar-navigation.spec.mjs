@@ -2,14 +2,12 @@ import { test, expect } from '@playwright/test';
 
 test.use({ viewport: { width: 1174, height: 900 } });
 
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    localStorage.removeItem('viscerium-sidebar-collapsed');
-  });
-});
-
 test('left navigation opens, collapses, persists and restores', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/start-here/', { waitUntil: 'networkidle' });
+  await page.evaluate(() => {
+    localStorage.removeItem('viscerium-sidebar-collapsed');
+  });
+  await page.reload({ waitUntil: 'networkidle' });
 
   const sidebar = page.locator('#starlight__sidebar');
   const hideButton = page.getByRole('button', { name: 'Hide sidebar' });
