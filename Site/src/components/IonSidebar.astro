@@ -1,5 +1,4 @@
 ---
-import MobileMenuFooter from 'virtual:starlight/components/MobileMenuFooter';
 import SidebarSublist from './IonSidebarSublist.astro';
 
 const { sidebar } = Astro.locals.starlightRoute;
@@ -19,9 +18,6 @@ const mainSidebar = sidebar.filter((entry: any) => !isChangelogGroup(entry));
       <SidebarSublist sublist={changelogSidebar} nestedCount={0} />
     </aside>
   )}
-  <div class="md:sl-hidden">
-    <MobileMenuFooter {...Astro.props} />
-  </div>
 </div>
 
 <style>

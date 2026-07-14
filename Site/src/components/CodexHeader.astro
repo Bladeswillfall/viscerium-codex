@@ -1,0 +1,56 @@
+---
+import config from 'virtual:starlight/user-config';
+
+import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
+import Search from 'virtual:starlight/components/Search';
+import SiteTitle from 'virtual:starlight/components/SiteTitle';
+import CodexThemeToggle from './CodexThemeToggle.astro';
+
+/**
+ * Keep Starlight's native Pagefind control visible whenever Pagefind is enabled.
+ * The override check preserves compatibility with any future custom Search component.
+ */
+const shouldRenderSearch =
+  config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
+---
+
+<div class="header codex-header">
+  <div class="title-wrapper sl-flex">
+    <SiteTitle />
+  </div>
+
+  <div class="codex-header-search print:hidden" data-codex-header-search>
+    {shouldRenderSearch && <Search />}
+  </div>
+
+  <!--
+    Starlight Telescope injects its custom element into `.right-group` at runtime.
+    Keep this class stable: it is part of the plugin integration contract.
+  -->
+  <div class="right-group codex-header-controls print:hidden" data-codex-header-controls>
+    <CodexThemeToggle />
+    <LanguageSelect />
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const runtimeKey = '__visceriumHeaderRuntime';
+    const root = document.documentElement;
+    const runtime = window[runtimeKey] ?? (window[runtimeKey] = {});
+    const desktopQuery = runtime.desktopQuery ?? window.matchMedia('(min-width: 800px)');
+
+    runtime.desktopQuery = desktopQuery;
+    runtime.sync = () => {
+      root.toggleAttribute('data-codex-wide-header', desktopQuery.matches);
+    };
+
+    if (!runtime.bound) {
+      desktopQuery.addEventListener('change', runtime.sync);
+      document.addEventListener('astro:page-load', runtime.sync);
+      runtime.bound = true;
+    }
+
+    runtime.sync();
+  })();
+</script>
