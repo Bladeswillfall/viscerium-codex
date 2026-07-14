@@ -30,3 +30,17 @@ test('sidebar toggle rebinds safely and tracks the desktop layout', () => {
   assert.match(footer, /localStorage\.getItem\(storageKey\) === 'true'/);
   assert.match(footer, /localStorage\.setItem\(storageKey, String\(collapsed\)\)/);
 });
+
+test('homepage opts into the sidebar and preserves its rail clearance', () => {
+  const homepage = read('../src/pages/index.astro');
+
+  assert.match(homepage, /hasSidebar=\{true\}/);
+  assert.match(homepage, /html\[data-codex-desktop-sidebar\]:not\(\.codex-sidebar-collapsed\) \.main-frame:has\(\.home-gateway\)/);
+  assert.match(homepage, /padding-inline-start: var\(--codex-sidebar-overlay-width\) !important/);
+});
+
+test('mobile page table of contents is suppressed at the desktop breakpoint', () => {
+  const navigation = read('../src/styles/navigation.css');
+
+  assert.match(navigation, /@media \(min-width: 800px\)[\s\S]*mobile-starlight-toc\s*\{[\s\S]*display: none !important/);
+});
