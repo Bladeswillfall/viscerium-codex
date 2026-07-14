@@ -5,7 +5,7 @@ import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
 import Search from 'virtual:starlight/components/Search';
 import SiteTitle from 'virtual:starlight/components/SiteTitle';
 import SocialIcons from 'virtual:starlight/components/SocialIcons';
-import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import CodexThemeToggle from './CodexThemeToggle.astro';
 
 /**
  * Keep Starlight's native Pagefind control visible whenever Pagefind is enabled.
@@ -32,81 +32,146 @@ const shouldRenderSearch =
     <div class="social-icons sl-flex">
       <SocialIcons />
     </div>
-    <ThemeSelect />
+    <CodexThemeToggle />
     <LanguageSelect />
   </div>
 </div>
 
-<style>
+<style is:global>
   @layer starlight.core {
     .codex-header {
-      display: flex;
-      gap: var(--sl-nav-gap);
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: minmax(0, auto) minmax(2.5rem, 1fr) auto;
+      gap: .5rem;
       align-items: center;
+      width: 100%;
       height: 100%;
     }
 
-    .title-wrapper {
+    .codex-header .title-wrapper {
       min-width: 0;
+      max-width: min(42vw, 18rem);
       overflow: clip;
-      padding: 0.25rem;
-      margin: -0.25rem;
+      padding: .25rem;
+      margin: -.25rem;
     }
 
     .codex-header-search {
       display: flex;
       min-width: 0;
+      justify-content: flex-end;
+    }
+
+    .codex-header-search button[data-open-modal] {
+      width: 2.5rem;
+      min-width: 2.5rem;
+      height: 2.5rem;
+      justify-content: center;
+      border: 1px solid var(--sl-color-gray-5);
+      border-radius: 0;
+      padding: 0;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .025), transparent),
+        var(--sl-color-black);
+      color: var(--sl-color-gray-2);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .012);
+    }
+
+    .codex-header-search button[data-open-modal]:hover {
+      border-color: var(--sl-color-gray-2);
+      background:
+        linear-gradient(180deg, rgba(184, 135, 70, .09), transparent),
+        var(--sl-color-black);
+      color: var(--sl-color-white);
     }
 
     .codex-header-controls {
-      display: none;
+      display: flex;
+      min-width: max-content;
       flex: 0 0 auto;
-      gap: 1rem;
+      gap: .4rem;
       align-items: center;
     }
 
-    .social-icons {
-      gap: 1rem;
+    .codex-header .social-icons {
+      display: none;
+      gap: .65rem;
       align-items: center;
     }
 
-    .social-icons::after {
+    .codex-header .social-icons::after {
       content: '';
       height: 2rem;
       border-inline-end: 1px solid var(--sl-color-gray-5);
     }
 
+    .codex-header telescope-search {
+      display: inline-flex;
+    }
+
+    .codex-header .telescope__trigger-btn {
+      display: inline-flex;
+      min-width: 2.5rem;
+      height: 2.5rem;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      border: 1px solid var(--sl-color-gray-5);
+      border-radius: 0;
+      padding: 0 .65rem;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .025), transparent),
+        var(--sl-color-black);
+      color: var(--sl-color-gray-2);
+      cursor: pointer;
+    }
+
+    .codex-header .telescope__trigger-btn:hover {
+      border-color: var(--sl-color-gray-2);
+      background:
+        linear-gradient(180deg, rgba(184, 135, 70, .09), transparent),
+        var(--sl-color-black);
+      color: var(--sl-color-white);
+    }
+
+    .codex-header .telescope__trigger-btn:focus-visible,
+    .codex-header-search button[data-open-modal]:focus-visible {
+      outline: 2px solid var(--sl-color-accent-high);
+      outline-offset: 2px;
+    }
+
     @media (min-width: 50rem) {
-      :global(:root[data-has-sidebar]) {
-        --__sidebar-pad: calc(2 * var(--sl-nav-pad-x));
-      }
-
-      :global(:root:not([data-has-toc])) {
-        --__toc-width: 0rem;
-      }
-
       .codex-header {
-        --__sidebar-width: max(0rem, var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x));
-        --__main-column-fr: calc(
-          (
-              100% + var(--__sidebar-pad, 0rem) - var(--__toc-width, var(--sl-sidebar-width)) -
-                (2 * var(--__toc-width, var(--sl-nav-pad-x))) - var(--sl-content-inline-start, 0rem) -
-                var(--sl-content-width)
-            ) / 2
-        );
-        display: grid;
-        grid-template-columns:
-          minmax(
-            calc(var(--__sidebar-width) + max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))),
-            auto
-          )
-          minmax(12rem, 1fr)
-          auto;
-        align-content: center;
+        grid-template-columns: minmax(12rem, 1fr) minmax(16rem, 34rem) auto;
+        gap: 1rem;
       }
 
-      .codex-header-controls {
+      .codex-header .title-wrapper {
+        max-width: none;
+      }
+
+      .codex-header-search {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .codex-header-search site-search {
+        display: contents;
+      }
+
+      .codex-header-search button[data-open-modal] {
+        width: 100%;
+        max-width: none;
+        min-width: 14rem;
+        justify-content: flex-start;
+        padding-inline: .85rem .65rem;
+      }
+
+      .codex-header-search button[data-open-modal] > :last-child {
+        margin-inline-start: auto;
+      }
+
+      .codex-header .social-icons {
         display: flex;
       }
     }
