@@ -68,15 +68,18 @@
       place-items: center;
       border: 1px solid var(--sl-color-gray-5);
       border-radius: 0;
-      background: var(--sl-color-black);
+      background: var(--sl-color-bg-nav, var(--sl-color-black));
+      background-image: none;
       color: var(--sl-color-gray-2);
+      box-shadow: none;
       cursor: pointer;
       transition: border-color .15s ease, background-color .15s ease, color .15s ease;
     }
 
     .theme-toggle:hover {
       border-color: var(--sl-color-gray-2);
-      background: var(--codex-surface-accent);
+      background: var(--sl-color-gray-6);
+      background-image: none;
       color: var(--sl-color-white);
     }
 
