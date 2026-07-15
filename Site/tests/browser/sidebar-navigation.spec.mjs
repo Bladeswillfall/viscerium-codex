@@ -26,15 +26,12 @@ function sidebarState(element) {
 
 test('left navigation opens, collapses, persists and restores', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/start-here/', { waitUntil: 'networkidle' });
-  await page.evaluate(() => {
-    localStorage.removeItem('viscerium-sidebar-collapsed');
-  });
+  await page.evaluate(() => localStorage.removeItem('viscerium-sidebar-collapsed'));
   await page.reload({ waitUntil: 'networkidle' });
 
   const sidebar = page.locator('#starlight__sidebar');
   const hideButton = page.getByRole('button', { name: 'Hide sidebar' });
   const openAncestry = await sidebar.evaluate(sidebarState);
-  console.log(`[sidebar-open-state] ${JSON.stringify(openAncestry)}`);
 
   await expect(hideButton).toBeVisible();
   expect(openAncestry[0]?.width).toBeGreaterThan(200);
@@ -46,10 +43,8 @@ test('left navigation opens, collapses, persists and restores', async ({ page })
   expect(await sidebar.getByRole('link').count()).toBeGreaterThan(3);
 
   await hideButton.click();
-  const showButton = page.getByRole('button', { name: 'Show sidebar' });
-  await expect(showButton).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Show sidebar' })).toBeVisible();
   await expect(page.locator('html')).toHaveClass(/codex-sidebar-collapsed/);
-
   await expect.poll(async () => sidebar.evaluate((element) => {
     const style = getComputedStyle(element);
     return `${style.visibility}:${style.opacity}:${style.pointerEvents}`;
@@ -68,24 +63,23 @@ test('left navigation opens, collapses, persists and restores', async ({ page })
   })).toBe('visible:1:auto');
 });
 
-test('homepage renders the restored desktop navigation rail', async ({ page }) => {
+test('homepage renders clear of the restored desktop navigation rail', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/', { waitUntil: 'networkidle' });
-  await page.evaluate(() => {
-    localStorage.removeItem('viscerium-sidebar-collapsed');
-  });
+  await page.evaluate(() => localStorage.removeItem('viscerium-sidebar-collapsed'));
   await page.reload({ waitUntil: 'networkidle' });
 
   const sidebar = page.locator('#starlight__sidebar');
-  const homeGateway = page.locator('.home-gateway');
+  const home = page.locator('.vc-home');
 
   await expect(sidebar).toBeVisible();
   await expect(page.getByRole('button', { name: 'Hide sidebar' })).toBeVisible();
-  await expect(homeGateway).toBeVisible();
+  await expect(home).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'VISCERIUM', exact: true })).toBeVisible();
   expect(await sidebar.getByRole('link').count()).toBeGreaterThan(3);
 
   const geometry = await page.evaluate(() => {
     const sidebarRect = document.getElementById('starlight__sidebar')?.getBoundingClientRect();
-    const homeRect = document.querySelector('.home-gateway')?.getBoundingClientRect();
+    const homeRect = document.querySelector('.vc-home')?.getBoundingClientRect();
     return {
       sidebarRight: sidebarRect?.right ?? 0,
       homeLeft: homeRect?.left ?? 0,
@@ -96,53 +90,60 @@ test('homepage renders the restored desktop navigation rail', async ({ page }) =
   expect(geometry.homeLeft).toBeGreaterThanOrEqual(geometry.sidebarRight - 1);
 });
 
-test('top ribbon owns flat, centred search, Telescope and colour-mode controls', async ({ page }) => {
+test('top ribbon keeps real search, Telescope and the aperture colour control', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/start-here/', { waitUntil: 'networkidle' });
 
-  const searchButton = page.locator('[data-codex-header-search] button[data-open-modal]');
+  const searchButton = page.locator('[data-vc-header-search] button[data-open-modal]');
   const telescopeButton = page.locator('.right-group telescope-search .telescope__trigger-btn');
-  const themeButton = page.locator('[data-codex-theme-toggle]');
+  const themeButton = page.locator('[data-vc-theme-switch]');
 
   await expect(searchButton).toBeVisible();
   await expect(telescopeButton).toBeVisible();
   await expect(themeButton).toBeVisible();
   await expect(page.locator('#starlight__sidebar starlight-theme-select')).toHaveCount(0);
-  await expect(page.locator('.codex-header .social-icons')).toHaveCount(0);
-  await expect(page.locator('.codex-header a[href*="github.com"]')).toHaveCount(0);
+  await expect(page.locator('.vc-header .social-icons')).toHaveCount(0);
+  await expect(page.locator('.vc-header a[href*="github.com"]')).toHaveCount(0);
 
   const ribbon = await page.evaluate(() => {
-    const header = document.querySelector('.codex-header');
-    const search = document.querySelector('[data-codex-header-search] button[data-open-modal]');
-    const telescope = document.querySelector('.right-group telescope-search .telescope__trigger-btn');
-    const theme = document.querySelector('[data-codex-theme-toggle]');
+    const header = document.querySelector('.vc-header');
+    const search = document.querySelector('[data-vc-header-search] button[data-open-modal]');
+    const theme = document.querySelector('[data-vc-theme-switch]');
 
-    if (!(header instanceof HTMLElement) || !(search instanceof HTMLElement)) {
-      throw new Error('Missing Codex header or search control');
+    if (!(header instanceof HTMLElement) || !(search instanceof HTMLElement) || !(theme instanceof HTMLElement)) {
+      throw new Error('Missing clean-slate header controls');
     }
 
     const headerRect = header.getBoundingClientRect();
     const searchRect = search.getBoundingClientRect();
-    const centerDelta = Math.abs(
-      (searchRect.left + searchRect.width / 2) - (headerRect.left + headerRect.width / 2)
-    );
+    const themeRect = theme.getBoundingClientRect();
 
     return {
       searchWidth: searchRect.width,
-      centerDelta,
-      backgroundImages: [search, telescope, theme]
-        .filter((element) => element instanceof HTMLElement)
-        .map((element) => getComputedStyle(element).backgroundImage),
+      searchInsideHeader: searchRect.left >= headerRect.left && searchRect.right <= headerRect.right,
+      themeInsideHeader: themeRect.left >= headerRect.left && themeRect.right <= headerRect.right,
+      themeBackgroundImage: getComputedStyle(theme).backgroundImage,
     };
   });
 
-  expect(ribbon.searchWidth).toBeGreaterThan(200);
-  expect(ribbon.centerDelta).toBeLessThan(2);
-  expect(ribbon.backgroundImages).toEqual(['none', 'none', 'none']);
+  expect(ribbon.searchWidth).toBeGreaterThan(120);
+  expect(ribbon.searchInsideHeader).toBe(true);
+  expect(ribbon.themeInsideHeader).toBe(true);
+  expect(ribbon.themeBackgroundImage).toBe('none');
 
   const initialTheme = await page.locator('html').getAttribute('data-theme');
   await themeButton.click();
   await expect.poll(() => page.locator('html').getAttribute('data-theme')).not.toBe(initialTheme);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('starlight-theme'))).not.toBe(initialTheme);
+});
+
+test('homepage era and route links are visible without animation gating', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4321/', { waitUntil: 'networkidle' });
+
+  await expect(page.getByRole('link', { name: 'Explore CITADEL' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Explore SMOG' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Explore NEARSIGHT' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Explore ENTROPY' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Start Here/ }).last()).toBeVisible();
 });
 
 test('mobile On this page control only appears below the desktop breakpoint', async ({ page }) => {
