@@ -11,6 +11,17 @@ const isHomepage = Astro.url.pathname === '/';
 const year = new Date().getUTCFullYear();
 ---
 
+<button
+  class="codex-sidebar-toggle vc-sidebar-toggle"
+  type="button"
+  data-vc-sidebar-toggle
+  aria-controls="starlight__sidebar"
+  aria-expanded="true"
+  aria-label="Hide sidebar"
+>
+  <span aria-hidden="true">←</span>
+</button>
+
 <CodexMath />
 <ContributorStrip />
 {!isHomepage && <GiscusComments />}
@@ -45,3 +56,187 @@ const year = new Date().getUTCFullYear();
 
   <div class="vc-site-footer__word" aria-hidden="true">VISCERIUM</div>
 </footer>
+
+<script is:inline>
+  (() => {
+    const storageKey = 'viscerium-sidebar-collapsed';
+    const root = document.documentElement;
+    const runtime = window.__visceriumSidebar ??= {};
+    const desktopQuery = runtime.desktopQuery ?? window.matchMedia('(min-width: 800px)');
+
+    runtime.desktopQuery = desktopQuery;
+
+    const readStoredState = () => {
+      try {
+        return localStorage.getItem(storageKey) === 'true';
+      } catch {
+        return false;
+      }
+    };
+
+    const writeStoredState = (collapsed) => {
+      try {
+        localStorage.setItem(storageKey, String(collapsed));
+      } catch {
+        // The control remains functional when storage is unavailable.
+      }
+    };
+
+    const setCollapsed = (button, collapsed) => {
+      root.classList.toggle('codex-sidebar-collapsed', collapsed);
+      button.setAttribute('aria-expanded', String(!collapsed));
+      button.setAttribute('aria-label', collapsed ? 'Show sidebar' : 'Hide sidebar');
+      const icon = button.querySelector('span');
+      if (icon) icon.textContent = collapsed ? '☰' : '←';
+    };
+
+    runtime.syncMobileToc = () => {
+      const summary = document.getElementById('starlight__on-this-page--mobile');
+      const navigation = summary?.closest('nav');
+      if (!navigation) return;
+
+      if (desktopQuery.matches) {
+        navigation.style.setProperty('display', 'none', 'important');
+        navigation.setAttribute('aria-hidden', 'true');
+      } else {
+        navigation.style.removeProperty('display');
+        navigation.removeAttribute('aria-hidden');
+      }
+    };
+
+    runtime.sync = () => {
+      const button = document.querySelector('[data-vc-sidebar-toggle]');
+      const sidebar = document.getElementById('starlight__sidebar');
+      const hasDesktopSidebar = Boolean(sidebar && desktopQuery.matches);
+
+      root.toggleAttribute('data-codex-desktop-sidebar', hasDesktopSidebar);
+      runtime.syncMobileToc();
+
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      if (!hasDesktopSidebar) {
+        button.hidden = true;
+        root.classList.remove('codex-sidebar-collapsed');
+        return;
+      }
+
+      button.hidden = false;
+      setCollapsed(button, readStoredState());
+
+      if (button.dataset.codexSidebarBound === 'true') return;
+      button.dataset.codexSidebarBound = 'true';
+      button.addEventListener('click', () => {
+        const collapsed = !root.classList.contains('codex-sidebar-collapsed');
+        writeStoredState(collapsed);
+        setCollapsed(button, collapsed);
+      });
+    };
+
+    if (!runtime.pageLoadBound) {
+      document.addEventListener('astro:page-load', runtime.sync);
+      runtime.pageLoadBound = true;
+    }
+
+    if (!runtime.desktopQueryBound) {
+      desktopQuery.addEventListener('change', runtime.sync);
+      runtime.desktopQueryBound = true;
+    }
+
+    if (!runtime.mobileTocObserver) {
+      runtime.mobileTocObserver = new MutationObserver(() => runtime.syncMobileToc());
+      runtime.mobileTocObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    runtime.sync();
+  })();
+</script>
+
+<style is:global>
+  html[data-codex-desktop-sidebar] {
+    --codex-sidebar-overlay-width: 18rem;
+    --sl-sidebar-width: 0rem;
+  }
+
+  html[data-codex-desktop-sidebar] .sidebar > starlight-menu-button {
+    display: none;
+  }
+
+  html[data-codex-desktop-sidebar] #starlight__sidebar {
+    --sl-sidebar-width: var(--codex-sidebar-overlay-width);
+    position: fixed;
+    z-index: 60;
+    visibility: visible;
+    inset-block: var(--sl-nav-height, 4.5rem) 0;
+    inset-inline-start: 0;
+    width: var(--codex-sidebar-overlay-width);
+    max-inline-size: calc(100vw - 3.75rem);
+    overflow-y: auto;
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+    transition: transform 180ms ease, opacity 180ms ease, visibility 0s linear 0s;
+  }
+
+  html[data-codex-desktop-sidebar]:not(.codex-sidebar-collapsed) .main-frame,
+  html[data-codex-desktop-sidebar]:not(.codex-sidebar-collapsed) .main-frame:has(.vc-home) {
+    box-sizing: border-box;
+    padding-inline-start: var(--codex-sidebar-overlay-width) !important;
+  }
+
+  html[data-codex-desktop-sidebar].codex-sidebar-collapsed .main-frame {
+    padding-inline-start: 0 !important;
+  }
+
+  html[data-codex-desktop-sidebar].codex-sidebar-collapsed #starlight__sidebar {
+    visibility: hidden;
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
+    transition-delay: 0s, 0s, 180ms;
+  }
+
+  .codex-sidebar-toggle {
+    position: fixed;
+    z-index: 1000;
+    inset-block-start: calc(var(--sl-nav-height, 4.5rem) + 0.75rem);
+    inset-inline-start: calc(var(--codex-sidebar-overlay-width, 18rem) + 0.75rem);
+    width: 2.35rem;
+    height: 2.35rem;
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid var(--vc-line-strong);
+    border-radius: 0;
+    background: var(--vc-ink-raised);
+    color: var(--vc-bone);
+    box-shadow: none;
+    cursor: pointer;
+    transition: inset-inline-start 180ms ease, background-color 160ms ease, color 160ms ease;
+  }
+
+  .codex-sidebar-toggle:hover {
+    background: var(--vc-rust-dark);
+    color: var(--vc-bone);
+  }
+
+  .codex-sidebar-toggle span {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    line-height: 1;
+  }
+
+  html[data-codex-desktop-sidebar].codex-sidebar-collapsed .codex-sidebar-toggle {
+    inset-inline-start: 0.75rem;
+  }
+
+  html:not([data-codex-desktop-sidebar]) .codex-sidebar-toggle {
+    display: none;
+  }
+
+  #starlight__sidebar a:hover .codex-icon,
+  #starlight__sidebar summary:hover .codex-icon {
+    transform: none !important;
+  }
+</style>
