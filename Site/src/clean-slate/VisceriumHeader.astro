@@ -1,0 +1,101 @@
+---
+import config from 'virtual:starlight/user-config';
+import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
+import Search from 'virtual:starlight/components/Search';
+import SiteTitle from 'virtual:starlight/components/SiteTitle';
+
+const shouldRenderSearch =
+  config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
+
+const path = Astro.url.pathname;
+const links = [
+  { href: '/start-here/', label: 'Start' },
+  { href: '/timelines/super/', label: 'Timeline' },
+  { href: '/graph/', label: 'World graph' },
+  { href: '/calendar/', label: 'Calendar' },
+];
+---
+
+<header class="header vc-header" data-vc-header>
+  <div class="vc-brand">
+    <a class="vc-brand__mark" href="/" aria-label="VISCERIUM Codex home">
+      <svg viewBox="0 0 36 36" aria-hidden="true">
+        <path d="M18 2.5 21.5 13l10.8-1.7-8.6 6.8 7.1 8.4-10.3-3.8L18 33.5l-2.5-10.8-10.3 3.8 7.1-8.4-8.6-6.8L14.5 13 18 2.5Z" />
+        <circle cx="18" cy="18" r="3.4" />
+      </svg>
+    </a>
+    <div class="vc-brand__title"><SiteTitle /></div>
+  </div>
+
+  <nav class="vc-primary-nav" aria-label="Primary">
+    {links.map((link) => (
+      <a href={link.href} aria-current={path.startsWith(link.href) ? 'page' : undefined}>
+        {link.label}
+      </a>
+    ))}
+  </nav>
+
+  <div class="vc-header__tools print:hidden">
+    <div class="vc-header__search" data-vc-header-search>
+      {shouldRenderSearch && <Search />}
+    </div>
+    <div class="right-group vc-header__controls">
+      <button
+        class="vc-theme-switch"
+        type="button"
+        data-vc-theme-switch
+        aria-label="Switch colour theme"
+        title="Switch colour theme"
+      >
+        <span class="vc-theme-switch__aperture" aria-hidden="true"><span></span></span>
+      </button>
+      <LanguageSelect />
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  (() => {
+    const storageKey = 'starlight-theme';
+    const runtime = window.__visceriumCleanHeader ??= {};
+
+    runtime.bind = () => {
+      document.querySelectorAll('[data-vc-theme-switch]').forEach((button) => {
+        if (!(button instanceof HTMLButtonElement) || button.dataset.bound === 'true') return;
+
+        const currentTheme = () =>
+          document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+
+        const sync = () => {
+          const nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
+          const label = `Switch to ${nextTheme} mode`;
+          button.setAttribute('aria-label', label);
+          button.setAttribute('title', label);
+          button.dataset.theme = currentTheme();
+        };
+
+        button.addEventListener('click', () => {
+          const nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
+          document.documentElement.dataset.theme = nextTheme;
+          document.documentElement.style.colorScheme = nextTheme;
+          try {
+            localStorage.setItem(storageKey, nextTheme);
+          } catch {
+            // Theme switching remains functional when storage is unavailable.
+          }
+          sync();
+        });
+
+        button.dataset.bound = 'true';
+        sync();
+      });
+    };
+
+    if (!runtime.pageLoadBound) {
+      document.addEventListener('astro:page-load', runtime.bind);
+      runtime.pageLoadBound = true;
+    }
+
+    runtime.bind();
+  })();
+</script>
