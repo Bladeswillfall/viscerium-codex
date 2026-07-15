@@ -19,8 +19,7 @@ import { progressiveCssColors } from './plugins/progressive-css-colors.mjs';
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
 
-const compressSourceAssets = process.env.CODEX_COMPRESS_SOURCE_ASSETS === '1';
-const sourceAssetCompressor = compressSourceAssets
+const sourceAssetCompressor = process.env.CODEX_COMPRESS_SOURCE_ASSETS === '1'
   ? compress({
       Path: ['../Vault/Assets'],
       CSS: false,
@@ -28,35 +27,15 @@ const sourceAssetCompressor = compressSourceAssets
       JavaScript: false,
       JSON: false,
       SVG: false,
-      Map: {
-        Image: '**/*.{avif,gif,png,tiff,webp}',
-      },
+      Map: { Image: '**/*.{avif,gif,png,tiff,webp}' },
       Image: {
         sharp: {
-          avif: {
-            chromaSubsampling: '4:4:4',
-            effort: 9,
-            lossless: true,
-          },
-          gif: {
-            effort: 10,
-          },
-          png: {
-            compressionLevel: 9,
-            palette: false,
-          },
-          tiff: {
-            compression: 'lzw',
-          },
-          webp: {
-            effort: 6,
-            lossless: true,
-          },
-          sharp: {
-            failOn: 'error',
-            sequentialRead: true,
-            unlimited: true,
-          },
+          avif: { chromaSubsampling: '4:4:4', effort: 9, lossless: true },
+          gif: { effort: 10 },
+          png: { compressionLevel: 9, palette: false },
+          tiff: { compression: 'lzw' },
+          webp: { effort: 6, lossless: true },
+          sharp: { failOn: 'error', sequentialRead: true, unlimited: true },
         },
       },
     })
@@ -86,22 +65,10 @@ const feedHead = [
 const webmentionHead = siteConfig.webmentions?.enabled
   ? [
       siteConfig.webmentions.endpoint
-        ? {
-            tag: 'link',
-            attrs: {
-              rel: 'webmention',
-              href: siteConfig.webmentions.endpoint,
-            },
-          }
+        ? { tag: 'link', attrs: { rel: 'webmention', href: siteConfig.webmentions.endpoint } }
         : undefined,
       siteConfig.webmentions.pingbackEndpoint
-        ? {
-            tag: 'link',
-            attrs: {
-              rel: 'pingback',
-              href: siteConfig.webmentions.pingbackEndpoint,
-            },
-          }
+        ? { tag: 'link', attrs: { rel: 'pingback', href: siteConfig.webmentions.pingbackEndpoint } }
         : undefined,
     ].filter(Boolean)
   : [];
@@ -126,52 +93,15 @@ const fontAwesomeHead = [
   },
 ];
 
-const faviconPath = '/favicons/viscerium-favicon.svg';
-
 const faviconHead = [
-  {
-    tag: 'link',
-    attrs: {
-      rel: 'icon',
-      type: 'image/svg+xml',
-      href: faviconPath,
-    },
-  },
-  {
-    tag: 'link',
-    attrs: {
-      rel: 'shortcut icon',
-      href: faviconPath,
-    },
-  },
-  {
-    tag: 'link',
-    attrs: {
-      rel: 'mask-icon',
-      href: '/favicons/viscerium-mask.svg',
-      color: '#0b0b0d',
-    },
-  },
-  {
-    tag: 'link',
-    attrs: {
-      rel: 'manifest',
-      href: '/site.webmanifest',
-    },
-  },
-  {
-    tag: 'meta',
-    attrs: {
-      name: 'theme-color',
-      content: '#0b0b0d',
-    },
-  },
+  { tag: 'link', attrs: { rel: 'icon', type: 'image/svg+xml', href: '/favicons/viscerium-favicon.svg' } },
+  { tag: 'link', attrs: { rel: 'shortcut icon', href: '/favicons/viscerium-favicon.svg' } },
+  { tag: 'link', attrs: { rel: 'mask-icon', href: '/favicons/viscerium-mask.svg', color: '#11100f' } },
+  { tag: 'link', attrs: { rel: 'manifest', href: '/site.webmanifest' } },
+  { tag: 'meta', attrs: { name: 'theme-color', content: '#11100f' } },
 ];
 
 const ga4MeasurementId = siteConfig.analytics?.ga4?.measurementId ?? 'G-XXXXXXXXXX';
-
-// GA4 placeholder only. Keep disabled until PUBLIC_GA4_MEASUREMENT_ID is replaced
-// with the real property ID and PUBLIC_GA4_ENABLED=1 is set in the deploy environment.
 const ga4Head = siteConfig.analytics?.ga4?.enabled
   ? [
       {
@@ -193,12 +123,8 @@ const ga4Head = siteConfig.analytics?.ga4?.enabled
           const measurementId = document
             .getElementById('ga4-init')
             .getAttribute('data-ga4-measurement-id');
-
           window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-
+          function gtag() { dataLayer.push(arguments); }
           gtag('js', new Date());
           gtag('config', measurementId);
         `,
@@ -213,21 +139,9 @@ const sidebar = [
     collapsed: false,
     items: [
       ...makeChangelogsSidebarLinks([
-        {
-          type: 'latest',
-          base: 'changelog',
-          label: 'Latest changes',
-        },
-        {
-          type: 'all',
-          base: 'changelog',
-          label: 'Version history',
-        },
-        {
-          type: 'recent',
-          base: 'changelog',
-          count: 3,
-        },
+        { type: 'latest', base: 'changelog', label: 'Latest changes' },
+        { type: 'all', base: 'changelog', label: 'Version history' },
+        { type: 'recent', base: 'changelog', count: 3 },
       ]),
     ],
   },
@@ -235,9 +149,7 @@ const sidebar = [
 
 export default defineConfig({
   site: siteConfig.site,
-  vite: {
-    plugins: [progressiveCssColors()],
-  },
+  vite: { plugins: [progressiveCssColors()] },
   integrations: [
     preact(),
     starlight({
@@ -245,36 +157,25 @@ export default defineConfig({
       description: siteConfig.description,
       pagefind: true,
       customCss: [
-        './vendor/starlight-ion-theme/styles/layers.css',
-        './vendor/starlight-ion-theme/styles/theme.css',
-        './vendor/starlight-ion-theme/styles/ec-theme.css',
-        './src/styles/typography.css',
-        './src/styles/codex-ui.css',
-        './src/styles/custom.css',
-        './src/styles/navigation.css',
-        './src/styles/header-controls.css',
         './src/styles/graph.css',
         './src/styles/timelines.css',
         './src/styles/maps.css',
         './src/styles/calendar.css',
         './src/styles/category-index.css',
         './src/styles/support.css',
-        './src/styles/layout.css',
-        './src/styles/color-tokens.css',
         './src/styles/a11y.css',
         './src/styles/era-styles.css',
+        './src/clean-slate/viscerium.css',
       ],
       components: {
-        Header: './src/components/CodexHeader.astro',
+        Header: './src/clean-slate/VisceriumHeader.astro',
         Sidebar: './src/components/IonSidebar.astro',
-        Footer: './src/components/StarlightFooter.astro',
+        Footer: './src/clean-slate/VisceriumFooter.astro',
         PageSidebar: './src/components/CodexPageSidebar.astro',
         PageTitle: './src/components/CodexPageTitle.astro',
         TwoColumnContent: './src/components/CodexTwoColumnContent.astro',
       },
-      editLink: {
-        baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
-      },
+      editLink: { baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/` },
       plugins: [
         starlightHeadingBadges(),
         starlightTags(),
@@ -293,11 +194,7 @@ export default defineConfig({
     }),
     sitemap(),
     mdx(),
-    partytown({
-      config: {
-        forward: ['dataLayer.push'],
-      },
-    }),
+    partytown({ config: { forward: ['dataLayer.push'] } }),
     ...(sourceAssetCompressor ? [sourceAssetCompressor] : []),
     compress({
       HTML: {
