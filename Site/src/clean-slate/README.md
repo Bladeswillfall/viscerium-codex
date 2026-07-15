@@ -13,7 +13,7 @@ This directory is the new presentation boundary for the Codex.
 
 The visual shell is rebuilt here rather than continuing to layer patches over the vendored Ion theme and the previous homepage CSS. `viscerium.css` owns the palette, typography, page chrome, navigation, prose and homepage. `VisceriumHeader.astro` and `VisceriumFooter.astro` own the global chrome.
 
-Specialist feature styles for timelines, maps, graph, calendar, category indexes, support and accessibility remain loaded as compatibility modules. The clean-slate stylesheet is loaded last and is the final authority for shared presentation.
+Specialist feature styles for timelines, maps, graph, calendar, category indexes, support and accessibility remain loaded for their proven behaviour. `specialist-features.css` supplies the clean-slate compatibility tokens and removes their inherited gradient, glow, rounded-card and shadow treatments.
 
 ## Design premise
 
