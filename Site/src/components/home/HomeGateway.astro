@@ -1,4 +1,6 @@
 ---
+import HomeReveal from './HomeReveal';
+
 type Props = {
   canonEntryCount: number;
   mappedEventCount: number;
@@ -19,6 +21,8 @@ const timelineStatLabel = unbrokenTimelineCount === 1
 ---
 
 <div class="home-gateway" id="home-gateway-top">
+  <HomeReveal client:load />
+
   <section class="home-hero" aria-labelledby="home-hero-title">
     <div class="home-hero__copy">
       <p class="home-eyebrow">Choose an age. Enter the same world.</p>
