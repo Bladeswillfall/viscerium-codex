@@ -166,6 +166,7 @@ export default defineConfig({
         './src/styles/a11y.css',
         './src/styles/era-styles.css',
         './src/clean-slate/viscerium.css',
+        './src/clean-slate/specialist-features.css',
       ],
       components: {
         Header: './src/clean-slate/VisceriumHeader.astro',
