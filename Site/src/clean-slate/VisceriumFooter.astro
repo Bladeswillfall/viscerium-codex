@@ -1,0 +1,47 @@
+---
+import LastUpdated from 'virtual:starlight/components/LastUpdated';
+import Pagination from 'virtual:starlight/components/Pagination';
+import CodexEditLink from '../components/CodexEditLink.astro';
+import CodexMath from '../components/CodexMath.astro';
+import ContributorStrip from '../components/ContributorStrip.astro';
+import GiscusComments from '../components/GiscusComments.astro';
+import siteConfig from '../../site.config.mjs';
+
+const isHomepage = Astro.url.pathname === '/';
+const year = new Date().getUTCFullYear();
+---
+
+<CodexMath />
+<ContributorStrip />
+{!isHomepage && <GiscusComments />}
+
+<footer class="vc-site-footer">
+  <Pagination />
+
+  <div class="vc-site-footer__meta">
+    <div class="vc-site-footer__statement">
+      <strong>One history. Four eras.</strong>
+      <span>The public archive of VISCERIUM.</span>
+    </div>
+
+    <nav aria-label="Codex utilities">
+      <a href="/start-here/">Start here</a>
+      <a href="/support/">Support</a>
+      <a href="/contact/">Contact</a>
+      <a href="/rss.xml">RSS</a>
+      <a href="/atom.xml">Atom</a>
+      <a href={siteConfig.githubRepoUrl} target="_blank" rel="noreferrer">
+        GitHub <span class="vc-outward" aria-hidden="true">↗</span>
+        <span class="vc-sr-only"> opens in a new tab</span>
+      </a>
+    </nav>
+
+    <div class="vc-site-footer__record">
+      <CodexEditLink />
+      <LastUpdated />
+      <span>© {year} VISCERIUM</span>
+    </div>
+  </div>
+
+  <div class="vc-site-footer__word" aria-hidden="true">VISCERIUM</div>
+</footer>
