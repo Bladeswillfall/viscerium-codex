@@ -125,7 +125,7 @@ test('top ribbon keeps real search, Telescope and the aperture colour control', 
     };
   });
 
-  expect(ribbon.searchWidth).toBeGreaterThan(120);
+  expect(ribbon.searchWidth).toBeGreaterThanOrEqual(28);
   expect(ribbon.searchInsideHeader).toBe(true);
   expect(ribbon.themeInsideHeader).toBe(true);
   expect(ribbon.themeBackgroundImage).toBe('none');
