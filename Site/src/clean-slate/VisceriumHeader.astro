@@ -16,7 +16,7 @@ const links = [
 ];
 ---
 
-<header class="header vc-header" data-vc-header>
+<header class="header vc-header codex-header" data-vc-header>
   <div class="vc-brand">
     <a class="vc-brand__mark" href="/" aria-label="VISCERIUM Codex home">
       <svg viewBox="0 0 36 36" aria-hidden="true">
@@ -36,14 +36,19 @@ const links = [
   </nav>
 
   <div class="vc-header__tools print:hidden">
-    <div class="vc-header__search" data-vc-header-search>
+    <div class="vc-header__search codex-header-search" data-vc-header-search data-codex-header-search>
       {shouldRenderSearch && <Search />}
     </div>
-    <div class="right-group vc-header__controls">
+    <!-- Starlight Telescope injects its trigger into `.right-group` at runtime. -->
+    <div
+      class="right-group vc-header__controls codex-header-controls print:hidden"
+      data-codex-header-controls
+    >
       <button
         class="vc-theme-switch"
         type="button"
         data-vc-theme-switch
+        data-codex-theme-toggle
         aria-label="Switch colour theme"
         title="Switch colour theme"
       >
@@ -99,3 +104,37 @@ const links = [
     runtime.bind();
   })();
 </script>
+
+<style is:global>
+  :root {
+    --vc-font-display: var(--vc-display);
+    --vc-font-body: var(--vc-body);
+    --vc-font-ui: var(--vc-ui);
+    --vc-font-mono: var(--vc-data);
+  }
+
+  .vc-header {
+    backdrop-filter: none;
+  }
+
+  .vc-primary-nav a[aria-current='page'] {
+    font-weight: 800;
+  }
+
+  .vc-primary-nav a[aria-current='page']::after {
+    display: none;
+  }
+
+  .vc-hero::before {
+    content: 'ERRACK / DEGEL SYSTEM' !important;
+  }
+
+  #starlight__sidebar summary span {
+    font-family: var(--vc-ui) !important;
+    letter-spacing: normal !important;
+  }
+
+  #starlight__sidebar [aria-current='page'] svg {
+    filter: none !important;
+  }
+</style>
