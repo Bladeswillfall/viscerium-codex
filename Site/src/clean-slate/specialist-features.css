@@ -85,6 +85,10 @@
     box-shadow: none !important;
   }
 
+  .vc-timeline-canvas .vis-item.vc-timeline-item .vis-item-content {
+    padding-block: 0.2rem !important;
+  }
+
   :is(.timeline-kicker, .timeline-date, .vc-detail-kicker, .codex-sidebar-kicker) {
     letter-spacing: normal !important;
     text-transform: none !important;
@@ -120,5 +124,17 @@
   ):hover {
     transform: none !important;
     box-shadow: none !important;
+  }
+
+  @media (min-width: 800px) {
+    html[data-codex-desktop-sidebar]:not(.codex-sidebar-collapsed) .vc-home {
+      width: calc(100% - var(--codex-sidebar-overlay-width)) !important;
+      margin-inline-start: var(--codex-sidebar-overlay-width) !important;
+    }
+
+    html[data-codex-desktop-sidebar].codex-sidebar-collapsed .vc-home {
+      width: 100% !important;
+      margin-inline-start: 0 !important;
+    }
   }
 }
