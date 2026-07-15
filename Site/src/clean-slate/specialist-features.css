@@ -1,0 +1,124 @@
+@layer viscerium {
+  :root {
+    --codex-page-bg: var(--vc-ink);
+    --codex-bg: var(--vc-ink);
+    --codex-bg-soft: var(--vc-ink-raised);
+    --codex-accent: var(--vc-brass);
+    --codex-accent-high: var(--vc-bone);
+    --codex-accent-soft: var(--vc-line);
+    --codex-surface: color-mix(in srgb, var(--vc-bone) 3%, transparent);
+    --codex-surface-raised: var(--vc-ink-raised);
+    --codex-surface-accent: color-mix(in srgb, var(--vc-rust) 10%, var(--vc-ink));
+    --codex-border: var(--vc-line);
+    --codex-border-strong: var(--vc-line-strong);
+    --codex-sidebar-toggle-bg: var(--vc-ink-raised);
+    --codex-radius: 0;
+    --codex-radius-lg: 0;
+    --codex-shadow: none;
+    --codex-red: #a95348;
+    --codex-blue: #8aa6aa;
+    --codex-green: #879b79;
+
+    --calendar-surface: color-mix(in srgb, var(--vc-bone) 3%, transparent);
+    --calendar-surface-soft: color-mix(in srgb, var(--vc-bone) 5%, transparent);
+    --calendar-border: var(--vc-line);
+    --calendar-border-strong: var(--vc-line-strong);
+    --calendar-text: var(--vc-bone);
+    --calendar-muted: var(--vc-bone-dim);
+    --calendar-winter: #8aa6aa;
+    --calendar-spring: #b9a867;
+    --calendar-summer: #879b79;
+    --calendar-autumn: #a97855;
+    --calendar-leap: #9285a1;
+    --calendar-holiday: #a85b60;
+    --calendar-marker: var(--vc-rust);
+  }
+
+  :root[data-theme='light'] {
+    --codex-surface: color-mix(in srgb, var(--vc-bone) 3%, transparent);
+    --codex-surface-raised: var(--vc-ink-raised);
+    --codex-surface-accent: color-mix(in srgb, var(--vc-rust) 7%, var(--vc-ink));
+    --calendar-surface: color-mix(in srgb, var(--vc-bone) 3%, transparent);
+    --calendar-surface-soft: color-mix(in srgb, var(--vc-bone) 5%, transparent);
+  }
+
+  :is(
+    .codex-sidebar-card,
+    .codex-sidebar-section,
+    .codex-comments-panel,
+    .codex-map,
+    .map-panel,
+    .map-frame,
+    .codex-image-panel,
+    .map-card,
+    .codex-map-card,
+    .image-card,
+    .codex-gallery-card,
+    .calendar-module,
+    .calendar-module__facts,
+    .calendar-month
+  ) {
+    border-radius: 0 !important;
+    border-color: var(--vc-line) !important;
+    background: var(--vc-ink-raised) !important;
+    box-shadow: none !important;
+  }
+
+  :is(.codex-map, .map-panel, .map-frame, .codex-image-panel) figcaption {
+    background: var(--vc-ink-soft) !important;
+  }
+
+  .vc-timeline-app {
+    border-radius: 0 !important;
+    background: var(--vc-ink) !important;
+    box-shadow: none !important;
+  }
+
+  :is(
+    .vc-timeline-toolbar,
+    .vc-timeline-filters,
+    .vc-timeline-minimap-wrap,
+    .vc-timeline-filter-grid fieldset
+  ) {
+    border-color: var(--vc-line) !important;
+    background: var(--vc-ink-raised) !important;
+    box-shadow: none !important;
+  }
+
+  :is(.timeline-kicker, .timeline-date, .vc-detail-kicker, .codex-sidebar-kicker) {
+    letter-spacing: normal !important;
+    text-transform: none !important;
+  }
+
+  .calendar-module__facts dt,
+  .calendar-legend dt {
+    letter-spacing: normal !important;
+    text-transform: none !important;
+  }
+
+  .codex-alpha-index__letter {
+    font-family: var(--vc-display) !important;
+    letter-spacing: 0 !important;
+  }
+
+  .codex-alpha-index__meta {
+    font-family: var(--vc-ui) !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+  }
+
+  :is(
+    .codex-sidebar-card,
+    .codex-sidebar-section,
+    .codex-comments-panel,
+    .map-card,
+    .codex-map-card,
+    .image-card,
+    .codex-gallery-card,
+    .calendar-month,
+    .vc-timeline-app button
+  ):hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
