@@ -42,6 +42,30 @@
     --calendar-surface-soft: color-mix(in srgb, var(--vc-bone) 5%, transparent);
   }
 
+  main:has(.vc-home) {
+    min-width: 0;
+    padding: 0 !important;
+    overflow: clip;
+  }
+
+  main:has(.vc-home) > .content-panel:first-of-type {
+    display: none;
+  }
+
+  main:has(.vc-home) > .content-panel:last-of-type {
+    padding: 0;
+    border-block-start: 0;
+  }
+
+  main:has(.vc-home) > .content-panel:last-of-type > .sl-container {
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  main:has(.vc-home) .sl-markdown-content {
+    max-width: none;
+  }
+
   :is(
     .codex-sidebar-card,
     .codex-sidebar-section,
@@ -127,12 +151,12 @@
   }
 
   @media (min-width: 800px) {
-    html:not(.codex-sidebar-collapsed) .vc-home {
+    html:not(.codex-sidebar-collapsed) main:has(.vc-home) {
       width: calc(100% - var(--codex-sidebar-overlay-width, 18rem)) !important;
       margin-inline-start: var(--codex-sidebar-overlay-width, 18rem) !important;
     }
 
-    html.codex-sidebar-collapsed .vc-home {
+    html.codex-sidebar-collapsed main:has(.vc-home) {
       width: 100% !important;
       margin-inline-start: 0 !important;
     }
