@@ -1,3 +1,4 @@
+// Shared, dependency-free path and escaping helpers for build scripts and browser bundles.
 export function cleanSlug(value) {
   return String(value ?? '').trim().replace(/^\/+|\/+$/g, '').toLowerCase();
 }
