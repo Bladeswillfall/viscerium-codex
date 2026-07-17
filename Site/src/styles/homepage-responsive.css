@@ -1,4 +1,4 @@
-@media (min-width: 68.76rem) and (hover: hover) and (pointer: fine) {
+@media (min-width: 68.76rem) {
   .home-era-gateway:hover > li:not(:hover),
   .home-era-gateway:focus-within > li:not(:focus-within) {
     flex-basis: 18%;
