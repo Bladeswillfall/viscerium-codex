@@ -86,7 +86,7 @@ jobs:
           set -o pipefail
           {
             rm -f cleanup-apply.log Site/unit-test.log
-            git rm --ignore-unmatch .github/scripts/apply_cleanup.py .github/scripts/prepare_cleanup.py .github/workflows/apply-cleanup-and-verify.yml
+            git rm -f --ignore-unmatch .github/scripts/apply_cleanup.py .github/scripts/prepare_cleanup.py .github/workflows/apply-cleanup-and-verify.yml
             git add -A
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
