@@ -1,13 +1,14 @@
 @media (min-width: 68.76rem) and (hover: hover) and (pointer: fine) {
-  .home-era-gateway:has(.home-era-card:hover) > li:not(:has(.home-era-card:hover)),
-  .home-era-gateway:has(.home-era-card:focus-visible) > li:not(:has(.home-era-card:focus-visible)) {
+  .home-era-gateway:hover > li:not(:hover),
+  .home-era-gateway:focus-within > li:not(:focus-within) {
     flex-basis: 18%;
     filter: brightness(.56) saturate(.72);
   }
 
-  .home-era-gateway > li:has(.home-era-card:hover),
-  .home-era-gateway > li:has(.home-era-card:focus-visible) {
+  .home-era-gateway > li:hover,
+  .home-era-gateway > li:focus-within {
     flex-basis: 46%;
+    filter: none;
   }
 
   .home-era-card:hover::before,
