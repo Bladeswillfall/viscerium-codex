@@ -85,7 +85,7 @@ Browse every public Codex page filed beneath **Eras**.
 <ul class="codex-alpha-index__items">
 <li class="codex-alpha-index__item">
 <div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/">CITADEL</a><span class="codex-alpha-index__meta">era</span></div>
-<p class="codex-alpha-index__description">A time of steel, bone and thrones: VISCERIUM&#039;s medieval age of walled realms, early gunpowder and open occult practice.</p>
+<p class="codex-alpha-index__description">A time of steel, bone and thrones: VISCERIUM&#39;s medieval age of walled realms, early gunpowder and open occult practice.</p>
 </li>
 <li class="codex-alpha-index__item">
 <div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/nearsight/events/the-corporate-genetic-bidding-programme/">The Corporate Genetic Bidding Programme</a><span class="codex-alpha-index__meta">event</span></div>

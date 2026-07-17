@@ -1,5 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import matter from 'gray-matter';
+import { slugToRoute, toPosixPath } from './src/lib/codex-paths.mjs';
+import { walk } from './scripts/lib/walk.mjs';
 import { iconLabel, parseIconLabel } from './src/lib/icon-spec.mjs';
 
 const docsDir = new URL('./src/content/docs/', import.meta.url);
@@ -24,12 +27,6 @@ const groupIcons = {
 function labelFromSegment(segment) {
   return segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
-
-function frontmatterValue(raw, key) {
-  const match = raw.match(new RegExp(`^---\\n[\\s\\S]*?^${key}:\\s*(.+?)\\s*$`, 'm'));
-  return match?.[1]?.replace(/^['\"]|['\"]$/g, '');
-}
-
 function sortSidebarEntries(entries) {
   return entries.sort((a, b) => parseIconLabel(a.label).label.localeCompare(parseIconLabel(b.label).label));
 }
@@ -59,14 +56,15 @@ export async function buildSidebar() {
     const rootItems = [];
 
     for (const file of files) {
-      const rel = path.relative(docsDir.pathname, file).replace(/\\/g, '/');
+      const rel = toPosixPath(path.relative(docsDir.pathname, file));
       if (!rel.endsWith('.md') && !rel.endsWith('.mdx')) continue;
       const id = rel.replace(/\.(md|mdx)$/, '');
       const raw = await fs.readFile(file, 'utf8');
-      const title = frontmatterValue(raw, 'title') ?? labelFromSegment(path.basename(id));
-      const slug = frontmatterValue(raw, 'slug') ?? id;
-      const articleIcon = frontmatterValue(raw, 'sidebarIcon') ?? frontmatterValue(raw, 'icon');
-      const link = slug === 'index' ? '/' : `/${slug.replace(/^\/+|\/+$/g, '')}/`;
+      const data = matter(raw).data ?? {};
+      const title = data.title ?? labelFromSegment(path.basename(id));
+      const slug = data.slug ?? id;
+      const articleIcon = data.sidebarIcon ?? data.icon;
+      const link = slugToRoute(slug);
       if (id === 'index') {
         rootItems.unshift({
           label: iconLabel(articleIcon ?? 'fa-solid fa-house', title),
@@ -99,13 +97,4 @@ export async function buildSidebar() {
   } catch {
     return [{ label: 'Start Here', link: '/' }];
   }
-}
-
-async function walk(dir) {
-  const entries = await fs.readdir(dir, { withFileTypes: true }).catch(() => []);
-  const files = await Promise.all(entries.map((entry) => {
-    const full = path.join(dir, entry.name);
-    return entry.isDirectory() ? walk(full) : full;
-  }));
-  return files.flat();
 }

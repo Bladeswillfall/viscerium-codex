@@ -1,6 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import { loadGeneratedDocs } from './content-manifest.mjs';
 import { isMainModule } from './script-entry.mjs';
 
@@ -44,8 +44,8 @@ export async function generateMapData({ manifest } = {}) {
     }
   }
 
-  await fs.ensureDir(path.dirname(outFile));
-  await fs.writeJson(outFile, maps, { spaces: 2 });
+  await fs.mkdir(path.dirname(outFile), { recursive: true });
+  await fs.writeFile(outFile, `${JSON.stringify(maps, null, 2)}\n`, 'utf8');
   console.log(`Generated ${Object.keys(maps).length} map data set(s).`);
   return maps;
 }

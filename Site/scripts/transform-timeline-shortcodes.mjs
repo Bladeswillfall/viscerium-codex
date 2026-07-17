@@ -1,6 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import fg from 'fast-glob';
 import matter from 'gray-matter';
 import { LANE_MODES, TIMELINE_IDS } from '../src/lib/timeline/core.mjs';
@@ -160,6 +160,6 @@ for (const file of files) {
   if (usedTimeline) parsed.data.timelinePage = true;
   const content = `${imports.join('\n')}\n\n${output.join('\n')}`;
   await fs.writeFile(outFile, matter.stringify(content, parsed.data));
-  if (outFile !== file) await fs.remove(file);
+  if (outFile !== file) await fs.rm(file, { force: true });
   console.log(`Expanded timeline content in ${path.relative(docsDir, outFile)}`);
 }

@@ -1,4 +1,5 @@
 import { formatAbsoluteDay } from '../calendar/runtime.mjs';
+import { escapeHtml } from '../codex-paths.mjs';
 
 const importanceLabels = {
   landmark: 'Landmark',
@@ -14,16 +15,6 @@ const certaintyLabels = {
   disputed: 'Disputed',
   legendary: 'Legendary',
 };
-
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
 function cssToken(value) {
   return String(value ?? '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
 }

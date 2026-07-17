@@ -1,5 +1,6 @@
 import { DataSet, Timeline } from 'vis-timeline/standalone';
 import { VisceriumChronosTimeline } from '../chronos-fork/VisceriumChronosTimeline.mjs';
+import { escapeHtml } from '../codex-paths.mjs';
 import { calendars, defaultCalendarId, formatAbsoluteDay } from '../calendar/runtime.mjs';
 import {
   IMPORTANCE_LEVELS,
@@ -32,16 +33,6 @@ const importanceLabels = {
   minor: 'Minor',
   incidental: 'Incidental',
 };
-
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
 function cssToken(value) {
   return String(value ?? '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
 }
