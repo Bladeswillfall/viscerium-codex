@@ -1,0 +1,79 @@
+name: Diagnose era card hover
+
+on:
+  push:
+    branches:
+      - agent/expand-era-cards-on-hover
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: Site/package-lock.json
+      - name: Install site dependencies
+        working-directory: Site
+        run: npm ci --no-audit --no-fund
+      - name: Build site
+        working-directory: Site
+        run: npm run build
+      - name: Install browser runtime
+        working-directory: Site
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start preview
+        working-directory: Site
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/preview.log 2>&1 &
+          for attempt in {1..60}; do
+            curl -fsS http://127.0.0.1:4321/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/preview.log
+          exit 1
+      - name: Measure hover layout
+        working-directory: Site
+        run: |
+          cat > /tmp/measure-hover.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+          await page.goto('http://127.0.0.1:4321/', { waitUntil: 'networkidle' });
+          const media = await page.evaluate(() => matchMedia('(min-width: 68.76rem) and (hover: hover) and (pointer: fine)').matches);
+          const measure = () => page.locator('.home-era-gateway > li').evaluateAll((items) => items.map((item) => ({
+            width: item.getBoundingClientRect().width,
+            flexBasis: getComputedStyle(item).flexBasis,
+            flexGrow: getComputedStyle(item).flexGrow,
+            flexShrink: getComputedStyle(item).flexShrink,
+            filter: getComputedStyle(item).filter,
+          })));
+          const before = await measure();
+          await page.locator('.home-era-card').first().hover();
+          await page.waitForTimeout(800);
+          const after = await measure();
+          const selectorMatches = await page.evaluate(() => ({
+            gatewayHasHover: document.querySelector('.home-era-gateway')?.matches(':has(.home-era-card:hover)'),
+            activeLi: document.querySelector('.home-era-gateway > li')?.matches(':has(.home-era-card:hover)'),
+          }));
+          console.log(JSON.stringify({ media, before, after, selectorMatches }, null, 2));
+          await page.screenshot({ path: '/tmp/era-card-hover.png', fullPage: false });
+          await browser.close();
+          EOF
+          node /tmp/measure-hover.mjs | tee /tmp/hover-diagnostics.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: era-card-hover-diagnostics
+          path: |
+            /tmp/hover-diagnostics.json
+            /tmp/era-card-hover.png
+            /tmp/preview.log
+          retention-days: 1
