@@ -73,6 +73,16 @@ h1#_top {
   letter-spacing: .015em;
 }
 
+/* Compose headings across the site and avoid weak final lines in editorial copy. */
+:where(h1, h2, h3, h4, h5, h6) {
+  text-wrap: balance;
+}
+
+main :where(p, blockquote, dd, figcaption),
+.sl-markdown-content li {
+  text-wrap: pretty;
+}
+
 nav,
 button,
 input,
