@@ -1,22 +1,3 @@
-@media (min-width: 68.76rem) {
-  .home-era-gateway:hover > li:not(:hover),
-  .home-era-gateway:focus-within > li:not(:focus-within) {
-    flex-basis: 18%;
-    filter: brightness(.56) saturate(.72);
-  }
-
-  .home-era-gateway > li:hover,
-  .home-era-gateway > li:focus-within {
-    flex-basis: 46%;
-    filter: none;
-  }
-
-  .home-era-card:hover::before,
-  .home-era-card:focus-visible::before {
-    scale: 1.09;
-  }
-}
-
 @media (max-width: 68.75rem) {
   .home-hero__copy {
     position: relative;
