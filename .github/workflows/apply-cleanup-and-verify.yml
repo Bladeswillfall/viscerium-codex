@@ -55,8 +55,24 @@ jobs:
         run: npm install
 
       - name: Run unit tests
+        id: unit
+        continue-on-error: true
         working-directory: Site
-        run: npm run test:unit
+        run: npm run test:unit > unit-test.log 2>&1
+
+      - name: Upload unit-test failure log
+        if: steps.unit.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cleanup-unit-test-log
+          path: Site/unit-test.log
+          retention-days: 1
+
+      - name: Fail failed unit tests
+        if: steps.unit.outcome == 'failure'
+        run: |
+          cat Site/unit-test.log
+          exit 1
 
       - name: Run full build
         working-directory: Site
