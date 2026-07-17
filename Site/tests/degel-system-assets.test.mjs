@@ -27,15 +27,7 @@ test('The Shards are Errack ring fortresses rather than an asteroid belt', () =>
   assert.equal(shards.mobileY, errack.mobileY);
 });
 
-test('placeholder materialization preserves replacement artwork', async () => {
-  const materializer = await readFile(
-    new URL('../scripts/materialize-degel-placeholders.mjs', import.meta.url),
-    'utf8',
-  );
-
-  assert.match(materializer, /fs\.pathExists\(outputPath\)/);
-  assert.match(materializer, /Buffer\.from\(base64, 'base64'\)/);
-
+test('Degel placeholder artwork is committed as valid WebP assets', async () => {
   for (const filename of [
     'degel.webp',
     'crucibus.webp',
@@ -44,6 +36,11 @@ test('placeholder materialization preserves replacement artwork', async () => {
     'eye-of-visi.webp',
     'the-shards.webp',
   ]) {
-    assert.match(materializer, new RegExp(filename.replace('.', '\\.')));
+    const asset = await readFile(
+      new URL(`../public/assets/images/degel-system/${filename}`, import.meta.url),
+    );
+    assert.ok(asset.length > 12, `${filename} should not be empty`);
+    assert.equal(asset.subarray(0, 4).toString('ascii'), 'RIFF');
+    assert.equal(asset.subarray(8, 12).toString('ascii'), 'WEBP');
   }
 });

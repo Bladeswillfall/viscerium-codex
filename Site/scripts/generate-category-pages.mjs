@@ -2,9 +2,10 @@ import path from 'node:path';
 import process from 'node:process';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import fg from 'fast-glob';
 import matter from 'gray-matter';
+import { cleanSlug, escapeHtml, slugToRoute, toPosixPath } from '../src/lib/codex-paths.mjs';
 
 const execFileAsync = promisify(execFile);
 const siteRoot = process.cwd();
@@ -15,15 +16,6 @@ const docsDir = process.env.VISCERIUM_DOCS_DIR
 const loreRoot = 'Vault/Lore/';
 const markdownExtensions = /\.(md|mdx)$/i;
 const leadingArticlePattern = /^(?:the|an|a)\s+/i;
-
-function cleanSlug(value) {
-  return String(value ?? '').trim().replace(/^\/+|\/+$/g, '').toLowerCase();
-}
-
-function routeFor(slug) {
-  return slug === 'index' ? '/' : `/${cleanSlug(slug)}/`;
-}
-
 function titleFromSegment(segment) {
   const known = new Map([
     ['citadel', 'CITADEL'],
@@ -39,7 +31,7 @@ function titleFromSegment(segment) {
 }
 
 function sourceRouteFromFile(file, data) {
-  const relative = path.relative(docsDir, file).replace(/\\/g, '/').replace(markdownExtensions, '');
+  const relative = toPosixPath(path.relative(docsDir, file)).replace(markdownExtensions, '');
   return cleanSlug(data.slug || relative);
 }
 
@@ -52,16 +44,6 @@ function asDate(value) {
 function entryDate(data) {
   return asDate(data.updated) ?? asDate(data.date) ?? asDate(data.published);
 }
-
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
 function sortableTitle(value) {
   const title = String(value ?? '').trim();
   const withoutArticle = title.replace(leadingArticlePattern, '').trim();
@@ -130,7 +112,7 @@ function renderAlphabeticalIndex(items, { idPrefix, kind, renderMeta, renderDesc
       const description = renderDescription?.(item);
       lines.push(
         '<li class="codex-alpha-index__item">',
-        `<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="${escapeHtml(routeFor(item.slug))}">${escapeHtml(item.title)}</a>${meta ? `<span class="codex-alpha-index__meta">${escapeHtml(meta)}</span>` : ''}</div>`,
+        `<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="${escapeHtml(slugToRoute(item.slug))}">${escapeHtml(item.title)}</a>${meta ? `<span class="codex-alpha-index__meta">${escapeHtml(meta)}</span>` : ''}</div>`,
         description ? `<p class="codex-alpha-index__description">${escapeHtml(description)}</p>` : '',
         '</li>',
       );
@@ -205,7 +187,7 @@ async function gitUpdatedDates() {
         continue;
       }
       if (!currentDate || !line.startsWith(loreRoot)) continue;
-      const sourcePath = line.slice(loreRoot.length).replace(/\\/g, '/');
+      const sourcePath = toPosixPath(line.slice(loreRoot.length));
       if (!updatedByPath.has(sourcePath)) updatedByPath.set(sourcePath, currentDate);
     }
     return updatedByPath;
@@ -225,7 +207,7 @@ for (const file of generatedFiles) {
   if (parsed.data.publish !== true || parsed.data.status !== 'canon' || parsed.data.type === 'category') continue;
 
   if (!entryDate(parsed.data) && typeof parsed.data.sourcePath === 'string') {
-    const updated = updatedBySourcePath.get(parsed.data.sourcePath.replace(/\\/g, '/'));
+    const updated = updatedBySourcePath.get(toPosixPath(parsed.data.sourcePath));
     if (updated) {
       raw = addFrontmatterField(raw, 'updated', updated);
       await fs.writeFile(file, raw, 'utf8');
@@ -290,7 +272,7 @@ for (const category of categoryList) {
     tableOfContents: false,
   };
   const intro = `Browse every public Codex page filed beneath **${category.title}**.`;
-  await fs.ensureDir(path.dirname(outFile));
+  await fs.mkdir(path.dirname(outFile), { recursive: true });
   await fs.writeFile(outFile, matter.stringify(`${intro}\n\n${section}`, frontmatter), 'utf8');
   console.log(`Generated category index ${path.relative(docsDir, outFile)}.`);
 }

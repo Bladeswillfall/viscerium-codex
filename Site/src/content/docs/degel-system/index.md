@@ -40,11 +40,11 @@ Browse every public Codex page filed beneath **Degel System**.
 </li>
 <li class="codex-alpha-index__item">
 <div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/degel-system/eye-of-visi/">Eye of Visi</a></div>
-<p class="codex-alpha-index__description">The smaller of Errack&#039;s two moons, the eye of the Sage.</p>
+<p class="codex-alpha-index__description">The smaller of Errack&#39;s two moons, the eye of the Sage.</p>
 </li>
 <li class="codex-alpha-index__item">
 <div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/degel-system/eye-of-vordr/">Eye of Vordr</a></div>
-<p class="codex-alpha-index__description">The larger of Errack&#039;s twin moons, the eye of the Warden</p>
+<p class="codex-alpha-index__description">The larger of Errack&#39;s twin moons, the eye of the Warden</p>
 </li>
 </ul>
 </section>
@@ -62,7 +62,7 @@ Browse every public Codex page filed beneath **Degel System**.
 <ul class="codex-alpha-index__items">
 <li class="codex-alpha-index__item">
 <div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/degel-system/the-shards/">The Shards</a></div>
-<p class="codex-alpha-index__description">Errack&#039;s orbital fortresses nestled in the planetary ring.</p>
+<p class="codex-alpha-index__description">Errack&#39;s orbital fortresses nestled in the planetary ring.</p>
 </li>
 </ul>
 </section>

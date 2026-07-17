@@ -3,8 +3,11 @@ import process from 'node:process';
 import fs from 'node:fs/promises';
 import { constants as fsConstants } from 'node:fs';
 import matter from 'gray-matter';
+import { cleanSlug, slugToRoute, toPosixPath } from '../src/lib/codex-paths.mjs';
 import siteConfig from '../site.config.mjs';
 import { transformCodexFormatting } from './codex-formatting.mjs';
+import { inferNoteType, sourceSegments } from './note-inference.mjs';
+import { walk } from './lib/walk.mjs';
 
 const siteRoot = process.cwd();
 const sourceDir = path.resolve(siteRoot, siteConfig.loreSourceDir);
@@ -15,51 +18,18 @@ const missingImagePath = '/assets/images/missing-image.svg';
 const missingImageFilename = 'missing-image.svg';
 const imageExtensions = /\.(avif|bmp|gif|jpe?g|png|svg|webp)$/i;
 const calendarComponentPath = path.resolve(siteRoot, 'src/components/calendar/CalendarYear.astro');
-const requiredFields = ['title', 'description'];
-const typeByFolder = new Map([
-  ['characters', 'character'],
-  ['factions', 'faction'],
-  ['locations', 'location'],
-  ['events', 'event'],
-  ['maps', 'map'],
-  ['images', 'image'],
-  ['eras', 'era'],
-  ['timelines', 'timeline'],
-  ['calendar', 'calendar'],
-  ['demo', 'system'],
-]);
-const eraStyleByEra = new Map([
+const requiredFields = ['title', 'description'];const eraStyleByEra = new Map([
   ['citadel', 'e1'],
   ['smog', 'e2'],
   ['nearsight', 'e3'],
   ['entropy', 'e4'],
 ]);
-
-function cleanSlug(slug) {
-  return String(slug).trim().replace(/^\/+|\/+$/g, '').toLowerCase();
-}
-
 function slugFromFile(file) {
-  const rel = path.relative(sourceDir, file).replace(/\\/g, '/').replace(/\.(md|mdx)$/i, '');
+  const rel = toPosixPath(path.relative(sourceDir, file)).replace(/\.(md|mdx)$/i, '');
   return rel.split('/').map((segment) => cleanSlug(segment).replace(/\s+/g, '-')).join('/');
 }
-
-function sourceSegments(file) {
-  const rel = path.relative(sourceDir, file).replace(/\\/g, '/').replace(/\.(md|mdx)$/i, '');
-  return rel.split('/').filter(Boolean);
-}
-
-function inferType(file) {
-  const segments = sourceSegments(file).map((segment) => segment.toLowerCase());
-  for (let index = segments.length - 2; index >= 0; index -= 1) {
-    const type = typeByFolder.get(segments[index]);
-    if (type) return type;
-  }
-  return typeByFolder.get(segments[0]) ?? 'article';
-}
-
 function inferEra(file) {
-  const segments = sourceSegments(file);
+  const segments = sourceSegments(file, sourceDir);
   const eraIndex = segments.findIndex((segment) => segment.toLowerCase() === 'eras');
   return eraIndex >= 0 && segments[eraIndex + 1] ? segments[eraIndex + 1] : undefined;
 }
@@ -71,16 +41,11 @@ function normaliseEraKey(value) {
 }
 
 function inferEraStyle(file, data = {}) {
-  const segments = sourceSegments(file).map((segment) => segment.toLowerCase());
+  const segments = sourceSegments(file, sourceDir).map((segment) => segment.toLowerCase());
   const eraIndex = segments.findIndex((segment) => segment === 'eras');
   const eraFromFolder = eraIndex >= 0 ? normaliseEraKey(segments[eraIndex + 1]) : undefined;
   return eraStyleByEra.get(eraFromFolder) ?? eraStyleByEra.get(normaliseEraKey(data.era));
 }
-
-function route(slug) {
-  return slug === 'index' ? '/' : `/${slug}/`;
-}
-
 function noteKey(input) {
   return String(input).trim().toLowerCase();
 }
@@ -161,16 +126,6 @@ async function emptyDir(dir) {
   await fs.rm(dir, { recursive: true, force: true });
   await fs.mkdir(dir, { recursive: true });
 }
-
-async function walk(dir) {
-  const entries = await fs.readdir(dir, { withFileTypes: true }).catch(() => []);
-  const files = await Promise.all(entries.map((entry) => {
-    const full = path.join(dir, entry.name);
-    return entry.isDirectory() ? walk(full) : full;
-  }));
-  return files.flat();
-}
-
 const files = (await walk(sourceDir)).filter((file) => /\.(md|mdx)$/i.test(file)).sort();
 const publicNotes = [];
 const slugByName = new Map();
@@ -183,7 +138,7 @@ for (const file of files) {
   if (parsed.data.publish !== true || parsed.data.status !== 'canon') continue;
   const slug = parsed.data.slug === 'index' ? 'index' : slugFromFile(file);
   parsed.data.slug = slug;
-  parsed.data.type ||= inferType(file);
+  parsed.data.type ||= inferNoteType(file, sourceDir);
   parsed.data.era ||= inferEra(file);
   parsed.data.eraStyle ||= inferEraStyle(file, parsed.data);
   for (const field of requiredFields) {
@@ -249,7 +204,7 @@ function renderMarkdownImage(alt, filename, url, title = '') {
   const suffix = title ? ` ${title}` : '';
   const image = `![${alt || filename}](${url}${suffix})`;
   const imageSlug = imageSlugByAsset.get(assetKey(filename));
-  return imageSlug ? `[${image}](${route(imageSlug)})` : image;
+  return imageSlug ? `[${image}](${slugToRoute(imageSlug)})` : image;
 }
 
 function markdownImage(filename, url) {
@@ -429,7 +384,7 @@ async function convertContent(content, currentFile, parsed, outFile, outputRequi
       warnings.push(`Unpublished or missing wikilink "${target.trim()}" in ${path.relative(sourceDir, currentFile)}`);
       return label;
     }
-    return `[${label}](${route(slug)})`;
+    return `[${label}](${slugToRoute(slug)})`;
   });
 
   converted = transformCodexFormatting(converted, {
@@ -444,7 +399,7 @@ for (const { file, parsed, slug } of publicNotes) {
   const shortcodeRequiresMdx = hasCalendarShortcodes(parsed.content);
   const extension = sourceIsMdx || shortcodeRequiresMdx ? '.mdx' : '.md';
   const outFile = path.join(outDir, `${slug}${extension}`);
-  const sourcePath = path.relative(sourceDir, file).replace(/\\/g, '/');
+  const sourcePath = toPosixPath(path.relative(sourceDir, file));
   const frontmatterAssets = {};
   await fs.mkdir(path.dirname(outFile), { recursive: true });
   for (const field of ['image', 'headerImage']) {

@@ -1,6 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import fg from 'fast-glob';
 
 const distDir = path.resolve(process.cwd(), 'dist');

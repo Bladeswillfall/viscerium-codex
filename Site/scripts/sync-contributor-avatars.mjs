@@ -1,6 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import sharp from 'sharp';
 import siteConfig from '../site.config.mjs';
 import { loadGeneratedDocs } from './content-manifest.mjs';
@@ -33,6 +33,16 @@ function placeholderSvg(profile) {
   <circle cx="96" cy="96" r="91" fill="none" stroke="#9b8cff" stroke-width="6"/>
   <text x="96" y="113" text-anchor="middle" fill="#f5f3ff" font-family="system-ui, sans-serif" font-size="62" font-weight="700">${label}</text>
 </svg>`);
+}
+
+
+async function pathExists(file) {
+  try {
+    await fs.access(file);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function validateRegistry(registry, manifest) {
@@ -97,15 +107,15 @@ async function refreshAvatar(id, profile, shouldRefresh) {
         .resize(192, 192, { fit: 'cover', position: 'centre' })
         .webp({ quality: 88, effort: 5 })
         .toFile(temporaryPath);
-      await fs.move(temporaryPath, cachePath, { overwrite: true });
+      await fs.rename(temporaryPath, cachePath);
       refreshed = true;
     } catch (error) {
-      await fs.remove(temporaryPath);
+      await fs.rm(temporaryPath, { force: true });
       console.warn(`Could not refresh avatar for ${id}: ${error.message}`);
     }
   }
 
-  if (!(await fs.pathExists(cachePath))) {
+  if (!(await pathExists(cachePath))) {
     await sharp(placeholderSvg(profile))
       .resize(192, 192)
       .webp({ quality: 88, effort: 5 })
@@ -113,19 +123,19 @@ async function refreshAvatar(id, profile, shouldRefresh) {
     console.warn(`Created a local placeholder avatar for ${id}.`);
   }
 
-  await fs.copy(cachePath, publicPath, { overwrite: true });
+  await fs.copyFile(cachePath, publicPath);
   console.log(`${refreshed ? 'Refreshed' : 'Copied cached'} contributor avatar ${filename}.`);
 }
 
 export async function syncContributorAvatars({ manifest, shouldRefresh = process.env.CODEX_SKIP_AVATAR_REFRESH !== '1' } = {}) {
   const docs = manifest ?? await loadGeneratedDocs();
-  const registry = await fs.readJson(registryPath);
+  const registry = JSON.parse(await fs.readFile(registryPath, 'utf8'));
   const profiles = registry.profiles ?? {};
 
   if (!validateRegistry(registry, docs)) throw new Error('Contributor registry validation failed.');
 
-  await fs.ensureDir(cacheDir);
-  await fs.ensureDir(publicDir);
+  await fs.mkdir(cacheDir, { recursive: true });
+  await fs.mkdir(publicDir, { recursive: true });
   for (const [id, profile] of Object.entries(profiles)) {
     await refreshAvatar(id, profile, shouldRefresh);
   }

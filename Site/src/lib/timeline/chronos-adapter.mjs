@@ -1,4 +1,5 @@
 import { attachChronosStyles, parseChronos } from 'chronos-timeline-md';
+import { escapeHtml } from '../codex-paths.mjs';
 import { absoluteDayToSyntheticDate, capTimelineGroups, KNOWN_CATEGORY_TOKENS } from './core.mjs';
 
 const CATEGORY_COLORS = {
@@ -25,16 +26,6 @@ const ERA_COLORS = {
   nearsight: 'cyan',
   entropy: 'purple',
 };
-
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
 function cleanChronosText(value) {
   const normalized = String(value ?? '')
     .replace(/[\r\n]+/g, ' ')

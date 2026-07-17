@@ -1,7 +1,8 @@
 import path from 'node:path';
 import process from 'node:process';
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import fg from 'fast-glob';
+import { cleanSlug, slugToRoute } from '../src/lib/codex-paths.mjs';
 import { compileTimelineRecords, TimelineCompilationError } from '../src/lib/timeline/compiler.mjs';
 import { TIMELINE_IDS } from '../src/lib/timeline/core.mjs';
 import { inferNoteType } from './note-inference.mjs';
@@ -10,11 +11,6 @@ import { isMainModule } from './script-entry.mjs';
 
 const siteRoot = process.cwd();
 const outDir = path.resolve(siteRoot, 'src/data/timelines');
-
-function cleanSlug(slug) {
-  return String(slug).trim().replace(/^\/+|\/+$/g, '').toLowerCase();
-}
-
 function slugFromRecord(record) {
   return record.relativePath
     .replace(/\.(md|mdx)$/i, '')
@@ -22,11 +18,6 @@ function slugFromRecord(record) {
     .map((segment) => cleanSlug(segment).replace(/\s+/g, '-'))
     .join('/');
 }
-
-function route(slug) {
-  return slug === 'index' ? '/' : `/${slug}/`;
-}
-
 export function reportTimelineError(error) {
   if (!(error instanceof TimelineCompilationError)) return false;
   console.error('Timeline validation failed:');
@@ -46,7 +37,7 @@ export async function generateTimelineData({ manifest, validateOnly = false } = 
     records.push({
       data,
       sourcePath: record.relativePath,
-      href: route(slug),
+      href: slugToRoute(slug),
     });
   }
 
@@ -60,12 +51,12 @@ export async function generateTimelineData({ manifest, validateOnly = false } = 
     return compiled;
   }
 
-  await fs.ensureDir(outDir);
-  await Promise.all((await fg('*.json', { cwd: outDir, absolute: true })).map((file) => fs.remove(file)));
+  await fs.mkdir(outDir, { recursive: true });
+  await Promise.all((await fg('*.json', { cwd: outDir, absolute: true })).map((file) => fs.rm(file, { force: true })));
   for (const id of TIMELINE_IDS) {
-    await fs.writeJson(path.join(outDir, `${id}.json`), compiled.datasets[id], { spaces: 2 });
+    await fs.writeFile(path.join(outDir, `${id}.json`), `${JSON.stringify(compiled.datasets[id], null, 2)}\n`, 'utf8');
   }
-  await fs.writeJson(path.join(outDir, 'manifest.json'), compiled.manifest, { spaces: 2 });
+  await fs.writeFile(path.join(outDir, 'manifest.json'), `${JSON.stringify(compiled.manifest, null, 2)}\n`, 'utf8');
   console.log(`Generated ${TIMELINE_IDS.length} timeline datasets from ${compiled.events.length} event(s) and ${compiled.eras.length} era record(s).`);
   return compiled;
 }

@@ -1,3 +1,4 @@
+import { escapeHtml } from '../src/lib/codex-paths.mjs';
 import { renderIconMarkup } from '../src/lib/icon-spec.mjs';
 
 const TAGS = new Set(['cols', 'row', 'col', 'card', 'note', 'warning', 'lore', 'equation']);
@@ -16,16 +17,6 @@ const GAP_VALUES = new Set(['none', 'xs', 'sm', 'md', 'lg', 'xl']);
 const ALIGN_VALUES = new Set(['start', 'center', 'end', 'stretch']);
 const JUSTIFY_VALUES = new Set(['start', 'center', 'end', 'between', 'around', 'evenly']);
 const CARD_VARIANTS = new Set(['plain', 'accent', 'muted', 'warning', 'danger', 'success']);
-
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 function classAttribute(classes, options) {
   const attribute = options?.jsx ? 'className' : 'class';
   return `${attribute}="${[...new Set(classes.filter(Boolean))].join(' ')}"`;
