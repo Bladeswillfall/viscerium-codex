@@ -1,12 +1,13 @@
 @media (min-width: 68.76rem) and (hover: hover) and (pointer: fine) {
   .home-era-gateway:has(.home-era-card:hover) > li:not(:has(.home-era-card:hover)),
   .home-era-gateway:has(.home-era-card:focus-visible) > li:not(:has(.home-era-card:focus-visible)) {
+    flex-basis: 18%;
     filter: brightness(.56) saturate(.72);
   }
 
   .home-era-gateway > li:has(.home-era-card:hover),
   .home-era-gateway > li:has(.home-era-card:focus-visible) {
-    flex-grow: 1.75;
+    flex-basis: 46%;
   }
 
   .home-era-card:hover::before,
