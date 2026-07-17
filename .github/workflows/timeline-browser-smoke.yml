@@ -8,6 +8,7 @@ on:
     paths:
       - 'Site/src/components/timeline/**'
       - 'Site/src/lib/timeline/**'
+      - 'Site/src/pages/index.astro'
       - 'Site/src/styles/**'
       - 'Site/src/data/timelines/**'
       - 'Site/tests/browser/**'
@@ -55,12 +56,13 @@ jobs:
           done
           cat /tmp/viscerium-preview.log
           exit 1
-      - name: Run timeline and sidebar browser smoke tests
+      - name: Run homepage, timeline and sidebar browser smoke tests
         shell: bash
         run: |
           mkdir -p timeline-browser-diagnostics
           set -o pipefail
           npx --no-install playwright test \
+            tests/browser/homepage-era-cards.spec.mjs \
             tests/browser/timeline-*.spec.mjs \
             tests/browser/sidebar-navigation.spec.mjs \
             --reporter=line --workers=1 2>&1 \
