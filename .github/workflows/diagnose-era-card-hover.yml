@@ -1,9 +1,7 @@
 name: Diagnose era card hover
 
 on:
-  push:
-    branches:
-      - agent/expand-era-cards-on-hover
+  pull_request:
 
 permissions:
   contents: read
