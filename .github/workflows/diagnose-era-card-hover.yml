@@ -89,4 +89,5 @@ jobs:
             /tmp/hover-diagnostics.json
             /tmp/era-card-hover.png
             /tmp/preview.log
+            Site/dist/_astro/index*.css
           retention-days: 1
