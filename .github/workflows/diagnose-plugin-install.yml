@@ -31,3 +31,5 @@ jobs:
       - name: Preserve failure status
         if: steps.install.outcome == 'failure'
         run: exit 1
+
+# Temporary diagnostic; remove after the dependency error is identified.
