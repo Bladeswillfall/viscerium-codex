@@ -206,7 +206,7 @@ main:has(.home-gateway) .sl-container > .home-gateway + * {
   min-width: 0;
   display: flex;
   flex: 1 1 25%;
-  transition: flex-grow .5s cubic-bezier(.2, .75, .2, 1), filter .35s ease;
+  transition: flex-basis .55s cubic-bezier(.2, .75, .2, 1), filter .35s ease;
 }
 
 .home-era-card {
