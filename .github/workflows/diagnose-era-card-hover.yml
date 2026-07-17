@@ -44,11 +44,23 @@ jobs:
         run: |
           set -o pipefail
           cat > measure-hover.mjs <<'EOF'
+          import { readFile } from 'node:fs/promises';
           import { chromium } from 'playwright';
+          const source = await readFile('src/styles/homepage-responsive.css', 'utf8');
           const browser = await chromium.launch({ headless: true });
           const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
           await page.goto('http://127.0.0.1:4321/', { waitUntil: 'networkidle' });
           const media = await page.evaluate(() => matchMedia('(min-width: 68.76rem) and (hover: hover) and (pointer: fine)').matches);
+          const cssAudit = await page.evaluate(async () => {
+            const hrefs = [...document.styleSheets].map((sheet) => sheet.href).filter(Boolean);
+            const files = await Promise.all(hrefs.map(async (href) => ({ href, text: await fetch(href).then((response) => response.text()) })));
+            return files.map(({ href, text }) => ({
+              href,
+              has46: text.includes('46%'),
+              hasHoverSelector: text.includes('.home-era-gateway:hover>li:not(:hover)') || text.includes('.home-era-gateway:hover > li:not(:hover)'),
+              nearby: text.includes('46%') ? text.slice(Math.max(0, text.indexOf('46%') - 240), text.indexOf('46%') + 160) : '',
+            }));
+          });
           const measure = () => page.locator('.home-era-gateway > li').evaluateAll((items) => items.map((item) => ({
             width: item.getBoundingClientRect().width,
             flexBasis: getComputedStyle(item).flexBasis,
@@ -61,10 +73,10 @@ jobs:
           await page.waitForTimeout(800);
           const after = await measure();
           const selectorMatches = await page.evaluate(() => ({
-            gatewayHasHover: document.querySelector('.home-era-gateway')?.matches(':has(.home-era-card:hover)'),
-            activeLi: document.querySelector('.home-era-gateway > li')?.matches(':has(.home-era-card:hover)'),
+            gatewayHover: document.querySelector('.home-era-gateway')?.matches(':hover'),
+            activeLiHover: document.querySelector('.home-era-gateway > li')?.matches(':hover'),
           }));
-          console.log(JSON.stringify({ media, before, after, selectorMatches }, null, 2));
+          console.log(JSON.stringify({ sourceTop: source.split('\n').slice(0, 20), media, cssAudit, before, after, selectorMatches }, null, 2));
           await page.screenshot({ path: '/tmp/era-card-hover.png', fullPage: false });
           await browser.close();
           EOF
