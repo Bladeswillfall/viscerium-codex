@@ -55,10 +55,10 @@
 
 /*
  * Switch to the compact reading geometry before the desktop columns begin
- * squeezing event titles into word-wide strips. This remains viewport-scoped,
- * so the established desktop presentation is untouched.
+ * squeezing event titles into word-wide strips. Use a pixel breakpoint here so
+ * Starlight's root font sizing cannot move the cutoff below tablet widths.
  */
-@media (max-width: 52rem) {
+@media (max-width: 800px) {
   .vc-timeline-list .vc-chronicle-masthead,
   .vc-timeline-list .vc-chronicle-chapter-header {
     grid-template-columns: minmax(0, 1fr);
@@ -68,6 +68,11 @@
   .vc-timeline-list .vc-chronicle-count {
     justify-items: start;
     text-align: left;
+  }
+
+  .vc-timeline-list .vc-chronicle-chapter-header {
+    position: relative;
+    top: auto;
   }
 
   .vc-timeline-list .vc-chronicle-chapter-header a {
@@ -123,9 +128,13 @@
     margin: 0 .75rem .85rem 2.8rem;
     padding: .85rem;
   }
+
+  .vc-timeline-list .vc-chronicle-dossier dl {
+    grid-template-columns: 1fr;
+  }
 }
 
-@media (max-width: 38rem) {
+@media (max-width: 560px) {
   .vc-timeline-list .vc-chronicle-masthead {
     padding: .9rem .8rem;
   }
