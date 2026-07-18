@@ -103,3 +103,61 @@ test('list view reads as an expandable archival chronicle and returns to the gra
   expect(metrics.enhanced).toBe('true');
   expect(metrics.plainListCount).toBe(0);
 });
+
+test('chronicle uses compact geometry on narrow screens without horizontal overflow', async ({ page }) => {
+  await page.setViewportSize({ width: 709, height: 1536 });
+  await openGlobalTimeline(page);
+
+  const toggle = page.locator('[data-vc-list]');
+  const list = page.locator('[data-vc-list-panel]');
+  await toggle.click();
+  await expect(list).toBeVisible();
+
+  const firstRecord = list.locator('.vc-chronicle-item').first();
+  const geometry = await firstRecord.locator('summary').evaluate((summary) => {
+    const date = summary.querySelector('.vc-chronicle-date')?.getBoundingClientRect();
+    const copy = summary.querySelector('.vc-chronicle-summary-copy')?.getBoundingClientRect();
+    const title = summary.querySelector('.vc-chronicle-title');
+    const chapterHeader = summary.closest('.vc-chronicle-chapter')?.querySelector('.vc-chronicle-chapter-header');
+    const chapterCopy = chapterHeader?.querySelector(':scope > div')?.getBoundingClientRect();
+    const chapterLink = chapterHeader?.querySelector(':scope > a')?.getBoundingClientRect();
+    const listPanel = summary.closest('[data-vc-list-panel]');
+    const summaryStyle = getComputedStyle(summary);
+    const titleStyle = title ? getComputedStyle(title) : null;
+    const listStyle = listPanel ? getComputedStyle(listPanel) : null;
+
+    return {
+      viewportWidth: window.innerWidth,
+      listWidth: listPanel?.getBoundingClientRect().width ?? 0,
+      gridTemplateColumns: summaryStyle.gridTemplateColumns,
+      containerType: listStyle?.containerType ?? '',
+      copyWidth: copy?.width ?? 0,
+      dateAboveCopy: Boolean(date && copy && date.bottom <= copy.top + 2 && Math.abs(date.left - copy.left) <= 2),
+      chapterStacked: Boolean(chapterCopy && chapterLink && chapterLink.top >= chapterCopy.bottom - 1),
+      documentOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      panelOverflow: listPanel ? listPanel.scrollWidth > listPanel.clientWidth + 1 : true,
+      titleWordBreak: titleStyle?.wordBreak ?? '',
+      titleOverflowWrap: titleStyle?.overflowWrap ?? '',
+    };
+  });
+
+  writeFileSync(
+    'timeline-browser-diagnostics/global-chronicle-mobile.json',
+    JSON.stringify(geometry, null, 2),
+  );
+  await page.screenshot({
+    path: 'timeline-browser-diagnostics/global-chronicle-mobile.png',
+    fullPage: true,
+  });
+
+  expect(geometry.viewportWidth).toBe(709);
+  expect(geometry.listWidth).toBeLessThanOrEqual(800);
+  expect(geometry.containerType).toBe('inline-size');
+  expect(geometry.copyWidth).toBeGreaterThan(240);
+  expect(geometry.dateAboveCopy).toBe(true);
+  expect(geometry.chapterStacked).toBe(true);
+  expect(geometry.documentOverflow).toBe(false);
+  expect(geometry.panelOverflow).toBe(false);
+  expect(geometry.titleWordBreak).toBe('normal');
+  expect(geometry.titleOverflowWrap).toBe('break-word');
+});
