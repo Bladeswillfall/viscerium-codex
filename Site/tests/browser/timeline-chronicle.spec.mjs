@@ -122,11 +122,15 @@ test('chronicle uses compact geometry on narrow screens without horizontal overf
     const chapterCopy = chapterHeader?.querySelector(':scope > div')?.getBoundingClientRect();
     const chapterLink = chapterHeader?.querySelector(':scope > a')?.getBoundingClientRect();
     const listPanel = summary.closest('[data-vc-list-panel]');
-    const columns = getComputedStyle(summary).gridTemplateColumns.trim().split(/\s+/);
+    const summaryStyle = getComputedStyle(summary);
     const titleStyle = title ? getComputedStyle(title) : null;
+    const listStyle = listPanel ? getComputedStyle(listPanel) : null;
 
     return {
-      columnCount: columns.length,
+      viewportWidth: window.innerWidth,
+      listWidth: listPanel?.getBoundingClientRect().width ?? 0,
+      gridTemplateColumns: summaryStyle.gridTemplateColumns,
+      containerType: listStyle?.containerType ?? '',
       copyWidth: copy?.width ?? 0,
       dateAboveCopy: Boolean(date && copy && date.bottom <= copy.top + 2 && Math.abs(date.left - copy.left) <= 2),
       chapterStacked: Boolean(chapterCopy && chapterLink && chapterLink.top >= chapterCopy.bottom - 1),
@@ -137,7 +141,18 @@ test('chronicle uses compact geometry on narrow screens without horizontal overf
     };
   });
 
-  expect(geometry.columnCount).toBe(3);
+  writeFileSync(
+    'timeline-browser-diagnostics/global-chronicle-mobile.json',
+    JSON.stringify(geometry, null, 2),
+  );
+  await page.screenshot({
+    path: 'timeline-browser-diagnostics/global-chronicle-mobile.png',
+    fullPage: true,
+  });
+
+  expect(geometry.viewportWidth).toBe(709);
+  expect(geometry.listWidth).toBeLessThanOrEqual(800);
+  expect(geometry.containerType).toBe('inline-size');
   expect(geometry.copyWidth).toBeGreaterThan(240);
   expect(geometry.dateAboveCopy).toBe(true);
   expect(geometry.chapterStacked).toBe(true);
@@ -145,9 +160,4 @@ test('chronicle uses compact geometry on narrow screens without horizontal overf
   expect(geometry.panelOverflow).toBe(false);
   expect(geometry.titleWordBreak).toBe('normal');
   expect(geometry.titleOverflowWrap).toBe('break-word');
-
-  await page.screenshot({
-    path: 'timeline-browser-diagnostics/global-chronicle-mobile.png',
-    fullPage: true,
-  });
 });
