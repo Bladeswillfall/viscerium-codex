@@ -195,7 +195,6 @@ export default defineConfig({
         './src/styles/category-index.css',
         './src/styles/support.css',
         './src/styles/layout.css',
-        './src/styles/borderless-shell.css',
         './src/styles/a11y.css',
         './src/styles/era-styles.css',
         'starlight-site-graph/styles/layers.css',
