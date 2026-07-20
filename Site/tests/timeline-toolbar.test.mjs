@@ -6,7 +6,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 test('the timeline island installs a scoped toolbar enhancement after existing behaviour', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const entrypoint = read('../src/styles/timeline.css');
+  const entrypoint = read('../src/styles/timeline-island.css');
   const toolbar = read('../src/lib/timeline/toolbar-ui.mjs');
   const styles = read('../src/styles/timeline-toolbar.css');
   const containerStyles = read('../src/styles/timeline-toolbar-container.css');
