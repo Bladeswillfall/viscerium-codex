@@ -4,7 +4,7 @@ import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import HomeGateway from '../components/home/HomeGateway.astro';
 import HomeReveal from '../components/home/HomeReveal';
 import timelineManifest from '../data/timelines/manifest.json';
-import '../styles/homepage.css';
+import '../styles/homepage-styles';
 
 const canonEntries = await getCollection('docs', ({ data }) => (
   data.publish === true
