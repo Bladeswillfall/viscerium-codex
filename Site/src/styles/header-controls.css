@@ -5,6 +5,23 @@
   responsive media block from the built Starlight stylesheet. CodexHeader therefore
   owns a matchMedia-backed root attribute and these selectors consume that state.
 */
+
+/*
+  The complete header ribbon is intentionally borderless. Include descendants and
+  pseudo-elements so Starlight and injected plugins cannot reintroduce dividers,
+  button rims or keyboard-key borders through their own component styles.
+*/
+header.header,
+header.header *,
+header.header *::before,
+header.header *::after,
+.codex-header,
+.codex-header *,
+.codex-header *::before,
+.codex-header *::after {
+  border: 0 !important;
+}
+
 .codex-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -37,7 +54,6 @@
   max-width: none !important;
   height: 2.5rem;
   justify-content: center !important;
-  border: 1px solid var(--sl-color-gray-5);
   border-radius: 0 !important;
   padding: 0 !important;
   background: var(--sl-color-bg-nav, var(--sl-color-black)) !important;
@@ -47,7 +63,6 @@
 }
 
 .codex-header-search button[data-open-modal]:hover {
-  border-color: var(--sl-color-gray-2);
   background: var(--sl-color-gray-6) !important;
   background-image: none !important;
   color: var(--sl-color-white);
@@ -73,13 +88,11 @@
 
 .codex-theme-control label {
   position: relative;
-  border: 1px solid var(--sl-color-gray-5);
   background: var(--sl-color-bg-nav, var(--sl-color-black));
   color: var(--sl-color-gray-2);
 }
 
 .codex-theme-control label:hover {
-  border-color: var(--sl-color-gray-2);
   background: var(--sl-color-gray-6);
   color: var(--sl-color-white);
 }
@@ -113,7 +126,6 @@
   align-items: center;
   justify-content: center;
   gap: .5rem;
-  border: 1px solid var(--sl-color-gray-5);
   border-radius: 0 !important;
   padding: 0 .65rem;
   background: var(--sl-color-bg-nav, var(--sl-color-black)) !important;
@@ -124,7 +136,6 @@
 }
 
 .codex-header .telescope__trigger-btn:hover {
-  border-color: var(--sl-color-gray-2);
   background: var(--sl-color-gray-6) !important;
   background-image: none !important;
   color: var(--sl-color-white);
