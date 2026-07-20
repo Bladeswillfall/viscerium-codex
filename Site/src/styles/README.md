@@ -1,18 +1,23 @@
 # Codex stylesheet architecture
 
-Styles are exposed through a small set of **entrypoints**. Astro/Vite processes these source files into production assets, so source-file count should follow maintainability boundaries rather than treating every file as a separate browser request.
+Astro/Vite processes authored styles into production assets, but **where a stylesheet enters the module graph can still affect the cascade and colour transformation output**. Consolidate imports only inside a boundary proven safe by unit, build, and browser regression tests.
 
-## Entrypoints
+## Safe entrypoints
 
-- `codex.css` — the complete global Starlight/Codex stack. This is the only first-party stylesheet registered in `astro.config.mjs`.
-- `homepage.css` — all homepage partials plus homepage-only shell overrides.
-- `timeline.css` — the complete interactive timeline stack used by `TimelineApp.astro`.
-- `chronos.css` — the smaller standalone Chronos embed stack.
-- `degel-system.css` and `degel-system-layout.css` — the Degel explorer feature. These remain separate until their large visual and layout rules can be regression-tested as one file.
+- `homepage.css` — all homepage partials plus homepage-only shell overrides. `index.astro` imports this one file.
+- `timeline-island.css` — the Chronicle and toolbar styles owned by the hydrated Preact timeline island. `TimelineIsland.tsx` imports this one file.
+- `chronos.css` — the existing standalone Chronos embed entrypoint.
 
-Page and component code should import an entrypoint rather than knowing the full list of implementation partials.
+## Deliberate separate-file boundaries
 
-## Core partials
+The following stacks remain explicit because browser regression tests showed that combining them through a CSS `@import` entrypoint changes runtime rendering:
+
+- The global Starlight/Codex files registered in `astro.config.mjs`. Consolidating them changed site-graph colour handling.
+- The server-rendered timeline files imported by `TimelineApp.astro`. Combining these with the hydrated-island styles changed the timeline hovercard colour.
+
+Do not collapse these boundaries merely to reduce the number of source files. Fewer files are not an improvement when the rendered cascade changes.
+
+## Core files
 
 - `typography.css` — typefaces, prose rhythm, headings, and text overflow behaviour.
 - `codex-ui.css` — reusable Codex surfaces, cards, clusters, pills, warnings, and buttons.
@@ -24,9 +29,7 @@ Page and component code should import an entrypoint rather than knowing the full
 - `a11y.css` — focus visibility, reduced motion, forced colours, screen-reader helpers, and target sizing.
 - `era-styles.css` — era-scoped variables and treatments. Structural layout does not belong here.
 
-Their global order is declared once in `codex.css`.
-
-## Feature partials
+## Feature files
 
 - `graph.css` — graph views and related-page visualisation.
 - `timelines.css` — shared timeline page presentation.
@@ -34,22 +37,23 @@ Their global order is declared once in `codex.css`.
 - `calendar.css` — calendar modules and date badges.
 - `support.css` — support, contact, and social-link pages.
 
-Feature partials remain separate where their selectors, components, and maintenance cycles are genuinely distinct. Related partials are collected by the nearest feature entrypoint.
+Feature files remain separate where their selectors, loading boundary, and maintenance cycle are genuinely distinct. Related partials may be collected by the nearest feature entrypoint only after browser tests prove the move is neutral.
 
 ## Cascade rules
 
-1. Do not reorder imports in an entrypoint casually. Their sequence is part of the cascade.
-2. Do not add another first-party global stylesheet directly to `astro.config.mjs`; add it to `codex.css` in the correct position.
-3. Do not add a growing list of CSS partial imports to a page or component when a feature entrypoint exists.
-4. Do not put page-global CSS inside an `.astro` page when a page entrypoint exists.
-5. Put shared colours and surfaces in tokens, not feature selectors.
-6. Put global geometry and late cascade overrides in `layout.css`.
-7. Put navigation and icon rules in `navigation.css`.
-8. Put era colour changes in `era-styles.css`; reuse the same selectors through `--era-*` variables.
-9. Avoid new unlayered `!important` overrides unless a third-party selector makes them unavoidable.
-10. When two partials style the same selector, document the intended owner before adding another override.
-11. Do not edit generated or middleware CSS bundles. Port experiments into these authored files.
-12. Keep the right sidebar page-scrolling: do not add `overflow`, `overflow-y`, or scrollbar declarations to its sticky desktop rule.
+1. Do not reorder imports casually. Their sequence and import boundary are part of the cascade.
+2. Keep the first-party global styles explicitly registered in `astro.config.mjs` unless browser regression tests prove an alternative is neutral.
+3. Keep the server-rendered timeline styles in `TimelineApp.astro` and the hydrated enhancement styles behind `timeline-island.css`.
+4. Do not add a growing list of CSS partial imports to a page or component when a tested feature entrypoint already exists.
+5. Do not put page-global CSS inside an `.astro` page when a page entrypoint exists.
+6. Put shared colours and surfaces in tokens, not feature selectors.
+7. Put global geometry and late cascade overrides in `layout.css`.
+8. Put navigation and icon rules in `navigation.css`.
+9. Put era colour changes in `era-styles.css`; reuse the same selectors through `--era-*` variables.
+10. Avoid new unlayered `!important` overrides unless a third-party selector makes them unavoidable.
+11. When two partials style the same selector, document the intended owner before adding another override.
+12. Do not edit generated or middleware CSS bundles. Port experiments into these authored files.
+13. Keep the right sidebar page-scrolling: do not add `overflow`, `overflow-y`, or scrollbar declarations to its sticky desktop rule.
 
 ## Progressive colour output
 
@@ -59,11 +63,10 @@ Because the OKLCH tier is emitted last, it is the preferred rendering path where
 
 ## Next consolidation pass
 
-Physical merging should happen only after browser regression coverage exists for the affected feature. The highest-value candidates are:
+Physical merging should happen only with browser coverage for the affected route and component boundary. Reasonable candidates are:
 
-1. `navigation.css` + `header-controls.css`
-2. the four homepage partials
-3. the timeline partials grouped into graph, controls, and chronicle files
-4. `degel-system.css` + `degel-system-art.css` + `degel-system-layout.css`
+1. The four homepage partials, now that `homepage.css` provides one stable entrypoint.
+2. The five hydrated timeline partials behind `timeline-island.css`.
+3. `degel-system.css` + `degel-system-art.css` + `degel-system-layout.css`, after dedicated explorer regression coverage.
 
-The staged approach makes the active import graph understandable first, then permits safe physical merging without guessing which rules currently win.
+The global Starlight stack and server-rendered timeline stack are not candidates until their colour-processing differences are understood and removed at the build-pipeline level.
