@@ -6,16 +6,15 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 test('the timeline island installs a scoped toolbar enhancement after existing behaviour', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const entrypoint = read('../src/styles/timeline-island.css');
   const toolbar = read('../src/lib/timeline/toolbar-ui.mjs');
   const styles = read('../src/styles/timeline-toolbar.css');
   const containerStyles = read('../src/styles/timeline-toolbar-container.css');
   const buttonStyles = read('../src/styles/timeline-buttons.css');
 
   assert.match(island, /installTimelineToolbar/);
-  assert.match(entrypoint, /@import '\.\/timeline-toolbar\.css'/);
-  assert.match(entrypoint, /@import '\.\/timeline-toolbar-container\.css'/);
-  assert.match(entrypoint, /@import '\.\/timeline-buttons\.css'/);
+  assert.match(island, /timeline-toolbar\.css/);
+  assert.match(island, /timeline-toolbar-container\.css/);
+  assert.match(island, /timeline-buttons\.css/);
   assert.match(island, /const cleanupToolbar = installTimelineToolbar\(root\)/);
   assert.match(island, /cleanupToolbar\(\);[\s\S]*cleanupChronicle\(\);[\s\S]*cleanupHovercard\(\);[\s\S]*cleanupTimeline\(\);/);
 
