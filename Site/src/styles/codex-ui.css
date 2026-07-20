@@ -82,6 +82,10 @@
     min-width: 0;
   }
 
+  .cx-cols > .cx-col {
+    margin-block: 0;
+  }
+
   .cx-compact { margin-block: .75rem; }
   .cx-bleed { width: 100%; max-width: none; }
   .cx-center { margin-inline: auto; }
@@ -150,6 +154,121 @@
     .cx-row > .cx-col {
       grid-column: span var(--cx-xl-span, var(--cx-lg-span, var(--cx-md-span, var(--cx-sm-span, var(--cx-span, 12)))));
       order: var(--cx-xl-order, var(--cx-lg-order, var(--cx-md-order, var(--cx-sm-order, var(--cx-order, initial)))));
+    }
+  }
+
+  /*
+    Temporary borderless presentation pass. Keep authored article components and
+    data-visualisation marks intact; only flatten page chrome, controls, wrappers,
+    section dividers and feature surfaces.
+  */
+  body :is(
+    header.header,
+    .codex-header,
+    .content-panel,
+    .codex-breadcrumbs,
+    #starlight__sidebar,
+    .sidebar,
+    .sidebar-pane,
+    .sidebar-content,
+    .codex-changelog-sidebar,
+    .sidebar .ion-expandable-group,
+    .sidebar .ion-expandable-group > summary,
+    .sidebar ul ul li,
+    .right-sidebar,
+    .right-sidebar-panel,
+    .codex-page-sidebar,
+    .codex-site-footer,
+    .ion-codex-footer,
+    .codex-sidebar-card,
+    .codex-sidebar-section,
+    .codex-header-image,
+    .codex-surface,
+    .codex-frame,
+    .codex-link-button,
+    .codex-sidebar-toggle,
+    .social-icons a,
+    .world-map,
+    .codex-map,
+    .map-panel,
+    .map-frame,
+    .codex-image-panel,
+    .map-card,
+    .codex-map-card,
+    .image-card,
+    .codex-gallery-card,
+    .calendar-module,
+    .calendar-module__facts,
+    .calendar-month,
+    .calendar-day,
+    .calendar-legend,
+    .calendar-date-badge,
+    .calendar-season,
+    .calendar-observance,
+    .support-hero,
+    .support-section,
+    .support-note,
+    .support-button,
+    .category-index,
+    .category-card,
+    .telescope__modal,
+    .telescope__close-button,
+    .telescope__tab,
+    .telescope__search-input,
+    .telescope__pin-button,
+    .telescope__tag,
+    .telescope__clear-btn,
+    .telescope__modal kbd,
+    dialog,
+    button[data-open-modal],
+    button[data-open-modal] > kbd,
+    .pagefind-ui__search-input,
+    .pagefind-ui__search-clear,
+    .pagefind-ui__button,
+    .pagefind-ui__result-title,
+    .pagefind-ui__result-nested,
+    .pagefind-ui__result-tag,
+    .pagefind-ui__filter-checkbox,
+    .home-button,
+    .home-era-card,
+    .home-timeline,
+    .home-timeline figcaption,
+    .home-stats,
+    .home-stat,
+    .home-route-grid,
+    .home-final-cta,
+    .sl-markdown-content h2
+  ) {
+    border: 0 !important;
+  }
+
+  .home-route-grid {
+    gap: clamp(.75rem, 1.5vw, 1.25rem);
+    background: transparent;
+  }
+
+  /* Calendar ornament rims are decorative; colour and fill still carry state. */
+  body :is(.calendar-day--holiday::after) {
+    border: 0 !important;
+  }
+
+  @media (forced-colors: active) {
+    body :is(
+      .codex-surface,
+      .codex-sidebar-card,
+      .codex-sidebar-section,
+      .calendar-module,
+      .calendar-month,
+      .calendar-day,
+      .support-section,
+      .world-map,
+      .codex-map,
+      button,
+      input,
+      select,
+      textarea
+    ) {
+      border: 1px solid CanvasText !important;
     }
   }
 }
