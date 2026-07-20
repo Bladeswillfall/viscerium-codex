@@ -15,10 +15,10 @@ const isHomepage = Astro.url.pathname === '/';
   type="button"
   data-codex-sidebar-toggle
   aria-controls="starlight__sidebar"
-  aria-expanded="true"
-  aria-label="Hide sidebar"
+  aria-expanded="false"
+  aria-label="Show sidebar"
 >
-  <span aria-hidden="true">←</span>
+  <span aria-hidden="true">☰</span>
 </button>
 
 <ContributorStrip />
@@ -61,9 +61,10 @@ const isHomepage = Astro.url.pathname === '/';
 
     const readStoredState = () => {
       try {
-        return localStorage.getItem(storageKey) === 'true';
+        const stored = localStorage.getItem(storageKey);
+        return stored === null ? true : stored === 'true';
       } catch {
-        return false;
+        return true;
       }
     };
 
