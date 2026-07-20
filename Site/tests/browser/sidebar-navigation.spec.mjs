@@ -24,7 +24,7 @@ function sidebarState(element) {
   return ancestry;
 }
 
-test('left navigation opens, collapses, persists and restores', async ({ page }) => {
+test('left navigation defaults collapsed, opens, persists and restores', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/start-here/', { waitUntil: 'networkidle' });
   await page.evaluate(() => {
     localStorage.removeItem('viscerium-sidebar-collapsed');
@@ -32,24 +32,38 @@ test('left navigation opens, collapses, persists and restores', async ({ page })
   await page.reload({ waitUntil: 'networkidle' });
 
   const sidebar = page.locator('#starlight__sidebar');
+  const showButton = page.getByRole('button', { name: 'Show sidebar' });
+
+  await expect(showButton).toBeVisible();
+  await expect(page.locator('html')).toHaveClass(/codex-sidebar-collapsed/);
+  await expect.poll(async () => sidebar.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return `${style.visibility}:${style.opacity}:${style.pointerEvents}`;
+  })).toBe('hidden:0:none');
+  expect(await sidebar.getByRole('link').count()).toBeGreaterThan(3);
+
+  await showButton.click();
   const hideButton = page.getByRole('button', { name: 'Hide sidebar' });
+  await expect(hideButton).toBeVisible();
+  await expect(page.locator('html')).not.toHaveClass(/codex-sidebar-collapsed/);
+
   const openAncestry = await sidebar.evaluate(sidebarState);
   console.log(`[sidebar-open-state] ${JSON.stringify(openAncestry)}`);
-
-  await expect(hideButton).toBeVisible();
   expect(openAncestry[0]?.width).toBeGreaterThan(200);
   expect(openAncestry[0]?.height).toBeGreaterThan(200);
   expect(openAncestry.every((entry) => entry.display !== 'none')).toBe(true);
   expect(openAncestry.every((entry) => entry.visibility !== 'hidden')).toBe(true);
   expect(openAncestry[0]?.opacity).toBe('1');
   expect(openAncestry[0]?.pointerEvents).toBe('auto');
-  expect(await sidebar.getByRole('link').count()).toBeGreaterThan(3);
 
-  await hideButton.click();
-  const showButton = page.getByRole('button', { name: 'Show sidebar' });
-  await expect(showButton).toBeVisible();
+  await page.reload({ waitUntil: 'networkidle' });
+  await expect(page.getByRole('button', { name: 'Hide sidebar' })).toBeVisible();
+  await expect(page.locator('html')).not.toHaveClass(/codex-sidebar-collapsed/);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('viscerium-sidebar-collapsed'))).toBe('false');
+
+  await page.getByRole('button', { name: 'Hide sidebar' }).click();
+  await expect(page.getByRole('button', { name: 'Show sidebar' })).toBeVisible();
   await expect(page.locator('html')).toHaveClass(/codex-sidebar-collapsed/);
-
   await expect.poll(async () => sidebar.evaluate((element) => {
     const style = getComputedStyle(element);
     return `${style.visibility}:${style.opacity}:${style.pointerEvents}`;
@@ -58,17 +72,10 @@ test('left navigation opens, collapses, persists and restores', async ({ page })
   await page.reload({ waitUntil: 'networkidle' });
   await expect(page.getByRole('button', { name: 'Show sidebar' })).toBeVisible();
   await expect(page.locator('html')).toHaveClass(/codex-sidebar-collapsed/);
-
-  await page.getByRole('button', { name: 'Show sidebar' }).click();
-  await expect(page.getByRole('button', { name: 'Hide sidebar' })).toBeVisible();
-  await expect(page.locator('html')).not.toHaveClass(/codex-sidebar-collapsed/);
-  await expect.poll(async () => sidebar.evaluate((element) => {
-    const style = getComputedStyle(element);
-    return `${style.visibility}:${style.opacity}:${style.pointerEvents}`;
-  })).toBe('visible:1:auto');
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('viscerium-sidebar-collapsed'))).toBe('true');
 });
 
-test('homepage renders the restored desktop navigation rail', async ({ page }) => {
+test('homepage can open the collapsed desktop navigation rail', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/', { waitUntil: 'networkidle' });
   await page.evaluate(() => {
     localStorage.removeItem('viscerium-sidebar-collapsed');
@@ -77,6 +84,10 @@ test('homepage renders the restored desktop navigation rail', async ({ page }) =
 
   const sidebar = page.locator('#starlight__sidebar');
   const homeGateway = page.locator('.home-gateway');
+
+  await expect(page.getByRole('button', { name: 'Show sidebar' })).toBeVisible();
+  await expect(page.locator('html')).toHaveClass(/codex-sidebar-collapsed/);
+  await page.getByRole('button', { name: 'Show sidebar' }).click();
 
   await expect(sidebar).toBeVisible();
   await expect(page.getByRole('button', { name: 'Hide sidebar' })).toBeVisible();
