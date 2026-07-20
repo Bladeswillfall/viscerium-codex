@@ -200,6 +200,7 @@ export default defineConfig({
         'starlight-site-graph/styles/layers.css',
         'starlight-site-graph/styles/common.css',
         'starlight-site-graph/styles/starlight.css',
+        './src/styles/graph-canvas.css',
       ],
       components: {
         Header: './src/components/CodexHeader.astro',
