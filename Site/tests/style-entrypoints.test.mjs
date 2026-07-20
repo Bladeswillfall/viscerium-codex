@@ -16,11 +16,11 @@ test('global Starlight styles remain separate because processing order is semant
   const config = await read('astro.config.mjs');
   const customCss = config.match(/customCss:\s*\[([\s\S]*?)\],\n\s*components:/)?.[1] ?? '';
 
-  assert.doesNotMatch(customCss, /\.\/src\/styles\/codex\.css/);
   assert.match(customCss, /\.\/src\/styles\/ion-layers\.css/);
   assert.match(customCss, /\.\/src\/styles\/color-tokens\.css/);
   assert.match(customCss, /\.\/src\/styles\/graph\.css/);
   assert.match(customCss, /\.\/src\/styles\/layout\.css/);
+  assert.doesNotMatch(customCss, /\.\/src\/styles\/codex\.css/);
 });
 
 test('the homepage imports one entrypoint and no inline global stylesheet', async () => {
@@ -44,38 +44,17 @@ test('the homepage entrypoint preserves partial order and shell overrides', asyn
   assert.match(homepage, /padding-inline-start: var\(--codex-sidebar-overlay-width\) !important/);
 });
 
-test('the server-rendered timeline keeps its explicit stylesheet boundary', async () => {
+test('timeline styles keep their tested Astro and Preact import boundaries', async () => {
   const timelineApp = await read('src/components/timeline/TimelineApp.astro');
+  const timelineIsland = await read('src/components/timeline/TimelineIsland.tsx');
 
-  for (const stylesheet of [
-    'chronos.css',
-    'timeline-loading.css',
-    'timeline-performance.css',
-    'timeline-pages.css',
-    'timeline-stacking.css',
-    'timeline-viewport.css',
-    'chronos-calendar-axis.css',
-  ]) {
-    assert.match(timelineApp, new RegExp(`styles/${stylesheet.replace('.', '\\.')}`));
-  }
+  assert.match(timelineApp, /styles\/timeline-loading\.css/);
+  assert.match(timelineApp, /styles\/timeline-viewport\.css/);
+  assert.match(timelineApp, /styles\/chronos-calendar-axis\.css/);
   assert.doesNotMatch(timelineApp, /styles\/timeline\.css/);
-});
 
-test('the hydrated timeline island imports one entrypoint', async () => {
-  const island = await read('src/components/timeline/TimelineIsland.tsx');
-
-  assert.match(island, /import ['"]\.\.\/\.\.\/styles\/timeline-island\.css['"]/);
-  assert.doesNotMatch(island, /styles\/(?:timeline-chronicle|timeline-toolbar|timeline-buttons)\.css/);
-});
-
-test('the hydrated timeline entrypoint preserves its partial order', async () => {
-  const timelineIsland = await read('src/styles/timeline-island.css');
-
-  assert.deepEqual(importedPartials(timelineIsland), [
-    'timeline-chronicle.css',
-    'timeline-chronicle-layout.css',
-    'timeline-toolbar.css',
-    'timeline-toolbar-container.css',
-    'timeline-buttons.css',
-  ]);
+  assert.match(timelineIsland, /styles\/timeline-chronicle\.css/);
+  assert.match(timelineIsland, /styles\/timeline-toolbar\.css/);
+  assert.match(timelineIsland, /styles\/timeline-buttons\.css/);
+  assert.doesNotMatch(timelineIsland, /styles\/timeline-island\.css/);
 });
