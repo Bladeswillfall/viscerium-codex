@@ -6,6 +6,8 @@ import ContributorStrip from './ContributorStrip.astro';
 import LocalIcon from './LocalIcon.astro';
 import Webmentions from './Webmentions.astro';
 import siteConfig from '../../site.config.mjs';
+
+const isHomepage = Astro.url.pathname === '/';
 ---
 
 <button
@@ -26,7 +28,7 @@ import siteConfig from '../../site.config.mjs';
     <CodexEditLink />
     <LastUpdated />
   </div>
-  <Webmentions />
+  {!isHomepage && <Webmentions />}
   <Pagination />
   <div class="ion-codex-footer sl-flex">
     <strong>© VISCERIUM Codex</strong>
