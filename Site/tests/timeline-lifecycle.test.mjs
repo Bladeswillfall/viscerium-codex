@@ -21,9 +21,8 @@ test('TimelineApp delegates browser behaviour to a client-loaded island', () => 
   const app = read('../src/components/timeline/TimelineApp.astro');
 
   assert.match(app, /import TimelineIsland from '\.\/TimelineIsland'/);
-  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-loading\.css'/);
-  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-performance\.css'/);
-  assert.match(app, /import '\.\.\/\.\.\/styles\/chronos-calendar-axis\.css'/);
+  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline\.css'/);
+  assert.doesNotMatch(app, /styles\/(?:timeline-loading|timeline-performance|chronos-calendar-axis)\.css/);
   assert.doesNotMatch(app, /timeline-scroll\.css/);
   assert.match(app, /<TimelineIsland[\s\S]*client:load/);
   assert.match(app, /fallbackEvents=\{fallbackEvents\}/);
