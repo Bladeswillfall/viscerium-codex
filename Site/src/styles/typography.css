@@ -74,16 +74,16 @@ h1#_top {
 }
 
 /*
-  In-article Era Spine hierarchy. The generated page title sits outside
-  .sl-markdown-content and is deliberately left for a separate design pass.
+  In-article Era Spine hierarchy. The generated page title and the bespoke
+  landing-page composition are deliberately excluded for separate design passes.
 */
-.sl-markdown-content h1 {
+.sl-markdown-content:not(:has(.home-gateway)) h1 {
   margin-block: 3.5rem 1.25rem;
   font-size: clamp(2.35rem, 5vw, 4.8rem);
   line-height: .92;
 }
 
-.sl-markdown-content h2 {
+.sl-markdown-content:not(:has(.home-gateway)) h2 {
   position: relative;
   margin-block: 3.5rem 1rem;
   padding-inline-start: 1rem;
@@ -95,7 +95,7 @@ h1#_top {
   line-height: 1.08;
 }
 
-.sl-markdown-content h2::before {
+.sl-markdown-content:not(:has(.home-gateway)) h2::before {
   content: '';
   position: absolute;
   inset-block: .12em .08em;
@@ -106,7 +106,7 @@ h1#_top {
   pointer-events: none;
 }
 
-.sl-markdown-content h3 {
+.sl-markdown-content:not(:has(.home-gateway)) h3 {
   margin-block: 2.4rem .75rem;
   color: var(--era-heading-accent, var(--sl-color-accent-high));
   font-family: var(--vc-font-ui);
@@ -117,7 +117,7 @@ h1#_top {
   text-transform: uppercase;
 }
 
-.sl-markdown-content h4 {
+.sl-markdown-content:not(:has(.home-gateway)) h4 {
   margin-block: 1.9rem .55rem;
   font-family: var(--vc-font-body);
   font-size: 1.1rem;
@@ -127,7 +127,7 @@ h1#_top {
   line-height: 1.4;
 }
 
-.sl-markdown-content h5 {
+.sl-markdown-content:not(:has(.home-gateway)) h5 {
   margin-block: 1.5rem .45rem;
   color: var(--sl-color-gray-3);
   font-family: var(--vc-font-ui);
@@ -138,7 +138,7 @@ h1#_top {
   text-transform: uppercase;
 }
 
-.sl-markdown-content h6 {
+.sl-markdown-content:not(:has(.home-gateway)) h6 {
   margin-block: 1.35rem .4rem;
   color: var(--sl-color-gray-4);
   font-family: var(--vc-font-ui);
