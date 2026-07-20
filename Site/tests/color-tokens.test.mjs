@@ -49,20 +49,19 @@ test('authored colours live in the progressive token palette', async () => {
 });
 
 test('canvas graph colours use only the RGB-safe variable adapter', async () => {
-  const graphStyles = await readFile(graphStylesPath, 'utf8');
-  const colorCalls = [...graphStyles.matchAll(/\b(?:rgb|rgba|hsl|hsla|oklab|oklch)\s*\([^;]+/gi)]
-    .map((match) => match[0]);
+  const graphStyles = (await readFile(graphStylesPath, 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '');
+  const assignments = [...graphStyles.matchAll(/(--slsg-(?:color|text|graph|context|node|link|label)[\w-]*):\s*([^;]+);/gi)]
+    .map(([, name, value]) => ({ name, value: value.trim() }))
+    .filter(({ value }) => /(?:color|rgb|oklch|oklab|color-mix)/i.test(value));
 
-  assert.ok(colorCalls.length > 0, 'graph theme needs explicit canvas-safe colours');
-  assert.ok(
-    colorCalls.some((value) => /^rgb\s*\(\s*var\(--vc-graph-/i.test(value)),
-    'graph theme must expose RGB values to the canvas renderer',
-  );
-  assert.equal(
-    colorCalls.filter((value) => /^rgb\s*\(/i.test(value)).every((value) => /^rgb\s*\(\s*var\(--vc-graph-/i.test(value)),
-    true,
-    'graph RGB declarations must be derived from channel-only variables',
-  );
+  assert.ok(assignments.length > 10, 'graph theme needs explicit canvas-safe colour assignments');
+  for (const { name, value } of assignments) {
+    assert.match(
+      value,
+      /^rgb\(var\(--vc-graph-[\w-]+-rgb\)\)$/i,
+      `${name} must resolve from a channel-only graph variable`,
+    );
+  }
 });
 
 test('the approved palette owns page and navigation surfaces', async () => {
