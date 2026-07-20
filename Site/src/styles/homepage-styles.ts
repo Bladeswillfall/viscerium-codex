@@ -5,4 +5,3 @@ import './homepage-base.css';
 import './homepage-content.css';
 import './homepage-responsive.css';
 import './homepage-reveal.css';
-import './homepage-shell.css';
