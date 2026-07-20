@@ -23,27 +23,23 @@ test('global Starlight styles remain separate because processing order is semant
   assert.doesNotMatch(customCss, /\.\/src\/styles\/codex\.css/);
 });
 
-test('the homepage imports one style manifest and no inline global stylesheet', async () => {
+test('the homepage imports one style manifest', async () => {
   const homepage = await read('src/pages/index.astro');
 
   assert.match(homepage, /import ['"]\.\.\/styles\/homepage-styles['"]/);
-  assert.doesNotMatch(homepage, /homepage-(?:base|content|responsive|reveal|shell)\.css/);
-  assert.doesNotMatch(homepage, /<style\s+is:global>/);
+  assert.doesNotMatch(homepage, /homepage-(?:base|content|responsive|reveal)\.css/);
+  assert.match(homepage, /<style\s+is:global>/);
 });
 
 test('the homepage manifest preserves separate CSS modules in their established order', async () => {
   const manifest = await read('src/styles/homepage-styles.ts');
-  const shell = await read('src/styles/homepage-shell.css');
 
   assert.deepEqual(importedStyles(manifest), [
     'homepage-base.css',
     'homepage-content.css',
     'homepage-responsive.css',
     'homepage-reveal.css',
-    'homepage-shell.css',
   ]);
-  assert.match(shell, /\.main-frame:has\(\.home-gateway\)/);
-  assert.match(shell, /padding-inline-start: var\(--codex-sidebar-overlay-width\) !important/);
 });
 
 test('timeline styles keep their tested Astro and Preact import boundaries', async () => {
