@@ -101,21 +101,31 @@ This article is a work in progress.
 > 
 > —
 
+[cols:1-1 gap=xl align=start]
+[col]
 The Okse Dominion is a hardy land of towering peaks, impenetrable temperate rainforests, deciduous woodlands, grassy highlands, and sheer cliffs. Its varied climates and rough terrain have made it an incredibly defensive nation, one hardened by generations of systematic brutality.
-
+[/col]
+[col]
 Under skies burdened with brooding clouds, the sun's warmth seldom graces the soil. Rain and snow more often than not dance their ceaseless waltz across the Dominion. Craggy mountains pierce the sky, steep hills challenge the bravest souls, tundral plains stretch to what feels like eternity, and icy rivers etch their veins through dense forests, binding coastal towns, cities, and villages alike in a frigid embrace.
+[/col]
+[/cols]
 
 ## History
 
+[cols:1-1 gap=xl align=start]
+[col]
 In the turbulent shadows of the Uxifirar family, the Okse Dominion was forged from the rift that cleaved kin from kin. Ralof Gullhyrndr would forge a new nation under his rule. The golden-horned son — ambitious, fearsome, defence-minded, and already in command of the Vetruxi Kingdom’s armies — would brand Errack's face with the flag of the Okse Dominion.
 
 To ensure the might of his father’s land would not falter, Ralof set his eyes on fortifying the nation and developing an industrial machine that could arm his followers. The Oksmun would not rely on imported ores or equipment.
-
+[/col]
+[col]
 Meanwhile, Ralof's younger brother, Asgrim Torradsson, a man deeply attuned to the pulse of their father Torrad Uxifadir’s realm, would birth the Krass Dominion from the soil’s womb. In the wake of the schism, Asgrim ensured that his people tilled the land and clung fiercely to the threads of independent culture and the unyielding mindset of the Vetruxi Kingdom.
 
 Bound by blood, yet split by divergent ambitions, the two brothers navigated a tumultuous partnership. Each harnessed their unique strengths to pursue their individual aspirations, transforming their brotherhood into a strategic alliance that would carve two distinct destinies.
 
 In a solemn tradition, the Oksmun, like their Krassian kin, would elect their once-leader to bear the esteemed title of Kóngr Eilífr. It was a pact born of shared reverence for Torrad, the Ox-Father, the mighty Bulwark of the Vetruxi Kingdom. They swore to forever eschew the titles of Kóngr or Dróttning, for their people continued to hold Torrad in the highest regard. He remained their father figure, revered leader, and a figure of living legend, uniting both Dominions under his enduring legacy.
+[/col]
+[/cols]
 
 ## People
 
@@ -155,6 +165,8 @@ Though predominantly an isolationist nation, the Oksmun rely on an import of sla
 
 ### Oil: The Black Gold of the Dominion
 
+[cols:1-1 gap=xl align=start]
+[col]
 Oil has emerged as a new resource fueling industrial might and military prowess. This black gold has become the lifeblood of the Dominion's economy, transforming its landscape and society profoundly.
 
 The discovery of vast oil reserves beneath the Dominion's rugged terrain sparked a revolution in Oksmun industrial capability. Engineers quickly developed methods to harness this valuable resource, integrating it into their culture, technology, and military infrastructure.
@@ -162,7 +174,8 @@ The discovery of vast oil reserves beneath the Dominion's rugged terrain sparked
 In the forges and armouries, oil found a crucial application. Oksmun weaponsmiths discovered that treating their arms and armour with oil not only prevented rust but also imbued their steel with a menacing dark sheen. This innovation soon became a hallmark of Oksmun military equipment, adding to their fearsome appearance on the battlefield.
 
 The military applications of oil extended beyond preservation. Oksmun engineers developed a specialised oil-based propellant for flamethrowers, creating a terrifying weapon for the Dominion's forces. These devices, spewing liquid fire, became a signature tool of Oksmun warfare.
-
+[/col]
+[col]
 However, the bounty of oil came at a grim cost. The Okse Dominion's reliance on slave labour found new depths in the oil industry. Thralls and Ambátts toil in perilous conditions, pumping crude oil from the earth and processing it in refineries. One of the largest of these operations is housed within the infamous Rauthrbak Min prison, where a section has been converted into a massive oil well.
 
 The search for new oil deposits drives the Dominion to push its slave workforce to ever greater extremes. Exploration teams, comprised mostly of expendable thralls, venture into treacherous terrain, risking life and limb to locate fresh reserves.
@@ -172,6 +185,8 @@ Even the Dominion's iconic longboats have not escaped the influence of this new 
 The oil boom has reshaped the Oksmun way of life in unexpected ways. While traditional fats from whales, pork, and beef remain important for cooking and tallow, oil lamps have become a common sight in Oksmun homes. These steady sources of illumination pierce the long, dark winters: a small comfort in the harsh reality of Dominion life.
 
 As the Okse Dominion's reliance on oil grows, so too does the complexity of its society. The black gold that flows beneath their feet has brought both prosperity and new forms of suffering, fueling the industrial machine while deepening the divide between master and slave. In the smoky glow of oil lamps and the shadow of towering derricks, the Oksmun forge ahead, their future as dark and potent as the resource that now defines them.
+[/col]
+[/cols]
 
 ### Major exports
 
@@ -189,11 +204,16 @@ Known for their grand defensive structures, the Dominion has started to allow th
 
 ## Wildlife
 
+[cols:1-1 gap=xl align=start]
+[col]
 Within the Dominion's tundra and coniferous realms, the tapestry of life is woven with hardy, thick-furred beasts of various magnitudes. Towering mammoths have been tamed to serve as living battering rams, while smaller highland cows graze the wide-open fields and rolling slopes.
-
+[/col]
+[col]
 In the skies above, Sigdfugl rule the aerial realm, their predatory instincts honed to perfection as they hunt small prey. Amidst the shadows of coniferous forests and wooded enclaves, where slightly milder climes provide respite, the land teems with life. Berries and fungi thrive in these realms, offering sustenance to creatures as resolute as the land itself. Here, amidst towering trees, deer, wolves, bears, and cunning foxes roam.
 
 Venturing to the shimmering waters, a kingdom beneath the surface stirs. Countless rivers, both fresh and salt, converge with the unyielding sea, harbouring a vast realm of sealife. Whales, seals, voracious pike, and the elusive Elvormr all carve their domains in the waters of the Okse Dominion, where survival is as ruthless as the land itself.
+[/col]
+[/cols]
 
 ## Armed forces
 
