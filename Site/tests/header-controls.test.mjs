@@ -66,6 +66,17 @@ test('the top ribbon is visually flat, centred and free of GitHub branding', () 
   assert.match(headerCss, /\.codex-header-controls\s*\{[\s\S]*justify-self:\s*end/);
 });
 
+test('the complete header ribbon is borderless without removing focus indicators', () => {
+  const headerCss = read('../src/styles/header-controls.css');
+
+  assert.match(
+    headerCss,
+    /header\.header,[\s\S]*\.codex-header \*::after\s*\{[\s\S]*border:\s*0 !important;/
+  );
+  assert.doesNotMatch(headerCss, /border-color\s*:/);
+  assert.match(headerCss, /:focus-visible[\s\S]*outline:\s*2px solid/);
+});
+
 test('theme controls are not duplicated inside the sidebar', () => {
   const sidebar = read('../src/components/IonSidebar.astro');
 
