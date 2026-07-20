@@ -1,0 +1,45 @@
+/*
+ * Homepage stylesheet entrypoint.
+ *
+ * The partials remain split by responsibility for now, but page code imports
+ * only this file. Homepage-only shell overrides live here rather than inside
+ * index.astro so the complete page cascade is visible from one entrypoint.
+ */
+
+@import './homepage-base.css';
+@import './homepage-content.css';
+@import './homepage-responsive.css';
+@import './homepage-reveal.css';
+
+/* Homepage shell overrides. */
+.main-frame:has(.home-gateway) {
+  max-inline-size: none !important;
+  margin-inline: 0 !important;
+  padding-inline: 0 !important;
+}
+
+html[data-codex-desktop-sidebar]:not(.codex-sidebar-collapsed) .main-frame:has(.home-gateway) {
+  padding-inline-start: var(--codex-sidebar-overlay-width) !important;
+}
+
+.main-frame:has(.home-gateway) > .codex-two-column-content {
+  inline-size: 100% !important;
+  max-inline-size: none !important;
+  margin-inline: 0 !important;
+}
+
+main:has(.home-gateway) .sl-markdown-content {
+  padding: 0 !important;
+}
+
+@media (min-width: 68.76rem) {
+  .home-hero {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .home-era-gateway {
+    min-height: clamp(44rem, calc(100svh - var(--sl-nav-height)), 80rem);
+  }
+}
