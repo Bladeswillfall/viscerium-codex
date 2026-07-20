@@ -8,10 +8,6 @@ async function read(relativePath) {
   return readFile(new URL(relativePath, siteRoot), 'utf8');
 }
 
-function importedStyles(source) {
-  return [...source.matchAll(/import\s+['"]\.\/([^'"]+)['"];?/g)].map((match) => match[1]);
-}
-
 test('global Starlight styles remain separate because processing order is semantic', async () => {
   const config = await read('astro.config.mjs');
   const customCss = config.match(/customCss:\s*\[([\s\S]*?)\],\n\s*components:/)?.[1] ?? '';
@@ -23,23 +19,17 @@ test('global Starlight styles remain separate because processing order is semant
   assert.doesNotMatch(customCss, /\.\/src\/styles\/codex\.css/);
 });
 
-test('the homepage imports one style manifest', async () => {
+test('homepage reveal styles are merged into the final homepage stylesheet', async () => {
   const homepage = await read('src/pages/index.astro');
+  const responsive = await read('src/styles/homepage-responsive.css');
 
-  assert.match(homepage, /import ['"]\.\.\/styles\/homepage-styles['"]/);
-  assert.doesNotMatch(homepage, /homepage-(?:base|content|responsive|reveal)\.css/);
-  assert.match(homepage, /<style\s+is:global>/);
-});
-
-test('the homepage manifest preserves separate CSS modules in their established order', async () => {
-  const manifest = await read('src/styles/homepage-styles.ts');
-
-  assert.deepEqual(importedStyles(manifest), [
-    'homepage-base.css',
-    'homepage-content.css',
-    'homepage-responsive.css',
-    'homepage-reveal.css',
-  ]);
+  assert.match(homepage, /import ['"]\.\.\/styles\/homepage-base\.css['"]/);
+  assert.match(homepage, /import ['"]\.\.\/styles\/homepage-content\.css['"]/);
+  assert.match(homepage, /import ['"]\.\.\/styles\/homepage-responsive\.css['"]/);
+  assert.doesNotMatch(homepage, /homepage-reveal\.css/);
+  assert.match(responsive, /\.home-reveal\s*\{/);
+  assert.match(responsive, /\.home-reveal--complete\s*\{/);
+  assert.match(responsive, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.home-reveal/);
 });
 
 test('timeline styles keep their tested Astro and Preact import boundaries', async () => {
