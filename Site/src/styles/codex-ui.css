@@ -160,9 +160,9 @@
   /*
     Temporary borderless presentation pass. Keep authored article components and
     data-visualisation marks intact; only flatten page chrome, controls, wrappers,
-    section dividers and feature surfaces.
+    section dividers and feature surfaces. The bespoke landing page is excluded.
   */
-  body :is(
+  body:not(:has(.home-gateway)) :is(
     header.header,
     .codex-header,
     .content-panel,
@@ -229,31 +229,18 @@
     .pagefind-ui__result-nested,
     .pagefind-ui__result-tag,
     .pagefind-ui__filter-checkbox,
-    .home-button,
-    .home-era-card,
-    .home-timeline,
-    .home-timeline figcaption,
-    .home-stats,
-    .home-stat,
-    .home-route-grid,
-    .home-final-cta,
     .sl-markdown-content h2
   ) {
     border: 0 !important;
   }
 
-  .home-route-grid {
-    gap: clamp(.75rem, 1.5vw, 1.25rem);
-    background: transparent;
-  }
-
   /* Calendar ornament rims are decorative; colour and fill still carry state. */
-  body :is(.calendar-day--holiday::after) {
+  body:not(:has(.home-gateway)) :is(.calendar-day--holiday::after) {
     border: 0 !important;
   }
 
   @media (forced-colors: active) {
-    body :is(
+    body:not(:has(.home-gateway)) :is(
       .codex-surface,
       .codex-sidebar-card,
       .codex-sidebar-section,
