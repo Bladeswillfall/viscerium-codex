@@ -251,3 +251,26 @@
     overflow-x: hidden;
   }
 }
+
+/* Initial homepage reveal overlay. Kept after all responsive rules to preserve its original cascade position. */
+.home-reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: block;
+  inline-size: 100vw;
+  block-size: 100vh;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity .4s ease;
+}
+
+.home-reveal--complete {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-reveal {
+    display: none;
+  }
+}
