@@ -24,6 +24,7 @@ test('sidebar lists folders before articles at every level', async () => {
 
 test('desktop sidebar overlay uses an explicit unlayered state', () => {
   const navigation = read('../src/styles/navigation.css');
+  const timelinePages = read('../src/styles/timeline-pages.css');
 
   assert.match(navigation, /html\[data-codex-desktop-sidebar\] #starlight__sidebar\s*\{/);
   assert.match(navigation, /visibility: visible/);
@@ -31,6 +32,14 @@ test('desktop sidebar overlay uses an explicit unlayered state', () => {
   assert.match(navigation, /visibility: hidden/);
   assert.match(navigation, /html:not\(\[data-codex-desktop-sidebar\]\) \.codex-sidebar-toggle/);
   assert.doesNotMatch(navigation, /:is\(nav\.sidebar-print-hide, \.sidebar-pane\)/);
+  assert.doesNotMatch(
+    navigation,
+    /html\[data-codex-desktop-sidebar\]\.codex-sidebar-collapsed \.main-frame\s*\{[\s\S]*?padding-inline-start:\s*0/,
+  );
+  assert.match(
+    timelinePages,
+    /\.main-frame:has\(> \.codex-timeline-page\)\s*\{[\s\S]*?padding-inline:\s*clamp\(1rem, 2\.4vw, 3rem\)/,
+  );
   assert.match(navigation, /pointer-events: none/);
   assert.match(navigation, /transform: translateX\(-110%\)/);
 });
