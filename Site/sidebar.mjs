@@ -8,20 +8,20 @@ import { iconLabel, parseIconLabel } from './src/lib/icon-spec.mjs';
 const docsDir = new URL('./src/content/docs/', import.meta.url);
 
 const groupIcons = {
-  calendar: 'fa-solid fa-calendar-days',
-  characters: 'fa-solid fa-people-group',
-  citadel: 'fa-solid fa-shield-halved',
-  'degel-system': 'fa-solid fa-sun',
-  demo: 'fa-solid fa-flask',
-  entropy: 'fa-solid fa-atom',
-  eras: 'fa-solid fa-hourglass-half',
-  events: 'fa-solid fa-calendar-days',
-  factions: 'fa-solid fa-flag',
-  images: 'fa-regular fa-image',
-  locations: 'fa-solid fa-location-dot',
-  maps: 'fa-solid fa-map',
-  nearsight: 'fa-solid fa-tower-broadcast',
-  smog: 'fa-solid fa-industry',
+  calendar: 'event',
+  characters: 'character',
+  citadel: 'faction',
+  'degel-system': 'spark',
+  demo: 'codex',
+  entropy: 'spark',
+  eras: 'event',
+  events: 'event',
+  factions: 'faction',
+  images: 'image',
+  locations: 'location',
+  maps: 'map',
+  nearsight: 'spark',
+  smog: 'status',
 };
 
 function labelFromSegment(segment) {
@@ -42,8 +42,8 @@ function buildEntries(groups) {
   return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([segment, group]) => ({
     label: iconLabel(groupIcons[segment], labelFromSegment(segment)),
     items: [
-      ...sortSidebarEntries(group.links),
       ...buildEntries(group.groups),
+      ...sortSidebarEntries(group.links),
     ],
     collapsed: true,
   }));
@@ -67,7 +67,7 @@ export async function buildSidebar() {
       const link = slugToRoute(slug);
       if (id === 'index') {
         rootItems.unshift({
-          label: iconLabel(articleIcon ?? 'fa-solid fa-house', title),
+          label: iconLabel(articleIcon ?? 'home', title),
           link: '/',
           badge: { text: 'Canon', variant: 'note' },
         });
@@ -91,8 +91,8 @@ export async function buildSidebar() {
     }
 
     return [
-      ...sortSidebarEntries(rootItems),
       ...buildEntries(groups),
+      ...sortSidebarEntries(rootItems),
     ];
   } catch {
     return [{ label: 'Start Here', link: '/' }];

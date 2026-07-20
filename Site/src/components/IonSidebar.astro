@@ -2,21 +2,28 @@
 import SidebarSublist from './IonSidebarSublist.astro';
 
 const { sidebar } = Astro.locals.starlightRoute;
-const changelogSidebarLabel = 'Changelogs';
+const changelogSidebarLabel = 'Releases';
 const isChangelogGroup = (entry: any) =>
   entry.type === 'group' && entry.label.split(']').pop()?.trim() === changelogSidebarLabel;
 const changelogSidebar = sidebar.filter(isChangelogGroup);
 const mainSidebar = sidebar.filter((entry: any) => !isChangelogGroup(entry));
+const mainGroups = mainSidebar.filter((entry: any) => entry.type === 'group');
+const mainArticles = mainSidebar.filter((entry: any) => entry.type === 'link');
 ---
 
 <div class="codex-sidebar-layout">
   <div class="codex-sidebar-main">
-    <SidebarSublist sublist={mainSidebar} nestedCount={0} />
+    <SidebarSublist sublist={mainGroups} />
   </div>
   {changelogSidebar.length > 0 && (
-    <aside class="codex-changelog-sidebar" aria-label="Changelogs">
-      <SidebarSublist sublist={changelogSidebar} nestedCount={0} />
+    <aside class="codex-changelog-sidebar" aria-label="Releases">
+      <SidebarSublist sublist={changelogSidebar} />
     </aside>
+  )}
+  {mainArticles.length > 0 && (
+    <div class="codex-sidebar-articles">
+      <SidebarSublist sublist={mainArticles} />
+    </div>
   )}
 </div>
 
@@ -31,6 +38,10 @@ const mainSidebar = sidebar.filter((entry: any) => !isChangelogGroup(entry));
 
     .codex-sidebar-main {
       flex: 0 0 auto;
+    }
+
+    .codex-sidebar-articles {
+      margin-block-start: .5rem;
     }
 
     .codex-changelog-sidebar {
@@ -49,7 +60,6 @@ const mainSidebar = sidebar.filter((entry: any) => !isChangelogGroup(entry));
       }
 
       .codex-changelog-sidebar {
-        margin-block-start: auto;
         padding-block-start: 1rem;
       }
     }

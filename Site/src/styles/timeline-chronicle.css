@@ -15,8 +15,8 @@
 }
 
 .vc-chronicle {
-  --vc-chronicle-rule: color-mix(in srgb, var(--vc-timeline-border-strong) 72%, transparent);
-  --vc-chronicle-soft-rule: color-mix(in srgb, var(--vc-timeline-border) 72%, transparent);
+  --vc-chronicle-rule: color-mix(in oklch, var(--vc-timeline-border-strong) 72%, transparent);
+  --vc-chronicle-soft-rule: color-mix(in oklch, var(--vc-timeline-border) 72%, transparent);
   --vc-chronicle-era: var(--vc-timeline-accent);
   display: grid;
   gap: 1rem;
@@ -31,8 +31,8 @@
   padding: clamp(1rem, 2.5vw, 1.5rem);
   border-block: 1px solid var(--vc-chronicle-rule);
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--vc-timeline-accent) 9%, transparent), transparent 38%),
-    color-mix(in srgb, var(--vc-timeline-surface) 88%, transparent);
+    linear-gradient(90deg, color-mix(in oklch, var(--vc-timeline-accent) 9%, transparent), transparent 38%),
+    color-mix(in oklch, var(--vc-timeline-surface) 88%, transparent);
 }
 
 .vc-chronicle-masthead > div,
@@ -93,13 +93,13 @@
   --vc-chronicle-era: var(--vc-timeline-accent);
   min-width: 0;
   border: 1px solid var(--vc-timeline-border);
-  background: color-mix(in srgb, var(--vc-timeline-surface-deep) 96%, transparent);
+  background: color-mix(in oklch, var(--vc-timeline-surface-deep) 96%, transparent);
 }
 
-.vc-chronicle-chapter.era-citadel { --vc-chronicle-era: var(--era-e1-surface, #8f672d); }
-.vc-chronicle-chapter.era-smog { --vc-chronicle-era: var(--era-e2-surface, #536b46); }
-.vc-chronicle-chapter.era-nearsight { --vc-chronicle-era: var(--era-e3-surface, #3e6274); }
-.vc-chronicle-chapter.era-entropy { --vc-chronicle-era: var(--era-e4-surface, #65466d); }
+.vc-chronicle-chapter.era-citadel { --vc-chronicle-era: var(--era-e1-surface); }
+.vc-chronicle-chapter.era-smog { --vc-chronicle-era: var(--era-e2-surface); }
+.vc-chronicle-chapter.era-nearsight { --vc-chronicle-era: var(--era-e3-surface); }
+.vc-chronicle-chapter.era-entropy { --vc-chronicle-era: var(--era-e4-surface); }
 
 .vc-chronicle-chapter-header {
   position: sticky;
@@ -111,12 +111,12 @@
   align-items: center;
   min-width: 0;
   padding: .85rem 1rem;
-  border-block-end: 1px solid color-mix(in srgb, var(--vc-chronicle-era) 58%, var(--vc-timeline-border));
+  border-block-end: 1px solid color-mix(in oklch, var(--vc-chronicle-era) 58%, var(--vc-timeline-border));
   border-inline-start: .35rem solid var(--vc-chronicle-era);
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--vc-chronicle-era) 20%, var(--vc-timeline-surface-deep)), var(--vc-timeline-surface-deep) 48%),
+    linear-gradient(90deg, color-mix(in oklch, var(--vc-chronicle-era) 20%, var(--vc-timeline-surface-deep)), var(--vc-timeline-surface-deep) 48%),
     var(--vc-timeline-surface-deep);
-  box-shadow: 0 .35rem 1rem color-mix(in srgb, black 24%, transparent);
+  box-shadow: 0 .35rem 1rem color-mix(in oklch, var(--codex-fixed-dark) 24%, transparent);
 }
 
 .vc-chronicle-chapter-header > div,
@@ -150,9 +150,9 @@
   align-items: center;
   justify-content: center;
   padding-inline: .75rem;
-  border: 1px solid color-mix(in srgb, var(--vc-chronicle-era) 72%, var(--vc-timeline-border-strong));
+  border: 1px solid color-mix(in oklch, var(--vc-chronicle-era) 72%, var(--vc-timeline-border-strong));
   color: var(--vc-timeline-ink);
-  background: color-mix(in srgb, var(--vc-chronicle-era) 10%, var(--vc-timeline-surface-deep));
+  background: color-mix(in oklch, var(--vc-chronicle-era) 10%, var(--vc-timeline-surface-deep));
   font: 800 .7rem/1 var(--vc-font-ui, ui-sans-serif, system-ui);
   letter-spacing: .06em;
   text-decoration: none;
@@ -162,7 +162,7 @@
 .vc-chronicle-chapter-header a:hover,
 .vc-chronicle-article-link:hover {
   border-color: var(--vc-chronicle-era);
-  background: color-mix(in srgb, var(--vc-chronicle-era) 20%, var(--vc-timeline-surface-deep));
+  background: color-mix(in oklch, var(--vc-chronicle-era) 20%, var(--vc-timeline-surface-deep));
 }
 
 .vc-chronicle-records {
@@ -223,12 +223,12 @@
 .vc-chronicle-entry > summary:hover,
 .vc-chronicle-entry[open] > summary {
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--vc-chronicle-era) 10%, transparent), transparent 42%),
-    color-mix(in srgb, var(--vc-timeline-surface) 76%, transparent);
+    linear-gradient(90deg, color-mix(in oklch, var(--vc-chronicle-era) 10%, transparent), transparent 42%),
+    color-mix(in oklch, var(--vc-timeline-surface) 76%, transparent);
 }
 
 .vc-chronicle-entry > summary:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--vc-chronicle-era) 74%, white);
+  outline: 3px solid color-mix(in oklch, var(--vc-chronicle-era) 74%, var(--codex-fixed-light));
   outline-offset: -3px;
 }
 
@@ -312,7 +312,7 @@
 
 .importance-minor .vc-chronicle-title,
 .importance-incidental .vc-chronicle-title {
-  color: color-mix(in srgb, var(--vc-timeline-ink) 78%, var(--vc-timeline-muted));
+  color: color-mix(in oklch, var(--vc-timeline-ink) 78%, var(--vc-timeline-muted));
   font-size: .9rem;
 }
 
@@ -337,7 +337,7 @@
   padding-inline: .38rem;
   border: 1px solid var(--vc-timeline-border);
   color: var(--vc-timeline-muted);
-  background: color-mix(in srgb, var(--vc-timeline-surface-deep) 82%, transparent);
+  background: color-mix(in oklch, var(--vc-timeline-surface-deep) 82%, transparent);
   font: 800 .61rem/1 var(--vc-font-ui, ui-sans-serif, system-ui);
   letter-spacing: .045em;
   text-transform: uppercase;
@@ -345,7 +345,7 @@
 
 .vc-chronicle-tag.importance-landmark,
 .vc-chronicle-tag.importance-major {
-  border-color: color-mix(in srgb, var(--vc-chronicle-era) 72%, var(--vc-timeline-border));
+  border-color: color-mix(in oklch, var(--vc-chronicle-era) 72%, var(--vc-timeline-border));
   color: var(--vc-timeline-ink);
 }
 
@@ -383,8 +383,8 @@
   border-block: 1px solid var(--vc-chronicle-rule);
   border-inline-start: 3px solid var(--vc-chronicle-era);
   background:
-    linear-gradient(115deg, color-mix(in srgb, var(--vc-chronicle-era) 9%, transparent), transparent 44%),
-    color-mix(in srgb, var(--vc-timeline-surface) 86%, var(--vc-timeline-surface-deep));
+    linear-gradient(115deg, color-mix(in oklch, var(--vc-chronicle-era) 9%, transparent), transparent 44%),
+    color-mix(in oklch, var(--vc-timeline-surface) 86%, var(--vc-timeline-surface-deep));
 }
 
 .vc-chronicle-dossier-kicker {
@@ -436,8 +436,8 @@
 }
 
 .vc-timeline-app .vc-chronicle-actions button {
-  border-color: color-mix(in srgb, var(--vc-chronicle-era) 72%, var(--vc-timeline-border-strong));
-  background: color-mix(in srgb, var(--vc-chronicle-era) 10%, var(--vc-timeline-surface-deep));
+  border-color: color-mix(in oklch, var(--vc-chronicle-era) 72%, var(--vc-timeline-border-strong));
+  background: color-mix(in oklch, var(--vc-chronicle-era) 10%, var(--vc-timeline-surface-deep));
   font-size: .72rem;
   letter-spacing: .055em;
   text-transform: uppercase;

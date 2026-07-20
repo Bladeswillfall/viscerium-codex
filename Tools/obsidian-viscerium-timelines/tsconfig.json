@@ -8,8 +8,7 @@
     "skipLibCheck": true,
     "noEmit": true,
     "allowJs": true,
-    "checkJs": false,
-    "types": ["node"]
+    "checkJs": false
   },
   "include": ["main.ts", "../../Site/src/lib/timeline/**/*.mjs", "../../Site/src/lib/calendar/**/*.mjs"]
 }

@@ -1,5 +1,9 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
-import WorldGraph from '../components/WorldGraph.astro';
+import { PageGraph } from 'starlight-site-graph/components';
 ---
-<StarlightPage frontmatter={{ title: 'World Graph', description: 'Public links and relationships generated from the Obsidian vault.' }}><WorldGraph /></StarlightPage>
+<StarlightPage frontmatter={{ title: 'World Graph', description: 'Public links and relationships generated from the Obsidian vault.' }}>
+  <div class="world-graph">
+    <PageGraph slug="start-here" />
+  </div>
+</StarlightPage>

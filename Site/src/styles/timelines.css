@@ -2,13 +2,13 @@
 
 .vc-timeline-shell,
 .vc-timeline-app {
-  --vc-timeline-surface: var(--codex-surface-raised, #171819);
-  --vc-timeline-surface-deep: var(--codex-bg, #0d0e0f);
-  --vc-timeline-border: var(--codex-border, #34373a);
-  --vc-timeline-border-strong: var(--codex-border-strong, #666057);
-  --vc-timeline-ink: var(--sl-color-white, #f3efe7);
-  --vc-timeline-muted: var(--sl-color-gray-3, #aaa49b);
-  --vc-timeline-accent: var(--sl-color-accent-high, #c59a5c);
+  --vc-timeline-surface: var(--codex-surface-raised-color);
+  --vc-timeline-surface-deep: var(--codex-bg);
+  --vc-timeline-border: var(--codex-border);
+  --vc-timeline-border-strong: var(--codex-border-strong);
+  --vc-timeline-ink: var(--sl-color-white);
+  --vc-timeline-muted: var(--sl-color-gray-3);
+  --vc-timeline-accent: var(--sl-color-accent-high);
   position: relative;
   min-width: 0;
 }
@@ -16,7 +16,7 @@
 .vc-timeline-page-header {
   margin-block: 0 1.5rem;
   padding-block-end: 1rem;
-  border-bottom: 1px solid var(--codex-border, #34373a);
+  border-bottom: 1px solid var(--codex-border);
 }
 
 .vc-timeline-page-header > :last-child {
@@ -43,10 +43,10 @@
   border: 1px solid var(--vc-timeline-border);
   border-radius: var(--codex-radius, .25rem);
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--vc-timeline-accent) 5%, transparent), transparent 32%),
-    repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in srgb, var(--vc-timeline-border) 20%, transparent) 32px),
+    linear-gradient(135deg, color-mix(in oklch, var(--vc-timeline-accent) 5%, transparent), transparent 32%),
+    repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in oklch, var(--vc-timeline-border) 20%, transparent) 32px),
     var(--vc-timeline-surface-deep);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 4%, transparent), 0 1rem 3rem color-mix(in srgb, black 25%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklch, var(--codex-fixed-light) 4%, transparent), 0 1rem 3rem color-mix(in oklch, var(--codex-shadow-color) 25%, transparent);
 }
 
 .vc-timeline-toolbar {
@@ -56,7 +56,7 @@
   gap: .65rem;
   padding: .65rem;
   border: 1px solid var(--vc-timeline-border);
-  background: color-mix(in srgb, var(--vc-timeline-surface) 92%, transparent);
+  background: color-mix(in oklch, var(--vc-timeline-surface) 92%, transparent);
 }
 
 .vc-timeline-field {
@@ -92,6 +92,11 @@
   padding: .55rem .65rem;
 }
 
+.vc-timeline-field input::placeholder {
+  color: var(--vc-timeline-muted);
+  opacity: 1;
+}
+
 .vc-timeline-app button {
   padding: .55rem .7rem;
   cursor: pointer;
@@ -100,11 +105,11 @@
 .vc-timeline-app button:hover,
 .vc-timeline-app button[aria-pressed='true'] {
   border-color: var(--vc-timeline-accent);
-  background: color-mix(in srgb, var(--vc-timeline-accent) 13%, var(--vc-timeline-surface-deep));
+  background: color-mix(in oklch, var(--vc-timeline-accent) 13%, var(--vc-timeline-surface-deep));
 }
 
 .vc-timeline-app :is(button, input, select, summary, a):focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--vc-timeline-accent) 75%, white);
+  outline: 3px solid color-mix(in oklch, var(--vc-timeline-accent) 75%, var(--codex-fixed-light));
   outline-offset: 3px;
 }
 
@@ -122,7 +127,7 @@
 .vc-timeline-filters,
 .vc-timeline-minimap-wrap {
   border: 1px solid var(--vc-timeline-border);
-  background: color-mix(in srgb, var(--vc-timeline-surface) 88%, transparent);
+  background: color-mix(in oklch, var(--vc-timeline-surface) 88%, transparent);
 }
 
 .vc-timeline-filters > summary,
@@ -209,14 +214,14 @@
 
 .vc-era-action a:hover {
   color: var(--vc-timeline-ink);
-  background: color-mix(in srgb, var(--vc-timeline-accent) 10%, transparent);
+  background: color-mix(in oklch, var(--vc-timeline-accent) 10%, transparent);
 }
 
 .vc-timeline-stage {
   position: relative;
   min-width: 0;
   border: 1px solid var(--vc-timeline-border);
-  background: color-mix(in srgb, var(--vc-timeline-surface-deep) 94%, transparent);
+  background: color-mix(in oklch, var(--vc-timeline-surface-deep) 94%, transparent);
 }
 
 .vc-timeline-axis {
@@ -225,7 +230,7 @@
   height: 3.1rem;
   overflow: hidden;
   border-bottom: 1px solid var(--vc-timeline-border-strong);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--vc-timeline-surface) 95%, transparent), var(--vc-timeline-surface-deep));
+  background: linear-gradient(180deg, color-mix(in oklch, var(--vc-timeline-surface) 95%, transparent), var(--vc-timeline-surface-deep));
 }
 
 .vc-timeline-axis span {
@@ -269,7 +274,7 @@
 
 .vc-timeline-canvas .vis-grid.vis-vertical,
 .vc-timeline-minimap .vis-grid.vis-vertical {
-  border-color: color-mix(in srgb, var(--vc-timeline-border) 45%, transparent) !important;
+  border-color: color-mix(in oklch, var(--vc-timeline-border) 45%, transparent) !important;
 }
 
 .vc-timeline-canvas .vis-label {
@@ -284,8 +289,8 @@
   border: 1px solid var(--vc-timeline-border-strong);
   border-radius: 0;
   color: var(--vc-timeline-ink);
-  background: color-mix(in srgb, var(--vc-timeline-surface) 94%, black);
-  box-shadow: 0 .25rem .7rem color-mix(in srgb, black 28%, transparent);
+  background: color-mix(in oklch, var(--vc-timeline-surface) 94%, var(--codex-fixed-dark));
+  box-shadow: 0 .25rem .7rem color-mix(in oklch, var(--codex-shadow-color) 28%, transparent);
   font-family: var(--vc-font-ui, ui-sans-serif, system-ui);
 }
 
@@ -359,23 +364,23 @@
 .vc-timeline-canvas .vis-item.vis-selected {
   z-index: 5;
   border-color: var(--vc-timeline-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vc-timeline-accent) 24%, transparent), 0 .5rem 1.4rem color-mix(in srgb, black 42%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--vc-timeline-accent) 24%, transparent), 0 .5rem 1.4rem color-mix(in oklch, var(--codex-shadow-color) 42%, transparent);
 }
 
-.vc-timeline-canvas .vis-item.category-technology { color: #8bc7c0; }
-.vc-timeline-canvas .vis-item.category-military { color: #d18a78; }
-.vc-timeline-canvas .vis-item.category-political { color: #c5a67a; }
-.vc-timeline-canvas .vis-item.category-cultural { color: #b69ac6; }
-.vc-timeline-canvas .vis-item.category-religious { color: #d0bd7b; }
-.vc-timeline-canvas .vis-item.category-economic { color: #9eb47a; }
-.vc-timeline-canvas .vis-item.category-scientific { color: #8da9cc; }
-.vc-timeline-canvas .vis-item.category-disaster { color: #c66b5f; }
-.vc-timeline-canvas .vis-item.category-resonance { color: #bc8ad1; }
-.vc-timeline-canvas .vis-item.category-myrkild { color: #8faf72; }
-.vc-timeline-canvas .vis-item.category-naranor { color: #d5d0bd; }
-.vc-timeline-canvas .vis-item.category-exploration { color: #73a5b1; }
-.vc-timeline-canvas .vis-item.category-social { color: #c79591; }
-.vc-timeline-canvas .vis-item.category-environmental { color: #89a77a; }
+.vc-timeline-canvas .vis-item.category-technology { color: var(--vc-event-technology); }
+.vc-timeline-canvas .vis-item.category-military { color: var(--vc-event-military); }
+.vc-timeline-canvas .vis-item.category-political { color: var(--vc-event-political); }
+.vc-timeline-canvas .vis-item.category-cultural { color: var(--vc-event-cultural); }
+.vc-timeline-canvas .vis-item.category-religious { color: var(--vc-event-religious); }
+.vc-timeline-canvas .vis-item.category-economic { color: var(--vc-event-economic); }
+.vc-timeline-canvas .vis-item.category-scientific { color: var(--vc-event-scientific); }
+.vc-timeline-canvas .vis-item.category-disaster { color: var(--vc-event-disaster); }
+.vc-timeline-canvas .vis-item.category-resonance { color: var(--vc-event-resonance); }
+.vc-timeline-canvas .vis-item.category-myrkild { color: var(--vc-event-myrkild); }
+.vc-timeline-canvas .vis-item.category-naranor { color: var(--vc-event-naranor); }
+.vc-timeline-canvas .vis-item.category-exploration { color: var(--vc-event-exploration); }
+.vc-timeline-canvas .vis-item.category-social { color: var(--vc-event-social); }
+.vc-timeline-canvas .vis-item.category-environmental { color: var(--vc-event-environmental); }
 .vc-timeline-canvas .vis-item.category-unknown { color: var(--vc-timeline-muted); }
 
 .vc-timeline-canvas .vis-item.vc-era-band,
@@ -385,13 +390,13 @@
 }
 
 .vc-era-action.era-citadel,
-.vis-item.era-citadel { background-color: var(--era-e1-surface, #8f672d) !important; }
+.vis-item.era-citadel { background-color: var(--era-e1-surface) !important; }
 .vc-era-action.era-smog,
-.vis-item.era-smog { background-color: var(--era-e2-surface, #536b46) !important; }
+.vis-item.era-smog { background-color: var(--era-e2-surface) !important; }
 .vc-era-action.era-nearsight,
-.vis-item.era-nearsight { background-color: var(--era-e3-surface, #3e6274) !important; }
+.vis-item.era-nearsight { background-color: var(--era-e3-surface) !important; }
 .vc-era-action.era-entropy,
-.vis-item.era-entropy { background-color: var(--era-e4-surface, #65466d) !important; }
+.vis-item.era-entropy { background-color: var(--era-e4-surface) !important; }
 
 .vc-timeline-minimap {
   min-height: 7rem;
@@ -408,7 +413,7 @@
 
 .vc-timeline-minimap .vis-item.vc-minimap-viewport {
   border: 2px solid var(--vc-timeline-accent);
-  background: color-mix(in srgb, var(--vc-timeline-accent) 12%, transparent);
+  background: color-mix(in oklch, var(--vc-timeline-accent) 12%, transparent);
 }
 
 .vc-timeline-status {
@@ -427,8 +432,8 @@
   padding: 1rem;
   overflow: auto;
   border: 1px solid var(--vc-timeline-accent);
-  background: color-mix(in srgb, var(--vc-timeline-surface-deep) 97%, transparent);
-  box-shadow: 0 1rem 4rem color-mix(in srgb, black 65%, transparent);
+  background: color-mix(in oklch, var(--vc-timeline-surface-deep) 97%, transparent);
+  box-shadow: 0 1rem 4rem color-mix(in oklch, var(--codex-shadow-color) 65%, transparent);
 }
 
 .vc-timeline-details[hidden] {
@@ -569,8 +574,8 @@
 .vc-timeline-index-card {
   margin: 0;
   padding: 1rem;
-  border: 1px solid var(--codex-border, #34373a);
-  background: var(--codex-surface-raised, #171819);
+  border: 1px solid var(--codex-border);
+  background: var(--codex-surface-raised);
 }
 
 .vc-timeline-index-card:first-child {

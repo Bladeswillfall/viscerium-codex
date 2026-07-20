@@ -8,6 +8,10 @@ Site/src/data/timelines/*.json
 Tools/obsidian-viscerium-timelines/node_modules/
 Tools/obsidian-viscerium-timelines/dist/
 
+# Installed Obsidian community plugin bundles
+Vault/.obsidian/plugins/*/main.js
+Vault/.obsidian/plugins/*/styles.css
+
 # Obsidian workspace state
 Vault/.obsidian/workspace.json
 Vault/.obsidian/workspace-mobile.json

@@ -9,25 +9,25 @@
 .vc-chronos-core.chronos-timeline-container,
 .vc-timeline-app .chronos-timeline-container,
 .vc-chronos-embed .chronos-timeline-container {
-  --chronos-bg-primary: var(--codex-bg, #0d0e0f);
-  --chronos-bg-secondary: var(--codex-surface-raised, #171819);
-  --chronos-canvas: color-mix(in srgb, var(--chronos-bg-primary) 90%, black);
-  --chronos-canvas-raised: color-mix(in srgb, var(--chronos-bg-secondary) 92%, black);
-  --chronos-canvas-muted: color-mix(in srgb, var(--chronos-bg-secondary) 76%, var(--chronos-bg-primary));
-  --chronos-grid-minor: color-mix(in srgb, var(--codex-border, #34373a) 52%, transparent);
-  --chronos-grid-major: color-mix(in srgb, var(--codex-border-strong, #666057) 68%, transparent);
-  --chronos-text-normal: var(--sl-color-white, #f3efe7);
-  --chronos-text-muted: var(--sl-color-gray-3, #aaa49b);
-  --chronos-text-on-accent: #fff;
-  --chronos-accent: var(--sl-color-accent-high, #c59a5c);
-  --chronos-accent-hover: color-mix(in srgb, var(--sl-color-accent-high, #c59a5c) 82%, white);
-  --chronos-accent-alpha: color-mix(in srgb, var(--sl-color-accent-high, #c59a5c) 20%, transparent);
-  --chronos-border: var(--codex-border, #34373a);
-  --chronos-border-active: color-mix(in srgb, var(--sl-color-accent-high, #c59a5c) 52%, transparent);
-  --chronos-interactive: var(--sl-color-accent-high, #c59a5c);
-  --chronos-interactive-hover: color-mix(in srgb, var(--sl-color-accent-high, #c59a5c) 82%, white);
-  --chronos-icon-color: var(--sl-color-gray-3, #aaa49b);
-  --chronos-bg-text: var(--sl-color-white, #f3efe7);
+  --chronos-bg-primary: var(--codex-bg);
+  --chronos-bg-secondary: var(--codex-surface-raised-color);
+  --chronos-canvas: color-mix(in oklch, var(--chronos-bg-primary) 90%, var(--codex-fixed-dark));
+  --chronos-canvas-raised: color-mix(in oklch, var(--chronos-bg-secondary) 92%, var(--codex-fixed-dark));
+  --chronos-canvas-muted: color-mix(in oklch, var(--chronos-bg-secondary) 76%, var(--chronos-bg-primary));
+  --chronos-grid-minor: color-mix(in oklch, var(--codex-border) 52%, transparent);
+  --chronos-grid-major: color-mix(in oklch, var(--codex-border-strong) 68%, transparent);
+  --chronos-text-normal: var(--sl-color-white);
+  --chronos-text-muted: var(--sl-color-gray-3);
+  --chronos-text-on-accent: var(--codex-fixed-light);
+  --chronos-accent: var(--sl-color-accent-high);
+  --chronos-accent-hover: color-mix(in oklch, var(--sl-color-accent-high) 82%, var(--codex-fixed-light));
+  --chronos-accent-alpha: color-mix(in oklch, var(--sl-color-accent-high) 20%, transparent);
+  --chronos-border: var(--codex-border);
+  --chronos-border-active: color-mix(in oklch, var(--sl-color-accent-high) 52%, transparent);
+  --chronos-interactive: var(--sl-color-accent-high);
+  --chronos-interactive-hover: color-mix(in oklch, var(--sl-color-accent-high) 82%, var(--codex-fixed-light));
+  --chronos-icon-color: var(--sl-color-gray-3);
+  --chronos-bg-text: var(--sl-color-white);
   --chronos-radius: 6px;
   --chronos-radius-small: 3px;
   color-scheme: dark;
@@ -145,7 +145,7 @@
 
 .vc-timeline-app :is(.vc-timeline-canvas, .vc-timeline-minimap) .vis-shadow,
 .vc-chronos-embed .vis-shadow {
-  box-shadow: 0 0 1rem color-mix(in srgb, black 72%, transparent) !important;
+  box-shadow: 0 0 1rem color-mix(in oklch, var(--codex-fixed-dark) 72%, transparent) !important;
 }
 
 /* Native Markdown embeds should look like Chronos, not a second Codex card. */
@@ -185,7 +185,7 @@
 .vc-chronos-core .chronos-timeline-refit-button:focus-visible,
 .vc-chronos-embed .chronos-timeline-refit-button:hover,
 .vc-chronos-embed .chronos-timeline-refit-button:focus-visible {
-  background: var(--chronos-semi-gray, hsla(0, 0%, 50%, .15));
+  background: color-mix(in oklch, var(--sl-color-gray-3) 15%, transparent);
 }
 
 .vc-chronos-core .chronos-timeline-refit-button svg,

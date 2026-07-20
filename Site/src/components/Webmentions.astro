@@ -1,0 +1,162 @@
+---
+import siteConfig from '../../site.config.mjs';
+
+const config = siteConfig.webmentions;
+const enabled = Boolean(config?.enabled && config.apiEndpoint);
+---
+
+{enabled && (
+  <>
+    <codex-webmentions
+      class="codex-webmentions"
+      data-api={config.apiEndpoint}
+      data-limit={config.maxMentions}
+    >
+      <details open>
+        <summary>Across the wider web</summary>
+        <p data-state role="status">Loading responses...</p>
+        <div class="codex-webmention-list" data-list></div>
+      </details>
+    </codex-webmentions>
+
+    <script is:inline>
+  const safeUrl = (value) => {
+    try {
+      const url = new URL(String(value));
+      return ['http:', 'https:'].includes(url.protocol) ? url.href : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const actionFor = (mention) => ({
+    'like-of': 'liked this page',
+    'repost-of': 'reposted this page',
+    'bookmark-of': 'bookmarked this page',
+    'in-reply-to': 'replied',
+    'mention-of': 'mentioned this page',
+  })[String(mention['wm-property'])] ?? 'responded';
+
+  class CodexWebmentions extends HTMLElement {
+    async connectedCallback() {
+      if (this.dataset.loaded) return;
+      this.dataset.loaded = 'true';
+
+      const state = this.querySelector('[data-state]');
+      const list = this.querySelector('[data-list]');
+      if (!state || !list || !this.dataset.api) return;
+
+      try {
+        const canonical = document.querySelector('link[rel="canonical"]')?.href ?? location.href;
+        const target = new URL(canonical);
+        target.hash = '';
+        target.search = '';
+
+        const api = new URL(this.dataset.api);
+        api.searchParams.set('target', target.href);
+        api.searchParams.set('per-page', this.dataset.limit ?? '24');
+        const response = await fetch(api, {
+          headers: { Accept: 'application/json' },
+          signal: AbortSignal.timeout(10_000),
+        });
+        if (!response.ok) throw new Error(String(response.status));
+
+        const payload = await response.json();
+        const mentions = (Array.isArray(payload.children) ? payload.children : [])
+          .filter((mention) => !mention?.['wm-private'])
+          .slice(0, Number(this.dataset.limit) || 24);
+
+        state.textContent = mentions.length
+          ? `${mentions.length} response${mentions.length === 1 ? '' : 's'}`
+          : 'No responses yet.';
+
+        for (const mention of mentions) {
+          const author = mention.author ?? {};
+          const article = document.createElement('article');
+          const meta = document.createElement('p');
+          const authorUrl = safeUrl(author.url);
+          const authorName = author.name || author.url || 'Someone';
+          const authorNode = authorUrl ? document.createElement('a') : document.createElement('strong');
+          authorNode.textContent = authorName;
+          if (authorUrl && authorNode instanceof HTMLAnchorElement) {
+            authorNode.href = authorUrl;
+            authorNode.rel = 'nofollow ugc noopener noreferrer';
+          }
+          meta.append(authorNode, ` ${actionFor(mention)}`);
+
+          const date = new Date(mention.published || mention['wm-received'] || '');
+          if (!Number.isNaN(date.valueOf())) {
+            const time = document.createElement('time');
+            time.dateTime = date.toISOString();
+            time.textContent = date.toLocaleDateString();
+            meta.append(' on ', time);
+          }
+          article.append(meta);
+
+          const text = String(mention.content?.text ?? '').trim().replace(/\s+/g, ' ');
+          if (text) {
+            const content = document.createElement('p');
+            content.textContent = text.length > 520 ? `${text.slice(0, 519)}...` : text;
+            article.append(content);
+          }
+
+          const sourceUrl = safeUrl(mention.url);
+          if (sourceUrl) {
+            const source = document.createElement('a');
+            source.href = sourceUrl;
+            source.rel = 'nofollow ugc noopener noreferrer';
+            source.textContent = 'View source';
+            article.append(source);
+          }
+          list.append(article);
+        }
+      } catch {
+        state.textContent = 'Responses are unavailable.';
+      }
+    }
+  }
+
+  if (!customElements.get('codex-webmentions')) {
+    customElements.define('codex-webmentions', CodexWebmentions);
+  }
+    </script>
+  </>
+)}
+
+<style>
+  .codex-webmentions {
+    display: block;
+    margin-block: 2rem;
+    border-block-start: 1px solid var(--sl-color-hairline-light);
+    padding-block-start: 1rem;
+  }
+
+  summary {
+    cursor: pointer;
+    color: var(--sl-color-white);
+    font-weight: 700;
+  }
+
+  [data-state] {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+
+  .codex-webmention-list {
+    display: grid;
+    gap: .75rem;
+  }
+
+  article {
+    padding-block: .75rem;
+    border-block-start: 1px solid var(--sl-color-hairline-light);
+  }
+
+  article p {
+    margin-block: 0 .4rem;
+  }
+
+  article a {
+    overflow-wrap: anywhere;
+  }
+</style>

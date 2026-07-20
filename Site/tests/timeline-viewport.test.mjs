@@ -6,11 +6,10 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 test('the Astro island mounts the local Chronos renderer fork without host patches', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const entry = read('../src/lib/timeline/renderer.mjs');
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
 
-  assert.match(entry, /export \{ mountTimeline \} from '\.\/chronos-native-renderer\.mjs'/);
+  assert.match(renderer, /export function mountTimeline/);
   assert.match(renderer, /VisceriumChronosTimeline/);
   assert.match(fork, /orientation: \{ axis: 'bottom', item: 'top' \}/);
   assert.match(fork, /groupHeightMode: 'fitItems'/);
@@ -22,7 +21,6 @@ test('the Astro island mounts the local Chronos renderer fork without host patch
   assert.match(fork, /timeline\.on\('rangechanged', sync\)/);
   assert.doesNotMatch(fork, /timeline\.on\('rangechange', sync\)/);
   assert.match(fork, /setOptions\(\{ queue: queueOptions \}\)/);
-  assert.doesNotMatch(entry, /ChronosTimeline\.prototype|_handleZoomWorkaround|Proxy\s*\(/);
   assert.doesNotMatch(renderer, /ChronosTimeline\.prototype|_handleZoomWorkaround|MutationObserver|ResizeObserver/);
 
   assert.match(island, /const cleanupTimeline = mountTimeline\(root, dataset, options\)/);

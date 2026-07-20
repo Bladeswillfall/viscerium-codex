@@ -50,7 +50,7 @@ export default function TimelineIsland({ dataset, options, fallbackEvents }: Tim
       if (skeletonRef.current) skeletonRef.current.hidden = false;
 
       try {
-        const { mountTimeline } = await import('../../lib/timeline/renderer.mjs');
+        const { mountTimeline } = await import('../../lib/timeline/chronos-native-renderer.mjs');
         if (cancelled || !mountRef.current) return;
 
         const cleanupTimeline = mountTimeline(root, dataset, options);

@@ -1,8 +1,7 @@
 ---
 import MobileTableOfContents from 'virtual:starlight/components/MobileTableOfContents';
 import TableOfContents from 'virtual:starlight/components/TableOfContents';
-import CodexBacklinks from './CodexBacklinks.astro';
-import CodexMiniGraph from './CodexMiniGraph.astro';
+import { PageBacklinks, PageGraph } from 'starlight-site-graph/components';
 
 const { starlightRoute } = Astro.locals;
 const entry = starlightRoute.entry.data;
@@ -37,10 +36,6 @@ function normaliseRoute(value) {
 
 function formatValue(value) {
   return Array.isArray(value) ? value.join(', ') : String(value).replace(/-/g, ' ');
-}
-
-function getFieldValue(source, field) {
-  return String(field).split('.').reduce((value, key) => value?.[key], source);
 }
 
 function imageTextAlternative(base, text) {
@@ -84,72 +79,6 @@ function normaliseSidebarSection(section) {
   return { title, fields, items, note };
 }
 
-const sidebarFieldsByType = {
-  character: [
-    ['Faction', 'faction'],
-    ['Location', 'location'],
-    ['Era', 'era'],
-    ['Species', 'species'],
-    ['Occupation', 'occupation'],
-    ['Alignment', 'alignment'],
-    ['Allies', 'relationships.allies'],
-    ['Rivals', 'relationships.rivals'],
-  ],
-  faction: [
-    ['Era', 'era'],
-    ['Capital', 'capital'],
-    ['Territory', 'territory'],
-    ['Leader', 'leader'],
-    ['Government', 'government'],
-    ['Founded', 'founding'],
-    ['Allies', 'relationships.allies'],
-    ['Enemies', 'relationships.enemies'],
-  ],
-  location: [
-    ['Region', 'region'],
-    ['Faction', 'faction'],
-    ['Population', 'population'],
-    ['Climate', 'climate'],
-    ['Map', 'map.id'],
-  ],
-  event: [
-    ['Location', 'location'],
-    ['Participants', 'participants'],
-    ['Outcome', 'outcome'],
-    ['Timeline', 'timeline.id'],
-    ['Year', 'timeline.year'],
-  ],
-  map: [
-    ['Map ID', 'mapId'],
-    ['Image', 'image'],
-    ['Width', 'width'],
-    ['Height', 'height'],
-  ],
-  image: [
-    ['Asset', 'asset'],
-    ['Artist', 'artist'],
-    ['Editor', 'editor'],
-    ['Source', 'source'],
-    ['Source URL', 'sourceUrl'],
-    ['Credit', 'credit'],
-    ['License', 'license'],
-    ['Rights', 'rights'],
-    ['Usage', 'usage'],
-    ['Width', 'width'],
-    ['Height', 'height'],
-    ['Related', 'related'],
-  ],
-  era: [
-    ['Start', 'start'],
-    ['End', 'end'],
-    ['Timeline', 'timeline.id'],
-    ['Anchor Year', 'timeline.year'],
-  ],
-  timeline: [
-    ['Timeline ID', 'timelineId'],
-  ],
-};
-
 const rawImageSource = entry.image ?? (entry.type === 'image' ? entry.asset : undefined);
 const sidebarImage = normaliseAssetPath(rawImageSource);
 const imageDetailHref = normaliseRoute(entry.imagePage);
@@ -162,8 +91,6 @@ const imageDescriptionId = imageDescription ? 'codex-sidebar-image-description' 
 const artworkTitle = entry.imageTitle ?? (entry.type === 'image' ? entry.title : undefined);
 const artworkArtist = entry.artist ?? entry.credit;
 const resolution = entry.width && entry.height ? `${entry.width} × ${entry.height}` : undefined;
-const typeSpecificFields = (sidebarFieldsByType[entry.type] ?? [])
-  .map(([label, field]) => [label, getFieldValue(entry, field)]);
 const defaultSidebarFields = [
   ['Type', entry.type],
   ['Status', entry.status],
@@ -297,19 +224,41 @@ const customSidebarSections = Array.isArray(sidebarConfig.sections)
             </div>
           </section>
           <TableOfContents />
-          <section class="codex-sidebar-section" aria-labelledby="codex-sidebar-graph-title">
-            <h2 id="codex-sidebar-graph-title">Graph View</h2>
-            <CodexMiniGraph />
-          </section>
-          <section class="codex-sidebar-section" aria-labelledby="codex-sidebar-backlinks-title">
-            <h2 id="codex-sidebar-backlinks-title">Backlinks</h2>
-            <CodexBacklinks />
-          </section>
+          <PageGraph class="codex-sidebar-section">
+            <h2 id="codex-sidebar-graph-title" slot="title">Graph View</h2>
+          </PageGraph>
+          <PageBacklinks class="codex-sidebar-section">
+            <h2 id="codex-sidebar-backlinks-title" slot="title">Backlinks</h2>
+          </PageBacklinks>
         </div>
       </aside>
     </>
   )
 }
+
+<script>
+  let sitemap;
+
+  async function hydrateSiteGraphs() {
+    const graphs = [...document.querySelectorAll('graph-component[data-sitemap="{}"]')];
+    if (graphs.length === 0) return;
+
+    if (!sitemap) {
+      const base = import.meta.env.BASE_URL.endsWith('/')
+        ? import.meta.env.BASE_URL
+        : `${import.meta.env.BASE_URL}/`;
+      const response = await fetch(`${base}sitegraph/sitemap.json`);
+      if (!response.ok) throw new Error(`Site graph sitemap returned ${response.status}`);
+      sitemap = JSON.stringify(await response.json());
+    }
+
+    graphs.forEach((graph) => graph.setAttribute('data-sitemap', sitemap));
+  }
+
+  const hydrate = () => void hydrateSiteGraphs().catch(console.error);
+  hydrate();
+  document.addEventListener('astro:page-load', hydrate);
+</script>
 
 <style>
   @layer starlight.core {

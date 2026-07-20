@@ -20,7 +20,7 @@
 
 .vc-chronos-source-fallback {
   padding: .8rem;
-  color: var(--chronos-text-muted, var(--sl-color-gray-3, #aaa49b));
+  color: var(--chronos-text-muted);
 }
 
 .vc-chronos-source-fallback > :first-child {
@@ -34,7 +34,7 @@
 
 .vc-chronos-credit {
   margin-inline-start: auto;
-  color: var(--sl-color-gray-4, #858078);
+  color: var(--sl-color-gray-4);
   font-size: .7rem;
   letter-spacing: .06em;
   text-transform: uppercase;

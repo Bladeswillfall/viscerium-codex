@@ -4,9 +4,7 @@ import { validateVaultAssets } from './validate-vault-assets.mjs';
 import { validateVaultNotes } from './validate-vault-notes.mjs';
 import { generateTimelineData, reportTimelineError } from './generate-timeline-data.mjs';
 import { validateGeneratedContent } from './validate-content.mjs';
-import { generateGraph } from './generate-graph.mjs';
 import { generateMapData } from './generate-map-data.mjs';
-import { syncContributorAvatars } from './sync-contributor-avatars.mjs';
 
 const modeArgument = process.argv.find((value) => value.startsWith('--mode='));
 const mode = modeArgument?.slice('--mode='.length) || 'build';
@@ -36,11 +34,9 @@ if (!validModes.has(mode)) {
     }
 
     if (mode === 'build') {
-      await generateGraph({ manifest: docs });
       await generateMapData({ manifest: docs });
     }
 
-    await syncContributorAvatars({ manifest: docs });
     console.log(`Completed shared content pipeline in ${mode} mode.`);
   } catch (error) {
     if (!reportTimelineError(error)) console.error(error.message ?? error);

@@ -15,7 +15,7 @@
 .codex-alpha-index__letter {
   margin: 0 0 .75rem;
   padding-block-end: .35rem;
-  border-block-end: 1px solid color-mix(in srgb, var(--sl-color-accent-high) 42%, var(--sl-color-hairline));
+  border-block-end: 1px solid color-mix(in oklch, var(--sl-color-accent-high) 42%, var(--sl-color-hairline));
   color: var(--sl-color-white);
   font-family: var(--sl-font-system-mono);
   font-size: clamp(1.6rem, 2vw, 2.35rem);
@@ -37,7 +37,7 @@
 }
 
 .codex-alpha-index__item + .codex-alpha-index__item {
-  border-block-start: 1px solid color-mix(in srgb, var(--sl-color-hairline) 72%, transparent);
+  border-block-start: 1px solid color-mix(in oklch, var(--sl-color-hairline) 72%, transparent);
 }
 
 .codex-alpha-index__line {
@@ -62,7 +62,7 @@
 .codex-alpha-index__link::before {
   content: '◇';
   flex: 0 0 auto;
-  color: color-mix(in srgb, var(--sl-color-accent-high) 78%, var(--sl-color-white));
+  color: color-mix(in oklch, var(--sl-color-accent-high) 78%, var(--sl-color-white));
   font-size: .72em;
   transform: translateY(-.05em) rotate(45deg);
 }

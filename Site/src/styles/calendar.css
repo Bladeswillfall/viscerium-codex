@@ -1,27 +1,15 @@
 @layer starlight.core {
-  :root {
-    --calendar-surface: rgba(255, 255, 255, .025);
-    --calendar-surface-soft: rgba(255, 255, 255, .04);
-    --calendar-border: rgba(184, 135, 70, .16);
-    --calendar-border-strong: rgba(184, 135, 70, .32);
-    --calendar-text: rgba(255, 255, 255, .88);
-    --calendar-muted: rgba(255, 255, 255, .56);
-    --calendar-winter: #9cc9d3;
-    --calendar-spring: #dfc862;
-    --calendar-summer: #94be8c;
-    --calendar-autumn: #d29b65;
-    --calendar-leap: #a893d0;
-    --calendar-holiday: #d86f78;
-    --calendar-marker: #ee5f67;
-  }
-
   .calendar-module {
     container-type: inline-size;
     margin-block: clamp(1.6rem, 2.4vw, 2.15rem);
     padding: clamp(.95rem, 1.8vw, 1.35rem);
     border: 1px solid var(--calendar-border);
     border-radius: 1.35rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, .032), rgba(255, 255, 255, .012));
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--codex-fixed-light) 3.2%, transparent),
+      color-mix(in oklch, var(--codex-fixed-light) 1.2%, transparent)
+    );
   }
 
   .calendar-module__intro {
@@ -80,7 +68,7 @@
     padding: .85rem;
     border: 1px solid var(--calendar-border);
     border-radius: 1rem;
-    background: rgba(0, 0, 0, .16);
+    background: color-mix(in oklch, var(--codex-fixed-dark) 16%, transparent);
   }
 
   .calendar-module__fact,
@@ -209,9 +197,9 @@
     height: 2.25rem;
     overflow: hidden;
     vertical-align: middle;
-    border: 1px solid rgba(255, 255, 255, .075) !important;
+    border: 1px solid color-mix(in oklch, var(--codex-fixed-light) 7.5%, transparent) !important;
     border-radius: .62rem;
-    background: rgba(255, 255, 255, .025) !important;
+    background: var(--calendar-surface) !important;
     color: var(--calendar-text);
     font-family: var(--vc-font-ui);
     transition:
@@ -260,7 +248,7 @@
     transform: translateY(-1px);
     border-color: var(--calendar-border-strong) !important;
     background: var(--calendar-surface-soft) !important;
-    box-shadow: 0 .45rem 1rem rgba(0, 0, 0, .18);
+    box-shadow: 0 .45rem 1rem color-mix(in oklch, var(--codex-shadow-color) 18%, transparent);
   }
 
   .calendar-day__number {
@@ -327,7 +315,7 @@
   .calendar-day--leap { --calendar-season-color: var(--calendar-leap); }
 
   .calendar-day--holiday {
-    border-color: color-mix(in srgb, var(--calendar-holiday) 45%, transparent) !important;
+    border-color: color-mix(in oklch, var(--calendar-holiday) 45%, transparent) !important;
   }
 
   .calendar-day--holiday::after {
@@ -335,14 +323,14 @@
     position: absolute;
     z-index: 2;
     inset: .2rem;
-    border: 1px solid color-mix(in srgb, var(--calendar-holiday) 42%, transparent);
+    border: 1px solid color-mix(in oklch, var(--calendar-holiday) 42%, transparent);
     border-radius: .44rem;
     pointer-events: none;
   }
 
   .calendar-day--linked-event {
-    border-color: color-mix(in srgb, var(--sl-color-accent-high) 38%, transparent) !important;
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sl-color-accent-high) 16%, transparent);
+    border-color: color-mix(in oklch, var(--sl-color-accent-high) 38%, transparent) !important;
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--sl-color-accent-high) 16%, transparent);
   }
 
   .calendar-day--linked-event a::after {
@@ -360,9 +348,9 @@
 
   .calendar-day--marker .calendar-day__number,
   .calendar-day--holiday .calendar-day__number {
-    color: #fff;
-    background: color-mix(in srgb, var(--calendar-marker) 68%, #101010);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--calendar-marker) 36%, transparent);
+    color: var(--codex-fixed-light);
+    background: color-mix(in oklch, var(--calendar-marker) 68%, var(--codex-page-bg));
+    box-shadow: 0 0 0 1px color-mix(in oklch, var(--calendar-marker) 36%, transparent);
   }
 
   .calendar-day--inactive {
@@ -385,7 +373,7 @@
     padding: .85rem;
     border: 1px solid var(--calendar-border);
     border-radius: 1rem;
-    background: rgba(0, 0, 0, .16);
+    background: color-mix(in oklch, var(--codex-fixed-dark) 16%, transparent);
   }
 
   .calendar-legend h3 {
@@ -412,7 +400,7 @@
     place-items: center;
     width: .8rem;
     height: .8rem;
-    border: 1px solid rgba(255, 255, 255, .18);
+    border: 1px solid color-mix(in oklch, var(--codex-fixed-light) 18%, transparent);
     border-radius: 999px;
   }
 
@@ -428,22 +416,22 @@
   .calendar-key--marker,
   .calendar-key--linked {
     border-radius: .35rem;
-    background: color-mix(in srgb, var(--calendar-marker) 70%, #101010);
-    color: #fff;
+    background: color-mix(in oklch, var(--calendar-marker) 70%, var(--codex-page-bg));
+    color: var(--codex-fixed-light);
   }
   .calendar-key--marker::after {
     content: '!';
-    color: #fff;
+    color: var(--codex-fixed-light);
     font-size: .58rem;
     font-weight: 900;
     line-height: 1;
   }
   .calendar-key--linked {
-    background: color-mix(in srgb, var(--sl-color-accent-high) 65%, #101010);
+    background: color-mix(in oklch, var(--sl-color-accent-high) 65%, var(--codex-page-bg));
   }
   .calendar-key--linked::after {
     content: '↗';
-    color: #fff;
+    color: var(--codex-fixed-light);
     font-size: .54rem;
     font-weight: 900;
     line-height: 1;
@@ -497,7 +485,7 @@
     align-items: center;
     min-height: 1.35rem;
     padding: .15rem .45rem;
-    border: 1px solid rgba(184, 135, 70, .22);
+    border: 1px solid color-mix(in oklch, var(--codex-accent) 22%, transparent);
     border-radius: 999px;
     color: var(--sl-color-gray-2);
     font-size: var(--sl-text-xs);
@@ -506,8 +494,8 @@
   }
 
   .calendar-observance--holiday {
-    border-color: rgba(232, 154, 154, .5);
-    color: #f2b0b0;
+    border-color: color-mix(in oklch, var(--codex-danger) 50%, transparent);
+    color: var(--codex-danger-high);
   }
 
   @supports not selector(:has(*)) {

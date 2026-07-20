@@ -36,7 +36,7 @@ test('the Preact island owns one forked Chronos mount, one hovercard and ordered
   assert.match(island, /useEffect\(/);
   assert.match(island, /useRef<HTMLDivElement>/);
   assert.match(island, /import \{ installTimelineHovercard \} from '\.\.\/\.\.\/lib\/timeline\/hovercard\.mjs'/);
-  assert.match(island, /await import\('\.\.\/\.\.\/lib\/timeline\/renderer\.mjs'\)/);
+  assert.match(island, /await import\('\.\.\/\.\.\/lib\/timeline\/chronos-native-renderer\.mjs'\)/);
   assert.match(island, /const cleanupTimeline = mountTimeline\(root, dataset, options\)/);
   assert.match(island, /const cleanupHovercard = installTimelineHovercard\(root, dataset\)/);
   assert.match(island, /cleanup = \(\) => \{[\s\S]*cleanupHovercard\(\);[\s\S]*cleanupTimeline\(\);/);
@@ -77,14 +77,13 @@ test('large timeline runtime bounds graph, list, search and minimap work', () =>
 });
 
 test('group and item changes stay inside one forked Chronos instance', () => {
-  const entry = read('../src/lib/timeline/renderer.mjs');
-  const nativeRenderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
+  const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
   const adapter = read('../src/lib/timeline/chronos-adapter.mjs');
 
-  assert.match(entry, /export \{ mountTimeline \}/);
-  assert.match(nativeRenderer, /chronos\.updateParsed\(model\.parsed\)/);
-  assert.match(nativeRenderer, /laneSelect\.addEventListener\('change'/);
+  assert.match(renderer, /export function mountTimeline/);
+  assert.match(renderer, /chronos\.updateParsed\(model\.parsed\)/);
+  assert.match(renderer, /laneSelect\.addEventListener\('change'/);
   assert.match(fork, /updateParsed\(result\)/);
   assert.match(fork, /nextGroups !== this\.groupModelSignature/);
   assert.match(fork, /nextItems !== this\.itemModelSignature/);
@@ -94,12 +93,11 @@ test('group and item changes stay inside one forked Chronos instance', () => {
   assert.match(fork, /this\.itemsDataSet\.setOptions\(\{ queue: queueOptions \}\)/);
   assert.match(fork, /if \(removedItems\.length\) this\.itemsDataSet\.remove\(removedItems\)/);
   assert.match(fork, /if \(removedGroups\.length\)[\s\S]*this\.groupsDataSet\.remove\(removedGroups\)/);
-  assert.doesNotMatch(entry, /Proxy\s*\(|ChronosTimeline\.prototype|MutationObserver|ResizeObserver/);
+  assert.doesNotMatch(renderer, /Proxy\s*\(|ChronosTimeline\.prototype|MutationObserver|ResizeObserver/);
   assert.match(adapter, /if \(laneMode === 'unified'\)[\s\S]*groups: \[chronology\]/);
 });
 
 test('the fork owns axis and geometry while the site owns one non-layout hovercard', () => {
-  const entry = read('../src/lib/timeline/renderer.mjs');
   const island = read('../src/components/timeline/TimelineIsland.tsx');
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
   const fork = read('../src/lib/chronos-fork/VisceriumChronosTimeline.mjs');
@@ -116,8 +114,10 @@ test('the fork owns axis and geometry while the site owns one non-layout hoverca
   assert.match(hovercard, /attributeFilter: \['title'\]/);
   assert.match(hovercard, /queueMicrotask\(\(\) => stripNativeTitle\(activeItem\)\)/);
   assert.match(viewportStyles, /body > \.vis-tooltip:not\(\.vc-timeline-hovercard\)/);
-  assert.match(viewportStyles, /:root\[data-theme='light'\] body > \.vc-timeline-hovercard/);
-  assert.doesNotMatch(entry, /MutationObserver|ResizeObserver|installTimelineDomGuards/);
+  assert.match(viewportStyles, /--vc-hovercard-bg:\s*color-mix\(in oklch, var\(--codex-surface-raised-color\)/);
+  assert.match(viewportStyles, /--vc-hovercard-text:\s*var\(--sl-color-text\)/);
+  assert.doesNotMatch(viewportStyles, /:root\[data-theme='light'\] body > \.vc-timeline-hovercard/);
+  assert.doesNotMatch(renderer, /MutationObserver|ResizeObserver|installTimelineDomGuards/);
   assert.doesNotMatch(island, /MutationObserver|ResizeObserver/);
 });
 

@@ -1,12 +1,13 @@
 import path from 'node:path';
 import process from 'node:process';
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import esbuild from 'esbuild';
 
 const production = process.argv[2] === 'production';
 const root = process.cwd();
 const outDir = path.join(root, 'dist');
-await fs.emptyDir(outDir);
+await fs.rm(outDir, { recursive: true, force: true });
+await fs.mkdir(outDir, { recursive: true });
 
 await esbuild.build({
   entryPoints: [path.join(root, 'main.ts')],
@@ -27,5 +28,9 @@ await esbuild.build({
 });
 
 const generatedCss = path.join(outDir, 'main.css');
-if (await fs.pathExists(generatedCss)) await fs.move(generatedCss, path.join(outDir, 'styles.css'), { overwrite: true });
-await fs.copy(path.join(root, 'manifest.json'), path.join(outDir, 'manifest.json'));
+try {
+  await fs.rename(generatedCss, path.join(outDir, 'styles.css'));
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
+await fs.copyFile(path.join(root, 'manifest.json'), path.join(outDir, 'manifest.json'));

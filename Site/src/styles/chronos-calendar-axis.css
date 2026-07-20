@@ -55,11 +55,11 @@
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-custom-time[data-vc-calendar-kind="secondary"] {
-  border-color: color-mix(in srgb, var(--vc-timeline-border) 55%, transparent);
+  border-color: color-mix(in oklch, var(--vc-timeline-border) 55%, transparent);
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-custom-time[data-vc-calendar-kind="primary"] {
-  border-color: color-mix(in srgb, var(--vc-timeline-border-strong) 82%, transparent);
+  border-color: color-mix(in oklch, var(--vc-timeline-border-strong) 82%, transparent);
 }
 
 .vc-timeline-app .vc-timeline-canvas .vc-calendar-time-label {

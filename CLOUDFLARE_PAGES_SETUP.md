@@ -44,30 +44,25 @@ TURNSTILE_SECRET_KEY
 
 Use Cloudflare secrets for `RESEND_API_KEY` and `TURNSTILE_SECRET_KEY`.
 
-## Optional giscus comments environment variables
+## Optional community integration overrides
 
-The comments component renders on every Starlight page. It will show a setup warning until giscus is configured.
+Giscus and Webmention.io are configured for this repository and `codex.viscerium.co.uk` by default. No Cloudflare variables are required.
 
-After enabling GitHub Discussions, installing the giscus GitHub app, and choosing the repository/category at `https://giscus.app/`, add these Cloudflare environment variables:
-
-```text
-PUBLIC_GISCUS_REPO_ID
-PUBLIC_GISCUS_CATEGORY_ID
-```
-
-The project defaults to `PUBLIC_GISCUS_REPO=Bladeswillfall/viscerium-codex`, `PUBLIC_GISCUS_CATEGORY=General`, and `PUBLIC_GISCUS_MAPPING=pathname`. You can override any of them if needed:
+Override the defaults only when moving the site or discussion category:
 
 ```text
 PUBLIC_GISCUS_REPO
+PUBLIC_GISCUS_REPO_ID
 PUBLIC_GISCUS_CATEGORY
+PUBLIC_GISCUS_CATEGORY_ID
 PUBLIC_GISCUS_MAPPING
-PUBLIC_GISCUS_STRICT
 PUBLIC_GISCUS_REACTIONS_ENABLED
-PUBLIC_GISCUS_EMIT_METADATA
 PUBLIC_GISCUS_INPUT_POSITION
 PUBLIC_GISCUS_THEME
-PUBLIC_GISCUS_LANG
 PUBLIC_GISCUS_LOADING
+PUBLIC_WEBMENTIONS_ENABLED
+PUBLIC_WEBMENTION_IO_USERNAME
+PUBLIC_WEBMENTION_ENDPOINT
+PUBLIC_WEBMENTION_PINGBACK_ENDPOINT
+PUBLIC_WEBMENTION_API_ENDPOINT
 ```
-
-Leave the giscus ID variables unset to keep the comments accordion as a setup placeholder.

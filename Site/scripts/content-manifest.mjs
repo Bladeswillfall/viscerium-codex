@@ -1,7 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import process from 'node:process';
-import fg from 'fast-glob';
 import matter from 'gray-matter';
 import siteConfig from '../site.config.mjs';
 
@@ -20,7 +19,9 @@ export async function scanMarkdownContent(rootDir, { refresh = false } = {}) {
   if (!refresh && manifestCache.has(resolvedRoot)) return manifestCache.get(resolvedRoot);
 
   const scan = (async () => {
-    const files = (await fg('**/*.{md,mdx}', { cwd: resolvedRoot, absolute: true })).sort();
+    const files = (await Array.fromAsync(fs.glob('**/*.{md,mdx}', { cwd: resolvedRoot })))
+      .map((file) => path.resolve(resolvedRoot, file))
+      .sort();
     const records = await Promise.all(files.map(async (file) => {
       const raw = await fs.readFile(file, 'utf8');
       const parsed = matter(raw);

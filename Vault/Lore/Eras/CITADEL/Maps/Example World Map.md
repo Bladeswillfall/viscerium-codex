@@ -1,8 +1,8 @@
 ---
 title: Example World Map
 description: "A sample interactive map metadata page with marker guidance for public location notes."
-publish: true
-status: canon
+publish: false
+status: draft
 slug: eras/citadel/maps/example-world
 type: map
 era: CITADEL

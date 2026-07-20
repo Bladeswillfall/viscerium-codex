@@ -1,11 +1,11 @@
 ---
 title: Example Character
 description: "A sample public character that demonstrates metadata, wikilinks, tags, layout cards, and related entries."
-publish: true
-status: canon
+publish: false
+status: draft
 slug: eras/citadel/characters/example-character
 type: character
-icon: "fa-solid fa-user"
+icon: character
 era: CITADEL
 faction: Example Faction
 location: Example City
@@ -32,7 +32,7 @@ Example Character is a template-friendly protagonist, antagonist, witness, schol
 
 [cols:2-1 gap=lg]
 [col]
-## [Icon:fa-solid fa-book-open] Summary
+## [Icon:codex] Summary
 
 Use this section for the readable hook: who they are, what they want, what makes them dangerous, and why they matter to the Codex.
 
@@ -40,11 +40,11 @@ Use this section for the readable hook: who they are, what they want, what makes
 The public sidebar is generated from frontmatter. Keep the article body for prose, context, and story texture instead of repeating every metadata field in manual tables.
 [/note]
 
-## [Icon:fa-solid fa-eye] Appearance
+## [Icon:character] Appearance
 
 Describe silhouette, clothing, equipment, scars, colours, posture, voice, and any era-specific visual language.
 
-## [Icon:fa-solid fa-brain] Personality
+## [Icon:character] Personality
 
 Summarise the character's public face, private contradictions, fears, habits, humour, and breaking points.
 [/col]
@@ -66,21 +66,21 @@ Keep secret biography, unrevealed loyalties, and future-era consequences in `Vau
 [/col]
 [/cols]
 
-## [Icon:fa-solid fa-scroll] Biography
+## [Icon:codex] Biography
 
-### [Icon:fa-solid fa-seedling] Early Life
+### [Icon:event] Early Life
 
 Explain the origin point that shaped their worldview. Keep this grounded: family, class, region, oath, debt, wound, faith, or disgrace.
 
-### [Icon:fa-solid fa-calendar-days] Major Events
+### [Icon:event] Major Events
 
 Tie the character to published events using wikilinks so the site graph becomes useful. For example: [[Example Battle]].
 
-## [Icon:fa-solid fa-bolt] Abilities and Resources
+## [Icon:spark] Abilities and Resources
 
 List capabilities that change scenes: authority, training, money, allies, local knowledge, occult skill, weapons, ships, land, debts, or blackmail.
 
-## [Icon:fa-solid fa-link] Relationships
+## [Icon:codex] Relationships
 
 Use prose for nuance and frontmatter for quick sidebar/graph data.
 
@@ -92,11 +92,11 @@ Use prose for nuance and frontmatter for quick sidebar/graph data.
 "A person is rarely remembered for the thing they meant to become. The world keeps better records of the mess they left behind."
 [/lore]
 
-## [Icon:fa-solid fa-user-secret] Notes and Secrets
+## [Icon:status] Notes and Secrets
 
 Keep private information in `Vault/Private/` or leave `publish: false` until it belongs in public canon.
 
-## [Icon:fa-solid fa-diagram-project] Related
+## [Icon:codex] Related
 
 - [[Example Faction]]
 - [[Example City]]

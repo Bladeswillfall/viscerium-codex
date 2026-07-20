@@ -19,8 +19,3 @@ const localIconPath = icon?.provider === 'local' ? `/icons/${icon.name}.svg` : u
     style={`--icon: url('${localIconPath}')`}
   ></span>
 )}
-{icon?.provider === 'classes' && (
-  <span class:list={classes} aria-hidden="true">
-    <i class:list={icon.classes}></i>
-  </span>
-)}

@@ -12,11 +12,6 @@
     white-space: nowrap !important;
   }
 
-  /* Component display rules must never override the native hidden state. */
-  :where(.codex-comments [hidden]) {
-    display: none !important;
-  }
-
   .sl-markdown-content a {
     text-decoration-line: underline;
     text-decoration-thickness: .08em;
@@ -34,29 +29,11 @@
   }
 
   .codex-sidebar-toggle,
-  .theme-toggle,
   .social-icons a,
-  .social-icons-extended a,
   .codex-link-button,
-  .support-button,
-  .social-icon-link {
+  .support-button {
     min-inline-size: 2.75rem;
     min-block-size: 2.75rem;
-  }
-
-  .contact-form__status[data-state='success']::before {
-    content: 'Success: ';
-    font-weight: 800;
-  }
-
-  .contact-form__status[data-state='error']::before {
-    content: 'Error: ';
-    font-weight: 800;
-  }
-
-  .contact-form__status[data-state='pending']::before {
-    content: 'Pending: ';
-    font-weight: 800;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -73,18 +50,10 @@
   }
 
   @media (forced-colors: active) {
-    .codex-card,
     .codex-surface,
     .codex-sidebar-card,
     .codex-sidebar-section,
-    .codex-comments-panel,
-    .cx-card,
-    .cx-callout,
-    .support-card,
-    .social-icon-link,
-    .contact-form input,
-    .contact-form select,
-    .contact-form textarea {
+    .cx-card {
       border: 1px solid CanvasText;
       background: Canvas;
       color: CanvasText;

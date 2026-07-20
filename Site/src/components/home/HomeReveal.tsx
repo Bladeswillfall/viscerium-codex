@@ -37,6 +37,11 @@ export default function HomeReveal() {
       return undefined;
     }
 
+    const palette = getComputedStyle(document.documentElement);
+    const cover = palette.getPropertyValue('--codex-fixed-dark').trim();
+    const vignetteSoft = palette.getPropertyValue('--home-reveal-vignette-soft').trim();
+    const vignetteClear = palette.getPropertyValue('--home-reveal-vignette-clear').trim();
+
     const spiral = new Image();
     spiral.decoding = 'async';
     spiral.src = `${import.meta.env.BASE_URL}images/home/reveal-spiral.svg`;
@@ -84,7 +89,7 @@ export default function HomeReveal() {
       context.globalCompositeOperation = 'source-over';
       context.globalAlpha = 1;
       context.clearRect(0, 0, width, height);
-      context.fillStyle = '#000';
+      context.fillStyle = cover;
       context.fillRect(0, 0, width, height);
 
       if (revealRadius > 0) {
@@ -98,9 +103,9 @@ export default function HomeReveal() {
           centreY,
           revealRadius,
         );
-        vignette.addColorStop(0, 'rgba(0, 0, 0, 1)');
-        vignette.addColorStop(0.72, 'rgba(0, 0, 0, .96)');
-        vignette.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        vignette.addColorStop(0, cover);
+        vignette.addColorStop(0.72, vignetteSoft);
+        vignette.addColorStop(1, vignetteClear);
 
         context.globalCompositeOperation = 'destination-out';
         context.fillStyle = vignette;

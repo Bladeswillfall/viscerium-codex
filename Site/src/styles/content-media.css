@@ -13,10 +13,26 @@
 
 .sl-markdown-content img {
   margin-block: 1rem;
-  border-radius: var(--codex-radius, .75rem);
+  border-radius: var(--codex-radius);
 }
 
 .sl-markdown-content figure {
   max-width: 100%;
   overflow: hidden;
+}
+
+.codex-header-image {
+  display: block;
+  width: 100%;
+  max-height: 18rem;
+  margin: 0;
+  object-fit: contain;
+  border: 0;
+  border-radius: var(--codex-radius);
+  box-shadow: none;
+}
+
+.codex-header-image-artwork {
+  max-height: min(70vh, 48rem);
+  background: color-mix(in oklch, var(--codex-fixed-dark) 22%, transparent);
 }

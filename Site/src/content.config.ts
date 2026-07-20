@@ -98,6 +98,7 @@ export const collections = {
         updated: frontmatterDate.optional(),
         contributors: z.array(contributorReferenceSchema).optional(),
         defaultContributors: z.boolean().optional(),
+        giscus: z.boolean().optional(),
         era: stringOrStrings.optional(),
         faction: stringOrStrings.optional(),
         character: stringOrStrings.optional(),
@@ -141,7 +142,7 @@ export const collections = {
     loader: changelogsLoader([
       {
         provider: 'keep-a-changelog',
-        base: 'changelog',
+        base: 'releases',
         title: 'VISCERIUM Codex',
         changelog: './CHANGELOG.md',
         pageSize: 10,

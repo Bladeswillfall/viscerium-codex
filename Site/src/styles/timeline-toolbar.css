@@ -14,8 +14,8 @@
   align-items: end;
   padding: .85rem;
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--vc-timeline-accent) 5%, transparent), transparent 42%),
-    color-mix(in srgb, var(--vc-timeline-surface) 94%, transparent);
+    linear-gradient(90deg, color-mix(in oklch, var(--vc-timeline-accent) 5%, transparent), transparent 42%),
+    color-mix(in oklch, var(--vc-timeline-surface) 94%, transparent);
 }
 
 .vc-timeline-toolbar-enhanced .vc-timeline-toolbar-field {
@@ -41,7 +41,7 @@
 
 .vc-timeline-toolbar-enhanced .vc-timeline-field-hint {
   margin-inline-start: auto;
-  color: color-mix(in srgb, var(--vc-timeline-muted) 74%, transparent);
+  color: color-mix(in oklch, var(--vc-timeline-muted) 74%, transparent);
   font-size: .58rem;
   font-weight: 700;
   letter-spacing: .04em;
@@ -57,23 +57,23 @@
 .vc-timeline-toolbar-enhanced .vc-timeline-field :is(input, select) {
   min-height: 3rem;
   padding: .65rem .75rem;
-  border-color: color-mix(in srgb, var(--vc-timeline-border-strong) 82%, transparent);
+  border-color: color-mix(in oklch, var(--vc-timeline-border-strong) 82%, transparent);
   background:
-    linear-gradient(180deg, color-mix(in srgb, white 2.5%, transparent), transparent),
+    linear-gradient(180deg, color-mix(in oklch, var(--codex-fixed-light) 2.5%, transparent), transparent),
     var(--vc-timeline-surface-deep);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 3%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklch, var(--codex-fixed-light) 3%, transparent);
   transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
 }
 
 .vc-timeline-toolbar-enhanced .vc-timeline-field :is(input, select):hover {
-  border-color: color-mix(in srgb, var(--vc-timeline-accent) 58%, var(--vc-timeline-border-strong));
+  border-color: color-mix(in oklch, var(--vc-timeline-accent) 58%, var(--vc-timeline-border-strong));
 }
 
 .vc-timeline-toolbar-enhanced .vc-timeline-field :is(input, select):focus {
   border-color: var(--vc-timeline-accent);
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 4%, transparent),
-    0 0 0 2px color-mix(in srgb, var(--vc-timeline-accent) 18%, transparent);
+    inset 0 1px 0 color-mix(in oklch, var(--codex-fixed-light) 4%, transparent),
+    0 0 0 2px color-mix(in oklch, var(--vc-timeline-accent) 18%, transparent);
 }
 
 .vc-timeline-toolbar-enhanced .vc-timeline-search input::-webkit-search-cancel-button {
@@ -95,7 +95,7 @@
   gap: .32rem;
   min-width: 0;
   padding-inline-start: .6rem;
-  border-inline-start: 1px solid color-mix(in srgb, var(--vc-timeline-border) 82%, transparent);
+  border-inline-start: 1px solid color-mix(in oklch, var(--vc-timeline-border) 82%, transparent);
 }
 
 .vc-timeline-toolbar-enhanced .vc-timeline-action-group:first-child {
@@ -125,11 +125,11 @@
   gap: .42rem;
   padding: .62rem .7rem;
   white-space: nowrap;
-  border-color: color-mix(in srgb, var(--vc-timeline-border-strong) 82%, transparent);
+  border-color: color-mix(in oklch, var(--vc-timeline-border-strong) 82%, transparent);
   background:
-    linear-gradient(180deg, color-mix(in srgb, white 2.5%, transparent), transparent),
+    linear-gradient(180deg, color-mix(in oklch, var(--codex-fixed-light) 2.5%, transparent), transparent),
     var(--vc-timeline-surface-deep);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 3%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklch, var(--codex-fixed-light) 3%, transparent);
   transition: translate 120ms ease, border-color 120ms ease, background-color 120ms ease;
 }
 
@@ -144,7 +144,7 @@
 .vc-timeline-toolbar-enhanced .vc-timeline-command .vc-timeline-control-icon {
   width: 1.05rem;
   height: 1.05rem;
-  color: color-mix(in srgb, var(--vc-timeline-ink) 82%, var(--vc-timeline-accent));
+  color: color-mix(in oklch, var(--vc-timeline-ink) 82%, var(--vc-timeline-accent));
 }
 
 .vc-timeline-toolbar-enhanced .vc-timeline-command-label {
@@ -157,14 +157,14 @@
 }
 
 .vc-timeline-toolbar-enhanced [data-vc-list] {
-  border-color: color-mix(in srgb, var(--vc-timeline-accent) 58%, var(--vc-timeline-border-strong));
-  background: color-mix(in srgb, var(--vc-timeline-accent) 8%, var(--vc-timeline-surface-deep));
+  border-color: color-mix(in oklch, var(--vc-timeline-accent) 58%, var(--vc-timeline-border-strong));
+  background: color-mix(in oklch, var(--vc-timeline-accent) 8%, var(--vc-timeline-surface-deep));
 }
 
 .vc-timeline-toolbar-enhanced [data-vc-list]:hover,
 .vc-timeline-toolbar-enhanced [data-vc-list][aria-pressed='true'] {
   border-color: var(--vc-timeline-accent);
-  background: color-mix(in srgb, var(--vc-timeline-accent) 17%, var(--vc-timeline-surface-deep));
+  background: color-mix(in oklch, var(--vc-timeline-accent) 17%, var(--vc-timeline-surface-deep));
 }
 
 .vc-timeline-toolbar-enhanced [data-vc-list][aria-pressed='true'] .vc-timeline-control-icon {
@@ -299,14 +299,14 @@
   min-width: 8.75rem;
   border-color: var(--vc-timeline-accent);
   background:
-    linear-gradient(180deg, color-mix(in srgb, white 4%, transparent), transparent),
-    color-mix(in srgb, var(--vc-timeline-accent) 20%, var(--vc-timeline-surface-deep));
+    linear-gradient(180deg, color-mix(in oklch, var(--codex-fixed-light) 4%, transparent), transparent),
+    color-mix(in oklch, var(--vc-timeline-accent) 20%, var(--vc-timeline-surface-deep));
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 7%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--vc-timeline-accent) 22%, transparent);
+    inset 0 1px 0 color-mix(in oklch, var(--codex-fixed-light) 7%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--vc-timeline-accent) 22%, transparent);
 }
 
 .vc-timeline-toolbar-enhanced .vc-timeline-action-group.is-view [data-vc-list]:hover,
 .vc-timeline-toolbar-enhanced .vc-timeline-action-group.is-view [data-vc-list][aria-pressed='true'] {
-  background: color-mix(in srgb, var(--vc-timeline-accent) 30%, var(--vc-timeline-surface-deep));
+  background: color-mix(in oklch, var(--vc-timeline-accent) 30%, var(--vc-timeline-surface-deep));
 }

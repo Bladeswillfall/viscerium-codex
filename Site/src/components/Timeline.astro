@@ -1,6 +1,0 @@
----
-import TimelineApp from './timeline/TimelineApp.astro';
-const { timeline, ...options } = Astro.props;
----
-
-{timeline ? <TimelineApp dataset={timeline} {...options} /> : <p class="codex-warning">Timeline not found.</p>}

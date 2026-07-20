@@ -31,15 +31,6 @@ Browse every public Codex page filed beneath **Events**.
 </li>
 </ul>
 </section>
-<section class="codex-alpha-index__group" aria-labelledby="pages-e">
-<h3 id="pages-e" class="codex-alpha-index__letter">E</h3>
-<ul class="codex-alpha-index__items">
-<li class="codex-alpha-index__item">
-<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/events/example-battle/">Example Battle</a><span class="codex-alpha-index__meta">event</span></div>
-<p class="codex-alpha-index__description">A sample event used to demonstrate generated timeline data, calendar date badges, wikilinks, and public callouts.</p>
-</li>
-</ul>
-</section>
 <section class="codex-alpha-index__group" aria-labelledby="pages-f">
 <h3 id="pages-f" class="codex-alpha-index__letter">F</h3>
 <ul class="codex-alpha-index__items">

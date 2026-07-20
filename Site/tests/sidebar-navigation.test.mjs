@@ -1,8 +1,26 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { buildSidebar } from '../sidebar.mjs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+
+test('sidebar lists folders before articles at every level', async () => {
+  const assertFoldersFirst = (entries) => {
+    let foundArticle = false;
+
+    for (const entry of entries) {
+      if (entry.items) {
+        assert.equal(foundArticle, false, `${entry.label} appears after an article`);
+        assertFoldersFirst(entry.items);
+      } else {
+        foundArticle = true;
+      }
+    }
+  };
+
+  assertFoldersFirst(await buildSidebar());
+});
 
 test('desktop sidebar overlay uses an explicit unlayered state', () => {
   const navigation = read('../src/styles/navigation.css');

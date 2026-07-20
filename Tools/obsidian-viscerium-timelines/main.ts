@@ -4,7 +4,7 @@ import '../../Site/src/styles/timelines.css';
 import '../../Site/src/styles/chronos.css';
 import { compileTimelineRecords, TimelineCompilationError } from '../../Site/src/lib/timeline/compiler.mjs';
 import { LANE_MODES, TIMELINE_IDS } from '../../Site/src/lib/timeline/core.mjs';
-import { mountTimeline } from '../../Site/src/lib/timeline/renderer.mjs';
+import { mountTimeline } from '../../Site/src/lib/timeline/chronos-native-renderer.mjs';
 
 type TimelineBlock = {
   timeline: string;

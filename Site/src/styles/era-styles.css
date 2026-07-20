@@ -9,72 +9,37 @@
   }
 
   .codex-two-column-content[data-era-style='e1'] {
-    --era-link: #9c1e35;
-    --era-link-hover: #f1d29b;
-    --era-icon-accent: #9c1e35;
-    --era-heading-accent: #702938;
-    --era-heading-ornament-color: #702938;
-    --era-graph-accent: #9c1e35;
+    --era-link: var(--era-e1-accent);
+    --era-link-hover: var(--era-e1-accent-high);
+    --era-icon-accent: var(--era-e1-accent);
+    --era-heading-accent: var(--era-e1-heading);
+    --era-heading-ornament-color: var(--era-e1-heading);
+    --era-graph-accent: var(--era-e1-accent);
     --era-heading-ornament: url('/assets/ui/era/e1-heading.svg');
   }
 
   .codex-two-column-content[data-era-style='e2'] {
-    --era-link: #c18a43;
-    --era-link-hover: #f2c87b;
-    --era-icon-accent: #c18a43;
-    --era-heading-accent: #8d642d;
-    --era-graph-accent: #c18a43;
+    --era-link: var(--era-e2-accent);
+    --era-link-hover: var(--era-e2-accent-high);
+    --era-icon-accent: var(--era-e2-accent);
+    --era-heading-accent: var(--era-e2-heading);
+    --era-graph-accent: var(--era-e2-accent);
   }
 
   .codex-two-column-content[data-era-style='e3'] {
-    --era-link: #7fb4c6;
-    --era-link-hover: #b8e4ef;
-    --era-icon-accent: #7fb4c6;
-    --era-heading-accent: #4b8296;
-    --era-graph-accent: #7fb4c6;
+    --era-link: var(--era-e3-accent);
+    --era-link-hover: var(--era-e3-accent-high);
+    --era-icon-accent: var(--era-e3-accent);
+    --era-heading-accent: var(--era-e3-heading);
+    --era-graph-accent: var(--era-e3-accent);
   }
 
   .codex-two-column-content[data-era-style='e4'] {
-    --era-link: #b49be8;
-    --era-link-hover: #d9c8ff;
-    --era-icon-accent: #b49be8;
-    --era-heading-accent: #7e68b6;
-    --era-graph-accent: #b49be8;
-  }
-
-  @supports (color: oklch(50% 0.1 120)) {
-    .codex-two-column-content[data-era-style='e1'] {
-      --era-link: rgb(156 30 53);
-      --era-link-hover: oklch(87.7% 0.079 81.6);
-      --era-icon-accent: rgb(156 30 53);
-      --era-heading-accent: oklch(36.3% 0.092 11.4);
-      --era-heading-ornament-color: oklch(36.3% 0.092 11.4);
-      --era-graph-accent: rgb(156 30 53);
-    }
-
-    .codex-two-column-content[data-era-style='e2'] {
-      --era-link: oklch(66.9% 0.108 70.5);
-      --era-link-hover: oklch(83.3% 0.106 77.5);
-      --era-icon-accent: oklch(66.9% 0.108 70.5);
-      --era-heading-accent: oklch(50.9% 0.088 70.5);
-      --era-graph-accent: oklch(66.9% 0.108 70.5);
-    }
-
-    .codex-two-column-content[data-era-style='e3'] {
-      --era-link: oklch(73.7% 0.067 217.4);
-      --era-link-hover: oklch(87.0% 0.049 209.9);
-      --era-icon-accent: oklch(73.7% 0.067 217.4);
-      --era-heading-accent: oklch(57.5% 0.073 218.6);
-      --era-graph-accent: oklch(73.7% 0.067 217.4);
-    }
-
-    .codex-two-column-content[data-era-style='e4'] {
-      --era-link: oklch(74.6% 0.108 300.0);
-      --era-link-hover: oklch(87.7% 0.079 300.0);
-      --era-icon-accent: oklch(74.6% 0.108 300.0);
-      --era-heading-accent: oklch(55.8% 0.121 300.0);
-      --era-graph-accent: oklch(74.6% 0.108 300.0);
-    }
+    --era-link: var(--era-e4-accent);
+    --era-link-hover: var(--era-e4-accent-high);
+    --era-icon-accent: var(--era-e4-accent);
+    --era-heading-accent: var(--era-e4-heading);
+    --era-graph-accent: var(--era-e4-accent);
   }
 
   .codex-two-column-content[data-era-style] :where(
@@ -105,23 +70,13 @@
     color: var(--era-link-hover);
   }
 
-  .codex-two-column-content[data-era-style] .codex-kicker,
-  .codex-two-column-content[data-era-style] .cx-callout-title {
+  .codex-two-column-content[data-era-style] .codex-kicker {
     color: var(--sl-color-white);
   }
 
   .codex-two-column-content[data-era-style] .codex-title-icon,
   .codex-two-column-content[data-era-style] .sl-markdown-content h2 > .codex-heading-icon {
     color: var(--era-icon-accent);
-  }
-
-  .codex-two-column-content[data-era-style] .codex-mini-graph__node:hover polygon,
-  .codex-two-column-content[data-era-style] .codex-mini-graph__node:focus polygon {
-    fill: var(--era-graph-accent);
-  }
-
-  .codex-two-column-content[data-era-style] .codex-mini-graph__node.is-current polygon {
-    stroke: var(--era-graph-accent);
   }
 
   .codex-two-column-content[data-era-style] .sl-markdown-content h2 {

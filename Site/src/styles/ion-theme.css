@@ -1,44 +1,8 @@
 @layer ion {
-  /* VISCERIUM theme tokens. This vendored Ion stylesheet is the source of truth for global colour variables. */
+  /* Ion layout and type metrics. Colour ownership lives in color-tokens.css. */
   :root {
-    --codex-page-bg: #101010;
-    --codex-accent: #b88746;
-    --codex-accent-high: #f1d29b;
-    --codex-accent-soft: rgba(184, 135, 70, .18);
-    --codex-surface: rgba(255, 255, 255, .025);
-    --codex-surface-raised: linear-gradient(135deg, rgba(184, 135, 70, .10), rgba(255, 255, 255, .02));
-    --codex-surface-accent: rgba(184, 135, 70, .10);
-    --codex-border: var(--codex-accent-soft);
     --codex-radius: .75rem;
-    --codex-sidebar-toggle-bg: rgba(16, 16, 15, .9);
-
-    /* Dark mode colors */
-    --sl-color-accent-low: #342516;
-    --sl-color-accent: var(--codex-accent);
-    --sl-color-accent-high: var(--codex-accent-high);
-    --sl-color-white: #ffffff;
-    --sl-color-gray-1: #c2c2c2;
-    --sl-color-gray-2: #a3a3a3;
-    --sl-color-gray-3: #838383;
-    --sl-color-gray-4: #3f3f3f;
-    --sl-color-gray-5: #262626;
-    --sl-color-gray-6: #121212;
-    --sl-color-black: #070707;
-
-    --sl-color-red-low: #3c0017;
-    --sl-color-red: #bd0249;
-    --sl-color-red-high: #ff78ac;
-
-    --sl-color-purple-low: #33225b;
-    --sl-color-purple: #8a5cf5;
-    --sl-color-purple-high: #9975ee;
-
-    --sl-border: #262626;
-    --pagefind-ui-border: #262626;
-    --pagefind-ui-primary: var(--sl-color-accent);
-
     --sl-icon-size: 1.25rem;
-
     --sl-text-body: .875rem;
     --sl-text-body-sm: .8125rem;
     --sl-text-4xl: 2rem;
@@ -46,49 +10,38 @@
     --sl-text-2xl: 1.5rem;
   }
 
-  :root[data-theme="dark"] {
-    --sl-color-bg: var(--codex-page-bg);
-    --sl-color-bg-sidebar: #151310;
-    --sl-color-bg-nav: #151310;
-  }
-
-  :root[data-theme="light"] {
-    --sl-color-accent-low: #f1d29b;
-    --sl-color-accent: var(--codex-accent);
-    --sl-color-accent-high: #342516;
-    --sl-color-white: #17181c;
-    --sl-color-gray-1: #24272f;
-    --sl-color-gray-2: #353841;
-    --sl-color-gray-3: #545861;
-    --sl-color-gray-4: #888b96;
-    --sl-color-gray-5: #c0c2c7;
-    --sl-color-gray-6: #eceef2;
-    --sl-color-gray-7: #f5f6f8;
-    --sl-color-black: #ffffff;
-
-    --sl-color-red-low: #ff78ac;
-    --sl-color-red: #bd0249;
-    --sl-color-red-high: #3c0017;
-
-    --sl-color-purple-low: #edd1fa;
-    --sl-color-purple: #bb3df5;
-    --sl-color-purple-high: #660891;
-
-    --sl-border: #c0c2c7;
-    --pagefind-ui-border: #eceef2;
-    --pagefind-ui-primary: var(--sl-color-accent);
+  /* Navigation stays OLED black in both themes and owns its foreground scale. */
+  header.header,
+  #starlight__sidebar {
+    --codex-accent: var(--codex-nav-text);
+    --codex-accent-high: var(--codex-nav-text);
+    --codex-border: var(--codex-nav-border);
+    --sl-color-text: var(--codex-nav-text);
+    --sl-color-accent: var(--codex-nav-text);
+    --sl-color-accent-high: var(--codex-nav-text);
+    --sl-color-white: var(--codex-nav-text);
+    --sl-color-gray-1: var(--codex-nav-text);
+    --sl-color-gray-2: var(--codex-nav-text);
+    --sl-color-gray-3: var(--codex-nav-muted);
+    --sl-color-gray-4: var(--codex-nav-muted);
+    --sl-color-gray-5: var(--codex-nav-border);
+    --sl-color-gray-6: var(--codex-nav-hover);
+    --sl-color-black: var(--codex-nav-bg);
+    --sl-color-hairline: var(--codex-nav-border);
+    --sl-color-hairline-light: var(--codex-nav-border);
+    --sl-border: var(--codex-nav-border);
   }
 
   /* Change background color of sidebar & add border */
   #starlight__sidebar {
-    background-color: var(--sl-color-black);
-    border-right: 1px solid var(--sl-border);
+    background-color: var(--sl-color-bg-sidebar);
+    border-right: 1px solid var(--codex-nav-border);
   }
 
   /* Change background of header & add border */
   header.header {
-    background-color: var(--sl-color-black);
-    border-bottom: 1px solid var(--sl-border);
+    background-color: var(--sl-color-bg-nav);
+    border-bottom: 1px solid var(--codex-nav-border);
   }
 
   /* Remove the border for the theme selector since it is disabled */

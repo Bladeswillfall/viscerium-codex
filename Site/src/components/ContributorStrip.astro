@@ -1,5 +1,4 @@
 ---
-import Tooltip from './Tooltip.astro';
 import contributorRegistry from '../data/contributors.json';
 
 type ContributorProfile = {
@@ -8,329 +7,146 @@ type ContributorProfile = {
   avatar: string;
 };
 
-type ResolvedContributor = ContributorProfile & {
+type Contributor = ContributorProfile & {
   id: string;
   roles: string[];
 };
 
 const profiles = contributorRegistry.profiles as Record<string, ContributorProfile>;
-const { starlightRoute } = Astro.locals;
-const entry = starlightRoute?.entry?.data ?? {};
-const routeId = String(entry.slug ?? starlightRoute?.entry?.id ?? '')
+const entry = Astro.locals.starlightRoute?.entry?.data ?? {};
+const routeId = String(entry.slug ?? Astro.locals.starlightRoute?.entry?.id ?? '')
   .replace(/\.(md|mdx)$/i, '')
   .replace(/^\/+|\/+$/g, '');
-const explicitContributors = Array.isArray(entry.contributors) ? entry.contributors : [];
-const defaultEligibleTypes = new Set([
-  'article',
-  'character',
-  'event',
-  'era',
-  'faction',
-  'image',
-  'location',
-  'map',
-  'timeline',
-]);
-const shouldUseDefaults = entry.defaultContributors !== false
+const eligibleTypes = new Set(['article', 'character', 'event', 'era', 'faction', 'image', 'location', 'map', 'timeline']);
+const useDefaults = entry.defaultContributors !== false
   && entry.publish === true
   && entry.status === 'canon'
   && routeId !== 'index'
-  && defaultEligibleTypes.has(entry.type ?? 'article');
-const requestedContributors = [
-  ...(shouldUseDefaults ? contributorRegistry.defaultContributors : []),
-  ...explicitContributors,
+  && eligibleTypes.has(entry.type ?? 'article');
+const requested = [
+  ...(useDefaults ? contributorRegistry.defaultContributors : []),
+  ...(Array.isArray(entry.contributors) ? entry.contributors : []),
 ];
-const mergedContributors = new Map<string, ResolvedContributor>();
+const byId = new Map<string, Contributor>();
 
-for (const item of requestedContributors) {
-  const normalised = typeof item === 'string' ? { id: item } : item;
-  if (!normalised || typeof normalised.id !== 'string') continue;
-  const id = normalised.id.trim().toLowerCase();
-  const profile = profiles[id];
-  if (!profile) continue;
+for (const item of requested) {
+  const reference = typeof item === 'string' ? { id: item } : item;
+  const id = reference?.id?.trim().toLowerCase();
+  if (!id || !profiles[id]) continue;
 
-  const incomingRoles = Array.isArray('roles' in normalised ? normalised.roles : undefined)
-    ? normalised.roles
-    : 'role' in normalised && normalised.role
-      ? [normalised.role]
-      : ['Contributor'];
-  const existing = mergedContributors.get(id) ?? {
-    id,
-    ...profile,
-    roles: [],
-  };
-  for (const role of incomingRoles ?? []) {
-    const value = String(role).trim();
-    if (value && !existing.roles.some((current) => current.toLowerCase() === value.toLowerCase())) {
-      existing.roles.push(value);
-    }
+  const contributor = byId.get(id) ?? { id, ...profiles[id], roles: [] };
+  const roles = Array.isArray(reference.roles) ? reference.roles : [reference.role ?? 'Contributor'];
+  for (const role of roles.map(String).map((value) => value.trim()).filter(Boolean)) {
+    if (!contributor.roles.some((value) => value.toLowerCase() === role.toLowerCase())) contributor.roles.push(role);
   }
-  mergedContributors.set(id, existing);
+  byId.set(id, contributor);
 }
 
-const contributors = [...mergedContributors.values()]
-  .map((contributor) => ({
-    ...contributor,
-    isAuthor: contributor.roles.some((role) => role.toLowerCase() === 'author'),
-  }))
-  .sort((a, b) => Number(b.isAuthor) - Number(a.isAuthor) || a.name.localeCompare(b.name));
-const contributorCount = contributors.length;
+const contributors = [...byId.values()].sort((a, b) => (
+  Number(b.roles.some((role) => role.toLowerCase() === 'author'))
+  - Number(a.roles.some((role) => role.toLowerCase() === 'author'))
+  || a.name.localeCompare(b.name)
+));
 const collapsedLimit = Math.max(1, Number(contributorRegistry.collapsedLimit) || 7);
-const hiddenCount = Math.max(0, contributorCount - collapsedLimit);
-const panelId = `codex-contributors-${crypto.randomUUID().replace(/-/g, '')}`;
 ---
 
-{contributorCount > 0 && (
-  <section class="codex-contributors" data-contributor-stack aria-labelledby={`${panelId}-title`}>
-    <button
-      class="codex-contributors__heading"
-      type="button"
-      aria-expanded="false"
-      aria-controls={panelId}
-      data-contributor-toggle
-    >
-      <span id={`${panelId}-title`} class="codex-contributors__title">Contributors</span>
-      <span class="codex-contributors__count" aria-label={`${contributorCount} contributors`}>{contributorCount}</span>
-      <span class="codex-contributors__chevron" aria-hidden="true" data-contributor-chevron>⌄</span>
-      <span class="codex-sr-only" data-contributor-toggle-label>Expand contributor list</span>
-    </button>
-
-    <div id={panelId} class="codex-contributor-coins" data-contributor-list>
-      {contributors.map((contributor, index) => {
-        const roles = contributor.roles.join(', ');
-        const profileUrl = `https://github.com/${contributor.github}`;
-        const tooltipText = `${contributor.name} — ${roles} · @${contributor.github}`;
-        const accessibleLabel = `${contributor.name} — ${roles}. Open GitHub profile in a new tab.`;
-        return (
-          <Tooltip
-            text={tooltipText}
-            href={profileUrl}
-            label={accessibleLabel}
-            external={true}
-            class={`codex-contributor-coin${contributor.isAuthor ? ' is-author' : ''}`}
-            wrapperClass={`codex-contributor-tooltip${index >= collapsedLimit ? ' is-overflow' : ''}`}
-          >
-            <img
-              src={`/assets/contributors/${contributor.avatar}`}
-              alt=""
-              width="48"
-              height="48"
-              loading="lazy"
-              decoding="async"
-            />
-          </Tooltip>
-        );
-      })}
-
-      {hiddenCount > 0 && (
-        <button
-          class="codex-contributor-more"
-          type="button"
-          aria-label={`Show ${hiddenCount} more contributors`}
-          data-contributor-more
-        >
-          +{hiddenCount}
-        </button>
-      )}
-    </div>
+{contributors.length > 0 && (
+  <section class="codex-contributors" aria-label="Contributors">
+    <details open={contributors.length <= collapsedLimit}>
+      <summary>Contributors <span>{contributors.length}</span></summary>
+      <ul>
+        {contributors.map((contributor) => {
+          const roles = contributor.roles.join(', ');
+          const isAuthor = contributor.roles.some((role) => role.toLowerCase() === 'author');
+          return (
+            <li>
+              <a
+                class:list={{ 'is-author': isAuthor }}
+                href={`https://github.com/${contributor.github}`}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${contributor.name}, ${roles}. Open GitHub profile in a new tab.`}
+              >
+                <img
+                  src={`/assets/contributors/${contributor.avatar}`}
+                  alt=""
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span><strong>{contributor.name}</strong><small>{roles}</small></span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </details>
   </section>
 )}
-
-<script is:inline>
-  (() => {
-    const initialiseContributorStacks = () => {
-      document.querySelectorAll('[data-contributor-stack]').forEach((section) => {
-        if (section.dataset.contributorReady === 'true') return;
-        section.dataset.contributorReady = 'true';
-
-        const toggle = section.querySelector('[data-contributor-toggle]');
-        const list = section.querySelector('[data-contributor-list]');
-        const more = section.querySelector('[data-contributor-more]');
-        const chevron = section.querySelector('[data-contributor-chevron]');
-        const label = section.querySelector('[data-contributor-toggle-label]');
-        if (!toggle || !list) return;
-
-        const setExpanded = (expanded) => {
-          section.classList.toggle('is-expanded', expanded);
-          list.classList.toggle('is-expanded', expanded);
-          toggle.setAttribute('aria-expanded', String(expanded));
-          if (chevron) chevron.textContent = expanded ? '⌃' : '⌄';
-          if (label) label.textContent = expanded ? 'Collapse contributor list' : 'Expand contributor list';
-        };
-
-        const toggleExpanded = () => setExpanded(toggle.getAttribute('aria-expanded') !== 'true');
-        toggle.addEventListener('click', toggleExpanded);
-        more?.addEventListener('click', toggleExpanded);
-        list.addEventListener('click', (event) => {
-          if (event.target instanceof Element && event.target.closest('a, button')) return;
-          toggleExpanded();
-        });
-      });
-    };
-
-    initialiseContributorStacks();
-    document.addEventListener('astro:page-load', initialiseContributorStacks);
-  })();
-</script>
 
 <style>
   .codex-contributors {
     margin-block: 2.5rem 1.5rem;
-    padding-block-start: 1.25rem;
     border-block-start: 1px solid var(--sl-color-hairline-light);
+    padding: 1.5rem var(--sl-content-pad-x);
   }
 
-  .codex-contributors__heading {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--sl-color-white);
+  summary {
     cursor: pointer;
-    font: inherit;
-  }
-
-  .codex-contributors__heading:hover .codex-contributors__title,
-  .codex-contributors__heading:focus-visible .codex-contributors__title {
-    color: var(--sl-color-accent-high);
-  }
-
-  .codex-contributors__heading:focus-visible {
-    outline: 2px solid var(--sl-color-accent-high);
-    outline-offset: 0.3rem;
-  }
-
-  .codex-contributors__title {
-    font-size: var(--sl-text-xl);
-    font-weight: 700;
-    transition: color 140ms ease;
-  }
-
-  .codex-contributors__count {
-    display: inline-grid;
-    min-width: 2rem;
-    min-height: 2rem;
-    place-items: center;
-    padding-inline: 0.55rem;
-    border-radius: 999px;
-    background: var(--sl-color-gray-6);
-    color: var(--sl-color-gray-1);
-    font-family: var(--sl-font-system-mono);
-    font-size: var(--sl-text-sm);
-    font-weight: 700;
-  }
-
-  .codex-contributors__chevron {
-    color: var(--sl-color-gray-3);
+    color: var(--sl-color-white);
     font-size: var(--sl-text-lg);
-    line-height: 1;
+    font-weight: 700;
   }
 
-  .codex-contributor-coins {
+  summary span {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin: .85rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
     display: flex;
     align-items: center;
-    min-height: 3.5rem;
-    margin-block-start: 0.85rem;
-    padding: 0.25rem 0.35rem;
-    cursor: pointer;
-  }
-
-  .codex-contributor-coins > :global(.codex-contributor-tooltip) {
-    transition: margin 180ms ease, transform 180ms ease;
-  }
-
-  .codex-contributor-coins > :global(.codex-contributor-tooltip:not(:first-child)) {
-    margin-inline-start: -0.85rem;
-  }
-
-  .codex-contributor-coins > :global(.codex-contributor-tooltip:hover),
-  .codex-contributor-coins > :global(.codex-contributor-tooltip:focus-within) {
-    z-index: 5;
-    transform: translateY(-0.2rem);
-  }
-
-  .codex-contributor-coins:not(.is-expanded) > :global(.codex-contributor-tooltip.is-overflow) {
-    display: none;
-  }
-
-  :global(.codex-contributor-coin) {
-    box-sizing: border-box;
-    width: 3rem;
-    height: 3rem;
-    overflow: hidden;
-    border: 2px solid var(--sl-color-bg);
-    border-radius: 50%;
-    background: var(--sl-color-gray-6);
-    box-shadow: 0 0 0 1px var(--sl-color-hairline-light);
+    gap: .65rem;
+    color: var(--sl-color-gray-2);
     text-decoration: none;
   }
 
-  :global(.codex-contributor-coin.is-author) {
-    border-color: var(--sl-color-accent-high);
-    box-shadow: 0 0 0 2px color-mix(in oklch, var(--sl-color-accent-high) 45%, transparent);
+  a:hover strong {
+    color: var(--sl-color-accent-high);
   }
 
-  :global(.codex-contributor-coin:focus-visible) {
-    outline: 2px solid var(--sl-color-white);
-    outline-offset: 0.2rem;
-  }
-
-  :global(.codex-contributor-coin img) {
-    display: block;
-    width: 100%;
-    height: 100%;
+  img {
+    width: 3rem;
+    height: 3rem;
+    border: 2px solid var(--sl-color-bg);
+    border-radius: 50%;
+    background: var(--codex-surface-raised-color);
     object-fit: cover;
   }
 
-  .codex-contributor-more {
-    display: inline-grid;
-    width: 3rem;
-    height: 3rem;
-    flex: 0 0 auto;
-    place-items: center;
-    margin-inline-start: -0.65rem;
-    border: 2px solid var(--sl-color-bg);
-    border-radius: 50%;
-    background: var(--sl-color-gray-6);
-    color: var(--sl-color-gray-1);
-    box-shadow: 0 0 0 1px var(--sl-color-hairline-light);
-    cursor: pointer;
-    font-family: var(--sl-font-system-mono);
-    font-size: var(--sl-text-xs);
-    font-weight: 800;
+  .is-author img {
+    border-color: var(--sl-color-accent-high);
   }
 
-  .codex-contributor-more:hover,
-  .codex-contributor-more:focus-visible {
-    background: var(--sl-color-accent-low);
+  a span {
+    display: grid;
+  }
+
+  strong {
     color: var(--sl-color-white);
   }
 
-  .codex-contributor-more:focus-visible {
-    outline: 2px solid var(--sl-color-accent-high);
-    outline-offset: 0.2rem;
-  }
-
-  .codex-contributor-coins.is-expanded {
-    flex-wrap: wrap;
-    gap: 0.8rem;
-    cursor: default;
-  }
-
-  .codex-contributor-coins.is-expanded > :global(.codex-contributor-tooltip) {
-    margin-inline-start: 0;
-  }
-
-  .codex-contributor-coins.is-expanded .codex-contributor-more {
-    display: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .codex-contributors__title,
-    .codex-contributor-coins > :global(.codex-contributor-tooltip) {
-      transition: none;
-    }
+  small {
+    color: var(--sl-color-gray-3);
   }
 </style>

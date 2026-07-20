@@ -1,66 +1,21 @@
 import { defineConfig } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
 import mdx from '@astrojs/mdx';
 import partytown from '@astrojs/partytown';
 import preact from '@astrojs/preact';
 import sitemap from '@astrojs/sitemap';
 import starlight from '@astrojs/starlight';
-import compress from '@playform/compress';
-import starlightAutoSidebar from 'starlight-auto-sidebar';
-import { starlightBasePath } from 'starlight-base-path';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
 import starlightChangelogs, { makeChangelogsSidebarLinks } from 'starlight-changelogs';
-import starlightHeadingBadges from 'starlight-heading-badges';
-import { starlightIconsPlugin } from 'starlight-plugin-icons';
+import starlightGiscus from 'starlight-giscus';
 import starlightScrollToTop from 'starlight-scroll-to-top';
 import starlightSidebarSwipe from 'starlight-sidebar-swipe';
+import siteGraph from 'starlight-site-graph/integration';
 import starlightTags from 'starlight-tags';
 import starlightTelescope from 'starlight-telescope';
-import starlightUiTweaks from 'starlight-ui-tweaks';
-import { progressiveCssColors } from './plugins/progressive-css-colors.mjs';
 import { buildSidebar } from './sidebar.mjs';
 import siteConfig from './site.config.mjs';
-
-const compressSourceAssets = process.env.CODEX_COMPRESS_SOURCE_ASSETS === '1';
-const sourceAssetCompressor = compressSourceAssets
-  ? compress({
-      Path: ['../Vault/Assets'],
-      CSS: false,
-      HTML: false,
-      JavaScript: false,
-      JSON: false,
-      SVG: false,
-      Map: {
-        Image: '**/*.{avif,gif,png,tiff,webp}',
-      },
-      Image: {
-        sharp: {
-          avif: {
-            chromaSubsampling: '4:4:4',
-            effort: 9,
-            lossless: true,
-          },
-          gif: {
-            effort: 10,
-          },
-          png: {
-            compressionLevel: 9,
-            palette: false,
-          },
-          tiff: {
-            compression: 'lzw',
-          },
-          webp: {
-            effort: 6,
-            lossless: true,
-          },
-          sharp: {
-            failOn: 'error',
-            sequentialRead: true,
-            unlimited: true,
-          },
-        },
-      },
-    })
-  : undefined;
 
 const feedHead = [
   {
@@ -106,26 +61,6 @@ const webmentionHead = siteConfig.webmentions?.enabled
     ].filter(Boolean)
   : [];
 
-const fontAwesomeHead = [
-  {
-    tag: 'link',
-    attrs: {
-      rel: 'preconnect',
-      href: 'https://cdnjs.cloudflare.com',
-      crossorigin: 'anonymous',
-    },
-  },
-  {
-    tag: 'link',
-    attrs: {
-      rel: 'stylesheet',
-      href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css',
-      crossorigin: 'anonymous',
-      referrerpolicy: 'no-referrer',
-    },
-  },
-];
-
 const faviconPath = '/favicons/viscerium-favicon.svg';
 
 const faviconHead = [
@@ -149,7 +84,7 @@ const faviconHead = [
     attrs: {
       rel: 'mask-icon',
       href: '/favicons/viscerium-mask.svg',
-      color: '#0b0b0d',
+      color: '#000000',
     },
   },
   {
@@ -163,16 +98,16 @@ const faviconHead = [
     tag: 'meta',
     attrs: {
       name: 'theme-color',
-      content: '#0b0b0d',
+      content: '#000000',
     },
   },
 ];
 
 const ga4MeasurementId = siteConfig.analytics?.ga4?.measurementId ?? 'G-XXXXXXXXXX';
-
+const ga4Enabled = siteConfig.analytics?.ga4?.enabled === true;
 // GA4 placeholder only. Keep disabled until PUBLIC_GA4_MEASUREMENT_ID is replaced
 // with the real property ID and PUBLIC_GA4_ENABLED=1 is set in the deploy environment.
-const ga4Head = siteConfig.analytics?.ga4?.enabled
+const ga4Head = ga4Enabled
   ? [
       {
         tag: 'script',
@@ -209,24 +144,19 @@ const ga4Head = siteConfig.analytics?.ga4?.enabled
 const sidebar = [
   ...(await buildSidebar()),
   {
-    label: '[history] Changelogs',
+    label: '[event] Releases',
     collapsed: false,
     items: [
       ...makeChangelogsSidebarLinks([
         {
           type: 'latest',
-          base: 'changelog',
-          label: 'Latest changes',
+          base: 'releases',
+          label: 'Latest release',
         },
         {
           type: 'all',
-          base: 'changelog',
-          label: 'Version history',
-        },
-        {
-          type: 'recent',
-          base: 'changelog',
-          count: 3,
+          base: 'releases',
+          label: 'All releases',
         },
       ]),
     ],
@@ -235,8 +165,11 @@ const sidebar = [
 
 export default defineConfig({
   site: siteConfig.site,
-  vite: {
-    plugins: [progressiveCssColors()],
+  markdown: {
+    processor: unified({
+      remarkPlugins: [remarkMath],
+      rehypePlugins: [rehypeKatex],
+    }),
   },
   integrations: [
     preact(),
@@ -245,12 +178,14 @@ export default defineConfig({
       description: siteConfig.description,
       pagefind: true,
       customCss: [
-        './vendor/starlight-ion-theme/styles/layers.css',
-        './vendor/starlight-ion-theme/styles/theme.css',
-        './vendor/starlight-ion-theme/styles/ec-theme.css',
+        'katex/dist/katex.min.css',
+        './src/styles/ion-layers.css',
+        './src/styles/color-tokens.css',
+        './src/styles/ion-theme.css',
+        './src/styles/ion-expressive-code.css',
         './src/styles/typography.css',
+        './src/styles/content-media.css',
         './src/styles/codex-ui.css',
-        './src/styles/custom.css',
         './src/styles/navigation.css',
         './src/styles/header-controls.css',
         './src/styles/graph.css',
@@ -260,9 +195,11 @@ export default defineConfig({
         './src/styles/category-index.css',
         './src/styles/support.css',
         './src/styles/layout.css',
-        './src/styles/color-tokens.css',
         './src/styles/a11y.css',
         './src/styles/era-styles.css',
+        'starlight-site-graph/styles/layers.css',
+        'starlight-site-graph/styles/common.css',
+        'starlight-site-graph/styles/starlight.css',
       ],
       components: {
         Header: './src/components/CodexHeader.astro',
@@ -276,36 +213,28 @@ export default defineConfig({
         baseUrl: `${siteConfig.githubRepoUrl}/edit/main/Vault/Lore/`,
       },
       plugins: [
-        starlightHeadingBadges(),
-        starlightTags(),
+        starlightTags({ onInlineTagsNotFound: 'create' }),
         starlightChangelogs(),
-        starlightBasePath(),
-        starlightAutoSidebar(),
-        starlightUiTweaks(),
-        starlightIconsPlugin(),
+        starlightGiscus(siteConfig.giscus),
         starlightScrollToTop(),
         starlightSidebarSwipe(),
         starlightTelescope(),
       ],
       sidebar,
-      head: [...feedHead, ...webmentionHead, ...fontAwesomeHead, ...faviconHead, ...ga4Head],
+      head: [...feedHead, ...webmentionHead, ...faviconHead, ...ga4Head],
       social: [{ icon: 'github', label: 'GitHub', href: siteConfig.githubRepoUrl }],
     }),
+    siteGraph({ starlight: true, overridePageSidebar: false }),
     sitemap(),
     mdx(),
-    partytown({
-      config: {
-        forward: ['dataLayer.push'],
-      },
-    }),
-    ...(sourceAssetCompressor ? [sourceAssetCompressor] : []),
-    compress({
-      HTML: {
-        'html-minifier-terser': {
-          removeAttributeQuotes: false,
-          sortClassName: false,
-        },
-      },
-    }),
+    ...(ga4Enabled
+      ? [
+          partytown({
+            config: {
+              forward: ['dataLayer.push'],
+            },
+          }),
+        ]
+      : []),
   ],
 });

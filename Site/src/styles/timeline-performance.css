@@ -7,7 +7,7 @@
   gap: .45rem;
   margin-block-start: .7rem;
   border: 1px solid var(--vc-timeline-border-strong) !important;
-  background: color-mix(in srgb, var(--vc-timeline-accent) 8%, var(--vc-timeline-surface-deep)) !important;
+  background: color-mix(in oklch, var(--vc-timeline-accent) 8%, var(--vc-timeline-surface-deep)) !important;
   text-align: center !important;
 }
 

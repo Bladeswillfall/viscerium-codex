@@ -92,13 +92,10 @@ textarea,
 .sidebar-pane,
 .right-sidebar,
 .pagination-links,
-.codex-meta,
 .codex-sidebar-meta,
 .codex-breadcrumbs,
-.codex-comments,
 .codex-warning,
 .ion-codex-footer,
-.cx-callout-title,
 figcaption,
 table th {
   font-family: var(--vc-font-ui);
@@ -127,14 +124,14 @@ samp,
   font-size: .92em;
 }
 
-/* MathJax and codex equation panels. */
+/* Build-time KaTeX and codex equation panels. */
 .cx-equation {
   margin-block: 1.5rem;
   padding: 1rem;
   overflow-x: auto;
   border: 1px solid var(--codex-accent-soft);
-  border-radius: .85rem;
-  background: linear-gradient(145deg, rgba(184, 135, 70, .10), rgba(255, 255, 255, .025));
+  border-radius: .5rem;
+  background: var(--codex-surface-raised-color);
 }
 
 .cx-equation-title {
@@ -147,30 +144,87 @@ samp,
   text-transform: uppercase;
 }
 
-.cx-math-display {
-  margin-block: 1rem;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-block: .35rem;
-}
-
-.cx-equation > :first-child,
-.cx-math-display > :first-child {
+.cx-equation > :first-child {
   margin-top: 0;
 }
 
-.cx-equation > :last-child,
-.cx-math-display > :last-child {
+.cx-equation > :last-child {
   margin-bottom: 0;
 }
 
-mjx-container {
-  font-size: 1.04em;
+/* Native Markdown quotations. */
+.sl-markdown-content blockquote {
+  position: relative;
+  margin-block: 2rem;
+  margin-inline: clamp(.25rem, 2vw, 1.75rem);
+  padding: 1.25rem clamp(1.25rem, 3vw, 2rem) 1.2rem clamp(2.5rem, 5vw, 3.75rem);
+  overflow: visible;
+  border: 1px solid color-mix(in oklch, var(--codex-accent) 20%, transparent);
+  border-inline-start-color: color-mix(in oklch, var(--codex-accent) 35%, transparent);
+  border-radius: .1rem;
+  background: var(--codex-surface);
+  box-shadow:
+    0 1.25rem 2.5rem color-mix(in oklch, var(--codex-shadow-color) 18%, transparent),
+    inset 0 0 0 1px color-mix(in oklch, var(--codex-fixed-light) 1.8%, transparent);
+  color: var(--sl-color-gray-2);
+  font-family: var(--vc-font-body);
+  font-size: clamp(1.05rem, 1.25vw, 1.28rem);
+  line-height: 1.75;
 }
 
-mjx-container[jax='CHTML'][display='true'] {
-  margin: 1rem 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-block: .25rem;
+.sl-markdown-content blockquote::before,
+.sl-markdown-content blockquote::after {
+  position: absolute;
+  z-index: 0;
+  color: color-mix(in oklch, var(--codex-accent) 35%, transparent);
+  font-family: var(--vc-font-display);
+  font-size: clamp(3.25rem, 7vw, 5.25rem);
+  font-weight: 400;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.sl-markdown-content blockquote::before {
+  content: '“';
+  inset-block-start: -.55rem;
+  inset-inline-start: .45rem;
+}
+
+.sl-markdown-content blockquote::after {
+  content: '”';
+  inset-block-end: -4.6rem;
+  inset-inline-end: .5rem;
+}
+
+.sl-markdown-content blockquote > * {
+  position: relative;
+  z-index: 1;
+}
+
+.sl-markdown-content blockquote > :first-child {
+  margin-top: 0;
+}
+
+.sl-markdown-content blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.sl-markdown-content blockquote p {
+  margin-block: .75rem;
+}
+
+.sl-markdown-content blockquote :is(cite, footer) {
+  display: block;
+  margin-block-start: .75rem;
+  color: var(--sl-color-gray-3);
+  font-family: var(--vc-font-ui);
+  font-size: var(--sl-text-sm);
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: .025em;
+  text-align: end;
+}
+
+.sl-markdown-content blockquote :is(cite, footer)::before {
+  content: '— ';
 }

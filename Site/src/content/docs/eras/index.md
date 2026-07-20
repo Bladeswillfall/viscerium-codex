@@ -17,7 +17,7 @@ Browse every public Codex page filed beneath **Eras**.
 <h3 id="subcategories-c" class="codex-alpha-index__letter">C</h3>
 <ul class="codex-alpha-index__items">
 <li class="codex-alpha-index__item">
-<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/">CITADEL</a><span class="codex-alpha-index__meta">15 pages</span></div>
+<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/">CITADEL</a><span class="codex-alpha-index__meta">9 pages</span></div>
 </li>
 </ul>
 </section>
@@ -103,30 +103,6 @@ Browse every public Codex page filed beneath **Eras**.
 <li class="codex-alpha-index__item">
 <div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/entropy/">ENTROPY</a><span class="codex-alpha-index__meta">era</span></div>
 <p class="codex-alpha-index__description">The far-future age of dark cybernetics, vacuum warfare and a civilisation confronting the full scale of the Naranor threat.</p>
-</li>
-<li class="codex-alpha-index__item">
-<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/images/example-banner/">Example Banner</a><span class="codex-alpha-index__meta">image</span></div>
-<p class="codex-alpha-index__description">A sample image sidecar page for artwork provenance, sidebar usage, rights, and related lore links.</p>
-</li>
-<li class="codex-alpha-index__item">
-<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/events/example-battle/">Example Battle</a><span class="codex-alpha-index__meta">event</span></div>
-<p class="codex-alpha-index__description">A sample event used to demonstrate generated timeline data, calendar date badges, wikilinks, and public callouts.</p>
-</li>
-<li class="codex-alpha-index__item">
-<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/characters/example-character/">Example Character</a><span class="codex-alpha-index__meta">character</span></div>
-<p class="codex-alpha-index__description">A sample public character that demonstrates metadata, wikilinks, tags, layout cards, and related entries.</p>
-</li>
-<li class="codex-alpha-index__item">
-<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/locations/example-city/">Example City</a><span class="codex-alpha-index__meta">location</span></div>
-<p class="codex-alpha-index__description">A sample city with generated map marker data, faction links, tags, and public layout guidance.</p>
-</li>
-<li class="codex-alpha-index__item">
-<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/factions/example-faction/">Example Faction</a><span class="codex-alpha-index__meta">faction</span></div>
-<p class="codex-alpha-index__description">A sample public faction used to demonstrate Codex metadata, image sidecars, wikilinks, layout tags, and relationship data.</p>
-</li>
-<li class="codex-alpha-index__item">
-<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/maps/example-world-map/">Example World Map</a><span class="codex-alpha-index__meta">map</span></div>
-<p class="codex-alpha-index__description">A sample interactive map metadata page with marker guidance for public location notes.</p>
 </li>
 </ul>
 </section>

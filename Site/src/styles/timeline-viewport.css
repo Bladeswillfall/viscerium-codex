@@ -65,12 +65,12 @@ body > .vis-tooltip:not(.vc-timeline-hovercard) {
 }
 
 body > .vc-timeline-hovercard {
-  --vc-hovercard-bg: #151310f7;
-  --vc-hovercard-border: #b8874670;
-  --vc-hovercard-text: #f4efe5;
-  --vc-hovercard-muted: #c2bbb0;
-  --vc-hovercard-accent: #f1d29b;
-  --vc-hovercard-shadow: #000000a6;
+  --vc-hovercard-bg: color-mix(in oklch, var(--codex-surface-raised-color) 97%, transparent);
+  --vc-hovercard-border: color-mix(in oklch, var(--codex-accent) 44%, transparent);
+  --vc-hovercard-text: var(--sl-color-text);
+  --vc-hovercard-muted: var(--sl-color-gray-2);
+  --vc-hovercard-accent: var(--sl-color-accent-high);
+  --vc-hovercard-shadow: color-mix(in oklch, var(--codex-shadow-color) 65%, transparent);
 
   position: fixed !important;
   z-index: 2147483000 !important;
@@ -94,15 +94,6 @@ body > .vc-timeline-hovercard {
   line-height: 1.35;
   white-space: normal !important;
   pointer-events: none;
-}
-
-:root[data-theme='light'] body > .vc-timeline-hovercard {
-  --vc-hovercard-bg: #f7f2eafa;
-  --vc-hovercard-border: #6f4a2770;
-  --vc-hovercard-text: #201d19;
-  --vc-hovercard-muted: #5f574d;
-  --vc-hovercard-accent: #6d431d;
-  --vc-hovercard-shadow: #37261433;
 }
 
 body > .vc-timeline-hovercard[hidden] {

@@ -101,12 +101,13 @@ test('top ribbon owns flat, centred search, Telescope and colour-mode controls',
 
   const searchButton = page.locator('[data-codex-header-search] button[data-open-modal]');
   const telescopeButton = page.locator('.right-group telescope-search .telescope__trigger-btn');
-  const themeButton = page.locator('[data-codex-theme-toggle]');
+  const themeSelect = page.locator('.codex-theme-control select');
 
   await expect(searchButton).toBeVisible();
   await expect(telescopeButton).toBeVisible();
-  await expect(themeButton).toBeVisible();
+  await expect(themeSelect).toBeVisible();
   await expect(page.locator('#starlight__sidebar starlight-theme-select')).toHaveCount(0);
+  expect(await page.locator('#starlight__sidebar .codex-local-icon').count()).toBeGreaterThan(3);
   await expect(page.locator('.codex-header .social-icons')).toHaveCount(0);
   await expect(page.locator('.codex-header a[href*="github.com"]')).toHaveCount(0);
 
@@ -114,7 +115,7 @@ test('top ribbon owns flat, centred search, Telescope and colour-mode controls',
     const header = document.querySelector('.codex-header');
     const search = document.querySelector('[data-codex-header-search] button[data-open-modal]');
     const telescope = document.querySelector('.right-group telescope-search .telescope__trigger-btn');
-    const theme = document.querySelector('[data-codex-theme-toggle]');
+    const theme = document.querySelector('.codex-theme-control select');
 
     if (!(header instanceof HTMLElement) || !(search instanceof HTMLElement)) {
       throw new Error('Missing Codex header or search control');
@@ -140,9 +141,10 @@ test('top ribbon owns flat, centred search, Telescope and colour-mode controls',
   expect(ribbon.backgroundImages).toEqual(['none', 'none', 'none']);
 
   const initialTheme = await page.locator('html').getAttribute('data-theme');
-  await themeButton.click();
-  await expect.poll(() => page.locator('html').getAttribute('data-theme')).not.toBe(initialTheme);
-  await expect.poll(() => page.evaluate(() => localStorage.getItem('starlight-theme'))).not.toBe(initialTheme);
+  const selectedTheme = initialTheme === 'dark' ? 'light' : 'dark';
+  await themeSelect.selectOption(selectedTheme);
+  await expect.poll(() => page.locator('html').getAttribute('data-theme')).toBe(selectedTheme);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('starlight-theme'))).toBe(selectedTheme);
 });
 
 test('mobile On this page control only appears below the desktop breakpoint', async ({ page }) => {

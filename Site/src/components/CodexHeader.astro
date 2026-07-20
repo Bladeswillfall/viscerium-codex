@@ -4,7 +4,7 @@ import config from 'virtual:starlight/user-config';
 import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
 import Search from 'virtual:starlight/components/Search';
 import SiteTitle from 'virtual:starlight/components/SiteTitle';
-import CodexThemeToggle from './CodexThemeToggle.astro';
+import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
 
 /**
  * Keep Starlight's native Pagefind control visible whenever Pagefind is enabled.
@@ -28,7 +28,9 @@ const shouldRenderSearch =
     Keep this class stable: it is part of the plugin integration contract.
   -->
   <div class="right-group codex-header-controls print:hidden" data-codex-header-controls>
-    <CodexThemeToggle />
+    <div class="codex-theme-control" title="Colour theme">
+      <ThemeSelect />
+    </div>
     <LanguageSelect />
   </div>
 </div>

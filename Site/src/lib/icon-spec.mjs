@@ -1,5 +1,4 @@
 const safeTokenPattern = /^[a-z0-9][a-z0-9-]*$/i;
-const fontAwesomeStylePattern = /^fa-(solid|regular|brands|thin|light|duotone|sharp|sharp-duotone)$/i;
 const iconLabelPattern = /^\[icon:([^\]]+)\]\s*(.*)$/i;
 const legacyIconLabelPattern = /^\[([a-z0-9][a-z0-9-]*)\]\s*(.*)$/i;
 
@@ -7,53 +6,17 @@ function cleanSpec(value) {
   return typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : '';
 }
 
-function safeTokens(value) {
-  const tokens = cleanSpec(value).split(' ').filter(Boolean);
-  return tokens.length > 0 && tokens.every((token) => safeTokenPattern.test(token)) ? tokens : [];
-}
-
 export function parseIconSpec(value) {
   const raw = cleanSpec(value);
   if (!raw) return null;
 
-  const tokens = safeTokens(raw);
-  if (tokens.length === 0) return null;
+  const name = raw.replace(/^local\s+/i, '');
+  if (!safeTokenPattern.test(name)) return null;
 
-  if (tokens[0].toLowerCase() === 'local') {
-    if (tokens.length !== 2) return null;
-    return {
-      provider: 'local',
-      name: tokens[1],
-      spec: `local ${tokens[1]}`,
-    };
-  }
-
-  // A single token is retained as shorthand for the Codex's local SVG library.
-  if (tokens.length === 1) {
-    if (fontAwesomeStylePattern.test(tokens[0])) return null;
-    return {
-      provider: 'local',
-      name: tokens[0],
-      spec: `local ${tokens[0]}`,
-    };
-  }
-
-  const isFontAwesome = fontAwesomeStylePattern.test(tokens[0]);
-  if (isFontAwesome && !tokens.slice(1).some((token) => /^fa-(?!fw$)/i.test(token))) {
-    return null;
-  }
-
-  const classes = isFontAwesome && !tokens.some((token) => token.toLowerCase() === 'fa-fw')
-    ? [...tokens, 'fa-fw']
-    : tokens;
-
-  // Multi-token specifications are rendered as CSS classes. Font Awesome
-  // icons always receive fa-fw so mixed glyph widths align consistently in
-  // navigation, page titles, and article headings.
   return {
-    provider: 'classes',
-    classes,
-    spec: tokens.join(' '),
+    provider: 'local',
+    name,
+    spec: `local ${name}`,
   };
 }
 
@@ -84,25 +47,16 @@ export function parseIconLabel(value) {
   return { icon: undefined, label: raw };
 }
 
-function classAttribute(jsx) {
-  return jsx ? 'className' : 'class';
-}
-
 export function renderIconMarkup(spec, options = {}) {
   const parsed = parseIconSpec(spec);
   if (!parsed) return '';
 
   const jsx = options.jsx === true;
-  const attr = classAttribute(jsx);
+  const attr = jsx ? 'className' : 'class';
   const classes = ['codex-icon', options.className].filter(Boolean).join(' ');
-
-  if (parsed.provider === 'local') {
-    const iconPath = `/icons/${parsed.name}.svg`;
-    const style = jsx
-      ? `style={"--icon: url('${iconPath}')"}`
-      : `style="--icon: url('${iconPath}')"`;
-    return `<span ${attr}="${classes} codex-local-icon" aria-hidden="true" ${style}></span>`;
-  }
-
-  return `<span ${attr}="${classes}" aria-hidden="true"><i ${attr}="${parsed.classes.join(' ')}"></i></span>`;
+  const iconPath = `/icons/${parsed.name}.svg`;
+  const style = jsx
+    ? `style={"--icon: url('${iconPath}')"}`
+    : `style="--icon: url('${iconPath}')"`;
+  return `<span ${attr}="${classes} codex-local-icon" aria-hidden="true" ${style}></span>`;
 }

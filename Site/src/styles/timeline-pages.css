@@ -29,25 +29,9 @@
 /* Every TimelineApp instance receives the same palette and Chronos-led presentation. */
 .vc-timeline-shell,
 .vc-timeline-app {
-  --vc-event-ink: #17191b;
-  --vc-event-technology: #a8d8d2;
-  --vc-event-military: #e8b3a0;
-  --vc-event-political: #e4ca91;
-  --vc-event-cultural: #cbb7dc;
-  --vc-event-religious: #e5d7a8;
-  --vc-event-economic: #bfd39f;
-  --vc-event-scientific: #b2cae6;
-  --vc-event-disaster: #e7a19a;
-  --vc-event-resonance: #d1b0e5;
-  --vc-event-myrkild: #b2cea0;
-  --vc-event-naranor: #d9d5c8;
-  --vc-event-exploration: #a1cdd3;
-  --vc-event-social: #dcb8b4;
-  --vc-event-environmental: #b7d0a8;
-  --vc-event-unknown: #c9c4bb;
-  --vc-year-line: color-mix(in srgb, var(--sl-color-gray-4, #858078) 22%, transparent);
-  --vc-year-line-decade: color-mix(in srgb, var(--sl-color-gray-3, #aaa49b) 36%, transparent);
-  --vc-year-line-century: color-mix(in srgb, var(--sl-color-gray-2, #c6c0b7) 52%, transparent);
+  --vc-year-line: color-mix(in oklch, var(--sl-color-gray-4) 22%, transparent);
+  --vc-year-line-decade: color-mix(in oklch, var(--sl-color-gray-3) 36%, transparent);
+  --vc-year-line-century: color-mix(in oklch, var(--sl-color-gray-2) 52%, transparent);
 }
 
 /* The application itself is not a card. Its controls and visual modules provide structure. */
@@ -80,7 +64,7 @@
 .vc-timeline-app .vc-timeline-toolbar,
 .vc-timeline-app .vc-timeline-filters,
 .vc-timeline-app .vc-timeline-minimap-wrap {
-  background: color-mix(in srgb, var(--vc-timeline-surface-deep) 82%, transparent);
+  background: color-mix(in oklch, var(--vc-timeline-surface-deep) 82%, transparent);
 }
 
 .vc-timeline-app .vc-timeline-stage {
@@ -132,7 +116,7 @@
    while its native event, range, point and period geometry remains intact. */
 .vc-timeline-app .vc-timeline-canvas .vis-item.vc-timeline-item {
   --vc-event-fill: var(--vc-event-unknown);
-  --vc-event-outline: color-mix(in srgb, var(--vc-event-fill) 62%, #3d4144);
+  --vc-event-outline: color-mix(in oklch, var(--vc-event-fill) 62%, var(--vc-event-ink));
   box-shadow: none !important;
 }
 
@@ -182,9 +166,9 @@
 }
 
 .vc-timeline-app .vc-timeline-canvas .vis-item.vc-timeline-item.vis-selected {
-  outline: 2px solid var(--sl-color-white, #f3efe7);
+  outline: 2px solid var(--sl-color-white);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vc-timeline-accent) 30%, transparent) !important;
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--vc-timeline-accent) 30%, transparent) !important;
 }
 
 @media (max-width: 38rem) {

@@ -89,9 +89,9 @@ tags:
   - faction
 ---
 
-[note title="Content warning"]
+:::caution[Content warning]
 This article contains references to slavery, coercion, brutality, and systemic exploitation.
-[/note]
+:::
 
 This article is a work in progress.
 

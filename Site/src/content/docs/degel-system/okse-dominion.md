@@ -92,13 +92,9 @@ sourcePath: "Degel System/Okse Dominion.md"
 updated: "2026-07-09T21:12:01Z"
 ---
 
-<aside class="cx-callout cx-callout-note">
-
-<p class="cx-callout-title">Content warning</p>
-
+:::caution[Content warning]
 This article contains references to slavery, coercion, brutality, and systemic exploitation.
-
-</aside>
+:::
 
 This article is a work in progress.
 

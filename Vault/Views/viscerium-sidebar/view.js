@@ -1,15 +1,3 @@
-async function ensureStyles() {
-  if (document.head.querySelector('style[data-viscerium-sidebar]')) return;
-  const css = await dv.io.load('Views/viscerium-sidebar/view.css');
-  if (!css) return;
-  const style = document.createElement('style');
-  style.dataset.visceriumSidebar = 'true';
-  style.textContent = css;
-  document.head.appendChild(style);
-}
-
-await ensureStyles();
-
 const page = dv.current();
 const options = input ?? {};
 const title = options.title ?? page.title ?? page.file.name;

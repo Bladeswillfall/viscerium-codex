@@ -37,7 +37,7 @@ The codex typography layer lives in `Site/src/styles/typography.css`.
 - Body prose: `Source Serif 4`
 - UI, metadata, captions, tables, and lower headings: `IBM Plex Sans`
 - Code, terminal fragments, and inline code: `IBM Plex Mono`
-- Mathematical notation: MathJax CommonHTML output
+- Mathematical notation: compile-time KaTeX output
 
 ## Codex formatting tags
 
@@ -85,41 +85,50 @@ Sidebar body.
 [/row]
 ```
 
-Cards and callouts:
+Cards:
 
 ```md
 [card:accent]
 Card content.
 [/card]
+```
 
+Use Starlight's native aside syntax for callouts:
+
+```md
+:::note[Archivist note]
+Note content.
+:::
+
+:::caution[Content warning]
+Warning content.
+:::
+
+:::note[Recovered fragment]
+In-world quoted text.
+:::
+
+<!-- Legacy drafts using these forms are still converted during sync. -->
 [note:title="Archivist note"]
 Note content.
 [/note]
-
-[warning:title="Content warning"]
-Warning content.
-[/warning]
-
-[lore:title="Recovered fragment"]
-In-world quoted text.
-[/lore]
 ```
 
 Equation panel:
 
 ````md
 [equation:title="Resonance decay model"]
-```math
+$$
 R(t)=R_0e^{-\lambda t}
-```
+$$
 [/equation]
 ````
 
-Supported layout tags: `[cols]`, `[row]`, `[col]`, `[card]`, `[note]`, `[warning]`, `[lore]`, and `[equation]`.
+Supported layout tags: `[cols]`, `[row]`, `[col]`, `[card]`, and `[equation]`. Legacy `[note]`, `[warning]`, and `[lore]` tags compile to native Starlight asides.
 
 ## Mathematical notation
 
-The codex loads MathJax on every Starlight page through `Site/src/components/CodexMath.astro`. Use GitHub-style TeX delimiters in articles:
+The Markdown pipeline renders math at build time with `remark-math`, `rehype-katex`, and KaTeX. Use GitHub-style TeX delimiters in articles:
 
 Inline math:
 
@@ -135,17 +144,17 @@ R(t)=R_0e^{-\lambda t}
 $$
 ```
 
-Complex fenced equation:
+Complex display equation:
 
-````md
-```math
+```md
+$$
 \begin{aligned}
 \mathcal{R}_{total}
   &= \sum_{i=1}^{n} \alpha_i \psi_i(t) \\
   &= \alpha_1 \psi_1(t) + \alpha_2 \psi_2(t) + \cdots + \alpha_n \psi_n(t)
 \end{aligned}
+$$
 ```
-````
 
 ## Local setup
 
@@ -161,17 +170,7 @@ Use `npm run dev:sync` when you want to sync notes and start the local site in o
 
 ## Compression
 
-`@playform/compress` runs last in the Astro integration list, so every `npm run build` compresses the generated `Site/dist/` deployment output.
-
-To losslessly compress supported tracked raster assets and then rebuild the synchronized public copies:
-
-```bash
-cd Site
-npm ci
-npm run compress:assets
-```
-
-Review the resulting asset changes before committing and pushing them. JPEG and source SVG files are intentionally not rewritten by this command to avoid cumulative image degradation or changes to authored SVG IDs and masks. See [`Site/COMPRESSION.md`](Site/COMPRESSION.md) for the complete workflow.
+Use the checked-in Obsidian Image Converter preset to create WebP artwork before publishing. Astro and Vite build the static assets, and Cloudflare Pages handles transfer compression when serving them. The build does not mutate source images or maintain parallel `.gz`/`.br` files. See [`Site/COMPRESSION.md`](Site/COMPRESSION.md).
 
 ## Cloudflare Pages settings
 
@@ -189,9 +188,8 @@ No committed Wrangler file is required for the current Pages deployment. Keep an
 
 ## Optional community integrations
 
-- Unified page discussion: this template renders one **Page discussion** section at the bottom of every Starlight page from `Site/src/components/GiscusComments.astro`.
-- Webmentions: the same section can display wider-web comments, replies, likes, reposts, bookmarks, and mentions collected by Webmention.io.
-- giscus comments: GitHub Discussions still render in the same section, beneath wider-web responses, instead of becoming a competing second comment box.
+- Webmentions: `Site/src/components/Webmentions.astro` displays responses collected for `codex.viscerium.co.uk` by Webmention.io.
+- giscus comments: `starlight-giscus` uses this repository's General GitHub Discussions category.
 - Ko-fi / Patreon / socials: placeholders live in `Site/src/config/supportLinks.mjs` and can be activated by adding real URLs.
 - Sitemap: `@astrojs/sitemap` is installed and configured in `Site/astro.config.mjs`; it uses `siteConfig.site`, which is controlled by `SITE_URL`.
 - Partytown: `@astrojs/partytown` is installed and configured in `Site/astro.config.mjs` with `dataLayer.push` forwarding for future GA4/GTM-style analytics.
@@ -202,8 +200,7 @@ No committed Wrangler file is required for the current Pages deployment. Keep an
 Installed Astro integrations are configured in `Site/astro.config.mjs`:
 
 - `@astrojs/sitemap` generates the site map from the canonical `site` value. Set `SITE_URL` before production launch so generated URLs use the real domain.
-- `@astrojs/partytown` moves supported third-party scripts off the main thread. It currently forwards `dataLayer.push` so the GA4 placeholder can work once it is properly enabled.
-- `@playform/compress` minifies and compresses the generated static build output after the other integrations finish.
+- `@astrojs/partytown` is enabled only with GA4 and moves that third-party script off the main thread.
 
 GA4 is intentionally placeholder-only. The code path exists, but it will not emit tracking scripts while the Measurement ID is still `G-XXXXXXXXXX`.
 

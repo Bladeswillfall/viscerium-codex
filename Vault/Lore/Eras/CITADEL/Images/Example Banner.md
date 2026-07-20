@@ -1,8 +1,8 @@
 ---
 title: Example Banner
 description: "A sample image sidecar page for artwork provenance, sidebar usage, rights, and related lore links."
-publish: true
-status: canon
+publish: false
+status: draft
 slug: eras/citadel/images/example-banner
 type: image
 era: CITADEL

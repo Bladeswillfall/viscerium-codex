@@ -1,7 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
 import fs from 'node:fs/promises';
-import fg from 'fast-glob';
 import { cleanSlug, slugToRoute } from '../src/lib/codex-paths.mjs';
 import { compileTimelineRecords, TimelineCompilationError } from '../src/lib/timeline/compiler.mjs';
 import { TIMELINE_IDS } from '../src/lib/timeline/core.mjs';
@@ -52,7 +51,8 @@ export async function generateTimelineData({ manifest, validateOnly = false } = 
   }
 
   await fs.mkdir(outDir, { recursive: true });
-  await Promise.all((await fg('*.json', { cwd: outDir, absolute: true })).map((file) => fs.rm(file, { force: true })));
+  const oldDatasets = await Array.fromAsync(fs.glob('*.json', { cwd: outDir }));
+  await Promise.all(oldDatasets.map((file) => fs.rm(path.resolve(outDir, file), { force: true })));
   for (const id of TIMELINE_IDS) {
     await fs.writeFile(path.join(outDir, `${id}.json`), `${JSON.stringify(compiled.datasets[id], null, 2)}\n`, 'utf8');
   }

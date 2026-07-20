@@ -1,11 +1,11 @@
 ---
 title: Example Faction
 description: "A sample public faction used to demonstrate Codex metadata, image sidecars, wikilinks, layout tags, and relationship data."
-publish: true
-status: canon
+publish: false
+status: draft
 slug: eras/citadel/factions/example-faction
 type: faction
-icon: "fa-solid fa-flag"
+icon: faction
 era: CITADEL
 capital: Example City
 territory: Example Valley
@@ -39,15 +39,15 @@ The Example Faction is a placeholder society for testing navigation, wikilinks, 
 
 [cols:2-1 gap=lg]
 [col]
-## [Icon:fa-solid fa-id-card] Identity
+## [Icon:faction] Identity
 
 Explain the faction's role in the setting. Lead with the story it tells about itself, not a dry government-type label.
 
-## [Icon:fa-solid fa-masks-theater] Culture
+## [Icon:character] Culture
 
 Describe values, taboos, public rituals, clothing, food, architecture, class pressure, religious habits, and the lies citizens are expected to repeat.
 
-## [Icon:fa-solid fa-landmark] Power Structure
+## [Icon:faction] Power Structure
 
 Name who holds power, how authority is transferred, who gets excluded, and what happens when someone refuses the system.
 [/col]
@@ -71,27 +71,27 @@ Use `capital`, `territory`, `era`, `relationships`, `tags`, and `related` in fro
 [/col]
 [/cols]
 
-## [Icon:fa-solid fa-coins] Economy and Resources
+## [Icon:status] Economy and Resources
 
 List what the faction exports, hoards, taxes, steals, sanctifies, or refuses to trade.
 
-## [Icon:fa-solid fa-shield-halved] Armed Forces
+## [Icon:faction] Armed Forces
 
 Describe doctrine in plain language first. Then add units, equipment, recruitment, logistics, fortifications, and weak points.
 
-## [Icon:fa-solid fa-palette] Visual Language
+## [Icon:image] Visual Language
 
 Use this for banners, colours, shapes, materials, vehicles, armour, weapons, typography, tattoos, charms, and recurring motifs.
 
 ![[example-banner.webp]]
 
-## [Icon:fa-solid fa-link] Relationships
+## [Icon:codex] Relationships
 
 - [[Example Character]] — public ally, internal critic, hostage, founder, or propaganda symbol.
 - [[Example City]] — capital, stronghold, market, holy site, or administrative centre.
 - [[Example Battle]] — victory, atrocity, defeat, myth, or unresolved grievance.
 
-## [Icon:fa-solid fa-diagram-project] Related
+## [Icon:codex] Related
 
 - [[Example City]]
 - [[Example Character]]

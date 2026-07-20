@@ -3,7 +3,6 @@ import process from 'node:process';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import fs from 'node:fs/promises';
-import fg from 'fast-glob';
 import matter from 'gray-matter';
 import { cleanSlug, escapeHtml, slugToRoute, toPosixPath } from '../src/lib/codex-paths.mjs';
 
@@ -197,7 +196,9 @@ async function gitUpdatedDates() {
   }
 }
 
-const generatedFiles = (await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true })).sort();
+const generatedFiles = (await Array.fromAsync(fs.glob('**/*.{md,mdx}', { cwd: docsDir })))
+  .map((file) => path.resolve(docsDir, file))
+  .sort();
 const updatedBySourcePath = await gitUpdatedDates();
 const entries = [];
 

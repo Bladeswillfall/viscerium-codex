@@ -1,7 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
 import fs from 'node:fs/promises';
-import fg from 'fast-glob';
 import matter from 'gray-matter';
 import { LANE_MODES, TIMELINE_IDS } from '../src/lib/timeline/core.mjs';
 
@@ -78,7 +77,9 @@ function isFenceClose(line, fence) {
   return Boolean(match && match[0].trim().length >= fence.length);
 }
 
-const files = (await fg('**/*.{md,mdx}', { cwd: docsDir, absolute: true })).sort();
+const files = (await Array.fromAsync(fs.glob('**/*.{md,mdx}', { cwd: docsDir })))
+  .map((file) => path.resolve(docsDir, file))
+  .sort();
 for (const file of files) {
   const raw = await fs.readFile(file, 'utf8');
   const hasTimelineShortcode = /^\s*\[Timeline:[^\]]+\]\s*$/im.test(raw);

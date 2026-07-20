@@ -5,7 +5,7 @@ import { constants as fsConstants } from 'node:fs';
 import matter from 'gray-matter';
 import { cleanSlug, slugToRoute, toPosixPath } from '../src/lib/codex-paths.mjs';
 import siteConfig from '../site.config.mjs';
-import { transformCodexFormatting } from './codex-formatting.mjs';
+import { requiresCodexMdx, transformCodexFormatting } from './codex-formatting.mjs';
 import { inferNoteType, sourceSegments } from './note-inference.mjs';
 import { walk } from './lib/walk.mjs';
 
@@ -18,7 +18,8 @@ const missingImagePath = '/assets/images/missing-image.svg';
 const missingImageFilename = 'missing-image.svg';
 const imageExtensions = /\.(avif|bmp|gif|jpe?g|png|svg|webp)$/i;
 const calendarComponentPath = path.resolve(siteRoot, 'src/components/calendar/CalendarYear.astro');
-const requiredFields = ['title', 'description'];const eraStyleByEra = new Map([
+const requiredFields = ['title', 'description'];
+const eraStyleByEra = new Map([
   ['citadel', 'e1'],
   ['smog', 'e2'],
   ['nearsight', 'e3'],
@@ -108,6 +109,9 @@ function stringifyFrontmatter(frontmatter, generated) {
   setField('era', generated.era);
   setField('eraStyle', generated.eraStyle);
   for (const [key, value] of Object.entries(generated.assets ?? {})) setField(key, value);
+  if (generated.links?.length && !lines.some((line) => line.startsWith('links:'))) {
+    lines.push(`links: ${JSON.stringify(generated.links)}`);
+  }
   setField('sourcePath', JSON.stringify(generated.sourcePath));
 
   return `---\n${lines.join('\n')}\n---\n\n`;
@@ -157,6 +161,19 @@ for (const note of publicNotes) {
   if (note.parsed.data.type === 'image' && typeof asset === 'string' && asset.trim()) {
     imageSlugByAsset.set(assetKey(asset), note.slug);
   }
+}
+
+function graphLinks(data, sourceSlug) {
+  const references = [
+    ...Object.values(data.relationships ?? {}),
+    data.related,
+  ].flatMap((value) => Array.isArray(value) ? value : [value]);
+
+  return [...new Set(references
+    .filter((value) => typeof value === 'string')
+    .map((value) => slugByName.get(noteKey(value)))
+    .filter((slug) => slug && slug !== sourceSlug)
+    .map((slug) => `${slug}/`))];
 }
 
 await emptyDir(outDir);
@@ -303,12 +320,7 @@ function mdxImportPath(outFile) {
 }
 
 function calendarShortcodeWarning(message) {
-  return [
-    '<aside className="cx-callout cx-callout-warning">',
-    '<p className="cx-callout-title">Calendar shortcode warning</p>',
-    `<p>${message.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`,
-    '</aside>',
-  ].join('\n');
+  return `:::caution[Calendar shortcode warning]\n${message}\n:::`;
 }
 
 function transformCalendarShortcodes(content, parsed, currentFile, outFile) {
@@ -397,7 +409,7 @@ async function convertContent(content, currentFile, parsed, outFile, outputRequi
 for (const { file, parsed, slug } of publicNotes) {
   const sourceIsMdx = path.extname(file).toLowerCase() === '.mdx';
   const shortcodeRequiresMdx = hasCalendarShortcodes(parsed.content);
-  const extension = sourceIsMdx || shortcodeRequiresMdx ? '.mdx' : '.md';
+  const extension = sourceIsMdx || shortcodeRequiresMdx || requiresCodexMdx(parsed.content) ? '.mdx' : '.md';
   const outFile = path.join(outDir, `${slug}${extension}`);
   const sourcePath = toPosixPath(path.relative(sourceDir, file));
   const frontmatterAssets = {};
@@ -413,6 +425,7 @@ for (const { file, parsed, slug } of publicNotes) {
     type: parsed.data.type,
     era: parsed.data.era,
     eraStyle: parsed.data.eraStyle,
+    links: graphLinks(parsed.data, slug),
     sourcePath,
     assets: frontmatterAssets,
   })}${result.content}`);

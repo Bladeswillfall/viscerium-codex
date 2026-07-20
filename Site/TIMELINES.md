@@ -43,8 +43,6 @@ chronos fenced block in a Vault note
           └── sync transform → ChronosEmbed.astro → Starlight
 ```
 
-`Site/src/lib/timeline/renderer.mjs` is a compatibility entry point that re-exports the native Chronos host renderer.
-
 Chronos owns event, point, range, background-period, group, colour, stacking and refit-control processing. VISCERIUM enriches Chronos output with canonical metadata and uses the public underlying timeline instance for calendar labels, filters, URL state, details and minimap synchronisation. A small direct `vis-timeline` instance remains for the overview minimap.
 
 See `NATIVE-CHRONOS.md` for the exact renderer boundary.

@@ -1,11 +1,11 @@
 const env = process.env;
 
-const webmentionUsername = env.PUBLIC_WEBMENTION_IO_USERNAME;
+const webmentionUsername = env.PUBLIC_WEBMENTION_IO_USERNAME || 'codex.viscerium.co.uk';
 const webmentionEndpoint =
-  env.PUBLIC_WEBMENTION_ENDPOINT ??
+  env.PUBLIC_WEBMENTION_ENDPOINT ||
   (webmentionUsername ? `https://webmention.io/${webmentionUsername}/webmention` : undefined);
 const webmentionPingbackEndpoint =
-  env.PUBLIC_WEBMENTION_PINGBACK_ENDPOINT ??
+  env.PUBLIC_WEBMENTION_PINGBACK_ENDPOINT ||
   (webmentionUsername ? `https://webmention.io/${webmentionUsername}/xmlrpc` : undefined);
 const webmentionMaxMentions = Number.parseInt(env.PUBLIC_WEBMENTIONS_MAX ?? '24', 10);
 const feedMaxItems = Number.parseInt(env.PUBLIC_FEED_MAX_ITEMS ?? '50', 10);
@@ -28,7 +28,7 @@ export default {
     enabled: env.PUBLIC_WEBMENTIONS_ENABLED !== '0' && Boolean(webmentionEndpoint),
     endpoint: webmentionEndpoint,
     pingbackEndpoint: webmentionPingbackEndpoint,
-    apiEndpoint: env.PUBLIC_WEBMENTION_API_ENDPOINT ?? 'https://webmention.io/api/mentions.jf2',
+    apiEndpoint: env.PUBLIC_WEBMENTION_API_ENDPOINT || 'https://webmention.io/api/mentions.jf2',
     maxMentions: Number.isFinite(webmentionMaxMentions) ? webmentionMaxMentions : 24,
   },
   analytics: {
@@ -40,17 +40,17 @@ export default {
     },
   },
   giscus: {
-    repo: env.PUBLIC_GISCUS_REPO ?? 'Bladeswillfall/viscerium-codex',
-    repoId: env.PUBLIC_GISCUS_REPO_ID,
-    category: env.PUBLIC_GISCUS_CATEGORY ?? 'General',
-    categoryId: env.PUBLIC_GISCUS_CATEGORY_ID,
+    repo: env.PUBLIC_GISCUS_REPO || 'Bladeswillfall/viscerium-codex',
+    repoId: env.PUBLIC_GISCUS_REPO_ID || 'R_kgDOTOi09Q',
+    category: env.PUBLIC_GISCUS_CATEGORY || 'General',
+    categoryId: env.PUBLIC_GISCUS_CATEGORY_ID || 'DIC_kwDOTOi09c4DAmpR',
     mapping: env.PUBLIC_GISCUS_MAPPING ?? 'pathname',
-    strict: env.PUBLIC_GISCUS_STRICT ?? '0',
-    reactionsEnabled: env.PUBLIC_GISCUS_REACTIONS_ENABLED ?? '1',
-    emitMetadata: env.PUBLIC_GISCUS_EMIT_METADATA ?? '0',
+    reactions: env.PUBLIC_GISCUS_REACTIONS_ENABLED !== '0',
     inputPosition: env.PUBLIC_GISCUS_INPUT_POSITION ?? 'bottom',
-    theme: env.PUBLIC_GISCUS_THEME ?? 'noborder_dark',
-    lang: env.PUBLIC_GISCUS_LANG ?? 'en',
-    loading: env.PUBLIC_GISCUS_LOADING ?? 'lazy',
+    theme: {
+      dark: env.PUBLIC_GISCUS_DARK_THEME ?? env.PUBLIC_GISCUS_THEME ?? 'noborder_dark',
+      light: env.PUBLIC_GISCUS_LIGHT_THEME ?? 'light',
+    },
+    lazy: env.PUBLIC_GISCUS_LOADING !== 'eager',
   },
 };

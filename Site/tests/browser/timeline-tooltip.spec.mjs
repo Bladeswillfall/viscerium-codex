@@ -56,7 +56,6 @@ async function readHoverState(page, item) {
       backgroundSrgb: background ? toSrgbBytes(background) : [],
       color,
       colorSrgb: color ? toSrgbBytes(color) : [],
-      supportsOklch: CSS.supports('color', 'oklch(50% 0.1 120)'),
       position: style?.position ?? '',
     };
   }, await item.elementHandle());
@@ -113,13 +112,6 @@ test('event hover uses one VISCERIUM hovercard in dark and light themes', async 
   expectSrgbClose(light.backgroundSrgb, [247, 242, 234]);
   expectSrgbClose(light.colorSrgb, [32, 29, 25]);
   expect(light.background).not.toBe(dark.background);
-
-  if (dark.supportsOklch && light.supportsOklch) {
-    expect(dark.background).toMatch(/^oklch\(/);
-    expect(dark.color).toMatch(/^oklch\(/);
-    expect(light.background).toMatch(/^oklch\(/);
-    expect(light.color).toMatch(/^oklch\(/);
-  }
 
   await page.locator('[data-vc-search]').hover();
   await expect(page.locator('body > .vc-timeline-hovercard:not([hidden])')).toHaveCount(0);

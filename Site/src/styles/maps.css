@@ -19,6 +19,30 @@
     height: auto;
   }
 
+  .world-map {
+    position: relative;
+    min-height: 20rem;
+    overflow: auto;
+    border: 1px solid var(--codex-border);
+    border-radius: var(--codex-radius);
+    background: var(--codex-bg-soft);
+  }
+
+  .world-map img {
+    display: block;
+    max-width: 100%;
+  }
+
+  .map-marker {
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--codex-fixed-light);
+    border-radius: 50%;
+    background: var(--codex-accent);
+    transform: translate(-50%, -50%);
+  }
+
   .codex-map figcaption,
   .map-panel figcaption,
   .map-frame figcaption,
@@ -29,7 +53,7 @@
     color: var(--sl-color-gray-3);
     font-family: var(--vc-font-ui);
     font-size: var(--sl-text-sm);
-    background: rgba(0, 0, 0, .15);
+    background: color-mix(in oklch, var(--codex-shadow-color) 15%, transparent);
   }
 
   .map-grid,

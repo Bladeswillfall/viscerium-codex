@@ -39,7 +39,6 @@
   margin-inline: 0 !important;
 }
 
-.codex-comments,
 .codex-site-footer {
   box-sizing: border-box;
   max-width: none;
@@ -114,7 +113,6 @@
     padding-inline-start: 0;
   }
 
-  .main-frame > .codex-two-column-content > .codex-main-pane .codex-comments,
   .main-frame > .codex-two-column-content > .codex-main-pane .codex-site-footer {
     width: 100%;
     max-width: none;
@@ -161,7 +159,6 @@
     max-inline-size: none !important;
   }
 
-  .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .codex-comments,
   .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .codex-site-footer {
     width: 100%;
     max-width: none;
@@ -177,18 +174,14 @@
 
   /*
     Global surface geometry. This deliberately reaches beyond lore articles so
-    calendars, maps, images, support, search, comments, and changelogs inherit
+    calendars, maps, support, search, and changelogs inherit
     the same flat visual language in both themes.
   */
   .content-panel,
   .codex-surface,
-  .codex-card,
   .codex-frame,
   .codex-sidebar-card,
   .codex-sidebar-section,
-  .codex-comments details,
-  .codex-comments-panel,
-  .image-figure img,
   .codex-header-image,
   .world-map,
   .codex-map,
@@ -212,16 +205,7 @@
   .support-hero,
   .support-section,
   .support-note,
-  .support-card,
-  .support-card__icon,
-  .social-icon-link,
   .support-button,
-  .contact-form,
-  .contact-form input,
-  .contact-form select,
-  .contact-form textarea,
-  .contact-form__notice,
-  .contact-form__status,
   .sl-markdown-content blockquote,
   .sl-markdown-content table,
   .starlight-aside,
@@ -229,12 +213,9 @@
   .sl-link-card,
   .expressive-code figure.frame,
   .cx-card,
-  .cx-callout,
   .codex-link-button,
   .codex-sidebar-toggle,
-  .theme-toggle,
   .social-icons a,
-  .social-icons-extended a,
   .telescope__modal,
   .telescope__close-button,
   .telescope__tab,
@@ -267,20 +248,13 @@
     are removed to match the approved reference page.
   */
   .codex-sidebar-card,
-  .codex-sidebar-section,
-  .codex-comments-panel {
+  .codex-sidebar-section {
     border: 0;
-  }
-
-  .codex-comments details {
-    border: 0;
-    background: transparent;
   }
 
   .right-sidebar nav h2,
   starlight-toc nav h2,
-  .codex-kicker,
-  .cx-callout-title {
+  .codex-kicker {
     color: var(--sl-color-white);
   }
 
@@ -310,7 +284,7 @@
     margin: .65rem 0 .1rem !important;
     padding: .55rem .45rem .35rem !important;
     border: 0 !important;
-    border-block-start: 1px solid rgba(184, 135, 70, .12) !important;
+    border-block-start: 1px solid color-mix(in oklch, var(--codex-accent) 12%, transparent) !important;
     border-radius: 0 !important;
     background: transparent !important;
     color: var(--sl-color-gray-3) !important;
@@ -323,7 +297,7 @@
 
   .sidebar .ion-expandable-group > summary:hover,
   .sidebar .ion-expandable-group > summary:focus-visible {
-    background: rgba(184, 135, 70, .08) !important;
+    background: color-mix(in oklch, var(--codex-accent) 8%, transparent) !important;
     color: var(--sl-color-white) !important;
   }
 
@@ -346,34 +320,36 @@
 
   .sidebar a:hover,
   .sidebar a:focus-visible {
-    background: rgba(184, 135, 70, .08) !important;
+    background: color-mix(in oklch, var(--codex-accent) 8%, transparent) !important;
     color: var(--sl-color-white) !important;
   }
 
   .sidebar a[aria-current='page'] {
     border-inline-start: 2px solid var(--sl-color-accent-high);
-    background: linear-gradient(90deg, rgba(184, 135, 70, .22), rgba(184, 135, 70, .06)) !important;
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklch, var(--codex-accent) 22%, transparent),
+      color-mix(in oklch, var(--codex-accent) 6%, transparent)
+    ) !important;
     color: var(--sl-color-white) !important;
     padding-inline-start: calc(var(--sl-sidebar-item-padding-inline) - 2px) !important;
   }
 
   .sidebar a[aria-current='page'] .local-icon {
-    filter: drop-shadow(0 0 6px rgba(241, 210, 155, .5));
+    filter: drop-shadow(0 0 6px color-mix(in oklch, var(--codex-accent-high) 50%, transparent));
   }
 
   .sidebar ul ul li {
     margin-inline-start: .55rem !important;
     padding-inline-start: .55rem !important;
-    border-inline-start: 1px solid rgba(184, 135, 70, .10);
+    border-inline-start: 1px solid var(--codex-surface-accent);
   }
 
-  .codex-comments,
   .codex-site-footer {
     margin-top: 1.5625rem;
   }
 
   @media (min-width: 72rem) {
-    .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .codex-comments,
     .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) .codex-site-footer {
       margin-top: 1.5625rem;
     }

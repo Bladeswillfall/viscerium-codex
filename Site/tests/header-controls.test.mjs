@@ -12,16 +12,15 @@ test('Starlight Pagefind and the owned header are explicitly enabled', () => {
   assert.match(config, /'\.\/src\/styles\/header-controls\.css'/);
 });
 
-test('the Codex header renders the native search field and owned theme toggle', () => {
+test('the Codex header renders Starlight search and theme controls', () => {
   const header = read('../src/components/CodexHeader.astro');
   const headerCss = read('../src/styles/header-controls.css');
-  const themeToggle = read('../src/components/CodexThemeToggle.astro');
 
   assert.match(header, /import Search from 'virtual:starlight\/components\/Search'/);
-  assert.match(header, /import CodexThemeToggle from '\.\/CodexThemeToggle\.astro'/);
+  assert.match(header, /import ThemeSelect from 'virtual:starlight\/components\/ThemeSelect'/);
   assert.match(header, /shouldRenderSearch/);
   assert.match(header, /<Search \/>/);
-  assert.match(header, /<CodexThemeToggle \/>/);
+  assert.match(header, /<ThemeSelect \/>/);
   assert.match(header, /data-codex-header-search/);
   assert.match(header, /data-codex-header-controls/);
 
@@ -37,9 +36,7 @@ test('the Codex header renders the native search field and owned theme toggle', 
   assert.match(headerCss, /> kbd\s*\{[\s\S]*display:\s*flex !important/);
   assert.doesNotMatch(headerCss, /@media/);
 
-  assert.match(themeToggle, /data-codex-theme-toggle/);
-  assert.match(themeToggle, /localStorage\.setItem\(storageKey, nextTheme\)/);
-  assert.match(themeToggle, /document\.documentElement\.dataset\.theme = nextTheme/);
+  assert.match(headerCss, /\.codex-theme-control select/);
 });
 
 test('the Telescope plugin retains a visible top-ribbon mount', () => {
@@ -57,12 +54,10 @@ test('the Telescope plugin retains a visible top-ribbon mount', () => {
 test('the top ribbon is visually flat, centred and free of GitHub branding', () => {
   const header = read('../src/components/CodexHeader.astro');
   const headerCss = read('../src/styles/header-controls.css');
-  const themeToggle = read('../src/components/CodexThemeToggle.astro');
 
   assert.doesNotMatch(header, /SocialIcons/);
   assert.doesNotMatch(header, /social-icons/);
   assert.doesNotMatch(headerCss, /linear-gradient/);
-  assert.doesNotMatch(themeToggle, /linear-gradient/);
   assert.match(
     headerCss,
     /grid-template-columns:\s*minmax\(0,\s*1fr\)\s+minmax\(16rem,\s*34rem\)\s+minmax\(0,\s*1fr\)/

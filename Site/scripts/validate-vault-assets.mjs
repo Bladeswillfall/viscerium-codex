@@ -1,7 +1,6 @@
 import path from 'node:path';
 import process from 'node:process';
 import fs from 'node:fs/promises';
-import fg from 'fast-glob';
 import siteConfig from '../site.config.mjs';
 import { isMainModule } from './script-entry.mjs';
 
@@ -20,12 +19,8 @@ function relative(file) {
 }
 
 export async function validateVaultAssets({ rootDir = defaultAssetRoot } = {}) {
-  const files = await fg('**/*.svg', {
-    cwd: rootDir,
-    absolute: true,
-    onlyFiles: true,
-    followSymbolicLinks: false,
-  });
+  const files = (await Array.fromAsync(fs.glob('**/*.svg', { cwd: rootDir })))
+    .map((file) => path.resolve(rootDir, file));
   let failed = false;
 
   for (const file of files) {

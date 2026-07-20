@@ -3,7 +3,7 @@ import CodexIcon from './CodexIcon.astro';
 
 const { name } = Astro.props;
 const rawName = typeof name === 'string' ? name.trim() : '';
-const spec = /^icon:/i.test(rawName) ? rawName.replace(/^icon:/i, '').trim() : `local ${rawName}`;
+const spec = rawName.replace(/^icon:/i, '').trim();
 ---
 
 <CodexIcon spec={spec} />

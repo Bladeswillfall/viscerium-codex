@@ -1,238 +1,160 @@
 import { escapeHtml } from '../src/lib/codex-paths.mjs';
 import { renderIconMarkup } from '../src/lib/icon-spec.mjs';
 
-const TAGS = new Set(['cols', 'row', 'col', 'card', 'note', 'warning', 'lore', 'equation']);
-const VOIDLESS_TAG_OUTPUT = new Map([
-  ['cols', 'div'],
-  ['row', 'div'],
-  ['col', 'div'],
-  ['card', 'div'],
-  ['note', 'aside'],
-  ['warning', 'aside'],
-  ['lore', 'aside'],
-  ['equation', 'section'],
-]);
-
-const GAP_VALUES = new Set(['none', 'xs', 'sm', 'md', 'lg', 'xl']);
-const ALIGN_VALUES = new Set(['start', 'center', 'end', 'stretch']);
-const JUSTIFY_VALUES = new Set(['start', 'center', 'end', 'between', 'around', 'evenly']);
+const CONTAINERS = {
+  cols: ['div', 'cx-cols'],
+  row: ['div', 'cx-row'],
+  col: ['div', 'cx-col'],
+  card: ['div', 'cx-card'],
+  equation: ['section', 'cx-equation'],
+};
+const ASIDES = { note: 'note', warning: 'caution', lore: 'note' };
+const TAGS = new Set([...Object.keys(CONTAINERS), ...Object.keys(ASIDES)]);
+const GAP = { none: '0', xs: '.35rem', sm: '.65rem', md: '1rem', lg: '1.5rem', xl: '2.25rem' };
+const ALIGN = new Set(['start', 'center', 'end', 'stretch']);
+const JUSTIFY = new Set(['start', 'center', 'end', 'between', 'around', 'evenly']);
 const CARD_VARIANTS = new Set(['plain', 'accent', 'muted', 'warning', 'danger', 'success']);
-function classAttribute(classes, options) {
-  const attribute = options?.jsx ? 'className' : 'class';
-  return `${attribute}="${[...new Set(classes.filter(Boolean))].join(' ')}"`;
-}
-
-function isSafeRatio(value) {
-  return /^\d+(?:-\d+){1,5}$/.test(value);
-}
-
-function isOneToTwelve(value) {
-  const number = Number(value);
-  return Number.isInteger(number) && number >= 1 && number <= 12;
-}
-
-function parseKeyValueOptions(spec) {
-  const options = new Map();
-  const pattern = /([a-z][\w-]*)=(?:"([^"]*)"|'([^']*)'|([^\s]+))/gi;
-  for (const match of String(spec ?? '').matchAll(pattern)) {
-    options.set(match[1].toLowerCase(), match[2] ?? match[3] ?? match[4] ?? '');
-  }
-  return options;
-}
 
 function tokens(spec) {
-  return String(spec ?? '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
+  return String(spec ?? '').trim().split(/\s+/).filter(Boolean);
 }
 
-function layoutUtilityClasses(spec) {
+function attributes(classes, styles, jsx) {
+  const className = jsx ? 'className' : 'class';
+  const uniqueClasses = [...new Set(classes.filter(Boolean))];
+  const output = [`${className}="${uniqueClasses.join(' ')}"`];
+  if (!Object.keys(styles).length) return output.join(' ');
+
+  if (jsx) output.push(`style={${JSON.stringify(styles)}}`);
+  else output.push(`style="${Object.entries(styles).map(([key, value]) => `${key}:${escapeHtml(value)}`).join(';')}"`);
+  return output.join(' ');
+}
+
+function titleFrom(spec) {
+  const match = String(spec).match(/\btitle=(?:"([^"]*)"|'([^']*)'|([^\s]+))/i);
+  return match?.slice(1).find((value) => value !== undefined);
+}
+
+function layoutOptions(spec) {
   const classes = [];
+  const styles = {};
   for (const token of tokens(spec)) {
     const lower = token.toLowerCase();
-    const [key, value] = lower.includes('=') ? lower.split('=', 2) : [lower, ''];
-
-    if (key === 'gap' && GAP_VALUES.has(value)) classes.push(`cx-gap-${value}`);
-    if (key === 'align' && ALIGN_VALUES.has(value)) classes.push(`cx-align-${value}`);
-    if (key === 'justify' && JUSTIFY_VALUES.has(value)) classes.push(`cx-justify-${value}`);
-    if (key === 'compact') classes.push('cx-compact');
-    if (key === 'bleed') classes.push('cx-bleed');
-    if (key === 'center') classes.push('cx-center');
+    const [key, value = ''] = lower.split('=', 2);
+    if (key === 'gap' && GAP[value]) styles['--cx-gap'] = GAP[value];
+    else if (key === 'align' && ALIGN.has(value)) classes.push(`cx-align-${value}`);
+    else if (key === 'justify' && JUSTIFY.has(value)) classes.push(`cx-justify-${value}`);
+    else if (['compact', 'bleed', 'center'].includes(key)) classes.push(`cx-${key}`);
   }
-  return classes;
+  return { classes, styles };
 }
 
-function colsClasses(spec) {
-  const classes = ['cx-cols'];
-  const firstRatio = tokens(spec).find((token) => isSafeRatio(token.toLowerCase()));
-  if (firstRatio) classes.push(`cx-cols-${firstRatio.toLowerCase()}`);
-  else classes.push('cx-cols-equal');
-  classes.push(...layoutUtilityClasses(spec));
-  return classes;
-}
+function containerOptions(tag, spec) {
+  const [element, baseClasses] = CONTAINERS[tag];
+  const classes = baseClasses.split(' ');
+  const styles = {};
 
-function rowClasses(spec) {
-  return ['cx-row', ...layoutUtilityClasses(spec)];
-}
+  if (tag === 'cols' || tag === 'row') {
+    const layout = layoutOptions(spec);
+    classes.push(...layout.classes);
+    Object.assign(styles, layout.styles);
+  }
 
-function colClasses(spec) {
-  const classes = ['cx-col'];
+  if (tag === 'cols') {
+    const ratio = tokens(spec).find((token) => /^\d+(?:-\d+){1,5}$/.test(token));
+    if (ratio) styles['--cx-columns'] = ratio.split('-').map((part) => `${Number(part)}fr`).join(' ');
+  }
 
-  for (const token of tokens(spec)) {
-    const lower = token.toLowerCase();
+  if (tag === 'col') {
+    for (const token of tokens(spec)) {
+      const lower = token.toLowerCase();
+      if (/^(?:[1-9]|1[0-2])$/.test(lower)) styles['--cx-span'] = lower;
 
-    if (isOneToTwelve(lower)) {
-      classes.push(`cx-span-${lower}`);
-      continue;
+      const span = lower.match(/^(sm|md|lg|xl):([1-9]|1[0-2])$/);
+      if (span) styles[`--cx-${span[1]}-span`] = span[2];
+
+      const order = lower.match(/^order(?:-(sm|md|lg|xl))?[-:]([1-9]|1[0-2])$/);
+      if (order) styles[order[1] ? `--cx-${order[1]}-order` : '--cx-order'] = order[2];
+
+      const self = lower.match(/^align=(start|center|end|stretch)$/);
+      if (self) styles['--cx-self'] = self[1];
     }
+  }
 
-    const breakpointSpan = lower.match(/^(sm|md|lg|xl):(\d{1,2})$/);
-    if (breakpointSpan && isOneToTwelve(breakpointSpan[2])) {
-      classes.push(`cx-${breakpointSpan[1]}-${breakpointSpan[2]}`);
-      continue;
+  if (tag === 'card') {
+    for (const token of tokens(spec)) {
+      const lower = token.toLowerCase();
+      if (CARD_VARIANTS.has(lower)) classes.push(`cx-card-${lower}`);
+      if (lower === 'compact') classes.push('cx-card-compact');
     }
-
-    const order = lower.match(/^order(?:-(sm|md|lg|xl))?[-:](\d{1,2})$/);
-    if (order) {
-      classes.push(order[1] ? `cx-order-${order[1]}-${order[2]}` : `cx-order-${order[2]}`);
-      continue;
-    }
-
-    const selfAlign = lower.match(/^align=(start|center|end|stretch)$/);
-    if (selfAlign) classes.push(`cx-self-${selfAlign[1]}`);
   }
 
-  return classes;
+  if (tag === 'equation' && tokens(spec).includes('compact')) classes.push('cx-equation-compact');
+  return { element, classes, styles };
 }
 
-function cardClasses(spec) {
-  const classes = ['cx-card'];
-  for (const token of tokens(spec)) {
-    const lower = token.toLowerCase();
-    if (CARD_VARIANTS.has(lower)) classes.push(`cx-card-${lower}`);
-    if (lower === 'compact') classes.push('cx-card-compact');
-  }
-  return classes;
-}
-
-function calloutClasses(tag, spec) {
-  const classes = ['cx-callout', `cx-callout-${tag}`];
-  if (tokens(spec).includes('compact')) classes.push('cx-callout-compact');
-  return classes;
-}
-
-function equationClasses(spec) {
-  const classes = ['cx-equation', 'tex2jax_process'];
-  if (tokens(spec).includes('compact')) classes.push('cx-equation-compact');
-  return classes;
-}
-
-function titleMarkup(className, title, options) {
-  return title ? `\n\n<p ${classAttribute([className], options)}>${escapeHtml(title)}</p>\n` : '\n';
-}
-
-function openTag(tag, spec, options) {
-  const htmlTag = VOIDLESS_TAG_OUTPUT.get(tag);
-  if (!htmlTag) return null;
-
-  if (tag === 'cols') return `<div ${classAttribute(colsClasses(spec), options)}>\n`;
-  if (tag === 'row') return `<div ${classAttribute(rowClasses(spec), options)}>\n`;
-  if (tag === 'col') return `<div ${classAttribute(colClasses(spec), options)}>\n`;
-  if (tag === 'card') return `<div ${classAttribute(cardClasses(spec), options)}>\n`;
-
-  const optionMap = parseKeyValueOptions(spec);
-  const title = optionMap.get('title');
-
-  if (tag === 'equation') {
-    return `<section ${classAttribute(equationClasses(spec), options)}>${titleMarkup('cx-equation-title', title, options)}`;
-  }
-
-  return `<aside ${classAttribute(calloutClasses(tag, spec), options)}>${titleMarkup('cx-callout-title', title, options)}`;
-}
-
-function closeTag(tag) {
-  const htmlTag = VOIDLESS_TAG_OUTPUT.get(tag);
-  return htmlTag ? `\n</${htmlTag}>` : null;
-}
-
-function parseCodexTagLine(line) {
+function parseTag(line) {
   const match = line.match(/^\s*\[(\/)?([a-z][a-z0-9-]*)(?:(?::|\s+)([^\]]*))?\]\s*$/i);
   if (!match) return null;
-
-  const closing = Boolean(match[1]);
   const tag = match[2].toLowerCase();
-  const spec = match[3] ?? '';
-
-  if (!TAGS.has(tag)) return null;
-  return { closing, tag, spec };
+  return TAGS.has(tag) ? { closing: Boolean(match[1]), tag, spec: match[3] ?? '' } : null;
 }
 
-function transformCodexTagLine(line, stack, options) {
-  const parsed = parseCodexTagLine(line);
+function transformTag(line, stack, options) {
+  const parsed = parseTag(line);
   if (!parsed) return null;
 
-  if (!parsed.closing) {
-    stack.push(parsed.tag);
-    return openTag(parsed.tag, parsed.spec, options);
+  if (parsed.closing) {
+    if (stack.at(-1) !== parsed.tag) return null;
+    stack.pop();
+    return ASIDES[parsed.tag] ? ':::' : `\n</${CONTAINERS[parsed.tag][0]}>`;
   }
 
-  if (stack.at(-1) !== parsed.tag) {
-    return null;
+  stack.push(parsed.tag);
+  const aside = ASIDES[parsed.tag];
+  if (aside) {
+    const title = titleFrom(parsed.spec)?.replace(/[\[\]]/g, '');
+    return `:::${aside}${title ? `[${title}]` : ''}`;
   }
 
-  stack.pop();
-  return closeTag(parsed.tag);
+  const { element, classes, styles } = containerOptions(parsed.tag, parsed.spec);
+  const title = titleFrom(parsed.spec);
+  const titleMarkup = parsed.tag === 'equation' && title
+    ? `\n\n<p ${attributes(['cx-equation-title'], {}, options.jsx)}>${escapeHtml(title)}</p>\n`
+    : '\n';
+  return `<${element} ${attributes(classes, styles, options.jsx)}>${titleMarkup}`;
 }
 
-function transformIconHeadingLine(line, options) {
+function transformHeading(line, options) {
   const match = line.match(/^(\s{0,3}#{1,6}\s+)\[icon:([^\]]+)\]\s+(.+)$/i);
   if (!match) return null;
-
-  const icon = renderIconMarkup(match[2], {
-    jsx: options?.jsx,
-    className: 'codex-heading-icon',
-  });
-  if (!icon) return null;
-
-  return `${match[1]}${icon} ${match[3]}`;
+  const icon = renderIconMarkup(match[2], { jsx: options.jsx, className: 'codex-heading-icon' });
+  return icon ? `${match[1]}${icon} ${match[3]}` : null;
 }
 
-function isFenceStart(line) {
-  const match = line.match(/^\s*(`{3,}|~{3,})/);
-  if (!match) return null;
-  return { marker: match[1][0], length: match[1].length };
-}
-
-function isFenceEnd(line, fence) {
-  if (!fence) return false;
-  const pattern = fence.marker === '`' ? /^\s*`{3,}/ : /^\s*~{3,}/;
-  const match = line.match(pattern);
-  return Boolean(match && match[0].trim().length >= fence.length);
+export function requiresCodexMdx(markdown) {
+  return /^\s*\[\/?(?:cols|row|col|card|equation)(?::|\s|\])/im.test(String(markdown));
 }
 
 export function transformCodexFormatting(markdown, options = {}) {
-  const lines = String(markdown).split(/\r?\n/);
-  const out = [];
+  const output = [];
   const stack = [];
-  let fence = null;
+  let fence;
 
-  for (const line of lines) {
+  for (const line of String(markdown).split(/\r?\n/)) {
+    const marker = line.match(/^\s*(`{3,}|~{3,})/);
     if (fence) {
-      out.push(line);
-      if (isFenceEnd(line, fence)) fence = null;
+      output.push(line);
+      if (marker?.[1][0] === fence.marker && marker[1].length >= fence.length) fence = undefined;
       continue;
     }
-
-    const fenceStart = isFenceStart(line);
-    if (fenceStart) {
-      fence = fenceStart;
-      out.push(line);
+    if (marker) {
+      fence = { marker: marker[1][0], length: marker[1].length };
+      output.push(line);
       continue;
     }
-
-    out.push(transformIconHeadingLine(line, options) ?? transformCodexTagLine(line, stack, options) ?? line);
+    output.push(transformHeading(line, options) ?? transformTag(line, stack, options) ?? line);
   }
 
-  return out.join('\n');
+  return output.join('\n');
 }

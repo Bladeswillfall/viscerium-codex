@@ -1,56 +1,20 @@
 # Codex compression
 
-The Codex uses [`@playform/compress`](https://github.com/PlayForm/Compress) as the final Astro integration. The package and its Sharp runtime are pinned through `Site/package-lock.json`, so `npm ci` installs the same compression stack after every pull.
+The build does not rewrite source assets or run a second minifier over Astro's output.
 
-## Production builds
+## Images
 
-Every normal build compresses the generated Astro output in `Site/dist/`:
+The checked-in Obsidian Image Converter settings provide a WebP 75 preset for artwork as it is added to the vault. Use that preset before publishing an image, and keep the original outside the repository when an archival copy is needed.
+
+The sync step copies only referenced vault assets into `Site/public/assets/`. It does not re-encode them, avoiding repeated lossy conversion and a Sharp dependency in the site build.
+
+## Delivery
+
+Astro and Vite produce the static CSS and JavaScript bundles. Cloudflare Pages applies supported transfer compression when serving those files, so committed `.gz` or `.br` copies are unnecessary.
+
+Run the normal production check from `Site/`:
 
 ```bash
-cd Site
 npm ci
 npm run build
 ```
-
-`dist/` is a generated deployment directory and is not committed. Cloudflare Pages receives the compressed build output automatically.
-
-## Compress source assets for Git
-
-Run the explicit source-asset workflow when you want smaller tracked raster assets:
-
-```bash
-cd Site
-npm ci
-npm run compress:assets
-```
-
-The command performs two builds:
-
-1. It compresses supported source raster files under `Vault/Assets/`.
-2. It rebuilds from those compressed files so `Site/public/assets/` and the final `dist/` output are synchronized.
-
-The source pass is deliberately conservative:
-
-- compressed losslessly: AVIF, GIF, PNG, TIFF and WebP;
-- not rewritten: JPEG/JPG, because repeated JPEG encoding can degrade artwork;
-- not rewritten: source SVG files, because optimization can alter IDs, masks or authored metadata;
-- generated `dist/` files still receive the integration's normal CSS, HTML, JavaScript, JSON, image and SVG compression.
-
-PlayForm Compress only writes a result when it is smaller than the original. Even so, inspect visual assets and review Git changes before committing.
-
-From the repository root:
-
-```bash
-git diff --stat
-git status --short -- Vault/Assets Site/public/assets
-git add Vault/Assets Site/public/assets
-git commit -m "chore: compress Codex assets"
-git push
-```
-
-## Notes
-
-- Run the command from `Site/`, or use `npm --prefix Site run compress:assets` from the repository root.
-- Do not manually compress files in `Site/src/content/docs/`; that directory is generated from the vault.
-- A normal `npm run dev` does not mutate source assets.
-- Source compression is opt-in and is enabled internally only while `compress:assets` performs its first build.

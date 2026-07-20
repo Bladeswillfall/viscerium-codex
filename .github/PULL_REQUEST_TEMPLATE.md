@@ -17,7 +17,6 @@
 
 - [ ] `cd Site && npm run sync`
 - [ ] `cd Site && npm run validate`
-- [ ] `cd Site && npm run generate:graph`
 - [ ] `cd Site && npm run generate:maps`
 - [ ] `cd Site && npm run generate:timelines`
 - [ ] `cd Site && npm run build`
