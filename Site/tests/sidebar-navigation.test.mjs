@@ -51,12 +51,12 @@ test('sidebar toggle rebinds safely and tracks the desktop layout', () => {
 
 test('homepage opts into the sidebar and preserves its rail clearance', () => {
   const homepage = read('../src/pages/index.astro');
-  const homepageStyles = read('../src/styles/homepage.css');
+  const homepageShell = read('../src/styles/homepage-shell.css');
 
   assert.match(homepage, /hasSidebar=\{true\}/);
-  assert.match(homepage, /import '\.\.\/styles\/homepage\.css'/);
-  assert.match(homepageStyles, /html\[data-codex-desktop-sidebar\]:not\(\.codex-sidebar-collapsed\) \.main-frame:has\(\.home-gateway\)/);
-  assert.match(homepageStyles, /padding-inline-start: var\(--codex-sidebar-overlay-width\) !important/);
+  assert.match(homepage, /import '\.\.\/styles\/homepage-styles'/);
+  assert.match(homepageShell, /html\[data-codex-desktop-sidebar\]:not\(\.codex-sidebar-collapsed\) \.main-frame:has\(\.home-gateway\)/);
+  assert.match(homepageShell, /padding-inline-start: var\(--codex-sidebar-overlay-width\) !important/);
 });
 
 test('mobile page table of contents is owned by the responsive runtime', () => {
