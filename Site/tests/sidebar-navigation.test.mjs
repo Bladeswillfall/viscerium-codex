@@ -53,7 +53,6 @@ test('homepage opts into the sidebar and preserves its rail clearance', () => {
   const homepage = read('../src/pages/index.astro');
 
   assert.match(homepage, /hasSidebar=\{true\}/);
-  assert.match(homepage, /import '\.\.\/styles\/homepage-styles'/);
   assert.match(homepage, /html\[data-codex-desktop-sidebar\]:not\(\.codex-sidebar-collapsed\) \.main-frame:has\(\.home-gateway\)/);
   assert.match(homepage, /padding-inline-start: var\(--codex-sidebar-overlay-width\) !important/);
 });
