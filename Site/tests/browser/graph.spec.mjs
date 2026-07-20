@@ -15,9 +15,18 @@ async function inspectGraph(page, viewport, screenshot, theme) {
   await page.setViewportSize(viewport);
   const pageErrors = [];
   const consoleErrors = [];
+  const graphParserErrors = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
   page.on('console', (message) => {
-    if (message.type() === 'error') consoleErrors.push(message.text());
+    if (message.type() !== 'error') return;
+    const text = message.text();
+    if (text.includes('[STARLIGHT-SITE-GRAPH]')) {
+      graphParserErrors.push(text);
+      return;
+    }
+    if (!text.startsWith('Failed to load resource: the server responded with a status of 404')) {
+      consoleErrors.push(text);
+    }
   });
   await page.goto('http://127.0.0.1:4321/graph/', { waitUntil: 'networkidle' });
 
@@ -27,6 +36,7 @@ async function inspectGraph(page, viewport, screenshot, theme) {
   await page.waitForTimeout(250);
   expect(pageErrors).toEqual([]);
   expect(consoleErrors).toEqual([]);
+  expect(graphParserErrors).toEqual([]);
   await expect(graph).toBeVisible({ timeout: 10_000 });
   await expect(canvas).toBeVisible({ timeout: 10_000 });
   await expect(graph.locator('button')).not.toHaveCount(0);
@@ -42,6 +52,7 @@ async function inspectGraph(page, viewport, screenshot, theme) {
       '--slsg-node-color-tag',
       '--slsg-link-color',
       '--slsg-label-color',
+      '--slsg-label-color-muted',
     ].map((name) => [name, styles.getPropertyValue(name).trim()]));
   });
 
@@ -74,6 +85,7 @@ async function inspectGraph(page, viewport, screenshot, theme) {
   expect(geometry.documentOverflow).toBe(false);
   expect(pageErrors).toEqual([]);
   expect(consoleErrors).toEqual([]);
+  expect(graphParserErrors).toEqual([]);
 }
 
 test('world graph renders with readable dark-theme colours', async ({ page }) => {
