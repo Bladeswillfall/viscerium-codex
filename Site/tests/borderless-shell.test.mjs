@@ -14,14 +14,15 @@ test('the borderless pass preserves the tested stylesheet registration graph', (
   assert.doesNotMatch(css, /body\s+:where\(\s*\*/);
 });
 
-test('structural borders are targeted without flattening article callouts or timelines', () => {
+test('structural borders are targeted without flattening article callouts, timelines or the landing page', () => {
   const css = read('../src/styles/codex-ui.css');
   const reset = css.slice(css.indexOf('Temporary borderless presentation pass'));
 
-  assert.match(reset, /body :is\(/);
+  assert.match(reset, /body:not\(:has\(\.home-gateway\)\) :is\(/);
   assert.match(reset, /\.content-panel/);
   assert.match(reset, /\.codex-breadcrumbs/);
   assert.match(reset, /\.sl-markdown-content h2/);
+  assert.doesNotMatch(reset, /\.home-button|\.home-era-card|\.home-timeline|\.home-stats|\.home-stat|\.home-route-grid|\.home-final-cta/);
   assert.doesNotMatch(reset, /blockquote/);
   assert.doesNotMatch(reset, /starlight-aside/);
   assert.doesNotMatch(reset, /vc-timeline-item/);
