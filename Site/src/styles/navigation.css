@@ -257,10 +257,6 @@ html[data-codex-desktop-sidebar]:not(.codex-sidebar-collapsed) .main-frame {
   padding-inline-start: var(--codex-sidebar-overlay-width);
 }
 
-html[data-codex-desktop-sidebar].codex-sidebar-collapsed .main-frame {
-  padding-inline-start: 0;
-}
-
 html[data-codex-desktop-sidebar].codex-sidebar-collapsed #starlight__sidebar {
   visibility: hidden;
   transform: translateX(-110%);
