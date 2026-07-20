@@ -2,18 +2,18 @@
 
 Astro/Vite processes authored styles into production assets, but **where a stylesheet enters the module graph can still affect the cascade and colour transformation output**. Consolidate imports only inside a boundary proven safe by unit, build, and browser regression tests.
 
-## Safe entrypoints
+## Safe entrypoint
 
 - `homepage.css` — all homepage partials plus homepage-only shell overrides. `index.astro` imports this one file.
-- `timeline-island.css` — the Chronicle and toolbar styles owned by the hydrated Preact timeline island. `TimelineIsland.tsx` imports this one file.
 - `chronos.css` — the existing standalone Chronos embed entrypoint.
 
 ## Deliberate separate-file boundaries
 
-The following stacks remain explicit because browser regression tests showed that combining them through a CSS `@import` entrypoint changes runtime rendering:
+The following stacks remain explicit because browser regression tests showed that combining them through CSS `@import` entrypoints changes runtime rendering:
 
 - The global Starlight/Codex files registered in `astro.config.mjs`. Consolidating them changed site-graph colour handling.
-- The server-rendered timeline files imported by `TimelineApp.astro`. Combining these with the hydrated-island styles changed the timeline hovercard colour.
+- The server-rendered timeline files imported by `TimelineApp.astro`.
+- The hydrated timeline files imported by `TimelineIsland.tsx`. Grouping them changed the timeline hovercard colour.
 
 Do not collapse these boundaries merely to reduce the number of source files. Fewer files are not an improvement when the rendered cascade changes.
 
@@ -43,7 +43,7 @@ Feature files remain separate where their selectors, loading boundary, and maint
 
 1. Do not reorder imports casually. Their sequence and import boundary are part of the cascade.
 2. Keep the first-party global styles explicitly registered in `astro.config.mjs` unless browser regression tests prove an alternative is neutral.
-3. Keep the server-rendered timeline styles in `TimelineApp.astro` and the hydrated enhancement styles behind `timeline-island.css`.
+3. Keep the server-rendered timeline styles in `TimelineApp.astro` and the hydrated enhancement styles in `TimelineIsland.tsx`.
 4. Do not add a growing list of CSS partial imports to a page or component when a tested feature entrypoint already exists.
 5. Do not put page-global CSS inside an `.astro` page when a page entrypoint exists.
 6. Put shared colours and surfaces in tokens, not feature selectors.
@@ -66,7 +66,6 @@ Because the OKLCH tier is emitted last, it is the preferred rendering path where
 Physical merging should happen only with browser coverage for the affected route and component boundary. Reasonable candidates are:
 
 1. The four homepage partials, now that `homepage.css` provides one stable entrypoint.
-2. The five hydrated timeline partials behind `timeline-island.css`.
-3. `degel-system.css` + `degel-system-art.css` + `degel-system-layout.css`, after dedicated explorer regression coverage.
+2. `degel-system.css` + `degel-system-art.css` + `degel-system-layout.css`, after dedicated explorer regression coverage.
 
-The global Starlight stack and server-rendered timeline stack are not candidates until their colour-processing differences are understood and removed at the build-pipeline level.
+The global Starlight stack and both timeline style stacks are not candidates until their processing differences are understood and removed at the build-pipeline level.
