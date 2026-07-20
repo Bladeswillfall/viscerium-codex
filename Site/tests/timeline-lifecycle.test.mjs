@@ -21,8 +21,9 @@ test('TimelineApp delegates browser behaviour to a client-loaded island', () => 
   const app = read('../src/components/timeline/TimelineApp.astro');
 
   assert.match(app, /import TimelineIsland from '\.\/TimelineIsland'/);
-  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline\.css'/);
-  assert.doesNotMatch(app, /styles\/(?:timeline-loading|timeline-performance|chronos-calendar-axis)\.css/);
+  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-loading\.css'/);
+  assert.match(app, /import '\.\.\/\.\.\/styles\/timeline-performance\.css'/);
+  assert.match(app, /import '\.\.\/\.\.\/styles\/chronos-calendar-axis\.css'/);
   assert.doesNotMatch(app, /timeline-scroll\.css/);
   assert.match(app, /<TimelineIsland[\s\S]*client:load/);
   assert.match(app, /fallbackEvents=\{fallbackEvents\}/);
@@ -35,6 +36,8 @@ test('the Preact island owns one forked Chronos mount, one hovercard and ordered
   assert.match(island, /useEffect\(/);
   assert.match(island, /useRef<HTMLDivElement>/);
   assert.match(island, /import \{ installTimelineHovercard \} from '\.\.\/\.\.\/lib\/timeline\/hovercard\.mjs'/);
+  assert.match(island, /import '\.\.\/\.\.\/styles\/timeline-island\.css'/);
+  assert.doesNotMatch(island, /styles\/(?:timeline-chronicle|timeline-toolbar|timeline-buttons)\.css/);
   assert.match(island, /await import\('\.\.\/\.\.\/lib\/timeline\/chronos-native-renderer\.mjs'\)/);
   assert.match(island, /const cleanupTimeline = mountTimeline\(root, dataset, options\)/);
   assert.match(island, /const cleanupHovercard = installTimelineHovercard\(root, dataset\)/);
