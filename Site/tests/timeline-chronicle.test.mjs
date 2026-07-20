@@ -6,14 +6,12 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 test('the Preact island enhances only the existing timeline list panel', () => {
   const island = read('../src/components/timeline/TimelineIsland.tsx');
-  const entrypoint = read('../src/styles/timeline-island.css');
   const chronicle = read('../src/lib/timeline/chronicle-view.mjs');
   const styles = read('../src/styles/timeline-chronicle.css');
   const renderer = read('../src/lib/timeline/chronos-native-renderer.mjs');
 
   assert.match(island, /installTimelineChronicle/);
-  assert.match(entrypoint, /@import '\.\/timeline-chronicle\.css'/);
-  assert.match(entrypoint, /@import '\.\/timeline-chronicle-layout\.css'/);
+  assert.match(island, /import '\.\.\/\.\.\/styles\/timeline-chronicle\.css'/);
   assert.match(island, /const cleanupChronicle = installTimelineChronicle\(root, dataset\)/);
   assert.match(island, /cleanupChronicle\(\);[\s\S]*cleanupHovercard\(\);[\s\S]*cleanupTimeline\(\);/);
 
