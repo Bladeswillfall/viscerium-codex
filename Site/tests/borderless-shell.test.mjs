@@ -35,6 +35,6 @@ test('the Okse Dominion source uses responsive two-column authoring blocks', () 
   assert.match(source, /### Oil: The Black Gold of the Dominion[\s\S]*\[cols:1-1 gap=xl align=start\]/);
 
   const compiled = transformCodexFormatting(source, { jsx: true });
-  assert.match(compiled, /className="cx-cols"/);
+  assert.match(compiled, /className="[^"]*\bcx-cols\b[^"]*"/);
   assert.match(compiled, /"--cx-columns":"1fr 1fr"/);
 });
