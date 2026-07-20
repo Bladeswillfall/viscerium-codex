@@ -62,7 +62,6 @@ const breadcrumbs = breadcrumbParts.map((part, index) => {
   {titleIcon && <CodexIcon spec={titleIcon} class="codex-title-icon" />}
   <span>{entry.title}</span>
 </h1>
-{entry.calendarDate && <CalendarDateBadge date={entry.calendarDate} title="Event date" />}
 {breadcrumbs.length > 0 && (
   <nav class="codex-breadcrumbs" aria-label="Breadcrumbs">
     <a href="/">Home</a>
@@ -74,6 +73,7 @@ const breadcrumbs = breadcrumbParts.map((part, index) => {
     ))}
   </nav>
 )}
+{entry.calendarDate && <CalendarDateBadge date={entry.calendarDate} title="Event date" />}
 {isDegelSystemIndex && <DegelSystemExplorer />}
 
 <style>
