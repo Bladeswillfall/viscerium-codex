@@ -4,17 +4,16 @@ Astro/Vite processes authored styles into production assets, but **where a style
 
 ## Homepage style manifest
 
-`homepage-styles.ts` is the single homepage import used by `index.astro`. It imports the existing CSS modules individually and in their established order:
+`homepage-styles.ts` is the single homepage stylesheet import used by `index.astro`. It imports the existing CSS modules individually and in their established order:
 
 1. `homepage-base.css`
 2. `homepage-content.css`
 3. `homepage-responsive.css`
 4. `homepage-reveal.css`
-5. `homepage-shell.css`
 
-The first four files retain their existing responsibilities. `homepage-shell.css` contains the Starlight shell overrides that previously lived in an inline global style block inside `index.astro`.
+The modules retain their existing responsibilities and continue to be processed separately by Astro/Vite. The homepage's small Starlight shell override remains in the page's global style block because moving it into another CSS module changed unrelated site-graph and timeline hovercard colour output during browser regression tests.
 
-This TypeScript manifest is deliberate. A CSS file using nested `@import` rules changed site-graph and timeline hovercard colours during browser regression tests. The module manifest gives maintainers one obvious entrypoint while allowing Astro/Vite to continue processing each stylesheet separately.
+A TypeScript manifest is deliberate here. A CSS file using nested `@import` rules changed computed colours elsewhere on the site. The manifest gives maintainers one obvious import location without changing how the CSS modules enter the build.
 
 ## Deliberate separate-file boundaries
 
@@ -23,6 +22,7 @@ The following stacks remain explicit because browser regression tests showed tha
 - The global Starlight/Codex files registered in `astro.config.mjs`.
 - The server-rendered timeline files imported by `TimelineApp.astro`.
 - The hydrated timeline files imported by `TimelineIsland.tsx`.
+- The homepage shell override embedded in `index.astro`.
 
 Do not collapse these boundaries merely to reduce the number of source files. Fewer files are not an improvement when rendered output changes.
 
@@ -54,7 +54,7 @@ Feature files remain separate where their selectors, loading boundary, and maint
 2. Keep first-party global styles explicitly registered in `astro.config.mjs` unless browser regression tests prove an alternative is neutral.
 3. Keep server-rendered timeline styles in `TimelineApp.astro` and hydrated enhancement styles in `TimelineIsland.tsx`.
 4. Use a TypeScript manifest—not CSS `@import`—when separate modules must be grouped behind one page import.
-5. Do not put page-global CSS inside an `.astro` page when a page-specific authored stylesheet exists.
+5. Keep page-scoped global overrides inline when externalising them changes build output; document the reason.
 6. Put shared colours and surfaces in tokens, not feature selectors.
 7. Put global geometry and late cascade overrides in `layout.css`.
 8. Put navigation and icon rules in `navigation.css`.
@@ -74,7 +74,7 @@ Because the OKLCH tier is emitted last, it is the preferred rendering path where
 
 Physical merging should happen only with browser coverage for the affected route and component boundary. Reasonable candidates are:
 
-1. Physically merge the homepage CSS modules after confirming the progressive-colour transform emits identical output for a single file.
+1. Physically merge homepage CSS modules only after the progressive-colour transform emits identical output for a single file.
 2. `degel-system.css` + `degel-system-art.css` + `degel-system-layout.css`, after dedicated explorer regression coverage.
 
 The global Starlight stack and both timeline style stacks are not candidates until their processing differences are understood and removed at the build-pipeline level.
