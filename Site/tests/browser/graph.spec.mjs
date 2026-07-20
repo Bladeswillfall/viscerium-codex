@@ -7,7 +7,6 @@ async function installTheme(page, theme) {
   await page.emulateMedia({ colorScheme: theme });
   await page.addInitScript((selectedTheme) => {
     localStorage.setItem('starlight-theme', selectedTheme);
-    document.documentElement.dataset.theme = selectedTheme;
   }, theme);
 }
 
