@@ -55,4 +55,14 @@ jobs:
           exit 1
 
       - name: Run browser checks
-        run: npx --no-install playwright test tests/browser --reporter=line --workers=1
+        shell: bash
+        run: |
+          set -o pipefail
+          npx --no-install playwright test tests/browser --reporter=line --workers=1 2>&1 | tee "$RUNNER_TEMP/browser-tests.log"
+
+      - name: Upload browser test log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: narrowed-browser-tests
+          path: ${{ runner.temp }}/browser-tests.log
