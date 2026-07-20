@@ -29,7 +29,22 @@ jobs:
           cache-dependency-path: Site/package-lock.json
 
       - run: npm ci --silent --no-audit --no-fund
-      - run: npm run test:unit
+      - name: Run unit tests
+        id: unit-tests
+        continue-on-error: true
+        run: npm run test:unit > "$RUNNER_TEMP/unit-tests.log" 2>&1
+      - name: Upload failed unit-test log
+        if: steps.unit-tests.outcome == 'failure'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: unit-test-log
+          path: ${{ runner.temp }}/unit-tests.log
+          retention-days: 1
+      - name: Fail failed unit tests
+        if: steps.unit-tests.outcome == 'failure'
+        run: |
+          tail -n 100 "$RUNNER_TEMP/unit-tests.log"
+          exit 1
       - run: npm run benchmark:timelines
       - run: npm run build
 
