@@ -1,39 +1,80 @@
 # Codex stylesheet architecture
 
-Styles are loaded in the order declared in `Site/astro.config.mjs`. Astro/Vite processes these source files into production assets, so source-file count should follow maintainability boundaries rather than treating every file as a separate browser request.
+The number of files in this directory looks excessive, but the current import boundaries are not merely organisational. In this project, **changing where a stylesheet enters the Astro/Vite module graph changes generated colour output and the final cascade**.
 
-## Core files
+## Tested consolidation result
 
-- `typography.css` — typefaces, prose rhythm, headings, and text overflow behaviour.
-- `codex-ui.css` — reusable Codex surfaces, cards, clusters, pills, warnings, and buttons.
-- `custom.css` — older shared article and authoring utilities. Prefer a more specific file for new feature work; reduce this file over time rather than adding unrelated rules.
-- `navigation.css` — icon rendering, left-sidebar presentation, and sidebar overlay behaviour.
-- `layout.css` — page grid, right-sidebar geometry, global square geometry, and late structural overrides.
-- `color-tokens.css` — dark/light colour tokens and Starlight token mappings.
-- `a11y.css` — focus visibility, reduced motion, forced colours, screen-reader helpers, and target sizing.
-- `era-styles.css` — era-scoped variables and treatments. Structural layout does not belong here.
+The following approaches were tested on a branch:
 
-## Feature files
+- one global CSS entrypoint using `@import`
+- one full timeline CSS entrypoint
+- a separate hydrated-timeline entrypoint
+- one homepage CSS entrypoint
+- a TypeScript manifest that imported homepage CSS modules
+- externalising the homepage's inline global shell overrides
+- physically merging the small homepage reveal stylesheet into another file
 
-- `graph.css` — graph views and related-page visualisation.
-- `timelines.css` — timeline components.
-- `maps.css` — map, image-panel, and gallery structures.
-- `calendar.css` — calendar modules and date badges.
-- `support.css` — support, contact, and social-link pages.
+All approaches passed unit tests and the production build. Browser regression tests still detected rendering changes, including:
 
-These feature files remain separate because their selectors, components, and maintenance cycles are distinct. Combining them would make human navigation worse while providing little or no production loading benefit after bundling.
+- `starlight-site-graph` failing to parse generated OKLCH custom-property values
+- the timeline hovercard resolving to a different computed colour
 
-## Progressive colour output
+The implementation changes were therefore reverted. The existing boundaries are preserved intentionally until the build pipeline produces deterministic output regardless of source-file grouping.
 
-Author CSS in stable HEX, RGB/RGBA, HSL/HSLA, Display-P3, or OKLCH values as appropriate. `Site/plugins/progressive-css-colors.mjs` keeps the authored declaration as the compatibility fallback, then emits a support-gated Display-P3 declaration and a final OKLCH declaration. The transform covers first-party styles, checked-in Starlight theme styles, Astro component style blocks, custom properties, gradients, shadows, and `color-mix()` interpolation spaces.
+## Current ownership
 
-Because the OKLCH tier is emitted last, it is the preferred rendering path where supported. Browsers without OKLCH fall back to Display-P3 where available, then to the original HEX/RGB-compatible declaration.
+### Global Starlight/Codex stack
 
-## Placement rules
+Registered explicitly and in order in `astro.config.mjs`:
 
-1. Put shared colours and surfaces in tokens, not feature selectors.
-2. Put global geometry and cascade overrides in `layout.css`.
-3. Put navigation and icon rules in `navigation.css`.
-4. Put era colour changes in `era-styles.css`; reuse the same selectors through `--era-*` variables.
-5. Do not edit generated or middleware CSS bundles. Port experiments into these authored files.
-6. Keep the right sidebar page-scrolling: do not add `overflow`, `overflow-y`, or scrollbar declarations to its sticky desktop rule.
+- `ion-layers.css` — cascade-layer declaration
+- `color-tokens.css` — shared palette, status, era, calendar, timeline, homepage, and Degel variables
+- `ion-theme.css` — Starlight theme adaptation and broad site presentation
+- `ion-expressive-code.css` — code-block integration
+- `typography.css` — typefaces, prose rhythm, and headings
+- `content-media.css` — article media treatment
+- `codex-ui.css` — reusable Codex surfaces, cards, buttons, and authoring utilities
+- `navigation.css` — icons, left navigation, and sidebar overlay behaviour
+- `header-controls.css` — header actions and controls
+- `graph.css`, `timelines.css`, `maps.css`, `calendar.css`, `category-index.css`, `support.css` — feature-owned presentation
+- `layout.css` — page geometry and late structural overrides
+- `a11y.css` — focus, reduced-motion, forced-colour, and target-size rules
+- `era-styles.css` — era-scoped variables and treatments
+
+### Homepage
+
+`index.astro` directly imports, in order:
+
+1. `homepage-base.css`
+2. `homepage-content.css`
+3. `homepage-responsive.css`
+4. `homepage-reveal.css`
+
+Its small Starlight shell override remains in the page's global style block because externalising it changed unrelated computed colours.
+
+### Timeline
+
+`TimelineApp.astro` owns the server-rendered timeline styles. `TimelineIsland.tsx` owns the hydrated Chronicle and toolbar styles. These must remain separate until the colour-processing issue is fixed.
+
+## Rules for human editing
+
+1. Treat import order and import location as part of the application behaviour.
+2. Do not introduce CSS `@import` aggregators for the global, homepage, or timeline stacks.
+3. Do not move page-global styles out of an Astro component without running browser regression tests.
+4. Put shared colours and semantic aliases in `color-tokens.css`; do not redefine them in feature files.
+5. Put global geometry and deliberate late overrides in `layout.css`.
+6. Put navigation rules in `navigation.css` and header-control rules in `header-controls.css`.
+7. Keep feature selectors in their named feature file.
+8. Before adding an override, identify which file should own the selector and remove or amend the competing rule where practical.
+9. Run unit tests, the production build, and the browser suite after any stylesheet-boundary change.
+
+## Prerequisite for meaningful consolidation
+
+The correct next engineering task is not another blind merge. First make `plugins/progressive-css-colors.mjs` produce identical transformed declarations regardless of whether source rules arrive from separate CSS modules, a CSS import, an Astro style block, or a physically merged file.
+
+Once that is deterministic, consolidation can be retried safely. The most useful targets would then be:
+
+1. global shell files with overlapping ownership (`ion-theme.css`, `navigation.css`, `header-controls.css`, and `layout.css`)
+2. timeline files grouped into graph, controls, and Chronicle ownership
+3. the Degel explorer's main, artwork, and layout files
+4. the four homepage files
