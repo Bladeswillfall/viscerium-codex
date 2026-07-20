@@ -3,6 +3,7 @@ import type { TimelineDataset, TimelineLaneMode } from '../../lib/timeline/types
 import { installTimelineChronicle } from '../../lib/timeline/chronicle-view.mjs';
 import { installTimelineHovercard } from '../../lib/timeline/hovercard.mjs';
 import { installTimelineToolbar } from '../../lib/timeline/toolbar-ui.mjs';
+import '../../styles/timeline-island.css';
 
 type TimelineIslandOptions = {
   defaultCalendar?: string;
