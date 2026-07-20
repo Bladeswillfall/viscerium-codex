@@ -6,12 +6,10 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 test('Starlight Pagefind and the owned header are explicitly enabled', () => {
   const config = read('../astro.config.mjs');
-  const entrypoint = read('../src/styles/codex.css');
 
   assert.match(config, /pagefind:\s*true/);
   assert.match(config, /Header:\s*'\.\/src\/components\/CodexHeader\.astro'/);
-  assert.match(config, /'\.\/src\/styles\/codex\.css'/);
-  assert.match(entrypoint, /@import '\.\/header-controls\.css'/);
+  assert.match(config, /'\.\/src\/styles\/header-controls\.css'/);
 });
 
 test('the Codex header renders Starlight search and theme controls', () => {
