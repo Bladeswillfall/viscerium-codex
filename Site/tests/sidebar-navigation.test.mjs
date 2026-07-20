@@ -35,17 +35,22 @@ test('desktop sidebar overlay uses an explicit unlayered state', () => {
   assert.match(navigation, /transform: translateX\(-110%\)/);
 });
 
-test('sidebar toggle rebinds safely and tracks the desktop layout', () => {
+test('sidebar toggle defaults closed, rebinds safely and tracks the desktop layout', () => {
   const footer = read('../src/components/StarlightFooter.astro');
 
   assert.match(footer, /aria-controls="starlight__sidebar"/);
+  assert.match(footer, /aria-expanded="false"/);
+  assert.match(footer, /aria-label="Show sidebar"/);
+  assert.match(footer, /<span aria-hidden="true">☰<\/span>/);
   assert.match(footer, /document\.getElementById\('starlight__sidebar'\)/);
   assert.match(footer, /window\.matchMedia\('\(min-width: 800px\)'\)/);
   assert.match(footer, /root\.toggleAttribute\('data-codex-desktop-sidebar', hasDesktopSidebar\)/);
   assert.match(footer, /document\.addEventListener\('astro:page-load', runtime\.sync\)/);
   assert.match(footer, /desktopQuery\.addEventListener\('change', runtime\.sync\)/);
   assert.match(footer, /button\.dataset\.codexSidebarBound === 'true'/);
-  assert.match(footer, /localStorage\.getItem\(storageKey\) === 'true'/);
+  assert.match(footer, /const stored = localStorage\.getItem\(storageKey\)/);
+  assert.match(footer, /return stored === null \? true : stored === 'true'/);
+  assert.match(footer, /catch \{\s*return true;\s*\}/);
   assert.match(footer, /localStorage\.setItem\(storageKey, String\(collapsed\)\)/);
 });
 
