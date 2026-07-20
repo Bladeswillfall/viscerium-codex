@@ -5,25 +5,30 @@ import { transformCodexFormatting } from '../scripts/codex-formatting.mjs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
-test('the borderless shell override loads after layout and before accessibility rules', () => {
+test('the borderless pass preserves the tested stylesheet registration graph', () => {
   const config = read('../astro.config.mjs');
-  const layoutIndex = config.indexOf("'./src/styles/layout.css'");
-  const borderlessIndex = config.indexOf("'./src/styles/borderless-shell.css'");
-  const accessibilityIndex = config.indexOf("'./src/styles/a11y.css'");
+  const css = read('../src/styles/codex-ui.css');
 
-  assert.ok(layoutIndex >= 0, 'layout.css must remain registered');
-  assert.ok(borderlessIndex > layoutIndex, 'borderless-shell.css must override structural styles');
-  assert.ok(accessibilityIndex > borderlessIndex, 'a11y.css must retain the final accessibility pass');
+  assert.doesNotMatch(config, /borderless-shell\.css/);
+  assert.match(css, /Temporary borderless presentation pass/);
+  assert.doesNotMatch(css, /body\s+:where\(\s*\*/);
 });
 
-test('structural borders are removed without flattening article callouts', () => {
-  const css = read('../src/styles/borderless-shell.css');
+test('structural borders are targeted without flattening article callouts or timelines', () => {
+  const css = read('../src/styles/codex-ui.css');
+  const reset = css.slice(css.indexOf('Temporary borderless presentation pass'));
 
-  assert.match(css, /border-width:\s*0 !important/);
-  assert.match(css, /\.sl-markdown-content blockquote \*/);
-  assert.match(css, /\.sl-markdown-content \.starlight-aside \*/);
-  assert.match(css, /\.sl-markdown-content \.codex-warning \*/);
-  assert.match(css, /@media \(forced-colors: active\)/);
+  assert.match(reset, /body :is\(/);
+  assert.match(reset, /\.content-panel/);
+  assert.match(reset, /\.codex-breadcrumbs/);
+  assert.match(reset, /\.sl-markdown-content h2/);
+  assert.doesNotMatch(reset, /blockquote/);
+  assert.doesNotMatch(reset, /starlight-aside/);
+  assert.doesNotMatch(reset, /vc-timeline-item/);
+  assert.doesNotMatch(reset, /vis-custom-time/);
+  assert.match(css, /\.codex-warning\s*\{[\s\S]*?border:/);
+  assert.match(css, /\.cx-card\s*\{[\s\S]*?border:/);
+  assert.match(reset, /@media \(forced-colors: active\)/);
 });
 
 test('the Okse Dominion source uses responsive two-column authoring blocks', () => {
