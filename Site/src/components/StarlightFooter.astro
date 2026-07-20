@@ -144,6 +144,10 @@ import siteConfig from '../../site.config.mjs';
 
 <style>
   @layer starlight.core {
+    :global(body:not(:has(.home-gateway)) .codex-main-pane > main) {
+      padding-block-end: 0;
+    }
+
     .codex-site-footer {
       flex-direction: column;
       gap: 1.5rem;
@@ -174,16 +178,27 @@ import siteConfig from '../../site.config.mjs';
       padding: 1.5rem var(--sl-content-pad-x);
     }
     .ion-codex-footer {
+      --ion-codex-footer-padding: 1rem;
+      box-sizing: border-box;
+      inline-size: 100vw;
+      max-inline-size: none;
       gap: 1rem;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       margin-top: 3rem;
-      padding: 1rem 0 0;
+      margin-inline: calc(50% - 50vw);
+      padding: var(--ion-codex-footer-padding);
       border: 1px solid var(--sl-color-hairline-light);
       border-radius: 0;
       background: var(--codex-surface-raised-color);
       font-size: var(--sl-text-sm);
+    }
+    @supports (width: 100dvw) {
+      .ion-codex-footer {
+        inline-size: 100dvw;
+        margin-inline: calc(50% - 50dvw);
+      }
     }
     .ion-codex-footer nav {
       display: flex;
