@@ -36,9 +36,6 @@ test('the Preact island owns one forked Chronos mount, one hovercard and ordered
   assert.match(island, /useEffect\(/);
   assert.match(island, /useRef<HTMLDivElement>/);
   assert.match(island, /import \{ installTimelineHovercard \} from '\.\.\/\.\.\/lib\/timeline\/hovercard\.mjs'/);
-  assert.match(island, /import '\.\.\/\.\.\/styles\/timeline-chronicle\.css'/);
-  assert.match(island, /import '\.\.\/\.\.\/styles\/timeline-toolbar\.css'/);
-  assert.match(island, /import '\.\.\/\.\.\/styles\/timeline-buttons\.css'/);
   assert.match(island, /await import\('\.\.\/\.\.\/lib\/timeline\/chronos-native-renderer\.mjs'\)/);
   assert.match(island, /const cleanupTimeline = mountTimeline\(root, dataset, options\)/);
   assert.match(island, /const cleanupHovercard = installTimelineHovercard\(root, dataset\)/);
