@@ -3,7 +3,6 @@ title: "The Trench Line at Orra Vale"
 description: "Three winters of static warfare turned Orra Vale into the model for industrial fortification and generational siege."
 publish: true
 status: canon
-slug: eras/smog/events/the-trench-line-at-orra-vale
 type: event
 era: SMOG
 calendarDate:
@@ -45,6 +44,7 @@ tags:
   - "smog"
   - "timeline-showcase"
   - "trench-war"
+slug: eras/smog/events/the-trench-line-at-orra-vale
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Trench Line at Orra Vale.md"
 updated: "2026-07-10T20:48:59Z"

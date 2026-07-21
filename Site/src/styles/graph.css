@@ -191,11 +191,6 @@
     color: var(--sl-color-white);
   }
 
-  .codex-sidebar-section .slsg-graph-component {
-    --slsg-graph-width: 100%;
-    --slsg-graph-height: 14rem;
-  }
-
   .world-graph .slsg-graph-component {
     --slsg-graph-width: 100%;
     --slsg-graph-height: min(70vh, 48rem);

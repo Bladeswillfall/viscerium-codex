@@ -3,7 +3,6 @@ title: "The Night of Seven Bells"
 description: "Seven citadel bells rang together without being struck, drawing thousands into the streets before dawn."
 publish: true
 status: canon
-slug: eras/citadel/events/the-night-of-seven-bells
 type: event
 era: CITADEL
 calendarDate:
@@ -36,6 +35,7 @@ tags:
   - "citadel"
   - "timeline-showcase"
   - "same-day"
+slug: eras/citadel/events/the-night-of-seven-bells
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The Night of Seven Bells.md"
 updated: "2026-07-10T20:48:59Z"

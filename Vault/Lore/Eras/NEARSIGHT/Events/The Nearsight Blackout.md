@@ -3,7 +3,6 @@ title: "The Nearsight Blackout"
 description: "A coordinated systems failure blinded military, civic and orbital sensors across multiple continents."
 publish: true
 status: canon
-slug: eras/nearsight/events/the-nearsight-blackout
 type: event
 era: NEARSIGHT
 calendarDate:

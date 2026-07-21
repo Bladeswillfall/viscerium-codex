@@ -3,7 +3,6 @@ title: "GARMIR Gate Ignition"
 description: "The GARMIR transit structure opened a stable corridor through folded space for eleven minutes."
 publish: true
 status: canon
-slug: eras/entropy/events/garmir-gate-ignition
 type: event
 era: ENTROPY
 calendarDate:
@@ -38,6 +37,7 @@ tags:
   - "timeline-showcase"
   - "garmir"
   - "same-day"
+slug: eras/entropy/events/garmir-gate-ignition
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/GARMIR Gate Ignition.md"
 updated: "2026-07-10T20:48:59Z"

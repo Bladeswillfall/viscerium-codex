@@ -3,7 +3,6 @@ title: NEARSIGHT
 description: "The near-future age of occult cassette futurism, mechanised war, dense cities and enemies visible only through instruments."
 publish: true
 status: canon
-slug: eras/nearsight
 type: era
 eraId: nearsight
 calendarDate:

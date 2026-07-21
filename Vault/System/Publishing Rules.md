@@ -10,12 +10,11 @@ title: Example Title
 description: "A short, reader-safe description for search and link previews."
 publish: true
 status: canon
-slug: eras/citadel/example-title
 type: article
 ---
 ```
 
-The sync script derives the public route from the note path, except for the root `index` page. Treat `Vault/Lore/` as the source of truth; never manually maintain generated files in `Site/src/content/docs/`.
+The sync script derives the public route from the note path relative to `Vault/Lore/`. Do not add `slug` frontmatter, and treat file moves as URL changes. Treat `Vault/Lore/` as the source of truth; never manually maintain generated files in `Site/src/content/docs/`.
 
 ## Recommended frontmatter
 
@@ -38,7 +37,7 @@ tags:
 related:
   - Example City
   - Example Battle
-image: example-banner.webp
+image: example-banner.svg
 imagePage: /eras/citadel/images/example-banner/
 alt: "Describe the image for screen readers."
 credit: Artist Name / Rights Holder
@@ -104,9 +103,9 @@ Use Markdown tables only for real tabular data.
 Store source images in `Vault/Assets/Images/` and maps in `Vault/Assets/Maps/`. Reference plain filenames in frontmatter where practical:
 
 ```yaml
-image: example-banner.webp
-headerImage: example-banner.webp
-asset: example-banner.webp
+image: example-banner.svg
+headerImage: example-banner.svg
+asset: example-banner.svg
 ```
 
 Create a `type: image` note when artwork needs provenance, rights or usage notes.

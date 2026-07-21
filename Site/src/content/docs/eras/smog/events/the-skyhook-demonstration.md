@@ -3,7 +3,6 @@ title: "The Skyhook Demonstration"
 description: "An armoured observation gondola climbed above the smog ceiling on a tethered electric cable before a military audience."
 publish: true
 status: canon
-slug: eras/smog/events/the-skyhook-demonstration
 type: event
 era: SMOG
 calendarDate:
@@ -37,6 +36,7 @@ tags:
   - "smog"
   - "timeline-showcase"
   - "aviation"
+slug: eras/smog/events/the-skyhook-demonstration
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Skyhook Demonstration.md"
 updated: "2026-07-10T20:48:59Z"

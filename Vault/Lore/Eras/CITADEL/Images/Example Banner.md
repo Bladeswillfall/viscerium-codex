@@ -3,11 +3,10 @@ title: Example Banner
 description: "A sample image sidecar page for artwork provenance, sidebar usage, rights, and related lore links."
 publish: false
 status: draft
-slug: eras/citadel/images/example-banner
 type: image
 era: CITADEL
-asset: example-banner.webp
-image: example-banner.webp
+asset: example-banner.svg
+image: example-banner.svg
 alt: "A simple placeholder fantasy banner."
 artist: "Unknown placeholder artist"
 editor: "Fall"
@@ -39,7 +38,7 @@ A placeholder image used to test image sidecar pages, article sidebar artwork, a
 
 ## Artwork Preview
 
-![[example-banner.webp]]
+![[example-banner.svg]]
 
 ## Provenance
 

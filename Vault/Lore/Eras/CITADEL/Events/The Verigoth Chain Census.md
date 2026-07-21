@@ -3,7 +3,6 @@ title: "The Verigoth Chain Census"
 description: "A six-year accounting of captives, debts and hereditary bondage conducted across the Verigoth chain-holds."
 publish: true
 status: canon
-slug: eras/citadel/events/the-verigoth-chain-census
 type: event
 era: CITADEL
 calendarDate:

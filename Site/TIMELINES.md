@@ -55,6 +55,8 @@ The compiler converts dates to absolute world-days. The Chronos adapter maps tho
 
 A native `chronos` block is a self-contained presentation timeline. Its date text is its own source and is not automatically imported into the canonical compiler. Do not duplicate a canonical event in a Chronos block merely to place it on a generated era timeline.
 
+Canonical routes are derived from note paths relative to `Vault/Lore/`; do not add `slug` frontmatter to event or era notes.
+
 ## Canonical event schema
 
 ```yaml
@@ -63,7 +65,6 @@ title: Example Event
 description: "A concise public description."
 publish: true
 status: canon
-slug: eras/citadel/events/example-event
 type: event
 era: CITADEL
 
@@ -143,7 +144,6 @@ title: CITADEL
 description: "A time of steel, bone and thrones."
 publish: true
 status: canon
-slug: eras/citadel
 type: era
 eraId: citadel
 

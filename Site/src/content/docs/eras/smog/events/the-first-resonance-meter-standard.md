@@ -3,7 +3,6 @@ title: "The First Resonance Meter Standard"
 description: "Guild laboratories agreed on a reproducible scale for comparing Resonant activity across instruments and cities."
 publish: true
 status: canon
-slug: eras/smog/events/the-first-resonance-meter-standard
 type: event
 era: SMOG
 calendarDate:
@@ -37,6 +36,7 @@ tags:
   - "smog"
   - "timeline-showcase"
   - "science"
+slug: eras/smog/events/the-first-resonance-meter-standard
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The First Resonance Meter Standard.md"
 updated: "2026-07-10T20:48:59Z"

@@ -3,7 +3,6 @@ title: "The RD-76 Dart Plunge Trial"
 description: "An RD-76 Dart completed a controlled near-orbital nose-down plunge and recovered under its own power."
 publish: true
 status: canon
-slug: eras/nearsight/events/the-rd-76-dart-plunge-trial
 type: event
 era: NEARSIGHT
 calendarDate:
@@ -37,6 +36,7 @@ tags:
   - "nearsight"
   - "timeline-showcase"
   - "rd-76"
+slug: eras/nearsight/events/the-rd-76-dart-plunge-trial
 eraStyle: e3
 sourcePath: "Eras/NEARSIGHT/Events/The RD-76 Dart Plunge Trial.md"
 updated: "2026-07-10T20:48:59Z"

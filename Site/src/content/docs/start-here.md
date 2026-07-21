@@ -3,9 +3,9 @@ title: Start Here
 description: "A guided introduction to VISCERIUM, the Degel System, and its four connected eras."
 publish: true
 status: canon
-slug: start-here
 type: article
 headerImage: /assets/images/viscerium-banner.webp
+slug: start-here
 sourcePath: "Start Here.md"
 updated: "2026-07-12T13:47:48+01:00"
 ---

@@ -30,7 +30,7 @@ publish: true
 status: canon
 ```
 
-Published notes must also include `title` and `description`. Optional fields currently supported by the content schema include `slug`, `type`, `era`, and `faction`.
+Published notes must also include `title` and `description`. Their routes are derived from paths relative to `Vault/Lore/`; `slug` frontmatter is rejected. Optional fields currently supported by the content schema include `type`, `era`, and `faction`.
 
 ## Configuration
 

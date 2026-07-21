@@ -3,7 +3,6 @@ title:
 description:
 publish: false
 status: draft
-slug:
 type: timeline
 headerImage:
 ---

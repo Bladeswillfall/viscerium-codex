@@ -58,6 +58,10 @@ export function validateVaultNotes(manifest) {
   for (const { file, data, content } of manifest.records) {
     if (data.publish !== true) continue;
 
+    if (Object.hasOwn(data, 'slug')) {
+      fail(`Published note routes are derived from file paths; remove frontmatter "slug": ${relative(file)}`);
+    }
+
     if (!allowedStatuses.has(data.status)) {
       fail(`Published note must use status: canon: ${relative(file)}${data.status ? ` (found status: ${data.status})` : ''}`);
       continue;

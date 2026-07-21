@@ -3,7 +3,6 @@ title: "The Ash-Winter Pilgrimage"
 description: "A disputed three-year migration in which Resonant penitents crossed the burned north and returned speaking in borrowed voices."
 publish: true
 status: canon
-slug: eras/citadel/events/the-ash-winter-pilgrimage
 type: event
 era: CITADEL
 calendarDate:

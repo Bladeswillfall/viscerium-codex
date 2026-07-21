@@ -6,7 +6,7 @@ This file uses the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) form
 
 ## [0.2.0] - 2026-07-10
 
-### Added
+### Added in 0.2.0
 
 - Added automatically generated public index pages for every category folder containing published canon notes.
 - Added subcategory and descendant-page listings to generated category routes.
@@ -14,12 +14,12 @@ This file uses the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) form
 
 ### Changed
 
-- Updated graph, mini-graph, backlinks, feeds, and sidebar navigation to use canonical public slugs.
+- Updated graph, backlinks, feeds, and sidebar navigation to use canonical public slugs.
 - Excluded generated category indexes from RSS and Atom update feeds.
 
 ## [0.1.0] - 2026-07-08
 
-### Added
+### Added in 0.1.0
 
 - Added the first VISCERIUM Codex changelog source file.
 - Added the Starlight Changelogs integration and generated changelog pages.

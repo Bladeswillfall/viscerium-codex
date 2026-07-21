@@ -3,7 +3,6 @@ title: "The Last Calendar Correction"
 description: "On a leap intercalary day, the major human polities reconciled their drifting clocks to one civil chronology for the last time."
 publish: true
 status: canon
-slug: eras/entropy/events/the-last-calendar-correction
 type: event
 era: ENTROPY
 calendarDate:

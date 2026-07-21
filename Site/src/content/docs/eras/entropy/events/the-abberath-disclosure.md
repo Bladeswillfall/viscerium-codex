@@ -3,7 +3,6 @@ title: "The Abberath Disclosure"
 description: "Leaked archives revealed that Abberath manifestations had been catalogued, cultivated and suppressed for centuries."
 publish: true
 status: canon
-slug: eras/entropy/events/the-abberath-disclosure
 type: event
 era: ENTROPY
 calendarDate:
@@ -37,6 +36,7 @@ tags:
   - "entropy"
   - "timeline-showcase"
   - "abberath"
+slug: eras/entropy/events/the-abberath-disclosure
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The Abberath Disclosure.md"
 updated: "2026-07-10T20:48:59Z"

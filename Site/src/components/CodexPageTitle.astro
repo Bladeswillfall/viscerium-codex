@@ -41,22 +41,98 @@ const breadcrumbs = breadcrumbParts.map((part, index) => {
   const label = index === breadcrumbParts.length - 1
     ? entry.title
     : part.replace(/[-_]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
-  return { href, label, current: index === breadcrumbParts.length - 1 };
-});
+  return { href, label, current: index === breadcrumbParts.length - 1, part, previous: breadcrumbParts[index - 1] };
+}).filter(({ part, previous }) => part !== 'version' || previous !== 'releases');
 ---
 
 {headerImage && (
-  <figure class="codex-header-figure">
-    <img
-      class={headerClass}
-      src={headerImage}
-      alt={headerAlt}
-      aria-describedby={headerDescriptionId}
-      loading="eager"
-      decoding="async"
-    />
-    {headerDescription && <figcaption id={headerDescriptionId} class="codex-sr-only">{headerDescription}</figcaption>}
-  </figure>
+  <>
+    <svg class="codex-header-fade-filter" width="0" height="0" aria-hidden="true">
+      <linearGradient id="codex-header-inner-fade-gradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="white" />
+        <stop offset=".68" stop-color="white" />
+        <stop offset=".72" stop-color="white" stop-opacity=".98" />
+        <stop offset=".76" stop-color="white" stop-opacity=".92" />
+        <stop offset=".8" stop-color="white" stop-opacity=".82" />
+        <stop offset=".84" stop-color="white" stop-opacity=".68" />
+        <stop offset=".88" stop-color="white" stop-opacity=".5" />
+        <stop offset=".92" stop-color="white" stop-opacity=".31" />
+        <stop offset=".96" stop-color="white" stop-opacity=".14" />
+        <stop offset="1" stop-color="white" stop-opacity="0" />
+      </linearGradient>
+      <mask
+        id="codex-header-inner-fade"
+        maskUnits="objectBoundingBox"
+        maskContentUnits="objectBoundingBox"
+      >
+        <rect width="1" height="1" fill="url(#codex-header-inner-fade-gradient)" />
+      </mask>
+      <filter
+        id="codex-header-bottom-fade"
+        x="0"
+        y="0"
+        width="100%"
+        height="170%"
+        color-interpolation-filters="sRGB"
+      >
+        <feTurbulence type="fractalNoise" baseFrequency=".45" numOctaves="3" seed="11" result="noise" />
+        <feColorMatrix
+          in="noise"
+          values="0 0 0 0 .5
+                  .333 .333 .333 0 0
+                  0 0 0 0 .5
+                  0 0 0 1 0"
+          result="vertical-noise"
+        />
+        <feColorMatrix in="noise" type="luminanceToAlpha" result="noise-alpha" />
+        <feComponentTransfer in="noise-alpha" result="grain-alpha">
+          <feFuncA type="table" tableValues=".1 1" />
+        </feComponentTransfer>
+        <feComponentTransfer in="SourceAlpha" result="inverse-alpha">
+          <feFuncA type="linear" slope="-1" intercept="1" />
+        </feComponentTransfer>
+        <feComposite in="SourceAlpha" in2="inverse-alpha" operator="in" result="fade-band" />
+        <feComposite in="fade-band" in2="grain-alpha" operator="in" result="grain-cut" />
+        <feComponentTransfer in="grain-cut" result="scaled-grain-cut">
+          <feFuncA type="linear" slope="2" />
+        </feComponentTransfer>
+        <feComposite in="SourceGraphic" in2="scaled-grain-cut" operator="out" result="grained-source" />
+        <feGaussianBlur in="grained-source" stdDeviation="0 18" result="blurred" />
+        <feOffset in="blurred" dy="30" result="extended" />
+        <feDisplacementMap
+          in="extended"
+          in2="vertical-noise"
+          scale="24"
+          xChannelSelector="R"
+          yChannelSelector="G"
+          result="grainy-extension"
+        />
+        <feComposite
+          in="grainy-extension"
+          in2="grained-source"
+          operator="out"
+          result="outside-extension"
+        />
+        <feComposite in="outside-extension" in2="grain-alpha" operator="in" result="grained-extension" />
+        <feComponentTransfer in="grained-extension" result="faded-extension">
+          <feFuncA type="linear" slope=".55" />
+        </feComponentTransfer>
+        <feBlend in="grained-source" in2="faded-extension" />
+      </filter>
+    </svg>
+
+    <figure class="codex-header-figure">
+      <img
+        class={headerClass}
+        src={headerImage}
+        alt={headerAlt}
+        aria-describedby={headerDescriptionId}
+        loading="eager"
+        decoding="async"
+      />
+      {headerDescription && <figcaption id={headerDescriptionId} class="codex-sr-only">{headerDescription}</figcaption>}
+    </figure>
+  </>
 )}
 <h1 id="_top" class:list={{ 'codex-page-title': Boolean(titleIcon) }}>
   {titleIcon && <CodexIcon spec={titleIcon} class="codex-title-icon" />}
@@ -78,8 +154,29 @@ const breadcrumbs = breadcrumbParts.map((part, index) => {
 
 <style>
   @layer starlight.core {
+    .codex-header-fade-filter {
+      position: fixed;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
     .codex-header-figure {
+      position: relative;
+      z-index: 0;
       margin: 0;
+      filter: url('#codex-header-bottom-fade');
+    }
+
+    .codex-header-image {
+      -webkit-mask-image: url('#codex-header-inner-fade');
+      mask-image: url('#codex-header-inner-fade');
+    }
+
+    .codex-header-figure + h1 {
+      position: relative;
+      z-index: 1;
+      margin-top: -2.25rem;
     }
 
     h1 {

@@ -32,7 +32,7 @@ export async function generateTimelineData({ manifest, validateOnly = false } = 
     if (record.data.publish !== true || record.data.status !== 'canon') continue;
     const data = { ...record.data };
     data.type ||= inferNoteType(record.file, vault.rootDir);
-    const slug = data.slug === 'index' ? 'index' : slugFromRecord(record);
+    const slug = slugFromRecord(record);
     records.push({
       data,
       sourcePath: record.relativePath,

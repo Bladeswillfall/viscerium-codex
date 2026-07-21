@@ -3,7 +3,6 @@ title: Example City
 description: "A sample city with generated map marker data, faction links, tags, and public layout guidance."
 publish: false
 status: draft
-slug: eras/citadel/locations/example-city
 type: location
 icon: location
 era: CITADEL
