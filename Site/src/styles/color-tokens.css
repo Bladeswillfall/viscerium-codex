@@ -13,6 +13,7 @@
     --codex-palette-ink: #101010;
     --codex-palette-deep: #484137;
     --codex-palette-mid: #888070;
+    --codex-palette-page-light: #b9b4a9;
     --codex-palette-light: #c8bfa8;
     --codex-text-base: #a0a0a0;
     --codex-text-body: var(--codex-text-base);
@@ -185,8 +186,8 @@
 
   :root[data-theme='light'] {
     color-scheme: light;
-    --codex-page-bg: var(--codex-palette-mid);
-    --codex-bg: var(--codex-palette-mid);
+    --codex-page-bg: var(--codex-palette-page-light);
+    --codex-bg: var(--codex-palette-page-light);
     --codex-bg-soft: var(--codex-palette-light);
     --codex-text-body: #151515;
     --codex-text-minor: var(--codex-text-body);
