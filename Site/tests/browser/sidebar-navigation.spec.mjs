@@ -24,6 +24,17 @@ function sidebarState(element) {
   return ancestry;
 }
 
+async function expectSidebarOpen(sidebar) {
+  await expect.poll(async () => sidebar.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return style.visibility === 'visible'
+      && style.opacity === '1'
+      && style.pointerEvents === 'auto'
+      && rect.right > 200;
+  })).toBe(true);
+}
+
 test('left navigation starts collapsed, can open, and resets closed on reload', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/start-here/', { waitUntil: 'networkidle' });
 
@@ -41,11 +52,12 @@ test('left navigation starts collapsed, can open, and resets closed on reload', 
 
   await showButton.click();
   const hideButton = page.getByRole('button', { name: 'Hide sidebar' });
-  const openAncestry = await sidebar.evaluate(sidebarState);
-  console.log(`[sidebar-open-state] ${JSON.stringify(openAncestry)}`);
 
   await expect(hideButton).toBeVisible();
   await expect(page.locator('html')).not.toHaveClass(/codex-sidebar-collapsed/);
+  await expectSidebarOpen(sidebar);
+
+  const openAncestry = await sidebar.evaluate(sidebarState);
   expect(openAncestry[0]?.width).toBeGreaterThan(200);
   expect(openAncestry[0]?.height).toBeGreaterThan(200);
   expect(openAncestry.every((entry) => entry.display !== 'none')).toBe(true);
@@ -81,7 +93,7 @@ test('homepage loads without a reveal and keeps its desktop navigation closed in
 
   await page.getByRole('button', { name: 'Show sidebar' }).click();
   await expect(page.getByRole('button', { name: 'Hide sidebar' })).toBeVisible();
-  await expect(sidebar).toBeVisible();
+  await expectSidebarOpen(sidebar);
 
   const geometry = await page.evaluate(() => {
     const sidebarRect = document.getElementById('starlight__sidebar')?.getBoundingClientRect();
