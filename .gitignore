@@ -17,6 +17,11 @@ Vault/.obsidian/plugins/*/styles.css
 !Vault/.obsidian/plugins/mysnippets-plugin/main.js
 !Vault/.obsidian/plugins/mysnippets-plugin/styles.css
 
+# VISCERIUM Timelines is maintained in this repository. Track the runnable
+# bundle so the vault integration works immediately after pulling.
+!Vault/.obsidian/plugins/viscerium-timelines/main.js
+!Vault/.obsidian/plugins/viscerium-timelines/styles.css
+
 # Obsidian workspace state
 Vault/.obsidian/workspace.json
 Vault/.obsidian/workspace-mobile.json
