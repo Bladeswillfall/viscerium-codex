@@ -167,22 +167,6 @@ import siteConfig from '../../site.config.mjs';
         0 1px 0 var(--sl-color-hairline-light);
     }
 
-    /*
-      Paint a guaranteed black junction directly behind the rounded deck edge.
-      This prevents the page/root background from showing through the corner cut-outs
-      while the actual sticky footer remains at z-index: -1 beneath page content.
-    */
-    .codex-page-deck::after {
-      content: '';
-      position: absolute;
-      z-index: -1;
-      inset-inline: 0;
-      inset-block-end: -20px;
-      block-size: 20px;
-      background: var(--codex-nav-bg);
-      pointer-events: none;
-    }
-
     .codex-site-footer {
       flex-direction: column;
       gap: 1.5rem;
@@ -219,7 +203,8 @@ import siteConfig from '../../site.config.mjs';
     }
 
     .ion-codex-footer {
-      --ion-codex-footer-padding: 2rem clamp(1.5rem, 3vw, 2.125rem) 1.25rem;
+      --ion-codex-footer-overlap: 2rem;
+      --ion-codex-footer-padding: var(--ion-codex-footer-overlap) clamp(1.5rem, 3vw, 2.125rem) 1.25rem;
       position: sticky;
       bottom: 0;
       z-index: -1;
@@ -231,7 +216,7 @@ import siteConfig from '../../site.config.mjs';
       min-block-size: 7rem;
       max-inline-size: none;
       gap: 1.5rem;
-      margin-top: -20px;
+      margin-top: calc(-1 * var(--ion-codex-footer-overlap));
       margin-inline: calc(50% - 50vw);
       padding: var(--ion-codex-footer-padding);
       border: 0;
@@ -248,7 +233,7 @@ import siteConfig from '../../site.config.mjs';
     .ion-codex-footer::before {
       content: '';
       position: absolute;
-      inset-block-start: 2rem;
+      inset-block-start: var(--ion-codex-footer-overlap);
       inset-inline-start: 50%;
       inline-size: 3.375rem;
       block-size: 0.1875rem;
@@ -317,10 +302,6 @@ import siteConfig from '../../site.config.mjs';
       .codex-page-deck {
         border-radius: 0;
         box-shadow: none;
-      }
-
-      .codex-page-deck::after {
-        display: none;
       }
 
       .ion-codex-footer {
