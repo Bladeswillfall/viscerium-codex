@@ -1,0 +1,55 @@
+/*
+ * Bases cards
+ * Improves the visual hierarchy and browsing feel of Obsidian Bases card views.
+ */
+
+.bases-view {
+  --bases-cards-background: var(--background-secondary);
+  --bases-cards-cover-background: var(--background-primary-alt);
+  --bases-cards-border: 1px solid var(--background-modifier-border);
+  --bases-cards-shadow: none;
+  --bases-cards-shadow-hover: 0 0.55rem 1.5rem var(--background-modifier-box-shadow);
+}
+
+.bases-cards-group {
+  gap: 1rem;
+  padding: 0.5rem 0.25rem 1.25rem;
+}
+
+.bases-cards-item {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.bases-cards-item:hover {
+  transform: translateY(-2px);
+}
+
+.bases-cards-cover {
+  background: var(--bases-cards-cover-background);
+}
+
+.bases-cards-property {
+  padding-inline: 0.75rem;
+}
+
+.bases-cards-property.mod-title {
+  padding-top: 0.7rem;
+  font-size: 1.02em;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.bases-cards-property:not(.mod-title) {
+  color: var(--text-muted);
+  font-size: 0.88em;
+}
+
+.bases-cards-label {
+  color: var(--text-faint);
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
