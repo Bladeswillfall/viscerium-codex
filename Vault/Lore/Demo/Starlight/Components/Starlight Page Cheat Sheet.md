@@ -9,8 +9,6 @@ alt: "A VISCERIUM artwork sample used to demonstrate the standard page sidebar i
 publish: true
 status: canon
 type: system
-icon: codex
-sidebarIcon: location
 titleIcon: codex
 era: CITADEL
 faction:
@@ -108,7 +106,7 @@ Everything below is optional.
 
 ## Frontmatter and page chrome
 
-This page itself demonstrates a header image, sidebar artwork, title/sidebar icons, automatic date badge, page banner, custom right sidebar, TOC depth, disabled pagination, and disabled Pagefind indexing.
+This page itself demonstrates a header image, sidebar artwork, a title icon, automatic date badge, page banner, custom right sidebar, TOC depth, disabled pagination, and disabled Pagefind indexing. Navigation icons are documented below rather than assigned live on this system page because Starlight pagination also consumes sidebar labels.
 
 ```yaml
 headerImage: /assets/images/example-banner.webp
@@ -151,7 +149,7 @@ sidebar:
 | `headerImage` | Large page-title artwork with the shared fade treatment. |
 | `image` | Artwork in the right-hand page information panel. |
 | `imageTitle`, `artist`, `alt` | Artwork context, provenance, and accessible text. |
-| `icon`, `sidebarIcon`, `titleIcon` | Shared local icon treatment. |
+| `icon`, `sidebarIcon`, `titleIcon` | Shared local icon treatment for navigation and/or the page title. |
 | `era` | Taxonomy plus the matching era styling where applicable. |
 | `faction`, `location`, `participants`, `tags` | Metadata, filtering, graphing, and editorial classification. |
 | `related` / `relationships` | Graph and related-entry connections. |
@@ -182,9 +180,9 @@ H4 through H6 are available when deeper structure is genuinely useful.
 
 ### Icon headings
 
-For a Codex icon heading, write the heading marker `## `, then `[` followed immediately by `Icon:codex]`, then the heading text. Replace `codex` with another validated local icon name such as `location` when appropriate.
+For a Codex icon heading, write the heading marker `## `, then an opening square bracket, immediately followed by `Icon:codex]`, then the heading text. Replace `codex` with another validated local icon name such as `location` when appropriate.
 
-This cheat sheet demonstrates the icon system live in its page title/navigation chrome through `icon: codex`, `titleIcon: codex`, and `sidebarIcon: location`. Body-level icon shortcodes use the same icon names.
+This cheat sheet demonstrates the icon system live through its `titleIcon: codex`. The `icon` and `sidebarIcon` frontmatter forms are shown in the copy/paste example above.
 
 ## Inline formatting
 
