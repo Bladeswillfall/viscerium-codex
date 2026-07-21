@@ -9,6 +9,7 @@
   --explorer-private: #ef6f91;
   --explorer-system: #a78bfa;
   --explorer-templates: #65d6ad;
+  --explorer-stories: #f97316;
 }
 
 .workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is([data-path="Lore"], [data-path^="Lore/"]) {
@@ -31,12 +32,17 @@
   --explorer-folder-color: var(--explorer-templates);
 }
 
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is([data-path="Stories"], [data-path^="Stories/"]) {
+  --explorer-folder-color: var(--explorer-stories);
+}
+
 .workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is(
   [data-path="Lore"], [data-path^="Lore/"],
   [data-path="Drafts"], [data-path^="Drafts/"],
   [data-path="Private"], [data-path^="Private/"],
   [data-path="System"], [data-path^="System/"],
-  [data-path="Templates"], [data-path^="Templates/"]
+  [data-path="Templates"], [data-path^="Templates/"],
+  [data-path="Stories"], [data-path^="Stories/"]
 ) {
   color: color-mix(in srgb, var(--explorer-folder-color) 78%, var(--text-normal));
   --nav-collapse-icon-color: color-mix(in srgb, var(--explorer-folder-color) 72%, transparent);
@@ -45,7 +51,7 @@
 }
 
 .workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is(
-  [data-path="Lore"], [data-path="Drafts"], [data-path="Private"], [data-path="System"], [data-path="Templates"]
+  [data-path="Lore"], [data-path="Drafts"], [data-path="Private"], [data-path="System"], [data-path="Templates"], [data-path="Stories"]
 ) {
   color: var(--explorer-folder-color);
 }
@@ -55,7 +61,8 @@
   [data-path="Drafts"], [data-path^="Drafts/"],
   [data-path="Private"], [data-path^="Private/"],
   [data-path="System"], [data-path^="System/"],
-  [data-path="Templates"], [data-path^="Templates/"]
+  [data-path="Templates"], [data-path^="Templates/"],
+  [data-path="Stories"], [data-path^="Stories/"]
 ) .nav-folder-title-content::before {
   background-color: var(--explorer-folder-color);
 }
@@ -80,12 +87,17 @@
   --explorer-guide-color: var(--explorer-templates);
 }
 
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder:has(> .nav-folder-title:is([data-path="Stories"], [data-path^="Stories/"])) {
+  --explorer-guide-color: var(--explorer-stories);
+}
+
 .workspace-leaf-content[data-type="file-explorer"] .nav-folder:has(> .nav-folder-title:is(
   [data-path="Lore"], [data-path^="Lore/"],
   [data-path="Drafts"], [data-path^="Drafts/"],
   [data-path="Private"], [data-path^="Private/"],
   [data-path="System"], [data-path^="System/"],
-  [data-path="Templates"], [data-path^="Templates/"]
+  [data-path="Templates"], [data-path^="Templates/"],
+  [data-path="Stories"], [data-path^="Stories/"]
 )) > .nav-folder-children {
   border-left-color: color-mix(in srgb, var(--explorer-guide-color) 34%, transparent);
 }

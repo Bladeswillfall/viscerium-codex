@@ -1,10 +1,11 @@
-import { MarkdownRenderChild, Notice, Plugin, TFile } from 'obsidian';
+import { ItemView, MarkdownRenderChild, Notice, Plugin, TFile, WorkspaceLeaf } from 'obsidian';
 import 'vis-timeline/styles/vis-timeline-graph2d.min.css';
 import '../../Site/src/styles/timelines.css';
 import '../../Site/src/styles/chronos.css';
 import { compileTimelineRecords, TimelineCompilationError } from '../../Site/src/lib/timeline/compiler.mjs';
 import { LANE_MODES, TIMELINE_IDS } from '../../Site/src/lib/timeline/core.mjs';
 import { mountTimeline } from '../../Site/src/lib/timeline/chronos-native-renderer.mjs';
+import { buildStoryLineTimelineDataset, inferStoryLineProjectBase } from '../../Site/src/lib/timeline/storyline-adapter.mjs';
 
 type TimelineBlock = {
   timeline: string;
@@ -17,6 +18,8 @@ type TimelineBlock = {
 };
 
 type CompiledResult = ReturnType<typeof compileTimelineRecords>;
+
+const STORY_TIMELINE_VIEW_TYPE = 'viscerium-storyline-timeline';
 
 function parseBoolean(value: unknown, fallback: boolean): boolean {
   if (value === undefined) return fallback;
@@ -94,11 +97,94 @@ class TimelineRenderChild extends MarkdownRenderChild {
   }
 }
 
+class StoryTimelineView extends ItemView {
+  private readonly plugin: VisceriumTimelinesPlugin;
+  private dataset: any | null = null;
+  private issues: Array<{ filePath: string; message: string }> = [];
+  private projectTitle = 'Story';
+  private disposeRenderer: (() => void) | null = null;
+
+  constructor(leaf: WorkspaceLeaf, plugin: VisceriumTimelinesPlugin) {
+    super(leaf);
+    this.plugin = plugin;
+  }
+
+  getViewType(): string {
+    return STORY_TIMELINE_VIEW_TYPE;
+  }
+
+  getDisplayText(): string {
+    return `${this.projectTitle} — VISCERIUM Story Timeline`;
+  }
+
+  getIcon(): string {
+    return 'clock-3';
+  }
+
+  async onOpen(): Promise<void> {
+    this.render();
+  }
+
+  async onClose(): Promise<void> {
+    this.disposeRenderer?.();
+    this.disposeRenderer = null;
+  }
+
+  setProject(projectTitle: string, dataset: any, issues: Array<{ filePath: string; message: string }>): void {
+    this.projectTitle = projectTitle;
+    this.dataset = dataset;
+    this.issues = issues;
+    this.render();
+  }
+
+  private render(): void {
+    const container = this.containerEl.children[1] as HTMLElement | undefined;
+    if (!container) return;
+    this.disposeRenderer?.();
+    this.disposeRenderer = null;
+    container.empty();
+    container.addClass('vc-storyline-timeline-view');
+
+    const header = container.createDiv({ cls: 'vc-storyline-timeline-header' });
+    header.createEl('h2', { text: `${this.projectTitle} — Story Timeline` });
+    header.createEl('p', {
+      text: 'Read-only VISCERIUM calendar view generated from StoryLine scene metadata. Scene files remain the single source of truth.',
+    });
+
+    if (!this.dataset?.events?.length) {
+      container.createEl('p', {
+        cls: 'codex-warning',
+        text: 'No dated StoryLine scenes found. Add storyDate to scenes using e.g. “16 Sólmanuthur, 9250”.',
+      });
+    } else {
+      const mount = container.createDiv({ cls: 'vc-obsidian-timeline-mount' });
+      this.disposeRenderer = mountTimeline(mount, this.dataset, {
+        defaultCalendar: this.dataset.defaultCalendar,
+        laneMode: 'unified',
+        showFilters: true,
+        showMinimap: true,
+        showLegend: false,
+        compact: false,
+        articleHandler: (event: { sourcePath?: string }) => this.plugin.openVaultFile(event.sourcePath),
+      });
+    }
+
+    if (this.issues.length) {
+      const details = container.createEl('details', { cls: 'vc-storyline-timeline-issues' });
+      details.createEl('summary', { text: `${this.issues.length} scene${this.issues.length === 1 ? '' : 's'} not placed on the VISCERIUM calendar` });
+      const list = details.createEl('ul');
+      for (const entry of this.issues) list.createEl('li', { text: `${entry.filePath}: ${entry.message}` });
+    }
+  }
+}
+
 export default class VisceriumTimelinesPlugin extends Plugin {
   private compiled: CompiledResult | null = null;
   private compilePromise: Promise<CompiledResult> | null = null;
 
   async onload(): Promise<void> {
+    this.registerView(STORY_TIMELINE_VIEW_TYPE, (leaf) => new StoryTimelineView(leaf, this));
+
     this.registerEvent(this.app.metadataCache.on('changed', () => this.invalidate()));
     this.registerEvent(this.app.vault.on('create', () => this.invalidate()));
     this.registerEvent(this.app.vault.on('delete', () => this.invalidate()));
@@ -116,6 +202,12 @@ export default class VisceriumTimelinesPlugin extends Plugin {
           new Notice(error instanceof Error ? error.message : String(error), 10000);
         }
       },
+    });
+
+    this.addCommand({
+      id: 'open-storyline-project-timeline',
+      name: 'Open StoryLine project timeline',
+      callback: async () => this.openStoryLineProjectTimeline(),
     });
 
     this.registerMarkdownPostProcessor(async (element, context) => {
@@ -165,6 +257,49 @@ export default class VisceriumTimelinesPlugin extends Plugin {
         }
       }
     });
+  }
+
+  public async openVaultFile(sourcePath?: string): Promise<void> {
+    if (!sourcePath) return;
+    const file = this.app.vault.getAbstractFileByPath(sourcePath);
+    if (file instanceof TFile) await this.app.workspace.getLeaf(false).openFile(file);
+    else new Notice(`Vault note not found: ${sourcePath}`);
+  }
+
+  private async openStoryLineProjectTimeline(): Promise<void> {
+    const active = this.app.workspace.getActiveFile();
+    if (!active) {
+      new Notice('Open a StoryLine project or scene under Stories/ first.');
+      return;
+    }
+
+    const projectBase = inferStoryLineProjectBase(active.path);
+    if (!projectBase) {
+      new Notice('The active note is not inside a StoryLine project under Stories/.');
+      return;
+    }
+
+    const scenePrefix = `${projectBase}/Scenes/`;
+    const scenes = this.app.vault.getMarkdownFiles()
+      .filter((file) => file.path.startsWith(scenePrefix))
+      .sort((left, right) => left.path.localeCompare(right.path))
+      .map((file) => {
+        const frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter ?? {};
+        return { ...frontmatter, filePath: file.path, title: frontmatter.title ?? file.basename };
+      })
+      .filter((scene) => scene.type === 'scene');
+
+    if (!scenes.length) {
+      new Notice(`No StoryLine scenes found in ${scenePrefix}`);
+      return;
+    }
+
+    const projectTitle = projectBase.split('/').at(-1) ?? 'Story';
+    const { dataset, issues } = buildStoryLineTimelineDataset(scenes, projectTitle);
+    const leaf = this.app.workspace.getLeaf(true);
+    await leaf.setViewState({ type: STORY_TIMELINE_VIEW_TYPE, active: true });
+    if (leaf.view instanceof StoryTimelineView) leaf.view.setProject(projectTitle, dataset, issues);
+    this.app.workspace.revealLeaf(leaf);
   }
 
   private invalidate(): void {

@@ -23,12 +23,17 @@
   --explorer-file-color: var(--explorer-templates, #65d6ad);
 }
 
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="Stories/"] {
+  --explorer-file-color: var(--explorer-stories, #f97316);
+}
+
 .workspace-leaf-content[data-type="file-explorer"] .nav-file-title:is(
   [data-path^="Lore/"],
   [data-path^="Drafts/"],
   [data-path^="Private/"],
   [data-path^="System/"],
-  [data-path^="Templates/"]
+  [data-path^="Templates/"],
+  [data-path^="Stories/"]
 ):not(.is-active) {
   color: color-mix(in srgb, var(--explorer-file-color) 30%, var(--text-normal));
 }
@@ -38,7 +43,8 @@
   [data-path^="Drafts/"],
   [data-path^="Private/"],
   [data-path^="System/"],
-  [data-path^="Templates/"]
+  [data-path^="Templates/"],
+  [data-path^="Stories/"]
 ):not(.is-active):hover {
   color: color-mix(in srgb, var(--explorer-file-color) 52%, var(--text-normal));
   --nav-item-background-hover: color-mix(in srgb, var(--explorer-file-color) 8%, transparent);
@@ -49,7 +55,8 @@
   [data-path^="Drafts/"],
   [data-path^="Private/"],
   [data-path^="System/"],
-  [data-path^="Templates/"]
+  [data-path^="Templates/"],
+  [data-path^="Stories/"]
 ) [data-icon] {
   color: inherit;
 }

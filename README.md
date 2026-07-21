@@ -8,7 +8,8 @@ The main Codex currently builds as a static Cloudflare Pages site. The private c
 
 - `Vault/` — open this folder in Obsidian. Your lore source lives here.
 - `Vault/Lore/` — only public/canon notes from this folder are published.
-- `Vault/Drafts/`, `Vault/Private/`, `Vault/System/`, `Vault/Templates/` — never published by the sync script.
+- `Vault/Drafts/`, `Vault/Private/`, `Vault/Stories/`, `Vault/System/`, `Vault/Templates/` — never published by the sync script.
+- `Vault/Stories/` — private/offline narrative projects. StoryLine uses this as its project root; story files remain Markdown/YAML and are never Codex sources.
 - `Vault/Assets/Images/` and `Vault/Assets/Maps/` — source assets copied to `Site/public/assets/` when referenced.
 - `Site/` — Astro + Starlight website. Do not manually edit `Site/src/content/docs/` because it is regenerated.
 
