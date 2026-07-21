@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import process from 'node:process';
 import { loadGeneratedDocs, loadVaultContent } from './content-manifest.mjs';
 import { validateVaultAssets } from './validate-vault-assets.mjs';
@@ -10,11 +11,28 @@ const modeArgument = process.argv.find((value) => value.startsWith('--mode='));
 const mode = modeArgument?.slice('--mode='.length) || 'build';
 const validModes = new Set(['sync', 'dev', 'build']);
 
+async function syncShellAssets() {
+  const noiseSource = new URL('../src/assets/images/codex-noise.webp.b64.txt', import.meta.url);
+  const noiseTargetDir = new URL('../public/assets/images/', import.meta.url);
+  const noiseTarget = new URL('../public/assets/images/codex-noise.webp', import.meta.url);
+  const encoded = (await fs.readFile(noiseSource, 'utf8')).trim();
+  const decoded = Buffer.from(encoded, 'base64');
+
+  const isWebp = decoded.subarray(0, 4).toString('ascii') === 'RIFF'
+    && decoded.subarray(8, 12).toString('ascii') === 'WEBP';
+  if (!isWebp) throw new Error('Codex noise source did not decode to a valid WebP asset.');
+
+  await fs.mkdir(noiseTargetDir, { recursive: true });
+  await fs.writeFile(noiseTarget, decoded);
+}
+
 if (!validModes.has(mode)) {
   console.error(`Unknown content build mode "${mode}". Expected sync, dev, or build.`);
   process.exitCode = 1;
 } else {
   try {
+    await syncShellAssets();
+
     const vault = await loadVaultContent({ refresh: true });
     if (!validateVaultNotes(vault)) throw new Error('Vault source validation failed.');
     if (!(await validateVaultAssets())) throw new Error('Vault asset validation failed.');
