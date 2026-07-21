@@ -69,4 +69,17 @@ jobs:
           exit 1
 
       - name: Run browser checks
-        run: npx --no-install playwright test tests/browser --reporter=line --workers=1
+        run: |
+          if npx --no-install playwright test tests/browser --reporter=line --workers=1 > "$RUNNER_TEMP/viscerium-browser-tests.log" 2>&1; then
+            tail -40 "$RUNNER_TEMP/viscerium-browser-tests.log"
+          else
+            tail -120 "$RUNNER_TEMP/viscerium-browser-tests.log"
+            exit 1
+          fi
+      - name: Upload failed browser-test log
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: browser-test-failure
+          path: ${{ runner.temp }}/viscerium-browser-tests.log
+          if-no-files-found: ignore
