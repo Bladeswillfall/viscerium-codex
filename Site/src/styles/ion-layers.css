@@ -14,7 +14,6 @@
   --codex-z-elevated-surface: 2;
   --codex-z-navigation: 60;
   --codex-z-control: 1000;
-  --codex-z-reveal: 9999;
   --codex-z-grain: 999999;
 }
 
@@ -65,10 +64,6 @@ html[data-codex-desktop-sidebar] #starlight__sidebar {
 .codex-sidebar-toggle,
 #scroll-to-top-button {
   z-index: var(--codex-z-control) !important;
-}
-
-.home-reveal {
-  z-index: var(--codex-z-reveal) !important;
 }
 
 /* Film grain has been restored to its pre-background-stack behaviour. */
