@@ -29,7 +29,14 @@ jobs:
           cache-dependency-path: Site/package-lock.json
 
       - run: npm ci --silent --no-audit --no-fund
-      - run: npm run test:unit
+      - name: Run unit tests
+        run: |
+          if npm run test:unit > "$RUNNER_TEMP/viscerium-unit-tests.log" 2>&1; then
+            tail -40 "$RUNNER_TEMP/viscerium-unit-tests.log"
+          else
+            tail -120 "$RUNNER_TEMP/viscerium-unit-tests.log"
+            exit 1
+          fi
       - run: npm run benchmark:timelines
       - run: npm run build
 
