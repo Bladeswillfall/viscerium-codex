@@ -1,8 +1,7 @@
 filters:
   and:
-    - 'type == "myrkild-unit"'
+    - type == "myrkild-unit"
     - '!file.inFolder("Templates")'
-
 properties:
   unit_id:
     displayName: Unit ID
@@ -36,7 +35,6 @@ properties:
     displayName: Artwork
   review_status:
     displayName: Review
-
 views:
   - type: cards
     name: All Units
@@ -62,12 +60,11 @@ views:
     imageFit: cover
     imageAspectRatio: 1.5
     image: image
-
   - type: cards
     name: CITADEL
     filters:
       and:
-        - 'era == "CITADEL"'
+        - era == "CITADEL"
     groupBy:
       property: myrkild_species
       direction: ASC
@@ -89,12 +86,11 @@ views:
     imageFit: cover
     imageAspectRatio: 1.5
     image: image
-
   - type: cards
     name: SMOG
     filters:
       and:
-        - 'era == "SMOG"'
+        - era == "SMOG"
     groupBy:
       property: myrkild_species
       direction: ASC
@@ -116,12 +112,11 @@ views:
     imageFit: cover
     imageAspectRatio: 1.5
     image: image
-
   - type: cards
     name: NEARSIGHT
     filters:
       and:
-        - 'era == "NEARSIGHT"'
+        - era == "NEARSIGHT"
     groupBy:
       property: myrkild_species
       direction: ASC
@@ -143,12 +138,11 @@ views:
     imageFit: cover
     imageAspectRatio: 1.5
     image: image
-
   - type: cards
     name: ENTROPY
     filters:
       and:
-        - 'era == "ENTROPY"'
+        - era == "ENTROPY"
     groupBy:
       property: myrkild_species
       direction: ASC
@@ -170,12 +164,11 @@ views:
     imageFit: cover
     imageAspectRatio: 1.5
     image: image
-
   - type: cards
     name: Mutated
     filters:
       and:
-        - 'origin == "Mutated"'
+        - origin == "Mutated"
     groupBy:
       property: era
       direction: ASC
@@ -198,12 +191,11 @@ views:
     imageFit: cover
     imageAspectRatio: 1.5
     image: image
-
   - type: cards
     name: Purespawn
     filters:
       and:
-        - 'origin == "Purespawn"'
+        - origin == "Purespawn"
     groupBy:
       property: era
       direction: ASC
@@ -224,12 +216,11 @@ views:
     imageFit: cover
     imageAspectRatio: 1.5
     image: image
-
   - type: cards
     name: Irradiated
     filters:
       and:
-        - 'subtype == "Irradiated"'
+        - subtype == "Irradiated"
     groupBy:
       property: era
       direction: ASC
@@ -250,7 +241,6 @@ views:
     imageFit: cover
     imageAspectRatio: 1.5
     image: image
-
   - type: table
     name: Database
     groupBy:
