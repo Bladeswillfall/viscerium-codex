@@ -14,7 +14,7 @@ const validModes = new Set(['sync', 'dev', 'build']);
 async function syncShellAssets() {
   const noiseSource = new URL('../src/assets/images/codex-noise.webp.b64.txt', import.meta.url);
   const noiseTargetDir = new URL('../public/assets/images/', import.meta.url);
-  const noiseTarget = new URL('../public/assets/images/codex-noise.webp', import.meta.url);
+  const noiseTarget = new URL('../public/assets/images/codex-noise-v2.webp', import.meta.url);
   const encoded = (await fs.readFile(noiseSource, 'utf8')).trim();
   const decoded = Buffer.from(encoded, 'base64');
 
