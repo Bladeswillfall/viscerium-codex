@@ -35,6 +35,27 @@ const shouldRenderSearch =
   </div>
 </div>
 
+<style is:global>
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: url('/assets/images/codex-noise.webp') repeat;
+    opacity: .7;
+    visibility: visible;
+    pointer-events: none;
+    display: block;
+    mix-blend-mode: soft-light;
+  }
+
+  @media print, (forced-colors: active) {
+    body::before {
+      display: none;
+    }
+  }
+</style>
+
 <script is:inline>
   (() => {
     const runtimeKey = '__visceriumHeaderRuntime';
