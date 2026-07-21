@@ -11,10 +11,10 @@ import Webmentions from './Webmentions.astro';
   type="button"
   data-codex-sidebar-toggle
   aria-controls="starlight__sidebar"
-  aria-expanded="true"
-  aria-label="Hide sidebar"
+  aria-expanded="false"
+  aria-label="Show sidebar"
 >
-  <span aria-hidden="true">←</span>
+  <span aria-hidden="true">☰</span>
 </button>
 
 <div class="codex-page-deck">
@@ -32,26 +32,9 @@ import Webmentions from './Webmentions.astro';
 
 <script is:inline>
   (() => {
-    const storageKey = 'viscerium-sidebar-collapsed';
     const root = document.documentElement;
     const runtime = window.__visceriumSidebar ??= {};
     const desktopQuery = window.matchMedia('(min-width: 800px)');
-
-    const readStoredState = () => {
-      try {
-        return localStorage.getItem(storageKey) === 'true';
-      } catch {
-        return false;
-      }
-    };
-
-    const writeStoredState = (collapsed) => {
-      try {
-        localStorage.setItem(storageKey, String(collapsed));
-      } catch {
-        // The sidebar still works when storage is unavailable.
-      }
-    };
 
     const setCollapsed = (button, collapsed) => {
       root.classList.toggle('codex-sidebar-collapsed', collapsed);
@@ -75,7 +58,7 @@ import Webmentions from './Webmentions.astro';
       }
     };
 
-    runtime.sync = () => {
+    runtime.sync = (resetCollapsed = false) => {
       const button = document.querySelector('[data-codex-sidebar-toggle]');
       const sidebar = document.getElementById('starlight__sidebar');
       const hasDesktopSidebar = Boolean(sidebar && desktopQuery.matches);
@@ -92,24 +75,23 @@ import Webmentions from './Webmentions.astro';
       }
 
       button.hidden = false;
-      setCollapsed(button, readStoredState());
+      setCollapsed(button, resetCollapsed || root.classList.contains('codex-sidebar-collapsed'));
 
       if (button.dataset.codexSidebarBound === 'true') return;
       button.dataset.codexSidebarBound = 'true';
       button.addEventListener('click', () => {
         const collapsed = !root.classList.contains('codex-sidebar-collapsed');
-        writeStoredState(collapsed);
         setCollapsed(button, collapsed);
       });
     };
 
     if (!runtime.pageLoadBound) {
-      document.addEventListener('astro:page-load', runtime.sync);
+      document.addEventListener('astro:page-load', () => runtime.sync(true));
       runtime.pageLoadBound = true;
     }
 
     if (!runtime.desktopQueryBound) {
-      desktopQuery.addEventListener('change', runtime.sync);
+      desktopQuery.addEventListener('change', () => runtime.sync(true));
       runtime.desktopQueryBound = true;
     }
 
@@ -118,7 +100,7 @@ import Webmentions from './Webmentions.astro';
       runtime.mobileTocObserver.observe(document.body, { childList: true, subtree: true });
     }
 
-    runtime.sync();
+    runtime.sync(true);
   })();
 </script>
 
