@@ -184,9 +184,7 @@ H4 through H6 are available when deeper structure is genuinely useful.
 
 For a Codex icon heading, write the heading marker `## `, then `[` followed immediately by `Icon:codex]`, then the heading text. Replace `codex` with another validated local icon name such as `location` when appropriate.
 
-### [Icon:codex] Live icon-heading example
-
-The live heading above uses that exact authoring form and is transformed by the Codex sync pipeline.
+This cheat sheet demonstrates the icon system live in its page title/navigation chrome through `icon: codex`, `titleIcon: codex`, and `sidebarIcon: location`. Body-level icon shortcodes use the same icon names.
 
 ## Inline formatting
 
