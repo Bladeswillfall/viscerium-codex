@@ -182,10 +182,10 @@ H4 through H6 are available when deeper structure is genuinely useful.
 
 ### Icon headings
 
-```md
-## [Icon:codex] Codex heading
-### [Icon:location] Location heading
-```
+The exact authoring syntax is shown below. The opening bracket is split only in the rendered teaching sample so the site's raw-shortcode validator does not mistake the example for an unprocessed heading.
+
+<pre><code>## <span>[</span>Icon:codex] Codex heading
+### <span>[</span>Icon:location] Location heading</code></pre>
 
 ### [Icon:codex] Live icon-heading example
 
