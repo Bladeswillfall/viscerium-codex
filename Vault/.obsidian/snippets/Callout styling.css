@@ -1,0 +1,29 @@
+/*
+ * Callout styling
+ * Keeps callouts distinct without letting them dominate a text-heavy page.
+ */
+
+.callout {
+  margin-block: 1rem 1.25rem;
+  border: 1px solid color-mix(in srgb, rgb(var(--callout-color)) 34%, var(--background-modifier-border));
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, rgb(var(--callout-color)) 8%, var(--background-primary));
+  box-shadow: none;
+}
+
+.callout-title {
+  align-items: center;
+  gap: 0.45rem;
+  padding-block: 0.1rem;
+  font-size: 0.9em;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+}
+
+.callout-content {
+  padding-top: 0.25rem;
+}
+
+.callout-content > :last-child {
+  margin-bottom: 0;
+}

@@ -1,0 +1,25 @@
+/*
+ * Image styling
+ * Gives embedded artwork consistent spacing and restrained framing.
+ */
+
+.markdown-reading-view .image-embed {
+  display: block;
+  margin-block: 1.15rem 1.45rem;
+  text-align: center;
+}
+
+.markdown-reading-view .image-embed img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 0.65rem;
+  background: var(--background-secondary);
+}
+
+.markdown-reading-view .image-embed[alt*="|"] img,
+.markdown-reading-view .image-embed img[width] {
+  width: auto;
+}

@@ -1,0 +1,30 @@
+/*
+ * MySnippets menu
+ * Gives the MySnippets popup enough room for descriptive snippet names.
+ */
+
+.MySnippets-statusbar-menu {
+  min-width: min(24rem, calc(100vw - 2rem));
+  max-height: min(70vh, 38rem);
+  overflow-y: auto;
+}
+
+.MySnippets-statusbar-menu .menu-item {
+  gap: 0.45rem;
+}
+
+.MySnippets-statusbar-menu .menu-item-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.MySnippets-statusbar-menu .checkbox-container {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.MySnippets-statusbar-menu .MS-OpenSnippet,
+.MySnippets-statusbar-menu .MySnippetsButton {
+  flex: 0 0 auto;
+  margin-left: 0.2rem;
+}
