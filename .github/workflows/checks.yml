@@ -31,7 +31,21 @@ jobs:
       - run: npm ci --silent --no-audit --no-fund
       - run: npm run test:unit
       - run: npm run benchmark:timelines
-      - run: npm run build
+      - name: Run build
+        run: |
+          if npm run build > "$RUNNER_TEMP/viscerium-build.log" 2>&1; then
+            tail -40 "$RUNNER_TEMP/viscerium-build.log"
+          else
+            tail -160 "$RUNNER_TEMP/viscerium-build.log"
+            exit 1
+          fi
+      - name: Upload failed build log
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: cheat-sheet-build-failure
+          path: ${{ runner.temp }}/viscerium-build.log
+          if-no-files-found: ignore
 
       - name: Build Obsidian timeline plugin
         working-directory: Tools/obsidian-viscerium-timelines
