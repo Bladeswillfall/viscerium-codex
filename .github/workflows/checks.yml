@@ -39,6 +39,14 @@ jobs:
           npm ci --no-audit --no-fund
           npm run build
 
+      - name: Upload Obsidian timeline plugin bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: viscerium-timelines-plugin
+          path: Tools/obsidian-viscerium-timelines/dist/
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Install browser runtime
         run: |
           npm install --no-save --package-lock=false --legacy-peer-deps --no-audit --no-fund @playwright/test@1.55.0
