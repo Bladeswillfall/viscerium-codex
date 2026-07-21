@@ -2,6 +2,18 @@
   "theme": "obsidian",
   "cssTheme": "Vanilla AMOLED Color",
   "enabledCssSnippets": [
-    "viscerium-sidebar"
+    "Infobox sidebar",
+    "Readable line width",
+    "Heading hierarchy",
+    "Paragraph spacing",
+    "Compact properties",
+    "Table styling",
+    "Image styling",
+    "Callout styling",
+    "Embed styling",
+    "Compact file explorer",
+    "Folder icons",
+    "Bases cards",
+    "MySnippets menu"
   ]
 }
