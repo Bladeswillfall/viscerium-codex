@@ -37,6 +37,13 @@ jobs:
             tail -120 "$RUNNER_TEMP/viscerium-unit-tests.log"
             exit 1
           fi
+      - name: Upload failed unit-test log
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: unit-test-failure
+          path: ${{ runner.temp }}/viscerium-unit-tests.log
+          if-no-files-found: ignore
       - run: npm run benchmark:timelines
       - run: npm run build
 
