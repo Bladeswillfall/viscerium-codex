@@ -39,12 +39,13 @@ test('the two-column shell contains local stacking and normal page surfaces cove
   assert.match(layers, /\.ion-codex-footer\s*\{[\s\S]*?z-index:\s*var\(--codex-z-underlay\)/);
 });
 
-test('the article end deck covers empty columns until the footer overlap zone', () => {
+test('the article end deck uses the full query-container width rather than viewport breakout geometry', () => {
   assert.match(
     layers,
-    /body:not\(:has\(\.home-gateway\)\) \.codex-page-deck::before\s*\{[\s\S]*?z-index:\s*-1[\s\S]*?inset-block-end:\s*20px[\s\S]*?inline-size:\s*100vw[\s\S]*?background:\s*var\(--codex-page-bg\)/,
+    /body:not\(:has\(\.home-gateway\)\) \.codex-page-deck::before\s*\{[\s\S]*?z-index:\s*-1[\s\S]*?inset-block:\s*0[\s\S]*?inset-inline-start:\s*0[\s\S]*?inline-size:\s*100cqw[\s\S]*?background:\s*var\(--codex-page-bg\)/,
   );
-  assert.match(layers, /@supports \(width:\s*100dvw\)[\s\S]*?\.codex-page-deck::before\s*\{[\s\S]*?inline-size:\s*100dvw/);
+  assert.doesNotMatch(layers, /\.codex-page-deck::before\s*\{[\s\S]*?inline-size:\s*100(?:d)?vw/);
+  assert.doesNotMatch(layers, /\.codex-page-deck::before\s*\{[\s\S]*?translateX\(-50%\)/);
   assert.match(layers, /@media print, \(forced-colors: active\)[\s\S]*?\.codex-page-deck::before\s*\{[\s\S]*?display:\s*none/);
 });
 
@@ -58,6 +59,7 @@ test('global chrome and overlays use the shared hierarchy', () => {
 test('the footer keeps the proven literal overlap while using the shared underlay tier', () => {
   assert.match(footer, /\.ion-codex-footer\s*\{[\s\S]*?z-index:\s*-1/);
   assert.match(footer, /\.ion-codex-footer\s*\{[\s\S]*?margin-top:\s*-20px/);
+  assert.match(footer, /\.ion-codex-footer\s*\{[\s\S]*?inline-size:\s*100cqw/);
   assert.doesNotMatch(footer, /margin-top:\s*calc\(/);
 });
 
