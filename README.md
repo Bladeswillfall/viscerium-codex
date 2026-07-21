@@ -208,5 +208,5 @@ When proper GA4 tracking is ready, add the real public values in Cloudflare and 
 
 ```bash
 PUBLIC_GA4_ENABLED=1
-PUBLIC_GA4_MEASUREMENT_ID=G-REAL-MEASUREMENT-ID
+PUBLIC_GA4_MEASUREMENT_ID=G-REAL_MEASUREMENT_ID
 ```
