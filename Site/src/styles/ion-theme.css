@@ -10,11 +10,6 @@
     --sl-text-2xl: 1.5rem;
   }
 
-  :root[data-theme='light'] {
-    --codex-page-bg: rgb(185, 180, 169);
-    --codex-bg: rgb(185, 180, 169);
-  }
-
   /* Navigation stays OLED black in both themes and owns its foreground scale. */
   header.header,
   #starlight__sidebar {
