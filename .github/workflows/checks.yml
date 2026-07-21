@@ -54,18 +54,5 @@ jobs:
           cat "$RUNNER_TEMP/viscerium-preview.log"
           exit 1
 
-      - name: Run sidebar browser checks
-        run: |
-          if npx --no-install playwright test tests/browser/sidebar-navigation.spec.mjs --reporter=line --workers=1 > "$RUNNER_TEMP/viscerium-sidebar-browser.log" 2>&1; then
-            tail -40 "$RUNNER_TEMP/viscerium-sidebar-browser.log"
-          else
-            tail -160 "$RUNNER_TEMP/viscerium-sidebar-browser.log"
-            exit 1
-          fi
-      - name: Upload failed sidebar browser log
-        if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: sidebar-browser-failure
-          path: ${{ runner.temp }}/viscerium-sidebar-browser.log
-          if-no-files-found: ignore
+      - name: Run browser checks
+        run: npx --no-install playwright test tests/browser --reporter=line --workers=1
