@@ -167,6 +167,22 @@ import siteConfig from '../../site.config.mjs';
         0 1px 0 var(--sl-color-hairline-light);
     }
 
+    /*
+      Paint a guaranteed black junction directly behind the rounded deck edge.
+      This prevents the page/root background from showing through the corner cut-outs
+      while the actual sticky footer remains at z-index: -1 beneath page content.
+    */
+    .codex-page-deck::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset-inline: 0;
+      inset-block-end: -20px;
+      block-size: 20px;
+      background: var(--codex-nav-bg);
+      pointer-events: none;
+    }
+
     .codex-site-footer {
       flex-direction: column;
       gap: 1.5rem;
@@ -203,7 +219,7 @@ import siteConfig from '../../site.config.mjs';
     }
 
     .ion-codex-footer {
-      --ion-codex-footer-padding: 2.5rem clamp(1.5rem, 3vw, 2.125rem) 1.75rem;
+      --ion-codex-footer-padding: 2rem clamp(1.5rem, 3vw, 2.125rem) 1.25rem;
       position: sticky;
       bottom: 0;
       z-index: -1;
@@ -212,7 +228,7 @@ import siteConfig from '../../site.config.mjs';
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
       align-items: end;
       inline-size: 100vw;
-      min-block-size: 9.375rem;
+      min-block-size: 7rem;
       max-inline-size: none;
       gap: 1.5rem;
       margin-top: -20px;
@@ -289,7 +305,7 @@ import siteConfig from '../../site.config.mjs';
       .ion-codex-footer {
         grid-template-columns: 1fr;
         align-items: start;
-        min-block-size: 11rem;
+        min-block-size: 8.5rem;
       }
 
       .ion-codex-footer nav {
@@ -301,6 +317,10 @@ import siteConfig from '../../site.config.mjs';
       .codex-page-deck {
         border-radius: 0;
         box-shadow: none;
+      }
+
+      .codex-page-deck::after {
+        display: none;
       }
 
       .ion-codex-footer {
