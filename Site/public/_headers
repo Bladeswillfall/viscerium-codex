@@ -8,11 +8,11 @@
 
 /giscus-light.css
   Access-Control-Allow-Origin: https://giscus.app
-  Cache-Control: public, max-age=300
+  Cache-Control: public, max-age=0, must-revalidate
 
 /giscus-auto.css
   Access-Control-Allow-Origin: https://giscus.app
-  Cache-Control: public, max-age=300
+  Cache-Control: public, max-age=0, must-revalidate
 
 /assets/*
   Cache-Control: public, max-age=604800
