@@ -1,6 +1,7 @@
 filters:
   and:
     - 'type == "myrkild-unit"'
+    - '!file.inFolder("Templates")'
 
 properties:
   unit_id:
