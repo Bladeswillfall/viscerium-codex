@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 const footer = read('../src/components/StarlightFooter.astro');
+const layers = read('../src/styles/ion-layers.css');
 
 test('normal Codex pages remove the inherited main bottom padding without touching the homepage', () => {
   assert.match(
@@ -25,6 +26,14 @@ test('article metadata stays on a raised deck while the navigation rail is a sep
   assert.match(footer, /\.codex-page-deck\s*\{[\s\S]*?border-radius:\s*0 0 1\.25rem 1\.25rem/);
   assert.match(footer, /\.codex-page-deck\s*\{[\s\S]*?box-shadow:/);
   assert.doesNotMatch(footer, /\.codex-page-deck::after/);
+});
+
+test('the page deck covers empty columns until the 20px footer overlap zone', () => {
+  assert.match(
+    layers,
+    /body:not\(:has\(\.home-gateway\)\) \.codex-page-deck::before\s*\{[\s\S]*?inset-block-end:\s*20px[\s\S]*?inline-size:\s*100vw[\s\S]*?background:\s*var\(--codex-page-bg\)/,
+  );
+  assert.match(layers, /@supports \(width:\s*100dvw\)[\s\S]*?\.codex-page-deck::before\s*\{[\s\S]*?inline-size:\s*100dvw/);
 });
 
 test('the Codex navigation footer uses literal overlap geometry', () => {
@@ -50,4 +59,5 @@ test('print and forced-colour modes disable the sticky reveal treatment', () => 
   assert.match(footer, /@media print, \(forced-colors: active\)[\s\S]*?\.ion-codex-footer\s*\{[\s\S]*?z-index:\s*auto/);
   assert.match(footer, /@media print, \(forced-colors: active\)[\s\S]*?\.ion-codex-footer\s*\{[\s\S]*?margin-top:\s*0/);
   assert.match(footer, /@media print, \(forced-colors: active\)[\s\S]*?\.codex-page-deck\s*\{[\s\S]*?box-shadow:\s*none/);
+  assert.match(layers, /@media print, \(forced-colors: active\)[\s\S]*?\.codex-page-deck::before\s*\{[\s\S]*?display:\s*none/);
 });
