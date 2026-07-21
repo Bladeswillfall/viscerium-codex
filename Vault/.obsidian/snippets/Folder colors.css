@@ -1,0 +1,93 @@
+/*
+ * Folder colors
+ * Gives the main vault sections stable semantic colour families in the file explorer.
+ */
+
+:root {
+  --explorer-lore: #5ac8fa;
+  --explorer-drafts: #f2b84b;
+  --explorer-private: #ef6f91;
+  --explorer-system: #a78bfa;
+  --explorer-templates: #65d6ad;
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is([data-path="Lore"], [data-path^="Lore/"]) {
+  --explorer-folder-color: var(--explorer-lore);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is([data-path="Drafts"], [data-path^="Drafts/"]) {
+  --explorer-folder-color: var(--explorer-drafts);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is([data-path="Private"], [data-path^="Private/"]) {
+  --explorer-folder-color: var(--explorer-private);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is([data-path="System"], [data-path^="System/"]) {
+  --explorer-folder-color: var(--explorer-system);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is([data-path="Templates"], [data-path^="Templates/"]) {
+  --explorer-folder-color: var(--explorer-templates);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[style*="--explorer-folder-color"],
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is(
+  [data-path="Lore"], [data-path^="Lore/"],
+  [data-path="Drafts"], [data-path^="Drafts/"],
+  [data-path="Private"], [data-path^="Private/"],
+  [data-path="System"], [data-path^="System/"],
+  [data-path="Templates"], [data-path^="Templates/"]
+) {
+  color: color-mix(in srgb, var(--explorer-folder-color) 78%, var(--text-normal));
+  --nav-collapse-icon-color: color-mix(in srgb, var(--explorer-folder-color) 72%, transparent);
+  --nav-item-background-hover: color-mix(in srgb, var(--explorer-folder-color) 10%, transparent);
+  --nav-item-color-hover: color-mix(in srgb, var(--explorer-folder-color) 90%, var(--text-normal));
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is(
+  [data-path="Lore"], [data-path="Drafts"], [data-path="Private"], [data-path="System"], [data-path="Templates"]
+) {
+  color: var(--explorer-folder-color);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is(
+  [data-path="Lore"], [data-path^="Lore/"],
+  [data-path="Drafts"], [data-path^="Drafts/"],
+  [data-path="Private"], [data-path^="Private/"],
+  [data-path="System"], [data-path^="System/"],
+  [data-path="Templates"], [data-path^="Templates/"]
+) .nav-folder-title-content::before {
+  background-color: var(--explorer-folder-color);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder:has(> .nav-folder-title:is([data-path="Lore"], [data-path^="Lore/"])) {
+  --explorer-guide-color: var(--explorer-lore);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder:has(> .nav-folder-title:is([data-path="Drafts"], [data-path^="Drafts/"])) {
+  --explorer-guide-color: var(--explorer-drafts);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder:has(> .nav-folder-title:is([data-path="Private"], [data-path^="Private/"])) {
+  --explorer-guide-color: var(--explorer-private);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder:has(> .nav-folder-title:is([data-path="System"], [data-path^="System/"])) {
+  --explorer-guide-color: var(--explorer-system);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder:has(> .nav-folder-title:is([data-path="Templates"], [data-path^="Templates/"])) {
+  --explorer-guide-color: var(--explorer-templates);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder[style*="--explorer-guide-color"] > .nav-folder-children,
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder:has(> .nav-folder-title:is(
+  [data-path="Lore"], [data-path^="Lore/"],
+  [data-path="Drafts"], [data-path^="Drafts/"],
+  [data-path="Private"], [data-path^="Private/"],
+  [data-path="System"], [data-path^="System/"],
+  [data-path="Templates"], [data-path^="Templates/"]
+)) > .nav-folder-children {
+  border-left-color: color-mix(in srgb, var(--explorer-guide-color) 34%, transparent);
+}
