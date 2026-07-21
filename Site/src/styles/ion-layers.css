@@ -72,6 +72,7 @@ html[data-codex-desktop-sidebar] #starlight__sidebar {
   z-index: var(--codex-z-reveal) !important;
 }
 
+/* Film grain has been restored to its pre-background-stack behaviour. */
 body::before {
   z-index: var(--codex-z-grain) !important;
 }
