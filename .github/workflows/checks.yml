@@ -65,7 +65,18 @@ jobs:
           exit 1
 
       - name: Run browser checks
-        run: npx --no-install playwright test tests/browser --reporter=line --workers=1
+        run: |
+          set -o pipefail
+          npx --no-install playwright test tests/browser --reporter=line --workers=1 2>&1 | tee "$RUNNER_TEMP/playwright.log"
+
+      - name: Upload browser check log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: browser-check-log
+          path: ${{ runner.temp }}/playwright.log
+          if-no-files-found: warn
+          retention-days: 1
 
   sync-local-plugin:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
