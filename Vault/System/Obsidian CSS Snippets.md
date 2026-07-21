@@ -44,11 +44,25 @@ Avoid names such as `VISCERIUM-Codex Folder icons`.
 
 - Compact file explorer
 - Folder icons
+- Folder colors
+- Article list colors
+- Active file indicator
+- Folder hierarchy
 - Compact tabs
 - Scrollbars
 - Compact status bar
 - Outline panel
 - Search results
+
+The file explorer uses stable section colours rather than assigning arbitrary colours by folder depth:
+
+- Lore — cyan
+- Drafts — amber
+- Private — rose
+- System — violet
+- Templates — mint
+
+Nested folders inherit their root section's colour family. Article titles receive a restrained tint, while the currently active article gets a stronger section-coloured background and left indicator.
 
 ### Bases and snippet management
 
