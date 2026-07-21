@@ -24,7 +24,8 @@
   [data-path="Drafts"],
   [data-path="Private"],
   [data-path="System"],
-  [data-path="Templates"]
+  [data-path="Templates"],
+  [data-path="Stories"]
 ) {
   margin-top: 0.32rem;
   font-weight: 700;
@@ -36,7 +37,8 @@
   [data-path="Drafts"],
   [data-path="Private"],
   [data-path="System"],
-  [data-path="Templates"]
+  [data-path="Templates"],
+  [data-path="Stories"]
 ) .nav-folder-title-content {
   font-size: 0.96em;
 }
