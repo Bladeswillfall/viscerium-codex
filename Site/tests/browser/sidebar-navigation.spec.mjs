@@ -32,7 +32,7 @@ test('left navigation starts collapsed, can open, and resets closed on reload', 
 
   await expect(showButton).toBeVisible();
   await expect(page.locator('html')).toHaveClass(/codex-sidebar-collapsed/);
-  expect(await sidebar.getByRole('link').count()).toBeGreaterThan(3);
+  expect(await sidebar.locator('a').count()).toBeGreaterThan(3);
 
   await expect.poll(async () => sidebar.evaluate((element) => {
     const style = getComputedStyle(element);
@@ -72,7 +72,7 @@ test('homepage loads without a reveal and keeps its desktop navigation closed in
   await expect(homeGateway).toBeVisible();
   await expect(page.getByRole('button', { name: 'Show sidebar' })).toBeVisible();
   await expect(page.locator('html')).toHaveClass(/codex-sidebar-collapsed/);
-  expect(await sidebar.getByRole('link').count()).toBeGreaterThan(3);
+  expect(await sidebar.locator('a').count()).toBeGreaterThan(3);
 
   await expect.poll(async () => sidebar.evaluate((element) => {
     const style = getComputedStyle(element);
