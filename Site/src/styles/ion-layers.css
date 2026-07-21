@@ -45,6 +45,7 @@
 
   .ion-codex-footer {
     z-index: var(--codex-z-underlay);
+    margin-top: -20px !important;
   }
 
   header.header {
