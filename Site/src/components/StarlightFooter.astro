@@ -105,6 +105,16 @@ import Webmentions from './Webmentions.astro';
 </script>
 
 <style>
+  /* Prevent an open-sidebar flash before the desktop runtime claims the shell. */
+  @media (min-width: 800px) {
+    :global(html:not([data-codex-desktop-sidebar]) #starlight__sidebar) {
+      visibility: hidden;
+      transform: translateX(-110%);
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
   @layer starlight.core {
     :global(body:not(:has(.home-gateway)) .codex-main-pane > main) {
       padding-block-end: 0;
