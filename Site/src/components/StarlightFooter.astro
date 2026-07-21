@@ -215,6 +215,7 @@ import siteConfig from '../../site.config.mjs';
       min-block-size: 9.375rem;
       max-inline-size: none;
       gap: 1.5rem;
+      margin-top: -20px;
       margin-inline: calc(50% - 50vw);
       padding: var(--ion-codex-footer-padding);
       border: 0;
@@ -231,7 +232,7 @@ import siteConfig from '../../site.config.mjs';
     .ion-codex-footer::before {
       content: '';
       position: absolute;
-      inset-block-start: 1rem;
+      inset-block-start: 2rem;
       inset-inline-start: 50%;
       inline-size: 3.375rem;
       block-size: 0.1875rem;
@@ -305,6 +306,7 @@ import siteConfig from '../../site.config.mjs';
       .ion-codex-footer {
         position: static;
         min-block-size: auto;
+        margin-top: 0;
         background: Canvas;
         color: CanvasText;
       }
