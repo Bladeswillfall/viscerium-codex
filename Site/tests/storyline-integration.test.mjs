@@ -19,6 +19,16 @@ test('StoryLine is rooted in the private Stories workspace', () => {
   assert.ok(plugins.includes('storyline'));
 });
 
+test('VISCERIUM Timelines is installed and enabled beside StoryLine', () => {
+  const plugins = JSON.parse(read('Vault/.obsidian/community-plugins.json'));
+  assert.ok(plugins.includes('viscerium-timelines'));
+
+  const sourceManifest = JSON.parse(read('Tools/obsidian-viscerium-timelines/manifest.json'));
+  const installedManifest = JSON.parse(read('Vault/.obsidian/plugins/viscerium-timelines/manifest.json'));
+  assert.equal(installedManifest.id, 'viscerium-timelines');
+  assert.equal(installedManifest.version, sourceManifest.version);
+});
+
 test('Codex source remains hard-gated to Lore', () => {
   const siteConfig = read('Site/site.config.mjs');
   assert.match(siteConfig, /loreSourceDir:\s*env\.LORE_SOURCE_DIR\s*\?\?\s*'\.\.\/Vault\/Lore'/);
@@ -36,4 +46,20 @@ test('StoryLine timeline uses an in-memory adapter instead of duplicate source f
   assert.match(plugin, /buildStoryLineTimelineDataset/);
   assert.match(adapter, /parseStoryLineDate\(scene\.storyDate\)/);
   assert.doesNotMatch(adapter, /scene\.calendarDate/);
+});
+
+test('StoryLine bridge resolves the active project outside Markdown views', () => {
+  const plugin = read('Tools/obsidian-viscerium-timelines/main.ts');
+  assert.match(plugin, /settings\.runtime\.activeProjectFile/);
+  assert.match(plugin, /settings\.disk\.activeProjectFile/);
+  assert.match(plugin, /source:\s*'storyline-runtime'/);
+  assert.match(plugin, /source:\s*'storyline-config'/);
+  assert.match(plugin, /source:\s*'single-project'/);
+});
+
+test('StoryLine bridge exposes a self-diagnostic command', () => {
+  const plugin = read('Tools/obsidian-viscerium-timelines/main.ts');
+  assert.match(plugin, /diagnose-storyline-integration/);
+  assert.match(plugin, /StoryLine loaded:/);
+  assert.match(plugin, /VISCERIUM-placeable scenes:/);
 });
