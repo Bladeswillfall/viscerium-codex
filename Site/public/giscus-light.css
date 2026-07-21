@@ -2,8 +2,8 @@
 
 /*
  * VISCERIUM light-mode Giscus theme.
- * Keep the discussion UI readable while letting it sit inside the Codex's
- * warm parchment palette instead of appearing as a bright white panel.
+ * The iframe cannot inherit the Codex palette, so explicitly flatten GitHub's
+ * bright white surfaces into the warm parchment used by the surrounding page.
  */
 main {
   --color-fg-default: #151515;
@@ -12,21 +12,21 @@ main {
 
   --color-canvas-default: transparent;
   --color-canvas-overlay: #c8bfa8;
-  --color-canvas-inset: rgb(200 191 168 / 62%);
-  --color-canvas-subtle: rgb(200 191 168 / 52%);
+  --color-canvas-inset: rgb(200 191 168 / 24%);
+  --color-canvas-subtle: rgb(200 191 168 / 18%);
 
-  --color-border-default: rgb(72 65 55 / 52%);
-  --color-border-muted: rgb(72 65 55 / 32%);
-  --color-neutral-muted: rgb(72 65 55 / 10%);
+  --color-border-default: rgb(72 65 55 / 42%);
+  --color-border-muted: rgb(72 65 55 / 24%);
+  --color-neutral-muted: rgb(72 65 55 / 9%);
 
   --color-btn-text: #151515;
-  --color-btn-bg: rgb(200 191 168 / 72%);
-  --color-btn-border: rgb(72 65 55 / 38%);
-  --color-btn-hover-bg: #c8bfa8;
-  --color-btn-hover-border: rgb(72 65 55 / 58%);
-  --color-btn-active-bg: #b9b4a9;
-  --color-btn-active-border: rgb(72 65 55 / 64%);
-  --color-btn-selected-bg: #b9b4a9;
+  --color-btn-bg: rgb(200 191 168 / 38%);
+  --color-btn-border: rgb(72 65 55 / 32%);
+  --color-btn-hover-bg: rgb(200 191 168 / 58%);
+  --color-btn-hover-border: rgb(72 65 55 / 46%);
+  --color-btn-active-bg: rgb(185 180 169 / 72%);
+  --color-btn-active-border: rgb(72 65 55 / 54%);
+  --color-btn-selected-bg: rgb(185 180 169 / 72%);
 
   --color-btn-primary-text: #f2eee4;
   --color-btn-primary-bg: #484137;
@@ -38,19 +38,59 @@ main {
   --color-btn-primary-disabled-bg: #888070;
   --color-btn-primary-disabled-border: rgb(72 65 55 / 28%);
 
-  --color-action-list-item-default-hover-bg: rgb(72 65 55 / 10%);
-  --color-segmented-control-bg: rgb(200 191 168 / 56%);
-  --color-segmented-control-button-bg: rgb(185 180 169 / 74%);
+  --color-action-list-item-default-hover-bg: rgb(72 65 55 / 9%);
+  --color-segmented-control-bg: transparent;
+  --color-segmented-control-button-bg: rgb(200 191 168 / 24%);
   --color-segmented-control-button-selected-border: #888070;
 
   --color-accent-fg: #484137;
   --color-accent-emphasis: #484137;
-  --color-accent-muted: rgb(72 65 55 / 32%);
-  --color-accent-subtle: rgb(200 191 168 / 58%);
+  --color-accent-muted: rgb(72 65 55 / 28%);
+  --color-accent-subtle: rgb(200 191 168 / 32%);
   --color-success-fg: #394b39;
 }
 
 html,
-body {
-  background: transparent;
+body,
+.gsc-main,
+.gsc-timeline,
+.gsc-header,
+.gsc-comments,
+.gsc-comment-box,
+.gsc-comment-box-tabs,
+.gsc-comment-box-main,
+.gsc-reply-box,
+.gsc-reactions {
+  background: transparent !important;
+}
+
+/* Remove the large GitHub-white card while retaining enough structure to read it. */
+.gsc-comment-box,
+.gsc-reply-box {
+  border-color: rgb(72 65 55 / 34%) !important;
+  box-shadow: none !important;
+}
+
+.gsc-comment-box-tabs {
+  border-color: rgb(72 65 55 / 24%) !important;
+  box-shadow: none !important;
+}
+
+.gsc-comment-box .form-control,
+.gsc-reply-box .form-control,
+.gsc-comment-box-textarea,
+.gsc-reply-box-textarea {
+  background: rgb(200 191 168 / 22%) !important;
+  border-color: rgb(72 65 55 / 26%) !important;
+  box-shadow: none !important;
+  color: #151515 !important;
+}
+
+.gsc-comment-box .form-control:focus,
+.gsc-reply-box .form-control:focus,
+.gsc-comment-box-textarea:focus,
+.gsc-reply-box-textarea:focus {
+  background: rgb(200 191 168 / 34%) !important;
+  border-color: rgb(72 65 55 / 46%) !important;
+  box-shadow: 0 0 0 1px rgb(72 65 55 / 12%) !important;
 }
