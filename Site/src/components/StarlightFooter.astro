@@ -203,8 +203,7 @@ import siteConfig from '../../site.config.mjs';
     }
 
     .ion-codex-footer {
-      --ion-codex-footer-overlap: 2rem;
-      --ion-codex-footer-padding: var(--ion-codex-footer-overlap) clamp(1.5rem, 3vw, 2.125rem) 1.25rem;
+      --ion-codex-footer-padding: 2rem clamp(1.5rem, 3vw, 2.125rem) 1.25rem;
       position: sticky;
       bottom: 0;
       z-index: -1;
@@ -216,7 +215,7 @@ import siteConfig from '../../site.config.mjs';
       min-block-size: 7rem;
       max-inline-size: none;
       gap: 1.5rem;
-      margin-top: calc(0rem - var(--ion-codex-footer-overlap));
+      margin-top: -20px;
       margin-inline: calc(50% - 50vw);
       padding: var(--ion-codex-footer-padding);
       border: 0;
@@ -233,7 +232,7 @@ import siteConfig from '../../site.config.mjs';
     .ion-codex-footer::before {
       content: '';
       position: absolute;
-      inset-block-start: var(--ion-codex-footer-overlap);
+      inset-block-start: 2rem;
       inset-inline-start: 50%;
       inline-size: 3.375rem;
       block-size: 0.1875rem;
