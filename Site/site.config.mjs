@@ -50,8 +50,8 @@ export default {
     inputPosition: env.PUBLIC_GISCUS_INPUT_POSITION ?? 'bottom',
     theme: {
       dark: env.PUBLIC_GISCUS_DARK_THEME ?? env.PUBLIC_GISCUS_THEME ?? 'noborder_dark',
-      light: env.PUBLIC_GISCUS_LIGHT_THEME ?? `${siteUrl}/giscus-light.css`,
-      auto: env.PUBLIC_GISCUS_AUTO_THEME ?? `${siteUrl}/giscus-auto.css`,
+      light: env.PUBLIC_GISCUS_LIGHT_THEME ?? `${siteUrl}/giscus-light.css?v=4`,
+      auto: env.PUBLIC_GISCUS_AUTO_THEME ?? `${siteUrl}/giscus-auto.css?v=4`,
     },
     lazy: env.PUBLIC_GISCUS_LOADING !== 'eager',
   },
