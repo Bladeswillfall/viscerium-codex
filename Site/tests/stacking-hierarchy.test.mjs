@@ -26,11 +26,18 @@ test('the two-column shell contains local stacking and normal page surfaces cove
 
   assert.match(
     layers,
-    /body:not\(:has\(\.home-gateway\)\) \.codex-main-pane > main > \.content-panel,[\s\S]*?background-color:\s*var\(--codex-page-bg\)/,
+    /body:not\(:has\(\.home-gateway\)\) \.codex-main-pane > main > \.content-panel,[\s\S]*?position:\s*relative[\s\S]*?z-index:\s*var\(--codex-z-surface\)[\s\S]*?background-color:\s*var\(--codex-page-bg\)/,
   );
 
   assert.match(layers, /\.codex-page-deck\s*\{[\s\S]*?z-index:\s*var\(--codex-z-surface\)/);
   assert.match(layers, /\.ion-codex-footer\s*\{[\s\S]*?z-index:\s*var\(--codex-z-underlay\)/);
+});
+
+test('global chrome and overlays use the shared hierarchy', () => {
+  assert.match(layers, /html\[data-codex-desktop-sidebar\] #starlight__sidebar\s*\{[\s\S]*?z-index:\s*var\(--codex-z-navigation\)\s*!important/);
+  assert.match(layers, /\.codex-sidebar-toggle,[\s\S]*?#scroll-to-top-button\s*\{[\s\S]*?z-index:\s*var\(--codex-z-control\)\s*!important/);
+  assert.match(layers, /\.home-reveal\s*\{[\s\S]*?z-index:\s*var\(--codex-z-reveal\)\s*!important/);
+  assert.match(layers, /body::before\s*\{[\s\S]*?z-index:\s*var\(--codex-z-grain\)\s*!important/);
 });
 
 test('the footer keeps the proven literal overlap while using the shared underlay tier', () => {
