@@ -2,12 +2,10 @@
 import { getCollection } from 'astro:content';
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import HomeGateway from '../components/home/HomeGateway.astro';
-import HomeReveal from '../components/home/HomeReveal';
 import timelineManifest from '../data/timelines/manifest.json';
 import '../styles/homepage-base.css';
 import '../styles/homepage-content.css';
 import '../styles/homepage-responsive.css';
-import '../styles/homepage-reveal.css';
 
 const canonEntries = await getCollection('docs', ({ data }) => (
   data.publish === true
@@ -32,7 +30,6 @@ const homepageStats = {
   }}
   hasSidebar={true}
 >
-  <HomeReveal client:load />
   <HomeGateway {...homepageStats} />
 </StarlightPage>
 
