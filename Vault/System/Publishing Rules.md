@@ -1,6 +1,8 @@
 # Publishing Rules
 
-Only notes in `Vault/Lore/` can publish. Draft, private, template and system notes are ignored.
+Only notes in `Vault/Lore/` can publish. Draft, private, story, template and system notes are ignored.
+
+`Vault/Stories/` is a hard private boundary for narrative projects. StoryLine projects, scenes, research notes and project-local system files stay there and are never Codex sources, regardless of their frontmatter.
 
 A public note must have:
 
