@@ -3,29 +3,18 @@
 /*
  * Site-level stacking hierarchy.
  *
- * The film grain is part of the background treatment: it paints above the body
- * background, but below the footer underlay and every normal page/UI surface.
  * Local component stacking (for example timeline event bands/items) should stay
  * inside one of these page-level stacking contexts rather than competing with
  * navigation, floating controls, or the footer underlay.
  */
 :root {
-  --codex-z-grain: -2;
   --codex-z-underlay: -1;
   --codex-z-page: 0;
   --codex-z-surface: 1;
   --codex-z-navigation: 60;
   --codex-z-control: 1000;
   --codex-z-reveal: 9999;
-}
-
-/*
- * Give negative background layers a local root. This keeps body::before above
- * the body background instead of letting it fall behind the document itself.
- */
-body {
-  position: relative;
-  isolation: isolate;
+  --codex-z-grain: 999999;
 }
 
 @layer ion {
