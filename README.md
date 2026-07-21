@@ -92,3 +92,121 @@ Cards:
 Card content.
 [/card]
 ```
+
+Use Starlight's native aside syntax for callouts:
+
+```md
+:::note[Archivist note]
+Note content.
+:::
+
+:::caution[Content warning]
+Warning content.
+:::
+
+:::note[Recovered fragment]
+In-world quoted text.
+:::
+
+<!-- Legacy drafts using these forms are still converted during sync. -->
+[note:title="Archivist note"]
+Note content.
+[/note]
+```
+
+Equation panel:
+
+````md
+[equation:title="Resonance decay model"]
+$$
+R(t)=R_0e^{-\lambda t}
+$$
+[/equation]
+````
+
+Supported layout tags: `[cols]`, `[row]`, `[col]`, `[card]`, and `[equation]`. Legacy `[note]`, `[warning]`, and `[lore]` tags compile to native Starlight asides.
+
+## Mathematical notation
+
+The Markdown pipeline renders math at build time with `remark-math`, `rehype-katex`, and KaTeX. Use GitHub-style TeX delimiters in articles:
+
+Inline math:
+
+```md
+Resonance decay can be represented as $R(t)=R_0e^{-\lambda t}$.
+```
+
+Display math:
+
+```md
+$$
+R(t)=R_0e^{-\lambda t}
+$$
+```
+
+Complex display equation:
+
+```md
+$$
+\begin{aligned}
+\mathcal{R}_{total}
+  &= \sum_{i=1}^{n} \alpha_i \psi_i(t) \\
+  &= \alpha_1 \psi_1(t) + \alpha_2 \psi_2(t) + \cdots + \alpha_n \psi_n(t)
+\end{aligned}
+$$
+```
+
+## Local setup
+
+```bash
+cd Site
+npm install
+npm run sync
+npm run dev
+npm run build
+```
+
+Use `npm run dev:sync` when you want to sync notes and start the local site in one command.
+
+## Compression
+
+Use the checked-in Obsidian Image Converter preset to create WebP artwork before publishing. Astro and Vite build the static assets, and Cloudflare Pages handles transfer compression when serving them. The build does not mutate source images or maintain parallel `.gz`/`.br` files. See [`Site/COMPRESSION.md`](Site/COMPRESSION.md).
+
+## Cloudflare Pages settings
+
+```text
+Root directory: Site
+Build command: npm run build
+Build output directory: dist
+Node version: 24
+Environment variable: SITE_URL=https://codex.viscerium.co.uk
+```
+
+Set `SITE_URL` in Cloudflare to the real canonical URL before production launch. The build falls back to `https://codex.viscerium.co.uk` if it is unset.
+
+No committed Wrangler file is required for the current Pages deployment. Keep any Resend/Turnstile secrets out of the static site until the contact form is moved to a separate Worker endpoint.
+
+## Optional community integrations
+
+- Webmentions: `Site/src/components/Webmentions.astro` displays responses collected for `codex.viscerium.co.uk` by Webmention.io.
+- giscus comments: `starlight-giscus` uses this repository's General GitHub Discussions category.
+- Ko-fi / Patreon / socials: placeholders live in `Site/src/config/supportLinks.mjs` and can be activated by adding real URLs.
+- Sitemap: `@astrojs/sitemap` is installed and configured in `Site/astro.config.mjs`; it uses `siteConfig.site`, which is controlled by `SITE_URL`.
+- Partytown: `@astrojs/partytown` is installed and configured in `Site/astro.config.mjs` with `dataLayer.push` forwarding for future GA4/GTM-style analytics.
+- GA4/GTM and Cloudflare Web Analytics: add only public IDs through environment variables or Cloudflare settings.
+
+## Site integrations and analytics placeholders
+
+Installed Astro integrations are configured in `Site/astro.config.mjs`:
+
+- `@astrojs/sitemap` generates the site map from the canonical `site` value. Set `SITE_URL` before production launch so generated URLs use the real domain.
+- `@astrojs/partytown` is enabled only with GA4 and moves that third-party script off the main thread.
+
+GA4 is intentionally placeholder-only. The code path exists, but it will not emit tracking scripts while the Measurement ID is still `G-XXXXXXXXXX`.
+
+When proper GA4 tracking is ready, add the real public values in Cloudflare and local `Site/.env` files as needed:
+
+```bash
+PUBLIC_GA4_ENABLED=1
+PUBLIC_GA4_MEASUREMENT_ID=G-REAL-MEASUREMENT-ID
+```
