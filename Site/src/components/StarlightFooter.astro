@@ -19,35 +19,38 @@ import siteConfig from '../../site.config.mjs';
   <span aria-hidden="true">←</span>
 </button>
 
-<ContributorStrip />
+<div class="codex-page-deck">
+  <ContributorStrip />
 
-<footer class="codex-site-footer sl-flex">
-  <div class="meta sl-flex">
-    <CodexEditLink />
-    <LastUpdated />
+  <div class="codex-site-footer sl-flex">
+    <div class="meta sl-flex">
+      <CodexEditLink />
+      <LastUpdated />
+    </div>
+    <Webmentions />
+    <Pagination />
   </div>
-  <Webmentions />
-  <Pagination />
-  <div class="ion-codex-footer sl-flex">
-    <strong>© VISCERIUM Codex</strong>
-    <nav aria-label="Footer">
-      <a href="/">Start Here</a>
-      <a href="/calendar/">Calendar</a>
-      <a href="/graph/">World Graph</a>
-      <a href="/support/">Support</a>
-      <a href="/contact/">
-        <LocalIcon name="mail" />
-        <span>Contact</span>
-      </a>
-      <a href="/rss.xml">RSS</a>
-      <a href="/atom.xml">Atom</a>
-      <a href={siteConfig.githubRepoUrl} target="_blank" rel="noreferrer">
-        <LocalIcon name="github" />
-        <span>GitHub</span>
-        <span class="codex-sr-only"> (opens in a new tab)</span>
-      </a>
-    </nav>
-  </div>
+</div>
+
+<footer class="ion-codex-footer">
+  <strong>© VISCERIUM Codex</strong>
+  <nav aria-label="Footer">
+    <a href="/">Start Here</a>
+    <a href="/calendar/">Calendar</a>
+    <a href="/graph/">World Graph</a>
+    <a href="/support/">Support</a>
+    <a href="/contact/">
+      <LocalIcon name="mail" />
+      <span>Contact</span>
+    </a>
+    <a href="/rss.xml">RSS</a>
+    <a href="/atom.xml">Atom</a>
+    <a href={siteConfig.githubRepoUrl} target="_blank" rel="noreferrer">
+      <LocalIcon name="github" />
+      <span>GitHub</span>
+      <span class="codex-sr-only"> (opens in a new tab)</span>
+    </a>
+  </nav>
 </footer>
 
 <script is:inline>
@@ -148,12 +151,29 @@ import siteConfig from '../../site.config.mjs';
       padding-block-end: 0;
     }
 
+    /*
+      The article-adjacent footer content stays attached to the page as a raised
+      deck. The final navigation rail is a separate sticky layer beneath it.
+    */
+    .codex-page-deck {
+      position: relative;
+      z-index: 2;
+      box-sizing: border-box;
+      padding-block-end: 1.25rem;
+      border-radius: 0 0 1.25rem 1.25rem;
+      background: var(--codex-page-bg);
+      box-shadow:
+        0 1.5rem 3.4375rem color-mix(in oklch, var(--codex-shadow-color) 46%, transparent),
+        0 1px 0 var(--sl-color-hairline-light);
+    }
+
     .codex-site-footer {
       flex-direction: column;
       gap: 1.5rem;
       box-sizing: border-box;
       max-width: none;
     }
+
     .meta {
       gap: 0.75rem 3rem;
       justify-content: space-between;
@@ -162,64 +182,136 @@ import siteConfig from '../../site.config.mjs';
       font-size: var(--sl-text-sm);
       color: var(--sl-color-gray-3);
     }
+
     .meta > :global(p:only-child) {
       margin-inline-start: auto;
     }
+
     .codex-edit-link {
       color: var(--sl-color-gray-3);
       text-decoration: none;
     }
+
     .codex-edit-link:hover {
       color: var(--sl-color-accent-high);
       text-decoration: underline;
     }
+
     :global(giscus-comments) {
       display: block;
       padding: 1.5rem var(--sl-content-pad-x);
     }
+
     .ion-codex-footer {
-      --ion-codex-footer-padding: 1rem;
+      --ion-codex-footer-padding: 2.5rem clamp(1.5rem, 3vw, 2.125rem) 1.75rem;
+      position: sticky;
+      bottom: 0;
+      z-index: 1;
       box-sizing: border-box;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+      align-items: end;
       inline-size: 100vw;
+      min-block-size: 9.375rem;
       max-inline-size: none;
-      gap: 1rem;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      margin-top: 3rem;
+      gap: 1.5rem;
       margin-inline: calc(50% - 50vw);
       padding: var(--ion-codex-footer-padding);
-      border: 1px solid var(--sl-color-hairline-light);
-      border-radius: 0;
-      background: var(--codex-surface-raised-color);
+      border: 0;
+      border-block-start: 1px solid var(--codex-nav-border);
+      background: linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--codex-nav-bg) 78%, var(--codex-palette-deep)),
+        var(--codex-nav-bg)
+      );
+      color: var(--codex-nav-text);
       font-size: var(--sl-text-sm);
     }
+
+    .ion-codex-footer::before {
+      content: '';
+      position: absolute;
+      inset-block-start: 1rem;
+      inset-inline-start: 50%;
+      inline-size: 3.375rem;
+      block-size: 0.1875rem;
+      border-radius: 999px;
+      transform: translateX(-50%);
+      background: var(--codex-nav-border);
+    }
+
     @supports (width: 100dvw) {
       .ion-codex-footer {
         inline-size: 100dvw;
         margin-inline: calc(50% - 50dvw);
       }
     }
+
+    .ion-codex-footer > strong {
+      align-self: end;
+      color: var(--codex-nav-text);
+      letter-spacing: 0.02em;
+    }
+
     .ion-codex-footer nav {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       flex-wrap: wrap;
       gap: 0.75rem 1rem;
     }
+
     .ion-codex-footer nav a {
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
-      color: var(--sl-color-gray-2);
+      color: var(--codex-nav-text);
       text-decoration: none;
     }
-    .ion-codex-footer nav a:hover {
-      color: var(--sl-color-accent-high);
+
+    .ion-codex-footer nav a:hover,
+    .ion-codex-footer nav a:focus-visible {
+      color: var(--codex-fixed-light) !important;
       text-decoration: underline;
     }
+
     .ion-codex-footer nav :global(svg) {
       width: 1rem;
       height: 1rem;
+    }
+
+    @media (max-width: 40rem) {
+      .codex-page-deck {
+        border-radius: 0 0 1rem 1rem;
+      }
+
+      .ion-codex-footer {
+        grid-template-columns: 1fr;
+        align-items: start;
+        min-block-size: 11rem;
+      }
+
+      .ion-codex-footer nav {
+        justify-content: flex-start;
+      }
+    }
+
+    @media print, (forced-colors: active) {
+      .codex-page-deck {
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .ion-codex-footer {
+        position: static;
+        min-block-size: auto;
+        background: Canvas;
+        color: CanvasText;
+      }
+
+      .ion-codex-footer::before {
+        display: none;
+      }
     }
   }
 </style>
