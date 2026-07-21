@@ -31,7 +31,6 @@
   --explorer-folder-color: var(--explorer-templates);
 }
 
-.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[style*="--explorer-folder-color"],
 .workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is(
   [data-path="Lore"], [data-path^="Lore/"],
   [data-path="Drafts"], [data-path^="Drafts/"],
@@ -81,7 +80,6 @@
   --explorer-guide-color: var(--explorer-templates);
 }
 
-.workspace-leaf-content[data-type="file-explorer"] .nav-folder[style*="--explorer-guide-color"] > .nav-folder-children,
 .workspace-leaf-content[data-type="file-explorer"] .nav-folder:has(> .nav-folder-title:is(
   [data-path="Lore"], [data-path^="Lore/"],
   [data-path="Drafts"], [data-path^="Drafts/"],
