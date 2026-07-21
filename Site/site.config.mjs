@@ -51,6 +51,7 @@ export default {
     theme: {
       dark: env.PUBLIC_GISCUS_DARK_THEME ?? env.PUBLIC_GISCUS_THEME ?? 'noborder_dark',
       light: env.PUBLIC_GISCUS_LIGHT_THEME ?? `${siteUrl}/giscus-light.css`,
+      auto: env.PUBLIC_GISCUS_AUTO_THEME ?? `${siteUrl}/giscus-auto.css`,
     },
     lazy: env.PUBLIC_GISCUS_LOADING !== 'eager',
   },
