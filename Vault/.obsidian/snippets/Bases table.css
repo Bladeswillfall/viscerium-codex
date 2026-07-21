@@ -1,0 +1,37 @@
+/*
+ * Bases table
+ * Makes native Obsidian Bases table views denser and easier to scan while editing data.
+ */
+
+.bases-view[data-view-type="table"] .bases-table {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 0.7rem;
+  overflow: hidden;
+}
+
+.bases-view[data-view-type="table"] .bases-thead {
+  background: var(--background-secondary);
+}
+
+.bases-view[data-view-type="table"] .bases-th,
+.bases-view[data-view-type="table"] .bases-td {
+  min-height: 2rem;
+  box-shadow: inset -1px -1px 0 var(--background-modifier-border);
+}
+
+.bases-view[data-view-type="table"] .bases-th .bases-table-cell {
+  color: var(--text-muted);
+  font-size: 0.76em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bases-view[data-view-type="table"] .bases-td .bases-table-cell {
+  padding-block: 0.32rem;
+  font-size: 0.9em;
+}
+
+.bases-view[data-view-type="table"] .bases-tr:hover .bases-td {
+  background: var(--background-modifier-hover);
+}
