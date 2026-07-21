@@ -3,6 +3,22 @@
  * Gives root sections more presence and progressively softens deeper folder levels.
  */
 
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-children .nav-folder-title {
+  font-weight: 600;
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-children .nav-folder-children .nav-folder-title {
+  font-weight: 550;
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-children .nav-folder-children .nav-folder-children .nav-folder-title {
+  font-weight: 500;
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-children .nav-folder-children .nav-folder-children .nav-folder-children .nav-folder-title {
+  font-weight: 450;
+}
+
 .workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is(
   [data-path="Lore"],
   [data-path="Drafts"],
@@ -23,20 +39,4 @@
   [data-path="Templates"]
 ) .nav-folder-title-content {
   font-size: 0.96em;
-}
-
-.workspace-leaf-content[data-type="file-explorer"] .nav-folder-children .nav-folder-title {
-  font-weight: 600;
-}
-
-.workspace-leaf-content[data-type="file-explorer"] .nav-folder-children .nav-folder-children .nav-folder-title {
-  font-weight: 550;
-}
-
-.workspace-leaf-content[data-type="file-explorer"] .nav-folder-children .nav-folder-children .nav-folder-children .nav-folder-title {
-  font-weight: 500;
-}
-
-.workspace-leaf-content[data-type="file-explorer"] .nav-folder-children .nav-folder-children .nav-folder-children .nav-folder-children .nav-folder-title {
-  font-weight: 450;
 }
