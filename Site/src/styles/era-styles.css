@@ -54,32 +54,32 @@
 
   :root[data-theme='light'] {
     /*
-      The light theme uses the same hues at much lower lightness because the
-      current Codex light surface is mid-value (#888070), not white.
+      Keep the same era hue identities vivid against the warm #b9b4a9 page.
+      Darker mid-tones clear AA without collapsing the accents toward black.
     */
-    --era-e1-accent: #330008;
-    --era-e1-accent-high: #150000;
+    --era-e1-accent: #7b0f2f;
+    --era-e1-accent-high: #62000c;
     --era-e1-heading: var(--era-e1-accent);
     --era-e1-surface: #e5a4a3;
     --era-e1-button: #5f1b2a;
     --era-e1-button-hover: #500000;
 
-    --era-e2-accent: #151600;
-    --era-e2-accent-high: #060600;
+    --era-e2-accent: #444700;
+    --era-e2-accent-high: #2c3300;
     --era-e2-heading: var(--era-e2-accent);
     --era-e2-surface: #b5bc93;
     --era-e2-button: #313700;
     --era-e2-button-hover: #222600;
 
-    --era-e3-accent: #30001b;
-    --era-e3-accent-high: #150000;
+    --era-e3-accent: #73144e;
+    --era-e3-accent-high: #5f0028;
     --era-e3-heading: var(--era-e3-accent);
     --era-e3-surface: #dfa5b4;
     --era-e3-button: #5d1840;
     --era-e3-button-hover: #4f0010;
 
-    --era-e4-accent: #001819;
-    --era-e4-accent-high: #000706;
+    --era-e4-accent: #004849;
+    --era-e4-accent-high: #00342e;
     --era-e4-heading: var(--era-e4-accent);
     --era-e4-surface: #96c2bb;
     --era-e4-button: #433018;
@@ -131,30 +131,30 @@
     }
 
     :root[data-theme='light'] {
-      /* Same hue identities, compressed toward black to clear the mid-value light background. */
-      --era-e1-accent: oklch(18.84% calc(0.0983 * var(--codex-chroma-scale)) 11.35);
-      --era-e1-accent-high: oklch(2.51% calc(0.2219 * var(--codex-chroma-scale)) 20.09);
+      /* Saturated dark mid-tones preserve era identity while clearing AA on the light page. */
+      --era-e1-accent: oklch(38% calc(0.14 * var(--codex-chroma-scale)) 11.35);
+      --era-e1-accent-high: oklch(30% calc(0.14 * var(--codex-chroma-scale)) 20.09);
       --era-e1-heading: var(--era-e1-accent);
       --era-e1-surface: oklch(78% calc(0.0777 * var(--codex-chroma-scale)) 20.09);
       --era-e1-button: oklch(33.61% calc(0.0983 * var(--codex-chroma-scale)) 11.35);
       --era-e1-button-hover: oklch(18.5% calc(0.2219 * var(--codex-chroma-scale)) 20.09);
 
-      --era-e2-accent: oklch(18.85% calc(0.0703 * var(--codex-chroma-scale)) 112.74);
-      --era-e2-accent-high: oklch(11.34% calc(0.1635 * var(--codex-chroma-scale)) 116.05);
+      --era-e2-accent: oklch(38% calc(0.12 * var(--codex-chroma-scale)) 112.74);
+      --era-e2-accent-high: oklch(30% calc(0.12 * var(--codex-chroma-scale)) 116.05);
       --era-e2-heading: var(--era-e2-accent);
       --era-e2-surface: oklch(78% calc(0.0572 * var(--codex-chroma-scale)) 116.05);
       --era-e2-button: oklch(31.56% calc(0.1373 * var(--codex-chroma-scale)) 115.61);
       --era-e2-button-hover: oklch(25.02% calc(0.1635 * var(--codex-chroma-scale)) 116.05);
 
-      --era-e3-accent: oklch(18.64% calc(0.1095 * var(--codex-chroma-scale)) 348.73);
-      --era-e3-accent-high: oklch(4.05% calc(0.2048 * var(--codex-chroma-scale)) 2.13);
+      --era-e3-accent: oklch(38% calc(0.14 * var(--codex-chroma-scale)) 348.73);
+      --era-e3-accent-high: oklch(30% calc(0.14 * var(--codex-chroma-scale)) 2.13);
       --era-e3-heading: var(--era-e3-accent);
       --era-e3-surface: oklch(78% calc(0.0717 * var(--codex-chroma-scale)) 2.13);
       --era-e3-button: oklch(33.81% calc(0.1095 * var(--codex-chroma-scale)) 348.73);
       --era-e3-button-hover: oklch(20.58% calc(0.2048 * var(--codex-chroma-scale)) 2.13);
 
-      --era-e4-accent: oklch(17.91% calc(0.0523 * var(--codex-chroma-scale)) 195.47);
-      --era-e4-accent-high: oklch(8.51% calc(0.134 * var(--codex-chroma-scale)) 184.92);
+      --era-e4-accent: oklch(36% calc(0.07 * var(--codex-chroma-scale)) 195.47);
+      --era-e4-accent-high: oklch(28% calc(0.08 * var(--codex-chroma-scale)) 184.92);
       --era-e4-heading: var(--era-e4-accent);
       --era-e4-surface: oklch(78% calc(0.0469 * var(--codex-chroma-scale)) 184.92);
       --era-e4-button: oklch(32.55% calc(0.0461 * var(--codex-chroma-scale)) 72.63);
