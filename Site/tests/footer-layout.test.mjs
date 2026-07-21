@@ -37,8 +37,9 @@ test('the Codex navigation footer derives its overlap from its top padding', () 
   assert.match(footer, /\.ion-codex-footer\s*\{[\s\S]*?min-block-size:\s*7rem/);
   assert.match(
     footer,
-    /\.ion-codex-footer\s*\{[\s\S]*?margin-top:\s*calc\(-1 \* var\(--ion-codex-footer-overlap\)\)/,
+    /\.ion-codex-footer\s*\{[\s\S]*?margin-top:\s*calc\(0rem - var\(--ion-codex-footer-overlap\)\)/,
   );
+  assert.doesNotMatch(footer, /calc\(-1 \* var\(--ion-codex-footer-overlap\)\)/);
   assert.match(footer, /\.ion-codex-footer\s*\{[\s\S]*?inline-size:\s*100vw/);
   assert.match(footer, /padding:\s*var\(--ion-codex-footer-padding\)/);
   assert.match(footer, /margin-inline:\s*calc\(50% - 50vw\)/);
