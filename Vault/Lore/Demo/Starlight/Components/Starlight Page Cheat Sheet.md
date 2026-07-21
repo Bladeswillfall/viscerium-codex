@@ -9,9 +9,9 @@ alt: "A VISCERIUM artwork sample used to demonstrate the standard page sidebar i
 publish: true
 status: canon
 type: system
-icon: "fa-solid fa-book-open"
-sidebarIcon: "fa-solid fa-list-check"
-titleIcon: "fa-solid fa-book-open"
+icon: codex
+sidebarIcon: location
+titleIcon: codex
 era: CITADEL
 faction:
   - Okse Dominion
@@ -81,9 +81,7 @@ pagefind: false
 ---
 
 %%
-Author note:
-This is the source of the single Starlight/Codex page cheat sheet.
-It intentionally replaces the older Feature Demo and Component Gallery pages.
+This replaces the older Starlight Feature Demo and Starlight Component Gallery.
 %%
 
 This is the **regular-page authoring reference** for the VISCERIUM Codex. It is deliberately overloaded so one page can be used to inspect the normal article renderer and copy working syntax back into lore notes.
@@ -94,7 +92,7 @@ A regular page starts as Markdown beneath `Vault/Lore/`. It does **not** need ha
 
 ## Quick-start page
 
-A minimal public article needs this frontmatter:
+A minimal public article needs:
 
 ```yaml
 ---
@@ -106,13 +104,11 @@ type: article
 ---
 ```
 
-Everything else on this page is optional and can be added when the article needs it.
+Everything below is optional.
 
 ## Frontmatter and page chrome
 
-This cheat sheet itself demonstrates a **header image**, title/sidebar icons, an automatic calendar-date badge, taxonomy fields, a page banner, a customised right-hand sidebar, TOC depth, disabled pagination, and disabled Pagefind indexing.
-
-A richer regular page can use:
+This page itself demonstrates a header image, sidebar artwork, title/sidebar icons, automatic date badge, page banner, custom right sidebar, TOC depth, disabled pagination, and disabled Pagefind indexing.
 
 ```yaml
 headerImage: /assets/images/example-banner.webp
@@ -121,9 +117,9 @@ imageTitle: Example artwork
 artist: Artist Name
 alt: "Describe the artwork for screen readers."
 
-icon: "fa-solid fa-book-open"
-sidebarIcon: "fa-solid fa-list-check"
-titleIcon: "fa-solid fa-book-open"
+icon: codex
+sidebarIcon: location
+titleIcon: codex
 
 era: CITADEL
 faction:
@@ -150,58 +146,54 @@ sidebar:
       note: Optional section note.
 ```
 
-| Field | What a regular page gets |
+| Field | Effect |
 |---|---|
-| `headerImage` | Large page-title artwork with the shared Codex fade treatment. |
+| `headerImage` | Large page-title artwork with the shared fade treatment. |
 | `image` | Artwork in the right-hand page information panel. |
-| `imageTitle`, `artist`, `alt` | Artwork caption/provenance and accessible alternative text. |
-| `icon`, `sidebarIcon`, `titleIcon` | Icon treatment in generated navigation and headings. |
-| `era` | Taxonomy plus the matching era visual treatment when applicable. |
-| `faction`, `location`, `participants`, `tags` | Search, graph, metadata, and editorial classification. |
+| `imageTitle`, `artist`, `alt` | Artwork context, provenance, and accessible text. |
+| `icon`, `sidebarIcon`, `titleIcon` | Shared local icon treatment. |
+| `era` | Taxonomy plus the matching era styling where applicable. |
+| `faction`, `location`, `participants`, `tags` | Metadata, filtering, graphing, and editorial classification. |
 | `related` / `relationships` | Graph and related-entry connections. |
-| `sidebar.meta` | Custom label/value metadata in the right sidebar. |
-| `sidebar.sections` | Extra facts, lists, links, and notes below sidebar metadata. |
-| `tableOfContents` | Controls the heading depths shown in the page TOC. |
-| `banner` | A Starlight page-level announcement strip. |
-| `prev`, `next` | Enables or disables article pagination links. |
-| `pagefind` | Controls whether the page enters Pagefind search. |
+| `sidebar.meta` | Custom label/value information in the right sidebar. |
+| `sidebar.sections` | Additional facts, lists, links, and notes. |
+| `tableOfContents` | Controls heading depths shown in the page TOC. |
+| `banner` | Page-level announcement strip. |
+| `prev`, `next` | Controls article pagination links. |
+| `pagefind` | Controls Pagefind search indexing. |
 
 ## Headings and section structure
 
-The page title from frontmatter is already the document H1. Normal article content should therefore begin at H2.
+The frontmatter title is already the H1. Begin normal article sections at H2.
 
 ### H3 — subsection
 
-Use H3 for a section inside an H2. This level is normally useful in the page table of contents.
+Use H3 for sections inside an H2.
 
 #### H4 — fine detail
 
-H4 through H6 are available for deeper structure but should be used sparingly.
+H4 through H6 are available when deeper structure is genuinely useful.
 
 ```md
 ## Major section
-
 ### Subsection
-
 #### Fine detail
 ```
 
 ### Icon headings
 
-A heading can use the shared icon renderer:
-
 ```md
-## [Icon:fa-solid fa-map] Geographic pressure
-### [Icon:local faction] Faction identity
+## [Icon:codex] Codex heading
+### [Icon:location] Location heading
 ```
 
-### [Icon:fa-solid fa-map] Live icon-heading example
+### [Icon:codex] Live icon-heading example
 
-This heading is rendered through the same authoring syntax a normal lore page can use.
+This heading uses the same validated local icon syntax as a regular lore page.
 
 ## Inline formatting
 
-This sentence demonstrates **bold**, _italic_, ***bold italic***, ~~strikethrough~~, `inline code`, [a normal site link](/), and <kbd>Ctrl</kbd> + <kbd>K</kbd> keyboard notation.
+This sentence demonstrates **bold**, _italic_, ***bold italic***, ~~strikethrough~~, `inline code`, [a normal link](/), and <kbd>Ctrl</kbd> + <kbd>K</kbd> keyboard notation.
 
 ```md
 **bold**
@@ -215,8 +207,6 @@ _italic_
 
 ## Links and wikilinks
 
-Regular Vault notes can use ordinary Markdown links or Obsidian wikilinks.
-
 - [Codex home](/)
 - [Calendar](/calendar/)
 - [[Okse Dominion]]
@@ -229,15 +219,11 @@ Regular Vault notes can use ordinary Markdown links or Obsidian wikilinks.
 [[Okse Dominion|Custom label]]
 ```
 
-Published wikilinks become site links and also feed graph/backlink data. Missing or unpublished targets fall back to plain text and produce a sync warning.
+Published wikilinks become site links and also feed graph/backlink data.
 
-## Paragraphs, blockquotes, and horizontal rules
-
-Short paragraph:
+## Paragraphs, blockquotes, and rules
 
 The horn did not sound. It remembered.
-
-Longer prose should simply remain normal Markdown. The body face, paragraph width, spacing, and responsive typography are supplied by the shared Codex article styles rather than by author markup.
 
 > Money flows here like water through a river, and anything can be bought for the right price.
 >
@@ -245,58 +231,42 @@ Longer prose should simply remain normal Markdown. The body face, paragraph widt
 
 ---
 
-The horizontal rule above uses plain Markdown:
-
 ```md
 ---
 ```
 
 ## Asides and Codex callouts
 
-Starlight asides are available directly in regular Markdown.
-
 :::note
-A neutral note is useful for clarification or secondary context.
+Neutral context or clarification.
 :::
 
 :::tip[Codex writing tip]
-Use a titled tip when the guidance itself is useful to the reader or author.
+Use a title when it makes the aside easier to scan.
 :::
 
 :::caution
-Caution is appropriate for unstable terminology, partial canon, or non-fatal warnings.
+Useful for unstable terminology, partial canon, or non-fatal warnings.
 :::
 
 :::danger[Content or canon hazard]
-Use danger sparingly so that it retains meaning.
+Use danger sparingly so it retains meaning.
 :::
 
 ```md
 :::note[Optional title]
 Callout body.
 :::
-
-:::tip
-Tip body.
-:::
-
-:::caution
-Caution body.
-:::
-
-:::danger
-Danger body.
-:::
 ```
 
-The Codex also provides Obsidian-friendly authoring tags that compile to the shared callout treatment:
+The Codex also provides authoring tags:
 
 [note:title="Archivist note"]
-This is a controlled note callout authored with the Codex tag syntax.
+A controlled note callout authored with Codex tag syntax.
 [/note]
 
 [warning:title="Content warning"]
-This is the standard author-facing warning form for sensitive material.
+The standard warning form for sensitive material.
 [/warning]
 
 [lore:title="Recovered fragment"]
@@ -319,23 +289,15 @@ In-world quoted text.
 
 ## Lists and task lists
 
-Unordered lists:
-
 - Resonance
 - Warfare
 - Culture
   - Social hierarchy
   - Religion
-  - History
-
-Ordered lists:
 
 1. Name the pressure.
 2. Name who benefits from it.
 3. Name who bleeds for it.
-4. Name what breaks when it changes.
-
-Task lists:
 
 - [x] Establish the public myth.
 - [x] Establish material pressure.
@@ -343,12 +305,10 @@ Task lists:
 
 ## Tables
 
-Use Markdown tables for genuinely tabular information rather than as a layout system.
-
 | Faction / power | Public story | Actual pressure | Responsive test |
 |:---|:---|:---|:---|
 | ASTU | Open hands, open minds | Trade security and democratic friction | Short cell |
-| TCSC | Progress through unity | Rail power, heavy industry, ideological cohesion | Longer text to test wrapping on narrow layouts |
+| TCSC | Progress through unity | Rail power, heavy industry, ideological cohesion | Longer wrapping cell |
 | KRG | Recovery and contract survival | Money, deniability, second-hand hardware | Acronym-heavy |
 | Republic of Askalia | Coin as freedom | Exploitation, guild pressure, and slavery | Sensitive-content example |
 
@@ -356,22 +316,20 @@ Use Markdown tables for genuinely tabular information rather than as a layout sy
 | Column A | Column B | Column C |
 |---|---|---|
 | Value | Value | Value |
-| Value | Value | Value |
 ```
 
 ## Responsive layout tags
 
-The compact Codex layout syntax is available from ordinary Vault Markdown. Tags must sit on their own lines.
+Tags must sit on their own lines.
 
 ```md
 [cols:2-1 gap=lg]
 [col]
 Main article body.
 [/col]
-
 [col]
 [card:accent compact]
-Sidebar or summary content.
+Supporting content.
 [/card]
 [/col]
 [/cols]
@@ -381,14 +339,13 @@ Sidebar or summary content.
 [col]
 ### Primary column
 
-Use this side for the main argument, description, history, or other long-form material. On narrow screens the columns collapse into a readable single-column flow.
+Use this side for the main argument, description, history, or other long-form material.
 [/col]
-
 [col]
 [card:accent compact]
 ### Supporting card
 
-Useful for a compact summary, doctrine note, key facts, warning, or sidebar-like material within the article itself.
+Useful for a compact summary, doctrine note, key facts, warning, or sidebar-like material.
 [/card]
 [/col]
 [/cols]
@@ -398,24 +355,17 @@ Useful for a compact summary, doctrine note, key facts, warning, or sidebar-like
 [cols gap=lg]
 [col]
 [card:plain]
-### First column
-
-Equal columns work well for comparisons where neither side should dominate.
+**First column.** Equal columns work for balanced comparisons.
 [/card]
 [/col]
-
 [col]
 [card:muted]
-### Second column
-
-The layout remains responsive without author-written CSS.
+**Second column.** They collapse responsively on narrow screens.
 [/card]
 [/col]
 [/cols]
 
 ### Twelve-column row control
-
-For more deliberate layouts, `[row]` uses a twelve-column grid and `[col]` accepts spans and breakpoint-specific spans.
 
 ```md
 [row gap=lg]
@@ -431,34 +381,34 @@ Four-column region.
 [row gap=lg]
 [col 8 md:8]
 [card]
-**Eight-column region.** This is the wider side of the row.
+**Eight-column region.** Wider content area.
 [/card]
 [/col]
 [col 4 md:4]
 [card:muted]
-**Four-column region.** This is the narrower side.
+**Four-column region.** Narrower supporting area.
 [/card]
 [/col]
 [/row]
 
 ### Card variants
 
-Available card variants are `plain`, `accent`, `muted`, `warning`, `danger`, and `success`; add `compact` when the content is small.
+Available variants are `plain`, `accent`, `muted`, `warning`, `danger`, and `success`. Add `compact` for small content.
 
 [cols gap=sm]
 [col]
 [card:accent compact]
-**Accent** — emphasis without implying danger.
+**Accent**
 [/card]
 [/col]
 [col]
 [card:warning compact]
-**Warning** — cautionary article material.
+**Warning**
 [/card]
 [/col]
 [col]
 [card:success compact]
-**Success** — confirmed or completed state.
+**Success**
 [/card]
 [/col]
 [/cols]
@@ -466,8 +416,6 @@ Available card variants are `plain`, `accent`, `muted`, `warning`, `danger`, and
 ## Images and media
 
 ### Standard Markdown image
-
-A regular local image can be referenced by generated public path or by a managed Vault asset. The sync process resolves managed images into `/assets/images/`.
 
 ![Okse Dominion artwork used as a local image example](/assets/images/640faf5b8cd2814de13871ff58c900b6.webp)
 
@@ -477,8 +425,6 @@ A regular local image can be referenced by generated public path or by a managed
 
 ### Obsidian image embed
 
-Vault image embeds are supported and are rewritten to managed public assets during sync:
-
 ![[Tech timeline for VISCERIUM.jpg]]
 
 ```md
@@ -486,8 +432,6 @@ Vault image embeds are supported and are rewritten to managed public assets duri
 ```
 
 ### Captioned image panel
-
-The shared media styles include `codex-image-panel`. Use MDX-compatible HTML when a figure needs a visible caption rather than a plain Markdown image.
 
 <figure className="codex-image-panel">
   <img src="/assets/images/1d6a04547df953b36f4d6f8ce73e91f2.webp" alt="A VISCERIUM landscape artwork used to demonstrate the captioned image panel." />
@@ -503,7 +447,7 @@ The shared media styles include `codex-image-panel`. Use MDX-compatible HTML whe
 
 ## Map containers
 
-A regular article does not need to become a specialist `type: map` page just to display cartography. The shared page styles expose map/image containers for inline maps, plans, diagrams, and map collections.
+Regular articles can display cartography without becoming specialist `type: map` pages.
 
 ### Single map panel
 
@@ -511,19 +455,17 @@ A regular article does not need to become a specialist `type: map` page just to 
 
 <figure className="codex-map">
   <img src="/assets/images/1d6a04547df953b36f4d6f8ce73e91f2.webp" alt="Demonstration artwork standing in for a map image inside the Codex map container." />
-  <figcaption>Demo map container. Replace the image source with the actual managed map asset for a lore page.</figcaption>
+  <figcaption>Demo map container. Replace the image source with the actual managed map asset.</figcaption>
 </figure>
 
 ```mdx
 <figure className="codex-map">
-  <img src="/assets/maps/your-map.webp" alt="Describe the map and the area shown." />
-  <figcaption>Map title, date, projection, source, or reader guidance.</figcaption>
+  <img src="/assets/maps/your-map.webp" alt="Describe the map and area shown." />
+  <figcaption>Map title, date, projection, source, or guidance.</figcaption>
 </figure>
 ```
 
 ### Scrollable world-map container
-
-For a large image that may need its own overflow area, use `world-map`:
 
 <div className="world-map">
   <img src="/assets/images/viscerium-banner.webp" alt="Wide VISCERIUM artwork used to demonstrate the scrollable world-map container." />
@@ -537,21 +479,19 @@ For a large image that may need its own overflow area, use `world-map`:
 
 ### Map grid and map cards
 
-Use `map-grid` with `map-card` when an article needs several regional maps or visual references.
-
 <div className="map-grid">
   <article className="map-card">
     <img src="/assets/images/640faf5b8cd2814de13871ff58c900b6.webp" alt="First demonstration image in a map card." />
     <div className="map-card__body">
       <h3>Regional map card</h3>
-      <p>Use the body for map scope, period, provenance, legend notes, or a link to the dedicated map page.</p>
+      <p>Use the body for map scope, period, provenance, legend notes, or a dedicated-map link.</p>
     </div>
   </article>
   <article className="map-card">
     <img src="/assets/images/viscerium-banner.webp" alt="Second demonstration image in a map card." />
     <div className="map-card__body">
       <h3>Second map card</h3>
-      <p>The grid automatically reflows according to available article width.</p>
+      <p>The grid reflows according to available article width.</p>
     </div>
   </article>
 </div>
@@ -570,8 +510,6 @@ Use `map-grid` with `map-card` when an article needs several regional maps or vi
 
 ### Connecting a normal article to an interactive map
 
-A regular location, battlefield, settlement, ruin, or region can also become a marker on a specialist map page through frontmatter:
-
 ```yaml
 map:
   id: example-world
@@ -582,11 +520,9 @@ map:
     - cities
 ```
 
-The `type: map` note owns the interactive map itself; normal articles only need the matching marker metadata when they should appear on it.
+The `type: map` note owns the interactive map; normal articles only need matching marker metadata when they should appear on it.
 
 ## Details / disclosure blocks
-
-Native HTML disclosure blocks are useful for optional technical detail, spoilers, long source notes, or secondary lists.
 
 <details>
 <summary>Open this demonstration disclosure</summary>
@@ -595,7 +531,6 @@ The hidden content can contain **Markdown**, lists, links, and `inline code`.
 
 - First hidden item
 - Second hidden item
-- Third hidden item
 
 </details>
 
@@ -610,8 +545,6 @@ Hidden Markdown content.
 
 ## Code blocks
 
-Fenced code blocks receive the shared Expressive Code treatment.
-
 ```js title="codex-demo.js" {2-4}
 export function pressureTestFaction(faction) {
   if (!faction.publicMyth) return 'Decoration wearing a flag';
@@ -619,8 +552,6 @@ export function pressureTestFaction(faction) {
   return 'Usable';
 }
 ```
-
-Language labels, titles, and highlighted lines can be added directly to the opening fence.
 
 ````md
 ```js title="example.js" {2-3}
@@ -632,15 +563,11 @@ const stillHighlighted = true;
 
 ## Mathematical notation
 
-Inline TeX works with dollar delimiters: $a^2+b^2=c^2$.
-
-Display TeX uses double-dollar delimiters:
+Inline TeX: $a^2+b^2=c^2$.
 
 $$
 a^2+b^2=c^2
 $$
-
-The Codex equation container can add a consistent title and presentation:
 
 [equation:title="Resonance decay model"]
 $$
@@ -651,10 +578,6 @@ $$
 ```md
 Inline: $a^2+b^2=c^2$
 
-$$
-a^2+b^2=c^2
-$$
-
 [equation:title="Resonance decay model"]
 $$
 R(t)=R_0e^{-\lambda t}
@@ -664,9 +587,7 @@ $$
 
 ## Calendar placement
 
-A regular page can display an automatic date badge through `calendarDate` and can place a full calendar wherever a shortcode appears.
-
-This page defines:
+A regular page can display an automatic date badge through `calendarDate` and place a full calendar wherever a shortcode appears.
 
 ```yaml
 calendarDate:
@@ -683,15 +604,13 @@ calendarBlocks:
     year: 4
 ```
 
-Then places the calendar with:
-
 ```md
 [Calendar:ID-0001]
 ```
 
 [Calendar:ID-0001]
 
-For a simple one-off calendar, the inline form is also available:
+Inline form:
 
 ```md
 [Calendar:okse year=4]
@@ -699,13 +618,13 @@ For a simple one-off calendar, the inline form is also available:
 
 ## Timeline placement
 
-Regular pages can place a generated canonical timeline with a shortcode. The simplest form is:
+Simple generated timeline:
 
 ```md
 [Timeline:citadel]
 ```
 
-For reusable page-specific settings, define a block in frontmatter:
+Configured block:
 
 ```yaml
 timelineBlocks:
@@ -718,8 +637,6 @@ timelineBlocks:
     showLegend: true
 ```
 
-Then place it where required:
-
 ```md
 [Timeline:ID-0001]
 ```
@@ -727,8 +644,6 @@ Then place it where required:
 [Timeline:ID-0001]
 
 ### Native note-local Chronos timeline
-
-A regular page can also contain a self-contained `chronos` fence for editorial, research, or note-local chronology that does not need to enter the canonical event compiler.
 
 ```chronos
 > NOTODAY
@@ -741,7 +656,7 @@ A regular page can also contain a self-contained `chronos` fence for editorial, 
 = [9220] Demonstration marker
 ```
 
-Use canonical event notes and `[Timeline:...]` shortcodes when the events must participate in registered calendars, era validation, filters, and generated datasets.
+Use canonical event notes and `[Timeline:...]` when events must participate in calendars, era validation, filters, and generated datasets.
 
 ## Footnotes
 
@@ -757,29 +672,27 @@ A sentence with a footnote.[^1]
 
 ## What is deliberately not in the regular-page toolbox?
 
-The old MDX component gallery imported Starlight components such as `Badge`, `CardGrid`, `FileTree`, `Tabs`, and `LinkCard` directly from `@astrojs/starlight/components`. Those are valid **hand-authored MDX** features, but they are not part of the normal Vault Markdown authoring contract and are therefore not presented here as everyday lore-page syntax.
+The old MDX component gallery imported `Badge`, `CardGrid`, `FileTree`, `Tabs`, `LinkCard`, and other Starlight components directly. Those are valid **hand-authored MDX** features, but they are not part of the normal Vault Markdown contract.
 
 | Feature | Regular page? | Use instead / when appropriate |
 |---|---:|---|
 | Markdown + Starlight asides | Yes | Everyday article authoring. |
-| Codex `[cols]`, `[row]`, `[card]`, callout, and equation tags | Yes | Responsive article layout from Vault Markdown. |
+| Codex layout/callout/equation tags | Yes | Responsive layout from Vault Markdown. |
 | Managed images and Obsidian embeds | Yes | Normal article media. |
-| `codex-map`, `world-map`, `map-grid`, `map-card` containers | Yes | Inline map and cartography presentation. |
+| `codex-map`, `world-map`, `map-grid`, `map-card` | Yes | Inline cartography presentation. |
 | Calendar and timeline shortcodes | Yes | Dynamic article modules. |
 | Native `chronos` fences | Yes | Note-local chronology. |
-| Imported Starlight MDX components | No, not by default | Reserve for deliberately hand-authored `.mdx` pages. |
-| `type: map` interactive-map route | Specialist page | Use only when the note owns the map dataset/route. |
-| Bespoke Astro/Preact components | Specialist implementation | Add at Site/component level, not inside ordinary lore notes. |
+| Imported Starlight MDX components | No, not by default | Deliberately hand-authored `.mdx` pages only. |
+| `type: map` interactive-map route | Specialist | Use when the note owns the map route/dataset. |
+| Bespoke Astro/Preact components | Specialist | Add at Site/component level. |
 
 ## Authoring checklist
 
-Before treating a regular lore article as finished:
-
 - [ ] Use one frontmatter `title`; do not repeat it as an H1 in the body.
 - [ ] Give every public page a useful `description`.
-- [ ] Use H2 for major body sections and H3 for subsections.
+- [ ] Use H2 for major sections and H3 for subsections.
 - [ ] Give meaningful images and maps useful alternative text.
-- [ ] Use tables only for tabular data; use layout tags for visual columns.
-- [ ] Prefer wikilinks when the relationship should feed graph/backlink data.
-- [ ] Use callouts only when the distinction actually helps the reader.
-- [ ] Keep specialist MDX/Astro components out of ordinary Vault notes unless the page genuinely requires custom implementation.
+- [ ] Use tables for tabular data; use layout tags for visual columns.
+- [ ] Prefer wikilinks when relationships should feed graph/backlink data.
+- [ ] Use callouts only when the distinction helps the reader.
+- [ ] Keep specialist MDX/Astro components out of ordinary Vault notes unless truly needed.
