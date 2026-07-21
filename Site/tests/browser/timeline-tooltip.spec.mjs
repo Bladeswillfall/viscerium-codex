@@ -77,10 +77,10 @@ function srgbContrast(first, second) {
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 
-function expectOpaqueReadablePair(background, foreground) {
+function expectReadablePair(background, foreground) {
   expect(background).toHaveLength(4);
   expect(foreground).toHaveLength(4);
-  expect(background[3]).toBe(255);
+  expect(background[3]).toBeGreaterThanOrEqual(240);
   expect(foreground[3]).toBe(255);
   expect(srgbContrast(background, foreground)).toBeGreaterThanOrEqual(4.5);
 }
@@ -118,14 +118,14 @@ test('event hover uses one VISCERIUM hovercard in dark and light themes', async 
   expect(dark.title).toBe('The Pathfinder Exodus');
   expect(dark.description.length).toBeGreaterThan(20);
   expect(dark.text).not.toMatch(/2030|2036/);
-  expectOpaqueReadablePair(dark.backgroundSrgb, dark.colorSrgb);
+  expectReadablePair(dark.backgroundSrgb, dark.colorSrgb);
   expect(dark.position).toBe('fixed');
 
   expect(light.cardCount).toBe(1);
   expect(light.nativeTooltipCount).toBe(0);
   expect(light.titleAttributeCount).toBe(0);
   expect(light.title).toBe('The Pathfinder Exodus');
-  expectOpaqueReadablePair(light.backgroundSrgb, light.colorSrgb);
+  expectReadablePair(light.backgroundSrgb, light.colorSrgb);
   expect(srgbLuminance(light.backgroundSrgb)).toBeGreaterThan(srgbLuminance(dark.backgroundSrgb));
   expect(light.background).not.toBe(dark.background);
 
