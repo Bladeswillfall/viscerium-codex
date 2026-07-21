@@ -49,9 +49,13 @@ export default {
     reactions: env.PUBLIC_GISCUS_REACTIONS_ENABLED !== '0',
     inputPosition: env.PUBLIC_GISCUS_INPUT_POSITION ?? 'bottom',
     theme: {
+      // Keep dark mode exactly as before. For light mode, use Giscus' own
+      // noborder_light counterpart instead of a VISCERIUM-coloured custom theme.
+      // Auto mode uses a tiny stylesheet that switches between the two stock
+      // noborder themes based on the operating-system preference.
       dark: env.PUBLIC_GISCUS_DARK_THEME ?? env.PUBLIC_GISCUS_THEME ?? 'noborder_dark',
-      light: env.PUBLIC_GISCUS_LIGHT_THEME ?? `${siteUrl}/giscus-light.css?v=4`,
-      auto: env.PUBLIC_GISCUS_AUTO_THEME ?? `${siteUrl}/giscus-auto.css?v=4`,
+      light: 'noborder_light',
+      auto: `${siteUrl}/giscus-auto.css`,
     },
     lazy: env.PUBLIC_GISCUS_LOADING !== 'eager',
   },
