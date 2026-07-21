@@ -12,6 +12,11 @@ Tools/obsidian-viscerium-timelines/dist/
 Vault/.obsidian/plugins/*/main.js
 Vault/.obsidian/plugins/*/styles.css
 
+# MySnippets is intentionally vendored because the community-store 1.2.3
+# bundle is incompatible with current Obsidian menu/toggle behaviour.
+!Vault/.obsidian/plugins/mysnippets-plugin/main.js
+!Vault/.obsidian/plugins/mysnippets-plugin/styles.css
+
 # Obsidian workspace state
 Vault/.obsidian/workspace.json
 Vault/.obsidian/workspace-mobile.json
