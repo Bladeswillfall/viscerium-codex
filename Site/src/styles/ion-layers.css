@@ -42,7 +42,7 @@
 
   /*
    * A sticky/right sidebar is an elevated page surface. Keeping it one tier
-   * above the normal surface prevents the viewport-wide end-deck cover from
+   * above the normal surface prevents the full-width end-deck surface from
    * obscuring a long sidebar when the two overlap near the bottom of a page.
    */
   body:not(:has(.home-gateway)) .codex-main-pane > .right-sidebar-container {
@@ -56,21 +56,29 @@
   }
 
   /*
-   * The article deck marks the real end of the page. Extend its opaque cover
-   * across the viewport so an empty right column cannot reveal the footer early.
-   * Stop 20px short of the deck bottom: that is the same literal overlap used by
-   * the footer, leaving the black underlay visible behind the rounded corners.
+   * The article deck marks the real end of the page. Its authored box lives in
+   * the left article track, so use the surrounding query container's width
+   * rather than viewport units. 100cqw is the full Codex page shell, including
+   * the right-sidebar track, and therefore stays correctly aligned whether the
+   * sidebar is present, absent, open, or collapsed.
+   *
+   * This pseudo-element owns the raised deck surface itself. The footer's
+   * literal -20px margin then tucks the black underlay beneath these full-width
+   * rounded corners without exposing an early black strip in an empty column.
    */
   body:not(:has(.home-gateway)) .codex-page-deck::before {
     content: '';
     position: absolute;
     z-index: -1;
-    inset-block-start: 0;
-    inset-block-end: 20px;
-    inset-inline-start: 50%;
-    inline-size: 100vw;
-    transform: translateX(-50%);
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: 100%;
+    inline-size: 100cqw;
+    border-radius: 0 0 1.25rem 1.25rem;
     background: var(--codex-page-bg);
+    box-shadow:
+      0 1.5rem 3.4375rem color-mix(in oklch, var(--codex-shadow-color) 46%, transparent),
+      0 1px 0 var(--sl-color-hairline-light);
     pointer-events: none;
   }
 
@@ -82,9 +90,9 @@
     z-index: var(--codex-z-navigation);
   }
 
-  @supports (width: 100dvw) {
+  @media (max-width: 40rem) {
     body:not(:has(.home-gateway)) .codex-page-deck::before {
-      inline-size: 100dvw;
+      border-radius: 0 0 1rem 1rem;
     }
   }
 
