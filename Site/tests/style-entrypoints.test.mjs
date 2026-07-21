@@ -42,20 +42,19 @@ test('global Starlight styles keep their tested explicit registration order', as
   assert.doesNotMatch(customCss, /\.\/src\/styles\/(?:codex|global|bundle)\.css/);
 });
 
-test('homepage styles keep their tested file and inline-style boundaries', async () => {
+test('homepage styles keep their tested file and inline-style boundaries without a reveal layer', async () => {
   const homepage = await read('src/pages/index.astro');
   const imports = [
     '../styles/homepage-base.css',
     '../styles/homepage-content.css',
     '../styles/homepage-responsive.css',
-    '../styles/homepage-reveal.css',
   ];
   const positions = orderedImportPositions(homepage, imports);
 
   assert.ok(positions.every((position) => position >= 0), 'all homepage styles remain directly imported');
   assert.deepEqual([...positions].sort((a, b) => a - b), positions, 'homepage style order is preserved');
   assert.match(homepage, /<style\s+is:global>/);
-  assert.doesNotMatch(homepage, /homepage-(?:styles|bundle)|styles\/homepage\.css/);
+  assert.doesNotMatch(homepage, /homepage-reveal\.css|homepage-(?:styles|bundle)|styles\/homepage\.css/);
 });
 
 test('server-rendered timeline styles remain direct Astro imports', async () => {
