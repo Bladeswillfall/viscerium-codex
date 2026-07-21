@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { buildSidebar } from '../sidebar.mjs';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
@@ -44,26 +44,33 @@ test('desktop sidebar overlay uses an explicit unlayered state', () => {
   assert.match(navigation, /transform: translateX\(-110%\)/);
 });
 
-test('sidebar toggle rebinds safely and tracks the desktop layout', () => {
+test('sidebar toggle rebinds safely and resets closed on each desktop page load', () => {
   const footer = read('../src/components/StarlightFooter.astro');
 
   assert.match(footer, /aria-controls="starlight__sidebar"/);
+  assert.match(footer, /aria-expanded="false"/);
+  assert.match(footer, /aria-label="Show sidebar"/);
   assert.match(footer, /document\.getElementById\('starlight__sidebar'\)/);
   assert.match(footer, /window\.matchMedia\('\(min-width: 800px\)'\)/);
   assert.match(footer, /root\.toggleAttribute\('data-codex-desktop-sidebar', hasDesktopSidebar\)/);
-  assert.match(footer, /document\.addEventListener\('astro:page-load', runtime\.sync\)/);
-  assert.match(footer, /desktopQuery\.addEventListener\('change', runtime\.sync\)/);
+  assert.match(footer, /document\.addEventListener\('astro:page-load', \(\) => runtime\.sync\(true\)\)/);
+  assert.match(footer, /desktopQuery\.addEventListener\('change', \(\) => runtime\.sync\(true\)\)/);
+  assert.match(footer, /setCollapsed\(button, resetCollapsed \|\| root\.classList\.contains\('codex-sidebar-collapsed'\)\)/);
+  assert.match(footer, /runtime\.sync\(true\)/);
   assert.match(footer, /button\.dataset\.codexSidebarBound === 'true'/);
-  assert.match(footer, /localStorage\.getItem\(storageKey\) === 'true'/);
-  assert.match(footer, /localStorage\.setItem\(storageKey, String\(collapsed\)\)/);
+  assert.doesNotMatch(footer, /localStorage|viscerium-sidebar-collapsed/);
+  assert.match(footer, /html:not\(\[data-codex-desktop-sidebar\]\) #starlight__sidebar/);
 });
 
-test('homepage opts into the sidebar and preserves its rail clearance', () => {
+test('homepage has no first-load reveal and still supports the sidebar rail', () => {
   const homepage = read('../src/pages/index.astro');
 
   assert.match(homepage, /hasSidebar=\{true\}/);
   assert.match(homepage, /html\[data-codex-desktop-sidebar\]:not\(\.codex-sidebar-collapsed\) \.main-frame:has\(\.home-gateway\)/);
   assert.match(homepage, /padding-inline-start: var\(--codex-sidebar-overlay-width\) !important/);
+  assert.doesNotMatch(homepage, /HomeReveal|homepage-reveal|client:load/);
+  assert.equal(existsSync(new URL('../src/components/home/HomeReveal.tsx', import.meta.url)), false);
+  assert.equal(existsSync(new URL('../src/styles/homepage-reveal.css', import.meta.url)), false);
 });
 
 test('mobile page table of contents is owned by the responsive runtime', () => {
