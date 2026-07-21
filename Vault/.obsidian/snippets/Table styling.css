@@ -1,0 +1,45 @@
+/*
+ * Table styling
+ * Gives Markdown tables clearer hierarchy and calmer borders.
+ */
+
+.markdown-rendered table {
+  width: 100%;
+  margin-block: 1rem 1.35rem;
+  border: 1px solid var(--background-modifier-border);
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 0.7rem;
+  overflow: hidden;
+}
+
+.markdown-rendered th,
+.markdown-rendered td {
+  padding: 0.55rem 0.7rem;
+  border-right: 1px solid var(--background-modifier-border);
+  border-bottom: 1px solid var(--background-modifier-border);
+  vertical-align: top;
+}
+
+.markdown-rendered th:last-child,
+.markdown-rendered td:last-child {
+  border-right: 0;
+}
+
+.markdown-rendered tr:last-child td {
+  border-bottom: 0;
+}
+
+.markdown-rendered th {
+  background: var(--background-secondary);
+  color: var(--text-muted);
+  font-size: 0.78em;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.markdown-rendered tbody tr:hover td {
+  background: var(--background-modifier-hover);
+}
