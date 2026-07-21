@@ -1,0 +1,24 @@
+/*
+ * List spacing
+ * Adds breathing room to lists while keeping nested lists compact.
+ */
+
+.markdown-rendered :is(ul, ol) {
+  margin-block: 0.85em 1em;
+}
+
+.markdown-rendered :is(ul, ol) > li {
+  margin-block: 0.28em;
+}
+
+.markdown-rendered li > :is(ul, ol) {
+  margin-block: 0.28em 0.4em;
+}
+
+.markdown-rendered li::marker {
+  color: var(--text-faint);
+}
+
+.cm-s-obsidian .HyperMD-list-line {
+  line-height: 1.55;
+}

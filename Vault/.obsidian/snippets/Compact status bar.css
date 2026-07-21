@@ -1,0 +1,22 @@
+/*
+ * Compact status bar
+ * Keeps status information available while reducing visual weight.
+ */
+
+.status-bar {
+  min-height: 24px;
+  padding: 2px 8px;
+  gap: 0.45rem;
+  font-size: 0.78em;
+  background: color-mix(in srgb, var(--background-secondary) 88%, transparent);
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.status-bar-item {
+  padding-inline: 0.2rem;
+  color: var(--text-faint);
+}
+
+.status-bar-item:hover {
+  color: var(--text-muted);
+}

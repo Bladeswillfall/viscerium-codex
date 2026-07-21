@@ -1,0 +1,30 @@
+/*
+ * Code block styling
+ * Keeps inline code and fenced blocks visually distinct and readable.
+ */
+
+.markdown-rendered code,
+.cm-s-obsidian span.cm-inline-code {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 0.08em 0.28em;
+  background: var(--background-secondary);
+}
+
+.markdown-rendered pre {
+  margin-block: 1.2em;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  background: var(--background-secondary);
+  box-shadow: none;
+}
+
+.markdown-rendered pre code {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.markdown-rendered pre::-webkit-scrollbar {
+  height: 6px;
+}
