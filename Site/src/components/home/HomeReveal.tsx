@@ -42,10 +42,6 @@ export default function HomeReveal() {
     const vignetteSoft = palette.getPropertyValue('--home-reveal-vignette-soft').trim();
     const vignetteClear = palette.getPropertyValue('--home-reveal-vignette-clear').trim();
 
-    const spiral = new Image();
-    spiral.decoding = 'async';
-    spiral.src = `${import.meta.env.BASE_URL}images/home/reveal-spiral.svg`;
-
     let animationFrame = 0;
     let startTime = 0;
     let width = 0;
@@ -110,26 +106,6 @@ export default function HomeReveal() {
         context.globalCompositeOperation = 'destination-out';
         context.fillStyle = vignette;
         context.fillRect(0, 0, width, height);
-      }
-
-      if (spiral.complete && spiral.naturalWidth > 0) {
-        const spiralPresence = Math.sin(Math.PI * clamp(linearProgress / 0.92));
-        const baseSize = Math.min(width, height);
-        const spiralSize = baseSize * (0.52 + progress * 1.72);
-
-        context.save();
-        context.translate(centreX, centreY);
-        context.rotate(-0.2 + progress * 0.72);
-        context.globalCompositeOperation = 'destination-out';
-        context.globalAlpha = clamp(spiralPresence * 0.95);
-        context.drawImage(
-          spiral,
-          -spiralSize / 2,
-          -spiralSize / 2,
-          spiralSize,
-          spiralSize,
-        );
-        context.restore();
       }
 
       if (linearProgress < 1) {
