@@ -1,1 +1,55 @@
 @layer starlight, ion;
+
+/*
+ * Site-level stacking hierarchy.
+ *
+ * Local component stacking (for example timeline event bands/items) should stay
+ * inside one of these page-level stacking contexts rather than competing with
+ * navigation, floating controls, or the footer underlay.
+ */
+:root {
+  --codex-z-underlay: -1;
+  --codex-z-page: 0;
+  --codex-z-surface: 1;
+  --codex-z-navigation: 60;
+  --codex-z-control: 1000;
+  --codex-z-reveal: 9999;
+  --codex-z-grain: 999999;
+}
+
+@layer ion {
+  /*
+   * container-type already introduces containment here; make the stacking
+   * boundary explicit so negative underlays cannot leak behind the document.
+   */
+  .codex-two-column-content {
+    position: relative;
+    isolation: isolate;
+    z-index: var(--codex-z-page);
+  }
+
+  /*
+   * Normal Codex content must paint an opaque cover above the sticky footer.
+   * This is what lets complex/transparent pages (timelines, category indexes,
+   * maps, etc.) scroll over the footer instead of allowing it to show through.
+   * The bespoke homepage owns its own surface/stacking treatment.
+   */
+  body:not(:has(.home-gateway)) .codex-main-pane > main > .content-panel,
+  body:not(:has(.home-gateway)) .codex-main-pane > .right-sidebar-container {
+    position: relative;
+    z-index: var(--codex-z-surface);
+    background-color: var(--codex-page-bg);
+  }
+
+  .codex-page-deck {
+    z-index: var(--codex-z-surface);
+  }
+
+  .ion-codex-footer {
+    z-index: var(--codex-z-underlay);
+  }
+
+  header.header {
+    z-index: var(--codex-z-navigation);
+  }
+}
