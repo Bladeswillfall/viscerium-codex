@@ -41,8 +41,8 @@ const breadcrumbs = breadcrumbParts.map((part, index) => {
   const label = index === breadcrumbParts.length - 1
     ? entry.title
     : part.replace(/[-_]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
-  return { href, label, current: index === breadcrumbParts.length - 1 };
-});
+  return { href, label, current: index === breadcrumbParts.length - 1, part, previous: breadcrumbParts[index - 1] };
+}).filter(({ part, previous }) => part !== 'version' || previous !== 'releases');
 ---
 
 {headerImage && (

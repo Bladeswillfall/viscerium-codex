@@ -22,12 +22,11 @@ title: Example Title
 description: "A short SEO-safe page description."
 publish: true
 status: canon
-slug: example/example-title
 type: article
 ---
 ```
 
-The build fails if a public note is missing `title`, `description`, `slug`, or `type`.
+The public route is derived from the note path relative to `Vault/Lore/`, so moving a note changes its URL. The build fails if a public note is missing `title` or `description`, or does not use `status: canon`.
 
 ## Typography
 

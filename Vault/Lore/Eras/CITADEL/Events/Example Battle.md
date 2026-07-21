@@ -3,7 +3,6 @@ title: Example Battle
 description: "A sample event used to demonstrate generated timeline data, calendar date badges, wikilinks, and public callouts."
 publish: false
 status: draft
-slug: eras/citadel/events/example-battle
 type: event
 era: CITADEL
 calendarDate:

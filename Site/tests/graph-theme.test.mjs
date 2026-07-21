@@ -37,3 +37,11 @@ test('site graph uses tags, native interactions and a late canvas adapter', () =
     /starlight-site-graph\/styles\/starlight\.css',[\s\S]*\.\/src\/styles\/graph-canvas\.css'/,
   );
 });
+
+test('the dedicated graph page hydrates its production sitemap', () => {
+  const graphPage = read('../src/pages/graph.astro');
+
+  assert.match(graphPage, /PageGraph slug="start-here"/);
+  assert.match(graphPage, /hydrateWorldGraph/);
+  assert.match(graphPage, /sitegraph\/sitemap\.json/);
+});

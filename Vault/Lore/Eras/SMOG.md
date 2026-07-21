@@ -3,7 +3,6 @@ title: SMOG
 description: "The industrial and trench-war age, where generations are born into war and decades are born into industry."
 publish: true
 status: canon
-slug: eras/smog
 type: era
 eraId: smog
 calendarDate:

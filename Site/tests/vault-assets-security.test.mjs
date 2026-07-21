@@ -5,14 +5,14 @@ import os from 'node:os';
 import path from 'node:path';
 import { validateVaultAssets } from '../scripts/validate-vault-assets.mjs';
 
-async function validateFixture(source) {
+async function validateFixture(source, filename = 'fixture.svg') {
   const rootDir = await mkdtemp(path.join(os.tmpdir(), 'viscerium-svg-security-'));
   const originalError = console.error;
   const errors = [];
   console.error = (...values) => errors.push(values.join(' '));
 
   try {
-    await writeFile(path.join(rootDir, 'fixture.svg'), source, 'utf8');
+    await writeFile(path.join(rootDir, filename), source);
     const valid = await validateVaultAssets({ rootDir });
     return { valid, errors };
   } finally {
@@ -48,4 +48,21 @@ test('SVG validation rejects scriptable constructs', async (t) => {
       assert.ok(result.errors.length > 0);
     });
   }
+});
+
+test('asset validation rejects content that does not match its extension', async () => {
+  const result = await validateFixture('<svg xmlns="http://www.w3.org/2000/svg"></svg>', 'fixture.webp');
+
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /does not match \.webp extension/);
+});
+
+test('asset validation accepts a matching WebP signature', async () => {
+  const result = await validateFixture(
+    Buffer.concat([Buffer.from('RIFF'), Buffer.alloc(4), Buffer.from('WEBP')]),
+    'fixture.webp',
+  );
+
+  assert.equal(result.valid, true);
+  assert.deepEqual(result.errors, []);
 });

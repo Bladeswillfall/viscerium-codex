@@ -3,7 +3,6 @@ title: "TCSC Bastion Doctrine Adopted"
 description: "The TCSC formally adopted slow, mutually supporting armoured formations designed to become mobile walls."
 publish: true
 status: canon
-slug: eras/nearsight/events/tcsc-bastion-doctrine-adopted
 type: event
 era: NEARSIGHT
 calendarDate:

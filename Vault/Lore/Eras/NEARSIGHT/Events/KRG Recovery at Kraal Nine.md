@@ -3,7 +3,6 @@ title: "KRG Recovery at Kraal Nine"
 description: "Karoo Recovery Group contractors extracted a damaged sensor core from a collapsed underground relay."
 publish: true
 status: canon
-slug: eras/nearsight/events/krg-recovery-at-kraal-nine
 type: event
 era: NEARSIGHT
 calendarDate:

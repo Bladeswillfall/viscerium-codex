@@ -3,7 +3,6 @@ title: "The Brass Lung Winter"
 description: "A four-year respiratory crisis spread through factory cities as coal smoke, metal dust and Resonant contamination combined."
 publish: true
 status: canon
-slug: eras/smog/events/the-brass-lung-winter
 type: event
 era: SMOG
 calendarDate:
@@ -44,6 +43,7 @@ tags:
   - "smog"
   - "timeline-showcase"
   - "public-health"
+slug: eras/smog/events/the-brass-lung-winter
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Brass Lung Winter.md"
 updated: "2026-07-10T20:48:59Z"

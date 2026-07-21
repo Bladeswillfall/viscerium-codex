@@ -3,7 +3,6 @@ title: "The Vodr Signal Bloom"
 description: "A dormant Vodr artefact emitted a system-wide pattern interpreted as message, map and biological instruction."
 publish: true
 status: canon
-slug: eras/entropy/events/the-vodr-signal-bloom
 type: event
 era: ENTROPY
 calendarDate:
@@ -37,6 +36,7 @@ tags:
   - "entropy"
   - "timeline-showcase"
   - "vodr"
+slug: eras/entropy/events/the-vodr-signal-bloom
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The Vodr Signal Bloom.md"
 updated: "2026-07-10T20:48:59Z"

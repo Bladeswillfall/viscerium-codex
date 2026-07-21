@@ -3,7 +3,6 @@ title: "The Corporate Genetic Bidding Programme"
 description: "States auctioned exclusive enhancement contracts to corporations in exchange for population-scale genetic services."
 publish: true
 status: canon
-slug: eras/nearsight/events/the-corporate-genetic-bidding-programme
 type: event
 era: NEARSIGHT
 calendarDate:

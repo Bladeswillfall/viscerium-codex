@@ -12,10 +12,10 @@ const feedMaxItems = Number.parseInt(env.PUBLIC_FEED_MAX_ITEMS ?? '50', 10);
 const ga4MeasurementId = env.PUBLIC_GA4_MEASUREMENT_ID ?? 'G-XXXXXXXXXX';
 
 export default {
-  title: 'VISCERIUM',
-  description: 'The public worldbuilding codex for VISCERIUM.',
+  title: env.SITE_TITLE ?? 'VISCERIUM',
+  description: env.SITE_DESCRIPTION ?? 'The public worldbuilding codex for VISCERIUM.',
   site: env.SITE_URL ?? 'https://codex.viscerium.co.uk',
-  loreSourceDir: '../Vault/Lore',
+  loreSourceDir: env.LORE_SOURCE_DIR ?? '../Vault/Lore',
   vaultAssetDir: '../Vault/Assets',
   githubRepoUrl: 'https://github.com/Bladeswillfall/viscerium-codex',
   feeds: {

@@ -3,7 +3,6 @@ title: "The First Crowning at Skallfast"
 description: "The oath-crowning that transformed a ring of fortified valleys into the first recognised Okse Dominion."
 publish: true
 status: canon
-slug: eras/citadel/events/the-first-crowning-at-skallfast
 type: event
 era: CITADEL
 calendarDate:

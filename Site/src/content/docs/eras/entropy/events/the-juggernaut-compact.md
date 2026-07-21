@@ -3,7 +3,6 @@ title: "The Juggernaut Compact"
 description: "Independent fortress-fleets agreed to mutual rescue, ammunition interchange and shared Naranor contact protocols."
 publish: true
 status: canon
-slug: eras/entropy/events/the-juggernaut-compact
 type: event
 era: ENTROPY
 calendarDate:
@@ -37,6 +36,7 @@ tags:
   - "entropy"
   - "timeline-showcase"
   - "juggernauts"
+slug: eras/entropy/events/the-juggernaut-compact
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The Juggernaut Compact.md"
 updated: "2026-07-10T20:48:59Z"

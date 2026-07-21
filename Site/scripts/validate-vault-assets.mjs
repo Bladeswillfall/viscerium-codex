@@ -2,10 +2,12 @@ import path from 'node:path';
 import process from 'node:process';
 import fs from 'node:fs/promises';
 import siteConfig from '../site.config.mjs';
+import { walk } from './lib/walk.mjs';
 import { isMainModule } from './script-entry.mjs';
 
 const siteRoot = process.cwd();
 const defaultAssetRoot = path.resolve(siteRoot, siteConfig.vaultAssetDir);
+const imageExtensions = new Set(['avif', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'svg', 'webp']);
 const unsafeSvgPatterns = [
   { label: 'script element', pattern: /<\s*script\b/i },
   { label: 'foreignObject element', pattern: /<\s*foreignObject\b/i },
@@ -18,21 +20,53 @@ function relative(file) {
   return path.relative(siteRoot, file).replace(/\\/g, '/');
 }
 
+function detectedImageType(source) {
+  if (source.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return 'png';
+  if (source[0] === 0xff && source[1] === 0xd8 && source[2] === 0xff) return 'jpeg';
+  if (['GIF87a', 'GIF89a'].includes(source.subarray(0, 6).toString('ascii'))) return 'gif';
+  if (source.subarray(0, 4).toString('ascii') === 'RIFF' && source.subarray(8, 12).toString('ascii') === 'WEBP') return 'webp';
+  if (source.subarray(0, 2).toString('ascii') === 'BM') return 'bmp';
+  if (source.subarray(4, 8).toString('ascii') === 'ftyp') {
+    for (let offset = 8; offset + 4 <= Math.min(source.length, 40); offset += 4) {
+      if (['avif', 'avis'].includes(source.subarray(offset, offset + 4).toString('ascii'))) return 'avif';
+    }
+  }
+
+  const text = source.subarray(0, 4096).toString('utf8').replace(/^\uFEFF/, '');
+  if (/^\s*(?:<\?xml[\s\S]*?\?>\s*)?(?:<!--[\s\S]*?-->\s*)*(?:<!DOCTYPE\s+svg[\s\S]*?>\s*)?<svg\b/i.test(text)) return 'svg';
+  return undefined;
+}
+
+function expectedImageType(file) {
+  const extension = path.extname(file).slice(1).toLowerCase();
+  return extension === 'jpg' ? 'jpeg' : extension;
+}
+
 export async function validateVaultAssets({ rootDir = defaultAssetRoot } = {}) {
-  const files = (await Array.fromAsync(fs.glob('**/*.svg', { cwd: rootDir })))
-    .map((file) => path.resolve(rootDir, file));
+  const files = (await walk(rootDir))
+    .filter((file) => imageExtensions.has(path.extname(file).slice(1).toLowerCase()))
+    .sort();
   let failed = false;
 
   for (const file of files) {
-    const source = await fs.readFile(file, 'utf8');
+    const source = await fs.readFile(file);
+    const detected = detectedImageType(source);
+    const expected = expectedImageType(file);
+    if (detected !== expected) {
+      console.error(`Asset content does not match .${path.extname(file).slice(1)} extension: ${relative(file)}`);
+      failed = true;
+    }
+    if (detected !== 'svg') continue;
+
+    const text = source.toString('utf8');
     for (const { label, pattern } of unsafeSvgPatterns) {
-      if (!pattern.test(source)) continue;
+      if (!pattern.test(text)) continue;
       console.error(`SVG asset contains a forbidden ${label}: ${relative(file)}`);
       failed = true;
     }
   }
 
-  if (!failed) console.log(`Validated ${files.length} SVG asset${files.length === 1 ? '' : 's'}.`);
+  if (!failed) console.log(`Validated ${files.length} image asset${files.length === 1 ? '' : 's'}.`);
   return !failed;
 }
 

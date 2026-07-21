@@ -3,7 +3,6 @@ title: "First Jade Current Compact Deployment"
 description: "The Jade Current Compact deployed a civil-compatible expeditionary force after a coastal infrastructure collapse."
 publish: true
 status: canon
-slug: eras/nearsight/events/first-jade-current-compact-deployment
 type: event
 era: NEARSIGHT
 calendarDate:
@@ -37,6 +36,7 @@ tags:
   - "nearsight"
   - "timeline-showcase"
   - "jade-current"
+slug: eras/nearsight/events/first-jade-current-compact-deployment
 eraStyle: e3
 sourcePath: "Eras/NEARSIGHT/Events/First Jade Current Compact Deployment.md"
 updated: "2026-07-10T20:48:59Z"

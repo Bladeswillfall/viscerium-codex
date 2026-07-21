@@ -3,7 +3,6 @@ title: "The Pathfinder Exodus"
 description: "Civilian pathfinder fleets departed Errack in staggered waves to establish redundant human settlements beyond mapped war corridors."
 publish: true
 status: canon
-slug: eras/entropy/events/the-pathfinder-exodus
 type: event
 era: ENTROPY
 calendarDate:
@@ -45,6 +44,7 @@ tags:
   - "entropy"
   - "timeline-showcase"
   - "pathfinder"
+slug: eras/entropy/events/the-pathfinder-exodus
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The Pathfinder Exodus.md"
 updated: "2026-07-10T20:48:59Z"

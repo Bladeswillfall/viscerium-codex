@@ -3,11 +3,10 @@ title: Example World Map
 description: "A sample interactive map metadata page with marker guidance for public location notes."
 publish: false
 status: draft
-slug: eras/citadel/maps/example-world
 type: map
 era: CITADEL
 mapId: example-world
-image: /assets/maps/example-world.webp
+image: /assets/maps/example-world.svg
 width: 2000
 height: 1200
 tags:
@@ -31,7 +30,7 @@ Place the source image in `Vault/Assets/Maps/`, then reference its generated pub
 
 ```yaml
 mapId: example-world
-image: /assets/maps/example-world.webp
+image: /assets/maps/example-world.svg
 width: 2000
 height: 1200
 ```

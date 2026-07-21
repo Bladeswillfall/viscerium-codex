@@ -31,7 +31,7 @@ alignment: Unaligned
 tags:
   - citadel
   - faction
-image: example-banner.webp
+image: example-banner.svg
 imagePage: /eras/citadel/images/example-banner/
 imageTitle: Example Banner
 alt: "Describe the image for screen readers."

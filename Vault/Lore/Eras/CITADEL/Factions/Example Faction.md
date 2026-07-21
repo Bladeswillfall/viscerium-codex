@@ -3,14 +3,13 @@ title: Example Faction
 description: "A sample public faction used to demonstrate Codex metadata, image sidecars, wikilinks, layout tags, and relationship data."
 publish: false
 status: draft
-slug: eras/citadel/factions/example-faction
 type: faction
 icon: faction
 era: CITADEL
 capital: Example City
 territory: Example Valley
 faction: Example Faction
-image: example-banner.webp
+image: example-banner.svg
 imagePage: /eras/citadel/images/example-banner/
 imageTitle: Example Banner
 artist: Unknown placeholder artist
@@ -83,7 +82,7 @@ Describe doctrine in plain language first. Then add units, equipment, recruitmen
 
 Use this for banners, colours, shapes, materials, vehicles, armour, weapons, typography, tattoos, charms, and recurring motifs.
 
-![[example-banner.webp]]
+![[example-banner.svg]]
 
 ## [Icon:codex] Relationships
 

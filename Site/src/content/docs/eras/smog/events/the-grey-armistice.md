@@ -3,7 +3,6 @@ title: "The Grey Armistice"
 description: "The last continental trench fronts fell silent beneath an ash-coloured sky, ending the wars that consumed the late industrial age."
 publish: true
 status: canon
-slug: eras/smog/events/the-grey-armistice
 type: event
 era: SMOG
 calendarDate:
@@ -37,6 +36,7 @@ tags:
   - "smog"
   - "timeline-showcase"
   - "armistice"
+slug: eras/smog/events/the-grey-armistice
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Grey Armistice.md"
 updated: "2026-07-10T20:48:59Z"

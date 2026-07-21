@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateVaultNotes } from '../scripts/validate-vault-notes.mjs';
 
-function manifest(content) {
+function manifest(content, data = {}) {
   return {
     records: [{
       file: '/tmp/viscerium-security-fixture.md',
@@ -11,18 +11,19 @@ function manifest(content) {
         status: 'canon',
         title: 'Security fixture',
         description: 'Validation fixture.',
+        ...data,
       },
       content,
     }],
   };
 }
 
-function validateQuietly(content) {
+function validateQuietly(content, data) {
   const originalError = console.error;
   const errors = [];
   console.error = (...values) => errors.push(values.join(' '));
   try {
-    return { valid: validateVaultNotes(manifest(content)), errors };
+    return { valid: validateVaultNotes(manifest(content, data)), errors };
   } finally {
     console.error = originalError;
   }
@@ -64,4 +65,11 @@ test('published notes reject active HTML and unsafe URL schemes', async (t) => {
       assert.ok(result.errors.length > 0);
     });
   }
+});
+
+test('published note routes are derived from their file paths', () => {
+  const result = validateQuietly('Ordinary lore text.', { slug: 'custom-route' });
+
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /routes are derived from file paths/);
 });

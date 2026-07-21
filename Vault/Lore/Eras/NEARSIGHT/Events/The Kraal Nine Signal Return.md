@@ -3,7 +3,6 @@ title: "The Kraal Nine Signal Return"
 description: "The recovered Kraal Nine core transmitted a reply to a signal no monitoring station had recorded sending."
 publish: true
 status: canon
-slug: eras/nearsight/events/the-kraal-nine-signal-return
 type: event
 era: NEARSIGHT
 calendarDate:

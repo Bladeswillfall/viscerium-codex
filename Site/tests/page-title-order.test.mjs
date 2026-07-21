@@ -15,3 +15,16 @@ test('page headers render title, breadcrumbs, then calendar date', () => {
   assert.ok(breadcrumbsIndex > titleIndex, 'breadcrumbs must follow the title');
   assert.ok(calendarIndex > breadcrumbsIndex, 'calendar date must follow breadcrumbs');
 });
+
+test('release breadcrumbs omit the changelog plugin virtual version segment', () => {
+  const pageTitle = read('../src/components/CodexPageTitle.astro');
+
+  assert.match(pageTitle, /part !== 'version' \|\| previous !== 'releases'/);
+});
+
+test('per-page sidebars keep backlinks without rendering a graph', () => {
+  const sidebar = read('../src/components/CodexPageSidebar.astro');
+
+  assert.match(sidebar, /PageBacklinks/);
+  assert.doesNotMatch(sidebar, /PageGraph|hydrateSiteGraphs/);
+});

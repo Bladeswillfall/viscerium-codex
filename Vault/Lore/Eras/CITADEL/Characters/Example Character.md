@@ -3,7 +3,6 @@ title: Example Character
 description: "A sample public character that demonstrates metadata, wikilinks, tags, layout cards, and related entries."
 publish: false
 status: draft
-slug: eras/citadel/characters/example-character
 type: character
 icon: character
 era: CITADEL

@@ -3,7 +3,6 @@ title: "First AESIR Mk-2 Fielding"
 description: "The AESIR Mk-2 exoskeleton entered operational service during a live border interception."
 publish: true
 status: canon
-slug: eras/nearsight/events/first-aesir-mk-2-fielding
 type: event
 era: NEARSIGHT
 calendarDate:
@@ -36,6 +35,7 @@ tags:
   - "nearsight"
   - "timeline-showcase"
   - "aesir"
+slug: eras/nearsight/events/first-aesir-mk-2-fielding
 eraStyle: e3
 sourcePath: "Eras/NEARSIGHT/Events/First AESIR Mk-2 Fielding.md"
 updated: "2026-07-10T20:48:59Z"
