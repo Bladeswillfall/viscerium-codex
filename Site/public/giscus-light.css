@@ -1,0 +1,56 @@
+@import url('https://giscus.app/themes/light.css');
+
+/*
+ * VISCERIUM light-mode Giscus theme.
+ * Keep the discussion UI readable while letting it sit inside the Codex's
+ * warm parchment palette instead of appearing as a bright white panel.
+ */
+main {
+  --color-fg-default: #151515;
+  --color-fg-muted: #484137;
+  --color-fg-subtle: #625b50;
+
+  --color-canvas-default: transparent;
+  --color-canvas-overlay: #c8bfa8;
+  --color-canvas-inset: rgb(200 191 168 / 62%);
+  --color-canvas-subtle: rgb(200 191 168 / 52%);
+
+  --color-border-default: rgb(72 65 55 / 52%);
+  --color-border-muted: rgb(72 65 55 / 32%);
+  --color-neutral-muted: rgb(72 65 55 / 10%);
+
+  --color-btn-text: #151515;
+  --color-btn-bg: rgb(200 191 168 / 72%);
+  --color-btn-border: rgb(72 65 55 / 38%);
+  --color-btn-hover-bg: #c8bfa8;
+  --color-btn-hover-border: rgb(72 65 55 / 58%);
+  --color-btn-active-bg: #b9b4a9;
+  --color-btn-active-border: rgb(72 65 55 / 64%);
+  --color-btn-selected-bg: #b9b4a9;
+
+  --color-btn-primary-text: #f2eee4;
+  --color-btn-primary-bg: #484137;
+  --color-btn-primary-border: rgb(16 16 16 / 35%);
+  --color-btn-primary-hover-bg: #332f29;
+  --color-btn-primary-hover-border: rgb(16 16 16 / 55%);
+  --color-btn-primary-selected-bg: #101010;
+  --color-btn-primary-disabled-text: rgb(242 238 228 / 72%);
+  --color-btn-primary-disabled-bg: #888070;
+  --color-btn-primary-disabled-border: rgb(72 65 55 / 28%);
+
+  --color-action-list-item-default-hover-bg: rgb(72 65 55 / 10%);
+  --color-segmented-control-bg: rgb(200 191 168 / 56%);
+  --color-segmented-control-button-bg: rgb(185 180 169 / 74%);
+  --color-segmented-control-button-selected-border: #888070;
+
+  --color-accent-fg: #484137;
+  --color-accent-emphasis: #484137;
+  --color-accent-muted: rgb(72 65 55 / 32%);
+  --color-accent-subtle: rgb(200 191 168 / 58%);
+  --color-success-fg: #394b39;
+}
+
+html,
+body {
+  background: transparent;
+}
