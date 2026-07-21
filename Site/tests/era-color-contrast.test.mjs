@@ -43,7 +43,7 @@ const themes = {
     },
   },
   light: {
-    background: '#888070',
+    background: '#b9b4a9',
     links: {
       e1: ['#330008', '#150000'],
       e2: ['#151600', '#060600'],
