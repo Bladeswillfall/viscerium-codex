@@ -5,17 +5,25 @@ import { readFileSync } from 'node:fs';
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 const layers = read('../src/styles/ion-layers.css');
+const header = read('../src/components/CodexHeader.astro');
 const footer = read('../src/components/StarlightFooter.astro');
 const timeline = read('../src/styles/timeline-stacking.css');
 
 test('the Codex defines explicit site-level stacking tiers', () => {
+  assert.match(layers, /--codex-z-grain:\s*-2/);
   assert.match(layers, /--codex-z-underlay:\s*-1/);
   assert.match(layers, /--codex-z-page:\s*0/);
   assert.match(layers, /--codex-z-surface:\s*1/);
   assert.match(layers, /--codex-z-navigation:\s*60/);
   assert.match(layers, /--codex-z-control:\s*1000/);
   assert.match(layers, /--codex-z-reveal:\s*9999/);
-  assert.match(layers, /--codex-z-grain:\s*999999/);
+});
+
+test('film grain is contained directly above the document background and below site surfaces', () => {
+  assert.match(layers, /body\s*\{[\s\S]*?position:\s*relative[\s\S]*?isolation:\s*isolate/);
+  assert.match(layers, /body::before\s*\{[\s\S]*?z-index:\s*var\(--codex-z-grain\)\s*!important/);
+  assert.match(header, /body::before\s*\{[\s\S]*?z-index:\s*var\(--codex-z-grain,\s*-2\)/);
+  assert.doesNotMatch(header, /body::before\s*\{[\s\S]*?z-index:\s*(?:999999|9999|1000)/);
 });
 
 test('the two-column shell contains local stacking and normal page surfaces cover the footer', () => {
@@ -37,7 +45,6 @@ test('global chrome and overlays use the shared hierarchy', () => {
   assert.match(layers, /html\[data-codex-desktop-sidebar\] #starlight__sidebar\s*\{[\s\S]*?z-index:\s*var\(--codex-z-navigation\)\s*!important/);
   assert.match(layers, /\.codex-sidebar-toggle,[\s\S]*?#scroll-to-top-button\s*\{[\s\S]*?z-index:\s*var\(--codex-z-control\)\s*!important/);
   assert.match(layers, /\.home-reveal\s*\{[\s\S]*?z-index:\s*var\(--codex-z-reveal\)\s*!important/);
-  assert.match(layers, /body::before\s*\{[\s\S]*?z-index:\s*var\(--codex-z-grain\)\s*!important/);
 });
 
 test('the footer keeps the proven literal overlap while using the shared underlay tier', () => {
