@@ -6,19 +6,23 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 const representativePages = {
   CITADEL: {
-    file: '../src/content/docs/eras/citadel/events/the-galdyr-compact.md',
+    source: '../../Vault/Lore/Eras/CITADEL/Events/The Galdyr Compact.md',
+    generated: '../src/content/docs/eras/citadel/events/the-galdyr-compact.md',
     style: 'e1',
   },
   SMOG: {
-    file: '../src/content/docs/eras/smog/events/the-grey-armistice.md',
+    source: '../../Vault/Lore/Eras/SMOG/Events/The Grey Armistice.md',
+    generated: '../src/content/docs/eras/smog/events/the-grey-armistice.md',
     style: 'e2',
   },
   NEARSIGHT: {
-    file: '../src/content/docs/eras/nearsight/events/formation-of-astu.md',
+    source: '../../Vault/Lore/Eras/NEARSIGHT/Events/Formation of ASTU.md',
+    generated: '../src/content/docs/eras/nearsight/events/formation-of-astu.md',
     style: 'e3',
   },
   ENTROPY: {
-    file: '../src/content/docs/eras/entropy/events/the-pathfinder-exodus.md',
+    source: '../../Vault/Lore/Eras/ENTROPY/Events/The Pathfinder Exodus.md',
+    generated: '../src/content/docs/eras/entropy/events/the-pathfinder-exodus.md',
     style: 'e4',
   },
 };
@@ -34,13 +38,16 @@ test('the content sync maps era folders to generated eraStyle metadata', () => {
   assert.match(sync, /eraStyle:\s*parsed\.data\.eraStyle/);
 });
 
-test('representative generated pages carry the hidden folder-derived eraStyle', () => {
-  for (const [era, { file, style }] of Object.entries(representativePages)) {
-    const page = read(file);
+test('eraStyle stays out of authored Obsidian frontmatter and appears in generated site frontmatter', () => {
+  for (const [era, { source, generated, style }] of Object.entries(representativePages)) {
+    const sourceNote = read(source);
+    const generatedPage = read(generated);
+    const sourceFrontmatter = sourceNote.split('\n---', 1)[0];
 
-    assert.match(page, new RegExp(`era:\\s*${era}`), `${era} page should retain its inferred era`);
-    assert.match(page, new RegExp(`eraStyle:\\s*${style}`), `${era} page should publish ${style}`);
-    assert.match(page, new RegExp(`sourcePath:\\s*"Eras/${era}/`), `${era} page should originate in the matching Vault folder`);
+    assert.doesNotMatch(sourceFrontmatter, /^eraStyle:/m, `${era} Vault source should not require presentation metadata`);
+    assert.match(generatedPage, new RegExp(`era:\\s*${era}`), `${era} page should retain its inferred era`);
+    assert.match(generatedPage, new RegExp(`eraStyle:\\s*${style}`), `${era} page should publish ${style}`);
+    assert.match(generatedPage, new RegExp(`sourcePath:\\s*"Eras/${era}/`), `${era} page should originate in the matching Vault folder`);
   }
 });
 
