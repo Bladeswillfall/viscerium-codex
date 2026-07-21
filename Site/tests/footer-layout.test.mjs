@@ -24,26 +24,30 @@ test('article metadata stays on a raised deck while the navigation rail is a sep
   assert.match(footer, /\.codex-page-deck\s*\{[\s\S]*?position:\s*relative[\s\S]*?z-index:\s*2/);
   assert.match(footer, /\.codex-page-deck\s*\{[\s\S]*?border-radius:\s*0 0 1\.25rem 1\.25rem/);
   assert.match(footer, /\.codex-page-deck\s*\{[\s\S]*?box-shadow:/);
+  assert.doesNotMatch(footer, /\.codex-page-deck::after/);
 });
 
-test('the deck paints a black junction beneath its rounded lower corners', () => {
-  assert.match(footer, /\.codex-page-deck::after\s*\{[\s\S]*?z-index:\s*-1/);
-  assert.match(footer, /\.codex-page-deck::after\s*\{[\s\S]*?inset-block-end:\s*-20px/);
-  assert.match(footer, /\.codex-page-deck::after\s*\{[\s\S]*?block-size:\s*20px/);
-  assert.match(footer, /\.codex-page-deck::after\s*\{[\s\S]*?background:\s*var\(--codex-nav-bg\)/);
-});
-
-test('the Codex navigation footer stays compact beneath all page content as a sticky viewport-wide underlay', () => {
-  assert.match(footer, /--ion-codex-footer-padding:\s*2rem clamp\(1\.5rem, 3vw, 2\.125rem\) 1\.25rem/);
+test('the Codex navigation footer derives its overlap from its top padding', () => {
+  assert.match(footer, /--ion-codex-footer-overlap:\s*2rem/);
+  assert.match(
+    footer,
+    /--ion-codex-footer-padding:\s*var\(--ion-codex-footer-overlap\) clamp\(1\.5rem, 3vw, 2\.125rem\) 1\.25rem/,
+  );
   assert.match(footer, /\.ion-codex-footer\s*\{[\s\S]*?position:\s*sticky[\s\S]*?bottom:\s*0[\s\S]*?z-index:\s*-1/);
   assert.match(footer, /\.ion-codex-footer\s*\{[\s\S]*?min-block-size:\s*7rem/);
-  assert.match(footer, /\.ion-codex-footer\s*\{[\s\S]*?margin-top:\s*-20px/);
+  assert.match(
+    footer,
+    /\.ion-codex-footer\s*\{[\s\S]*?margin-top:\s*calc\(-1 \* var\(--ion-codex-footer-overlap\)\)/,
+  );
   assert.match(footer, /\.ion-codex-footer\s*\{[\s\S]*?inline-size:\s*100vw/);
   assert.match(footer, /padding:\s*var\(--ion-codex-footer-padding\)/);
   assert.match(footer, /margin-inline:\s*calc\(50% - 50vw\)/);
   assert.match(footer, /@supports \(width:\s*100dvw\)[\s\S]*?inline-size:\s*100dvw/);
   assert.match(footer, /margin-inline:\s*calc\(50% - 50dvw\)/);
-  assert.match(footer, /\.ion-codex-footer::before\s*\{[\s\S]*?inset-block-start:\s*2rem[\s\S]*?inline-size:\s*3\.375rem[\s\S]*?block-size:\s*0\.1875rem/);
+  assert.match(
+    footer,
+    /\.ion-codex-footer::before\s*\{[\s\S]*?inset-block-start:\s*var\(--ion-codex-footer-overlap\)[\s\S]*?inline-size:\s*3\.375rem[\s\S]*?block-size:\s*0\.1875rem/,
+  );
 });
 
 test('print and forced-colour modes disable the sticky reveal treatment', () => {
@@ -51,5 +55,4 @@ test('print and forced-colour modes disable the sticky reveal treatment', () => 
   assert.match(footer, /@media print, \(forced-colors: active\)[\s\S]*?\.ion-codex-footer\s*\{[\s\S]*?z-index:\s*auto/);
   assert.match(footer, /@media print, \(forced-colors: active\)[\s\S]*?\.ion-codex-footer\s*\{[\s\S]*?margin-top:\s*0/);
   assert.match(footer, /@media print, \(forced-colors: active\)[\s\S]*?\.codex-page-deck\s*\{[\s\S]*?box-shadow:\s*none/);
-  assert.match(footer, /@media print, \(forced-colors: active\)[\s\S]*?\.codex-page-deck::after\s*\{[\s\S]*?display:\s*none/);
 });
