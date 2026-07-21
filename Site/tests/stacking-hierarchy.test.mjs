@@ -16,8 +16,8 @@ test('the Codex defines explicit site-level stacking tiers', () => {
   assert.match(layers, /--codex-z-elevated-surface:\s*2/);
   assert.match(layers, /--codex-z-navigation:\s*60/);
   assert.match(layers, /--codex-z-control:\s*1000/);
-  assert.match(layers, /--codex-z-reveal:\s*9999/);
   assert.match(layers, /--codex-z-grain:\s*999999/);
+  assert.doesNotMatch(layers, /codex-z-reveal|\.home-reveal/);
 });
 
 test('the raised page and underlay rail are siblings in the document stack', () => {
@@ -50,10 +50,9 @@ test('article-local footer breakout hacks are gone', () => {
   assert.doesNotMatch(rail, /100cqw|100vw|100dvw/);
 });
 
-test('global chrome and overlays use the shared hierarchy', () => {
+test('global chrome uses the shared hierarchy', () => {
   assert.match(layers, /html\[data-codex-desktop-sidebar\] #starlight__sidebar\s*\{[\s\S]*?z-index:\s*var\(--codex-z-navigation\)\s*!important/);
   assert.match(layers, /\.codex-sidebar-toggle,[\s\S]*?#scroll-to-top-button\s*\{[\s\S]*?z-index:\s*var\(--codex-z-control\)\s*!important/);
-  assert.match(layers, /\.home-reveal\s*\{[\s\S]*?z-index:\s*var\(--codex-z-reveal\)\s*!important/);
   assert.match(layers, /body::before\s*\{[\s\S]*?z-index:\s*var\(--codex-z-grain\)\s*!important/);
 });
 
