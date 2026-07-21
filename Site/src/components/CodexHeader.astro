@@ -42,11 +42,15 @@ const shouldRenderSearch =
     inset: 0;
     z-index: 999999;
     background: url('/assets/images/codex-noise-v2.webp') repeat;
-    opacity: .7;
+    opacity: .2;
     visibility: visible;
     pointer-events: none;
     display: block;
     mix-blend-mode: soft-light;
+  }
+
+  :root[data-theme='light'] body::before {
+    opacity: .1;
   }
 
   @media print, (forced-colors: active) {
