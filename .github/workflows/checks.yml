@@ -39,12 +39,14 @@ jobs:
             tail -160 "$RUNNER_TEMP/viscerium-build.log"
             exit 1
           fi
-      - name: Upload failed build log
+      - name: Upload failed build diagnostics
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: cheat-sheet-build-failure
-          path: ${{ runner.temp }}/viscerium-build.log
+          path: |
+            ${{ runner.temp }}/viscerium-build.log
+            Site/dist/demo/starlight/index.html
           if-no-files-found: ignore
 
       - name: Build Obsidian timeline plugin
