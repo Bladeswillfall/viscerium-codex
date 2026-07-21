@@ -12,6 +12,15 @@ async function installTheme(page, theme) {
 
 async function inspectGraph(page, viewport, screenshot, theme) {
   await installTheme(page, theme);
+  // The graph test exercises local graph rendering, not the remote Giscus iframe.
+  // Production auto mode references the canonical custom-theme URL, which is
+  // intentionally unreachable in the isolated CI browser. Stub only that exact
+  // stylesheet so unrelated DNS failure cannot masquerade as a graph failure.
+  await page.route('https://codex.viscerium.co.uk/giscus-auto.css', (route) => route.fulfill({
+    status: 200,
+    contentType: 'text/css',
+    body: '/* CI stub: Giscus theme is outside the graph smoke-test surface. */',
+  }));
   await page.setViewportSize(viewport);
   const pageErrors = [];
   const consoleErrors = [];
