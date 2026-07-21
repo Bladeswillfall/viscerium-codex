@@ -2,12 +2,13 @@
 
 This maintained local plugin renders canonical VISCERIUM timeline shortcodes through Chronos. It imports the shared calendar runtime, compiler, Chronos adapter and renderer from `Site/src/lib/`, compiles canon notes directly from the open vault, and does not require the Astro development server.
 
-It is designed to coexist with the public **Chronos Timeline** community plugin:
+It is designed to coexist with the public **Chronos Timeline** community plugin and **StoryLine**:
 
 - The public Chronos plugin owns fenced `chronos` blocks, templates, note links and quick Markdown timelines.
-- VISCERIUM Timelines owns `[Timeline:...]` shortcodes, registered fictional calendars, canonical era membership and generated super/era datasets.
+- StoryLine owns story projects, scene prose, reading order, chronological order and story-planning metadata beneath `Stories/`.
+- VISCERIUM Timelines owns `[Timeline:...]` shortcodes, registered fictional calendars, canonical era membership, generated super/era datasets, and the read-only VISCERIUM calendar view of StoryLine scenes.
 
-The local plugin deliberately does not register a second `chronos` code-block processor.
+The local plugin deliberately does not register a second `chronos` code-block processor and does not write duplicate chronology fields into StoryLine scene notes.
 
 ## Build
 
@@ -37,7 +38,7 @@ Vault/.obsidian/plugins/viscerium-timelines/
 
 Copy the three files from `dist/` into that directory, reload Obsidian, then enable **VISCERIUM Timelines** under Community plugins.
 
-Also install and enable **Chronos Timeline** from the Obsidian community directory when you want native fenced blocks. The two plugins have separate processors and can be enabled together.
+Also install and enable **Chronos Timeline** from the Obsidian community directory when you want native fenced blocks. Install **StoryLine** when you want the story-planning workspace beneath `Stories/`. The plugins have separate responsibilities and can be enabled together.
 
 For development, run `npm run dev`, copy the resulting files, and use Obsidian's **Reload app without saving** command. The plugin provides **VISCERIUM Timelines: Refresh compiled timelines** in the command palette.
 
@@ -74,6 +75,32 @@ timelineBlocks:
 
 Supported timeline IDs are `super`, `citadel`, `smog`, `nearsight` and `entropy`.
 
+## StoryLine project timelines
+
+Open a StoryLine project note or scene beneath `Stories/`, then run:
+
+**VISCERIUM Timelines: Open StoryLine project timeline**
+
+The plugin finds that project's `Scenes/` folder and generates a read-only VISCERIUM calendar view from the scene Markdown. It does not insert a shortcode or generated data into the manuscript.
+
+StoryLine's `storyDate` remains the single story-date field. Accepted VISCERIUM forms include:
+
+```yaml
+storyDate: "16 Sólmanuthur, 9250"
+```
+
+```yaml
+storyDate: "9250-solmanuthur-16"
+```
+
+An explicit registered calendar may be prefixed when needed:
+
+```yaml
+storyDate: "okse:16 Sólmanuthur, 9250"
+```
+
+StoryLine continues to own `sequence` and `chronologicalOrder`. The VISCERIUM adapter converts `storyDate` to the shared absolute-day calendar model only in memory. Missing or invalid story dates are reported in the timeline view and do not alter the source scene.
+
 ## Native Chronos blocks
 
 Use the public Chronos plugin for quick note-local timelines:
@@ -94,13 +121,15 @@ The site sync process converts the same block to `ChronosEmbed.astro`, so the co
 
 ## Source-of-truth behaviour
 
-- Only Markdown notes beneath `Lore/` with `publish: true` and `status: canon` are compiled into generated datasets.
-- `calendarDate` is the sole canonical event start date.
-- `calendarEndDate` is optional and creates a period by default.
+- Only Markdown notes beneath `Lore/` with `publish: true` and `status: canon` are compiled into generated public datasets.
+- `Stories/` is never scanned as a canonical/public source.
+- Canonical lore events use `calendarDate` as their sole start date.
+- StoryLine scenes use `storyDate` as their sole story date; the adapter converts it in memory rather than duplicating `calendarDate`.
+- `calendarEndDate` is optional for canonical lore events and creates a period by default.
 - Era membership is calculated from canonical era records.
-- Legacy `timeline.id`, `timeline.year` and `timeline.date` fail compilation.
-- The normalized dataset is adapted to Chronos with `renderParsed`; authors do not maintain generated Chronos syntax.
-- Selecting **Open full article** opens the source note in Obsidian.
+- Legacy `timeline.id`, `timeline.year` and `timeline.date` fail canonical compilation.
+- The normalized canonical dataset is adapted to Chronos with `renderParsed`; authors do not maintain generated Chronos syntax.
+- Selecting **Open full article** opens canonical source notes in Obsidian; selecting a StoryLine timeline event opens its scene note.
 
 ## Files to commit
 
