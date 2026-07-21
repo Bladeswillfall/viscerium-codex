@@ -5,7 +5,11 @@ import '../../Site/src/styles/chronos.css';
 import { compileTimelineRecords, TimelineCompilationError } from '../../Site/src/lib/timeline/compiler.mjs';
 import { LANE_MODES, TIMELINE_IDS } from '../../Site/src/lib/timeline/core.mjs';
 import { mountTimeline } from '../../Site/src/lib/timeline/chronos-native-renderer.mjs';
-import { buildStoryLineTimelineDataset, inferStoryLineProjectBase } from '../../Site/src/lib/timeline/storyline-adapter.mjs';
+import {
+  buildStoryLineTimelineDataset,
+  inferStoryLineProjectBase,
+  parseStoryLineDate,
+} from '../../Site/src/lib/timeline/storyline-adapter.mjs';
 
 type TimelineBlock = {
   timeline: string;
@@ -18,6 +22,15 @@ type TimelineBlock = {
 };
 
 type CompiledResult = ReturnType<typeof compileTimelineRecords>;
+type StoryLineSettingsSnapshot = {
+  storyLineRoot?: string;
+  activeProjectFile?: string;
+};
+type StoryLineResolution = {
+  projectBase: string;
+  projectTitle: string;
+  source: 'active-file' | 'storyline-runtime' | 'storyline-config' | 'single-project';
+};
 
 const STORY_TIMELINE_VIEW_TYPE = 'viscerium-storyline-timeline';
 
@@ -28,6 +41,12 @@ function parseBoolean(value: unknown, fallback: boolean): boolean {
   if (normalized === 'true') return true;
   if (normalized === 'false') return false;
   return fallback;
+}
+
+function asNonEmptyString(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  return trimmed || undefined;
 }
 
 function parseInlineBlock(id: string, specification = ''): TimelineBlock {
@@ -210,6 +229,12 @@ export default class VisceriumTimelinesPlugin extends Plugin {
       callback: async () => this.openStoryLineProjectTimeline(),
     });
 
+    this.addCommand({
+      id: 'diagnose-storyline-integration',
+      name: 'Diagnose StoryLine integration',
+      callback: async () => this.diagnoseStoryLineIntegration(),
+    });
+
     this.registerMarkdownPostProcessor(async (element, context) => {
       const sourceFile = this.app.vault.getAbstractFileByPath(context.sourcePath);
       const frontmatter = sourceFile instanceof TFile
@@ -237,7 +262,7 @@ export default class VisceriumTimelinesPlugin extends Plugin {
         try {
           const compiled = await this.getCompiled();
           const dataset = compiled.datasets[block.timeline];
-          if (!dataset) throw new Error(`Unknown timeline '${block.timeline}'.`);
+          if (!dataset) throw new Error(`Unknown timeline '${id}'.`);
           const dispose = mountTimeline(mount, dataset, {
             defaultCalendar: block.defaultCalendar,
             laneMode: block.laneMode,
@@ -266,21 +291,109 @@ export default class VisceriumTimelinesPlugin extends Plugin {
     else new Notice(`Vault note not found: ${sourcePath}`);
   }
 
-  private async openStoryLineProjectTimeline(): Promise<void> {
+  private getStoryLineRuntimeSettings(): StoryLineSettingsSnapshot {
+    const appWithPlugins = this.app as unknown as {
+      plugins?: { plugins?: Record<string, unknown> };
+    };
+    const plugin = appWithPlugins.plugins?.plugins?.storyline as { settings?: Record<string, unknown> } | undefined;
+    const settings = plugin?.settings ?? {};
+    return {
+      storyLineRoot: asNonEmptyString(settings.storyLineRoot),
+      activeProjectFile: asNonEmptyString(settings.activeProjectFile),
+    };
+  }
+
+  private async getStoryLineDiskSettings(): Promise<StoryLineSettingsSnapshot> {
+    try {
+      const vaultWithConfig = this.app.vault as unknown as { configDir?: string };
+      const configDir = vaultWithConfig.configDir ?? '.obsidian';
+      const path = `${configDir}/plugins/storyline/data.json`;
+      if (!await this.app.vault.adapter.exists(path)) return {};
+      const raw = JSON.parse(await this.app.vault.adapter.read(path)) as Record<string, unknown>;
+      return {
+        storyLineRoot: asNonEmptyString(raw.storyLineRoot),
+        activeProjectFile: asNonEmptyString(raw.activeProjectFile),
+      };
+    } catch {
+      return {};
+    }
+  }
+
+  private async getStoryLineSettings(): Promise<{ runtime: StoryLineSettingsSnapshot; disk: StoryLineSettingsSnapshot; merged: StoryLineSettingsSnapshot }> {
+    const runtime = this.getStoryLineRuntimeSettings();
+    const disk = await this.getStoryLineDiskSettings();
+    return {
+      runtime,
+      disk,
+      merged: {
+        storyLineRoot: runtime.storyLineRoot ?? disk.storyLineRoot ?? 'Stories',
+        activeProjectFile: runtime.activeProjectFile ?? disk.activeProjectFile,
+      },
+    };
+  }
+
+  private findStoryLineProjects(root: string): TFile[] {
+    const prefix = `${root.replace(/\/+$/, '')}/`;
+    return this.app.vault.getMarkdownFiles()
+      .filter((file) => file.path.startsWith(prefix))
+      .filter((file) => this.app.metadataCache.getFileCache(file)?.frontmatter?.type === 'storyline')
+      .sort((left, right) => left.path.localeCompare(right.path));
+  }
+
+  private async resolveStoryLineProject(): Promise<StoryLineResolution | null> {
     const active = this.app.workspace.getActiveFile();
-    if (!active) {
-      new Notice('Open a StoryLine project or scene under Stories/ first.');
-      return;
+    if (active) {
+      const projectBase = inferStoryLineProjectBase(active.path);
+      if (projectBase) {
+        return {
+          projectBase,
+          projectTitle: projectBase.split('/').at(-1) ?? 'Story',
+          source: 'active-file',
+        };
+      }
     }
 
-    const projectBase = inferStoryLineProjectBase(active.path);
-    if (!projectBase) {
-      new Notice('The active note is not inside a StoryLine project under Stories/.');
-      return;
+    const settings = await this.getStoryLineSettings();
+    if (settings.runtime.activeProjectFile) {
+      const projectBase = inferStoryLineProjectBase(settings.runtime.activeProjectFile);
+      if (projectBase) {
+        return {
+          projectBase,
+          projectTitle: projectBase.split('/').at(-1) ?? 'Story',
+          source: 'storyline-runtime',
+        };
+      }
     }
 
+    if (settings.disk.activeProjectFile) {
+      const projectBase = inferStoryLineProjectBase(settings.disk.activeProjectFile);
+      if (projectBase) {
+        return {
+          projectBase,
+          projectTitle: projectBase.split('/').at(-1) ?? 'Story',
+          source: 'storyline-config',
+        };
+      }
+    }
+
+    const projects = this.findStoryLineProjects(settings.merged.storyLineRoot ?? 'Stories');
+    if (projects.length === 1) {
+      const projectBase = inferStoryLineProjectBase(projects[0].path);
+      if (projectBase) {
+        return {
+          projectBase,
+          projectTitle: projectBase.split('/').at(-1) ?? projects[0].basename,
+          source: 'single-project',
+        };
+      }
+    }
+
+    return null;
+  }
+
+  private collectStoryLineScenes(projectBase: string): Array<Record<string, unknown> & { filePath: string }> {
     const scenePrefix = `${projectBase}/Scenes/`;
-    const scenes = this.app.vault.getMarkdownFiles()
+    return this.app.vault.getMarkdownFiles()
       .filter((file) => file.path.startsWith(scenePrefix))
       .sort((left, right) => left.path.localeCompare(right.path))
       .map((file) => {
@@ -288,17 +401,44 @@ export default class VisceriumTimelinesPlugin extends Plugin {
         return { ...frontmatter, filePath: file.path, title: frontmatter.title ?? file.basename };
       })
       .filter((scene) => scene.type === 'scene');
+  }
 
-    if (!scenes.length) {
-      new Notice(`No StoryLine scenes found in ${scenePrefix}`);
+  private async diagnoseStoryLineIntegration(): Promise<void> {
+    const settings = await this.getStoryLineSettings();
+    const resolved = await this.resolveStoryLineProject();
+    const appWithPlugins = this.app as unknown as { plugins?: { plugins?: Record<string, unknown> } };
+    const storyLineLoaded = Boolean(appWithPlugins.plugins?.plugins?.storyline);
+    const projects = this.findStoryLineProjects(settings.merged.storyLineRoot ?? 'Stories');
+    const scenes = resolved ? this.collectStoryLineScenes(resolved.projectBase) : [];
+    const datedScenes = scenes.filter((scene) => asNonEmptyString(scene.storyDate));
+    const placedScenes = datedScenes.filter((scene) => parseStoryLineDate(scene.storyDate));
+
+    const lines = [
+      `VISCERIUM Timelines ${this.manifest.version} / StoryLine integration`,
+      `StoryLine loaded: ${storyLineLoaded ? 'yes' : 'no'}`,
+      `Root: ${settings.merged.storyLineRoot ?? 'Stories'}`,
+      `Active project setting: ${settings.merged.activeProjectFile ?? 'none'}`,
+      `Projects found: ${projects.length}`,
+      `Resolved project: ${resolved?.projectBase ?? 'none'}${resolved ? ` (${resolved.source})` : ''}`,
+      `Scenes: ${scenes.length}`,
+      `Scenes with storyDate: ${datedScenes.length}`,
+      `VISCERIUM-placeable scenes: ${placedScenes.length}`,
+    ];
+    new Notice(lines.join('\n'), 15000);
+  }
+
+  private async openStoryLineProjectTimeline(): Promise<void> {
+    const resolved = await this.resolveStoryLineProject();
+    if (!resolved) {
+      new Notice('No active StoryLine project could be resolved. Open/switch a StoryLine project, then retry.');
       return;
     }
 
-    const projectTitle = projectBase.split('/').at(-1) ?? 'Story';
-    const { dataset, issues } = buildStoryLineTimelineDataset(scenes, projectTitle);
+    const scenes = this.collectStoryLineScenes(resolved.projectBase);
+    const { dataset, issues } = buildStoryLineTimelineDataset(scenes, resolved.projectTitle);
     const leaf = this.app.workspace.getLeaf(true);
     await leaf.setViewState({ type: STORY_TIMELINE_VIEW_TYPE, active: true });
-    if (leaf.view instanceof StoryTimelineView) leaf.view.setProject(projectTitle, dataset, issues);
+    if (leaf.view instanceof StoryTimelineView) leaf.view.setProject(resolved.projectTitle, dataset, issues);
     this.app.workspace.revealLeaf(leaf);
   }
 

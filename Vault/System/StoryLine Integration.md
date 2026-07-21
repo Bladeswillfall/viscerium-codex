@@ -43,15 +43,24 @@ Scenes without a supported `storyDate` remain valid StoryLine scenes. They are s
 
 ## Open the VISCERIUM story timeline
 
-1. Open a StoryLine project note or one of its scene notes beneath `Stories/`.
-2. Run **VISCERIUM Timelines: Open StoryLine project timeline** from the command palette.
-3. The generated view reads that project's `Scenes/` folder and opens scene notes when timeline entries are selected.
+Run **VISCERIUM Timelines: Open StoryLine project timeline** from the command palette.
 
-No shortcode is inserted into the project and no generated timeline file is written.
+The bridge resolves the project from, in order:
+
+1. an active StoryLine project/scene Markdown file beneath `Stories/`;
+2. StoryLine's live `activeProjectFile` setting, which also works from Corkboard, PlotGrid, Timeline and other StoryLine custom views;
+3. StoryLine's saved `data.json` active project;
+4. the sole StoryLine project beneath `Stories/`, when exactly one exists.
+
+The generated view reads that project's `Scenes/` folder and opens scene notes when timeline entries are selected. No shortcode is inserted into the project and no generated timeline file is written.
+
+Use **VISCERIUM Timelines: Diagnose StoryLine integration** when troubleshooting. It reports whether StoryLine is loaded, the configured root, active project, discovered project/scene counts, dated scenes, and scenes that can be placed on the VISCERIUM calendar.
 
 ## Plugin setup
 
-The vault enables the StoryLine plugin ID `storyline` and stores only this repository-level setting:
+StoryLine's executable bundle is managed normally by Obsidian Community Plugins. Its plugin ID is `storyline`.
+
+`Vault/.obsidian/plugins/storyline/data.json` is plugin-managed and may expand to contain StoryLine's complete settings after first use. The required invariant is:
 
 ```json
 {
@@ -59,6 +68,16 @@ The vault enables the StoryLine plugin ID `storyline` and stores only this repos
 }
 ```
 
-StoryLine's executable plugin bundle is not vendored. Install it once through Obsidian Community Plugins and let Obsidian handle normal plugin updates.
+The active project may also be stored there as `activeProjectFile`; VISCERIUM Timelines intentionally reads that value rather than asking authors to duplicate project selection elsewhere.
 
-The local VISCERIUM Timelines plugin remains the adapter between StoryLine scene metadata and the shared VISCERIUM calendar/Chronos renderer.
+VISCERIUM Timelines is maintained in this repository and its runnable bundle is tracked beneath:
+
+`Vault/.obsidian/plugins/viscerium-timelines/`
+
+That plugin is enabled alongside StoryLine and Chronos, so pulling the vault is sufficient to install the bridge. The source remains in `Tools/obsidian-viscerium-timelines/`, and CI rebuilds the same bundle for verification.
+
+## Canonical Lore as StoryLine source material
+
+StoryLine supports Additional Source Folders and can route external `type: character`, `type: location`, `type: world`, scene, and enabled Codex-category notes into its views. However, those external files are editable from StoryLine and may be modified by it.
+
+Do not point StoryLine at all of `Lore/` by default. Shared canon folders should only be added after their frontmatter schema has been checked for StoryLine write-compatibility. Story-specific entities should stay inside the StoryLine project/series Codex until that compatibility decision is made.
