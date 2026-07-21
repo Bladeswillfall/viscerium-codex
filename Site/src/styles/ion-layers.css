@@ -53,3 +53,25 @@
     z-index: var(--codex-z-navigation);
   }
 }
+
+/*
+ * These elements are authored by component/plugin styles outside the Codex
+ * cascade layers. Keep their site-level stack positions pinned to the shared
+ * hierarchy so a later local stylesheet cannot accidentally reorder them.
+ */
+html[data-codex-desktop-sidebar] #starlight__sidebar {
+  z-index: var(--codex-z-navigation) !important;
+}
+
+.codex-sidebar-toggle,
+#scroll-to-top-button {
+  z-index: var(--codex-z-control) !important;
+}
+
+.home-reveal {
+  z-index: var(--codex-z-reveal) !important;
+}
+
+body::before {
+  z-index: var(--codex-z-grain) !important;
+}
