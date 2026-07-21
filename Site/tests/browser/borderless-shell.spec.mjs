@@ -82,14 +82,17 @@ test('Okse uses one full-page raised deck with the global footer rail revealed o
 
     const shellRect = shell.getBoundingClientRect();
     const railRect = rail.getBoundingClientRect();
+    const sampleX = Math.max(1, Math.min(window.innerWidth - 2, railRect.left + railRect.width / 2));
+    const sampleY = Math.max(1, Math.min(window.innerHeight - 2, railRect.top + railRect.height / 2));
+    const topElement = document.elementFromPoint(sampleX, sampleY);
+
     return {
       railIsNextSibling: shell.nextElementSibling === rail,
       shellLeft: shellRect.left,
       shellWidth: shellRect.width,
       railLeft: railRect.left,
       railWidth: railRect.width,
-      railTopBeforeEnd: railRect.top,
-      viewportHeight: window.innerHeight,
+      pageCoversRailBeforeEnd: topElement === shell || shell.contains(topElement),
       railZIndex: getComputedStyle(rail).zIndex,
       railMarginTop: getComputedStyle(rail).marginTop,
     };
@@ -99,7 +102,7 @@ test('Okse uses one full-page raised deck with the global footer rail revealed o
   expect(structure.railIsNextSibling).toBe(true);
   expect(Math.abs(structure.railLeft - structure.shellLeft)).toBeLessThan(1);
   expect(Math.abs(structure.railWidth - structure.shellWidth)).toBeLessThan(1);
-  expect(structure.railTopBeforeEnd).toBeGreaterThan(structure.viewportHeight);
+  expect(structure.pageCoversRailBeforeEnd).toBe(true);
   expect(structure.railZIndex).toBe('-1');
   expect(structure.railMarginTop).toBe('-20px');
 
