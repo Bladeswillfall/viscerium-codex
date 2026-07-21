@@ -75,14 +75,16 @@ test('the approved palette owns page and navigation surfaces', async () => {
     ink: '#101010',
     deep: '#484137',
     mid: '#888070',
+    pageLight: '#b9b4a9',
     light: '#c8bfa8',
   })) {
-    assert.match(tokens, new RegExp(`--codex-palette-${name}:\\s*${value};`, 'i'));
+    const tokenName = name === 'pageLight' ? 'page-light' : name;
+    assert.match(tokens, new RegExp(`--codex-palette-${tokenName}:\\s*${value};`, 'i'));
   }
 
   assert.match(tokens, /--codex-page-bg:\s*var\(--codex-palette-ink\)/);
   assert.match(tokens, /--codex-nav-bg:\s*var\(--codex-palette-oled\)/);
-  assert.match(tokens, /:root\[data-theme='light'\][\s\S]*--codex-page-bg:\s*var\(--codex-palette-mid\)/);
+  assert.match(tokens, /:root\[data-theme='light'\][\s\S]*--codex-page-bg:\s*var\(--codex-palette-page-light\)/);
   assert.match(tokens, /@layer\s+ion/);
 });
 
