@@ -2,95 +2,56 @@
 
 /*
  * VISCERIUM light-mode Giscus theme.
- * The iframe cannot inherit the Codex palette, so explicitly flatten GitHub's
- * bright white surfaces into the warm parchment used by the surrounding page.
+ * Keep Giscus recognisably GitHub/Primer rather than recolouring it to match
+ * the Codex. The only material change is to soften the bright white GitHub
+ * canvas into the same kind of restrained, layered treatment used by the
+ * existing dark Giscus theme.
  */
 main {
-  --color-fg-default: #151515;
-  --color-fg-muted: #484137;
-  --color-fg-subtle: #625b50;
+  /* Preserve GitHub's native text, accent, success and button colours. */
+  --color-canvas-default: #f6f8fa;
+  --color-canvas-overlay: #ffffff;
+  --color-canvas-inset: #eef1f4;
+  --color-canvas-subtle: #f1f3f5;
 
-  --color-canvas-default: transparent;
-  --color-canvas-overlay: #c8bfa8;
-  --color-canvas-inset: rgb(200 191 168 / 24%);
-  --color-canvas-subtle: rgb(200 191 168 / 18%);
-
-  --color-border-default: rgb(72 65 55 / 42%);
-  --color-border-muted: rgb(72 65 55 / 24%);
-  --color-neutral-muted: rgb(72 65 55 / 9%);
-
-  --color-btn-text: #151515;
-  --color-btn-bg: rgb(200 191 168 / 38%);
-  --color-btn-border: rgb(72 65 55 / 32%);
-  --color-btn-hover-bg: rgb(200 191 168 / 58%);
-  --color-btn-hover-border: rgb(72 65 55 / 46%);
-  --color-btn-active-bg: rgb(185 180 169 / 72%);
-  --color-btn-active-border: rgb(72 65 55 / 54%);
-  --color-btn-selected-bg: rgb(185 180 169 / 72%);
-
-  --color-btn-primary-text: #f2eee4;
-  --color-btn-primary-bg: #484137;
-  --color-btn-primary-border: rgb(16 16 16 / 35%);
-  --color-btn-primary-hover-bg: #332f29;
-  --color-btn-primary-hover-border: rgb(16 16 16 / 55%);
-  --color-btn-primary-selected-bg: #101010;
-  --color-btn-primary-disabled-text: rgb(242 238 228 / 72%);
-  --color-btn-primary-disabled-bg: #888070;
-  --color-btn-primary-disabled-border: rgb(72 65 55 / 28%);
-
-  --color-action-list-item-default-hover-bg: rgb(72 65 55 / 9%);
-  --color-segmented-control-bg: transparent;
-  --color-segmented-control-button-bg: rgb(200 191 168 / 24%);
-  --color-segmented-control-button-selected-border: #888070;
-
-  --color-accent-fg: #484137;
-  --color-accent-emphasis: #484137;
-  --color-accent-muted: rgb(72 65 55 / 28%);
-  --color-accent-subtle: rgb(200 191 168 / 32%);
-  --color-success-fg: #394b39;
+  --color-border-default: #d0d7de;
+  --color-border-muted: #d8dee4;
+  --color-neutral-muted: rgb(175 184 193 / 20%);
 }
 
+/* Like noborder_dark, let the page itself show around the GitHub UI. */
 html,
-body,
-.gsc-main,
-.gsc-timeline,
-.gsc-header,
-.gsc-comments,
-.gsc-comment-box,
-.gsc-comment-box-tabs,
-.gsc-comment-box-main,
-.gsc-reply-box,
-.gsc-reactions {
-  background: transparent !important;
+body {
+  background: transparent;
 }
 
-/* Remove the large GitHub-white card while retaining enough structure to read it. */
+/*
+ * Keep the editor as a distinct GitHub surface. This is deliberately not
+ * transparent: the separation between the page, editor shell and textarea is
+ * what makes the dark version still read as an embedded GitHub component.
+ */
 .gsc-comment-box,
 .gsc-reply-box {
-  border-color: rgb(72 65 55 / 34%) !important;
-  box-shadow: none !important;
+  background: var(--color-canvas-default) !important;
+  border-color: var(--color-border-default) !important;
 }
 
 .gsc-comment-box-tabs {
-  border-color: rgb(72 65 55 / 24%) !important;
-  box-shadow: none !important;
+  background: var(--color-canvas-default) !important;
+  border-color: var(--color-border-muted) !important;
 }
 
 .gsc-comment-box .form-control,
 .gsc-reply-box .form-control,
 .gsc-comment-box-textarea,
 .gsc-reply-box-textarea {
-  background: rgb(200 191 168 / 22%) !important;
-  border-color: rgb(72 65 55 / 26%) !important;
-  box-shadow: none !important;
-  color: #151515 !important;
+  background: var(--color-canvas-overlay) !important;
+  border-color: var(--color-border-default) !important;
 }
 
 .gsc-comment-box .form-control:focus,
 .gsc-reply-box .form-control:focus,
 .gsc-comment-box-textarea:focus,
 .gsc-reply-box-textarea:focus {
-  background: rgb(200 191 168 / 34%) !important;
-  border-color: rgb(72 65 55 / 46%) !important;
-  box-shadow: 0 0 0 1px rgb(72 65 55 / 12%) !important;
+  background: var(--color-canvas-overlay) !important;
 }
