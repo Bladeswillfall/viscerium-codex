@@ -1,0 +1,55 @@
+/*
+ * Article list colors
+ * Tints article names by their top-level vault section without overpowering normal text.
+ */
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="Lore/"] {
+  --explorer-file-color: var(--explorer-lore, #5ac8fa);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="Drafts/"] {
+  --explorer-file-color: var(--explorer-drafts, #f2b84b);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="Private/"] {
+  --explorer-file-color: var(--explorer-private, #ef6f91);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="System/"] {
+  --explorer-file-color: var(--explorer-system, #a78bfa);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="Templates/"] {
+  --explorer-file-color: var(--explorer-templates, #65d6ad);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title:is(
+  [data-path^="Lore/"],
+  [data-path^="Drafts/"],
+  [data-path^="Private/"],
+  [data-path^="System/"],
+  [data-path^="Templates/"]
+):not(.is-active) {
+  color: color-mix(in srgb, var(--explorer-file-color) 30%, var(--text-normal));
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title:is(
+  [data-path^="Lore/"],
+  [data-path^="Drafts/"],
+  [data-path^="Private/"],
+  [data-path^="System/"],
+  [data-path^="Templates/"]
+):not(.is-active):hover {
+  color: color-mix(in srgb, var(--explorer-file-color) 52%, var(--text-normal));
+  --nav-item-background-hover: color-mix(in srgb, var(--explorer-file-color) 8%, transparent);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title:is(
+  [data-path^="Lore/"],
+  [data-path^="Drafts/"],
+  [data-path^="Private/"],
+  [data-path^="System/"],
+  [data-path^="Templates/"]
+) [data-icon] {
+  color: inherit;
+}

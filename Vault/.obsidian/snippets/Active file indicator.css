@@ -1,0 +1,47 @@
+/*
+ * Active file indicator
+ * Makes the currently open article obvious while preserving its vault-section identity.
+ */
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="Lore/"] {
+  --explorer-active-color: var(--explorer-lore, #5ac8fa);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="Drafts/"] {
+  --explorer-active-color: var(--explorer-drafts, #f2b84b);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="Private/"] {
+  --explorer-active-color: var(--explorer-private, #ef6f91);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="System/"] {
+  --explorer-active-color: var(--explorer-system, #a78bfa);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="Templates/"] {
+  --explorer-active-color: var(--explorer-templates, #65d6ad);
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title.is-active:is(
+  [data-path^="Lore/"],
+  [data-path^="Drafts/"],
+  [data-path^="Private/"],
+  [data-path^="System/"],
+  [data-path^="Templates/"]
+) {
+  color: color-mix(in srgb, var(--explorer-active-color) 78%, var(--text-normal));
+  background: color-mix(in srgb, var(--explorer-active-color) 13%, transparent);
+  box-shadow: inset 3px 0 0 var(--explorer-active-color);
+  font-weight: 600;
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title.is-active:is(
+  [data-path^="Lore/"],
+  [data-path^="Drafts/"],
+  [data-path^="Private/"],
+  [data-path^="System/"],
+  [data-path^="Templates/"]
+):hover {
+  background: color-mix(in srgb, var(--explorer-active-color) 18%, transparent);
+}
