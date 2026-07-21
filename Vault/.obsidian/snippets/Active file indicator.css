@@ -23,12 +23,17 @@
   --explorer-active-color: var(--explorer-templates, #65d6ad);
 }
 
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path^="Stories/"] {
+  --explorer-active-color: var(--explorer-stories, #f97316);
+}
+
 .workspace-leaf-content[data-type="file-explorer"] .nav-file-title.is-active:is(
   [data-path^="Lore/"],
   [data-path^="Drafts/"],
   [data-path^="Private/"],
   [data-path^="System/"],
-  [data-path^="Templates/"]
+  [data-path^="Templates/"],
+  [data-path^="Stories/"]
 ) {
   color: color-mix(in srgb, var(--explorer-active-color) 78%, var(--text-normal));
   background: color-mix(in srgb, var(--explorer-active-color) 13%, transparent);
@@ -41,7 +46,8 @@
   [data-path^="Drafts/"],
   [data-path^="Private/"],
   [data-path^="System/"],
-  [data-path^="Templates/"]
+  [data-path^="Templates/"],
+  [data-path^="Stories/"]
 ):hover {
   background: color-mix(in srgb, var(--explorer-active-color) 18%, transparent);
 }
