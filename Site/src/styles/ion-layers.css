@@ -11,6 +11,7 @@
   --codex-z-underlay: -1;
   --codex-z-page: 0;
   --codex-z-surface: 1;
+  --codex-z-elevated-surface: 2;
   --codex-z-navigation: 60;
   --codex-z-control: 1000;
   --codex-z-reveal: 9999;
@@ -29,20 +30,48 @@
   }
 
   /*
-   * Normal Codex content must paint an opaque cover above the sticky footer.
-   * This is what lets complex/transparent pages (timelines, category indexes,
-   * maps, etc.) scroll over the footer instead of allowing it to show through.
-   * The bespoke homepage owns its own surface/stacking treatment.
+   * Normal Codex content paints an opaque surface above the sticky footer.
+   * Local page applications therefore stay inside the page tier instead of
+   * competing directly with the footer or global chrome.
    */
-  body:not(:has(.home-gateway)) .codex-main-pane > main > .content-panel,
-  body:not(:has(.home-gateway)) .codex-main-pane > .right-sidebar-container {
+  body:not(:has(.home-gateway)) .codex-main-pane > main > .content-panel {
     position: relative;
     z-index: var(--codex-z-surface);
     background-color: var(--codex-page-bg);
   }
 
+  /*
+   * A sticky/right sidebar is an elevated page surface. Keeping it one tier
+   * above the normal surface prevents the viewport-wide end-deck cover from
+   * obscuring a long sidebar when the two overlap near the bottom of a page.
+   */
+  body:not(:has(.home-gateway)) .codex-main-pane > .right-sidebar-container {
+    position: relative;
+    z-index: var(--codex-z-elevated-surface);
+    background-color: var(--codex-page-bg);
+  }
+
   .codex-page-deck {
     z-index: var(--codex-z-surface);
+  }
+
+  /*
+   * The article deck marks the real end of the page. Extend its opaque cover
+   * across the viewport so an empty right column cannot reveal the footer early.
+   * Stop 20px short of the deck bottom: that is the same literal overlap used by
+   * the footer, leaving the black underlay visible behind the rounded corners.
+   */
+  body:not(:has(.home-gateway)) .codex-page-deck::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset-block-start: 0;
+    inset-block-end: 20px;
+    inset-inline-start: 50%;
+    inline-size: 100vw;
+    transform: translateX(-50%);
+    background: var(--codex-page-bg);
+    pointer-events: none;
   }
 
   .ion-codex-footer {
@@ -51,6 +80,18 @@
 
   header.header {
     z-index: var(--codex-z-navigation);
+  }
+
+  @supports (width: 100dvw) {
+    body:not(:has(.home-gateway)) .codex-page-deck::before {
+      inline-size: 100dvw;
+    }
+  }
+
+  @media print, (forced-colors: active) {
+    body:not(:has(.home-gateway)) .codex-page-deck::before {
+      display: none;
+    }
   }
 }
 
