@@ -161,9 +161,11 @@
       --era-e4-button-hover: oklch(25.81% calc(0.019 * var(--codex-chroma-scale)) 76.82);
     }
   }
-}
 
-@layer starlight.core {
+  /*
+    Apply the generated eraStyle metadata in the Codex layer itself. Keeping these
+    selectors in `ion` ensures they outrank Starlight's generic link presentation.
+  */
   .codex-two-column-content[data-era-style] {
     --era-link: var(--sl-color-accent-high);
     --era-link-hover: var(--sl-color-white);
@@ -234,18 +236,25 @@
   .codex-two-column-content[data-era-style] :where(
     .sl-markdown-content a:hover,
     .sl-markdown-content a:focus-visible,
+    .sl-markdown-content a[aria-current='true'],
     .codex-breadcrumbs a:hover,
     .codex-breadcrumbs a:focus-visible,
+    .codex-breadcrumbs a[aria-current='true'],
     .codex-sidebar-meta a:hover,
     .codex-sidebar-meta a:focus-visible,
+    .codex-sidebar-meta a[aria-current='true'],
     .codex-sidebar-list a:hover,
     .codex-sidebar-list a:focus-visible,
+    .codex-sidebar-list a[aria-current='true'],
     .calendar-date-badge a:hover,
     .calendar-date-badge a:focus-visible,
+    .calendar-date-badge a[aria-current='true'],
     starlight-toc a:hover,
-    starlight-toc a:focus-visible
+    starlight-toc a:focus-visible,
+    starlight-toc a[aria-current='true']
   ) {
-    color: var(--era-link-hover);
+    /* ion-theme.css has a generic !important hover/current rule; era pages win here. */
+    color: var(--era-link-hover) !important;
   }
 
   /* Era-aware Codex action buttons keep their historical per-era control identity. */
