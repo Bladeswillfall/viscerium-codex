@@ -182,14 +182,11 @@ H4 through H6 are available when deeper structure is genuinely useful.
 
 ### Icon headings
 
-The exact authoring syntax is shown below. The raw opening token is split only in the rendered teaching sample so the site's shortcode validator does not mistake the example for an unprocessed heading.
-
-<pre><code>## [</code><code>Icon:codex] Codex heading
-### [</code><code>Icon:location] Location heading</code></pre>
+For a Codex icon heading, write the heading marker `## `, then `[` followed immediately by `Icon:codex]`, then the heading text. Replace `codex` with another validated local icon name such as `location` when appropriate.
 
 ### [Icon:codex] Live icon-heading example
 
-This heading uses the same validated local icon syntax as a regular lore page.
+The live heading above uses that exact authoring form and is transformed by the Codex sync pipeline.
 
 ## Inline formatting
 
@@ -210,7 +207,6 @@ _italic_
 - [Codex home](/)
 - [Calendar](/calendar/)
 - [[Okse Dominion]]
-- [[Myrkild]]
 - [[Okse Dominion|Custom wikilink label]]
 
 ```md
@@ -420,15 +416,15 @@ Available variants are `plain`, `accent`, `muted`, `warning`, `danger`, and `suc
 ![Okse Dominion artwork used as a local image example](/assets/images/640faf5b8cd2814de13871ff58c900b6.webp)
 
 ```md
-![Useful alternative text](/assets/images/example-image.webp)
+![Useful alternative text](/assets/images/640faf5b8cd2814de13871ff58c900b6.webp)
 ```
 
 ### Obsidian image embed
 
-![[Tech timeline for VISCERIUM.jpg]]
+![[640faf5b8cd2814de13871ff58c900b6.webp]]
 
 ```md
-![[Tech timeline for VISCERIUM.jpg]]
+![[640faf5b8cd2814de13871ff58c900b6.webp]]
 ```
 
 ### Captioned image panel
@@ -440,7 +436,7 @@ Available variants are `plain`, `accent`, `muted`, `warning`, `danger`, and `suc
 
 ```mdx
 <figure className="codex-image-panel">
-  <img src="/assets/images/example.webp" alt="Describe the image." />
+  <img src="/assets/images/640faf5b8cd2814de13871ff58c900b6.webp" alt="Describe the image." />
   <figcaption>Visible caption and context.</figcaption>
 </figure>
 ```
