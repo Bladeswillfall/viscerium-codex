@@ -1,5 +1,5 @@
 @layer ion {
-  /* Ion layout and type metrics. Colour ownership lives in color-tokens.css. */
+  /* Ion layout and type metrics. Core colour ownership lives in color-tokens.css; shell-specific theme overrides live here. */
   :root {
     --codex-radius: .75rem;
     --sl-icon-size: 1.25rem;

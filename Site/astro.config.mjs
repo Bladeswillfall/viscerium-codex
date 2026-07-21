@@ -206,6 +206,7 @@ export default defineConfig({
         Header: './src/components/CodexHeader.astro',
         Sidebar: './src/components/IonSidebar.astro',
         Footer: './src/components/StarlightFooter.astro',
+        PageFrame: './src/components/CodexPageFrame.astro',
         PageSidebar: './src/components/CodexPageSidebar.astro',
         PageTitle: './src/components/CodexPageTitle.astro',
         TwoColumnContent: './src/components/CodexTwoColumnContent.astro',

@@ -3,9 +3,7 @@ import LastUpdated from 'virtual:starlight/components/LastUpdated';
 import Pagination from 'virtual:starlight/components/Pagination';
 import CodexEditLink from './CodexEditLink.astro';
 import ContributorStrip from './ContributorStrip.astro';
-import LocalIcon from './LocalIcon.astro';
 import Webmentions from './Webmentions.astro';
-import siteConfig from '../../site.config.mjs';
 ---
 
 <button
@@ -13,65 +11,30 @@ import siteConfig from '../../site.config.mjs';
   type="button"
   data-codex-sidebar-toggle
   aria-controls="starlight__sidebar"
-  aria-expanded="true"
-  aria-label="Hide sidebar"
+  aria-expanded="false"
+  aria-label="Show sidebar"
 >
-  <span aria-hidden="true">←</span>
+  <span aria-hidden="true">☰</span>
 </button>
 
-<ContributorStrip />
+<div class="codex-page-deck">
+  <ContributorStrip />
 
-<footer class="codex-site-footer sl-flex">
-  <div class="meta sl-flex">
-    <CodexEditLink />
-    <LastUpdated />
+  <div class="codex-site-footer sl-flex">
+    <div class="meta sl-flex">
+      <CodexEditLink />
+      <LastUpdated />
+    </div>
+    <Webmentions />
+    <Pagination />
   </div>
-  <Webmentions />
-  <Pagination />
-  <div class="ion-codex-footer sl-flex">
-    <strong>© VISCERIUM Codex</strong>
-    <nav aria-label="Footer">
-      <a href="/">Start Here</a>
-      <a href="/calendar/">Calendar</a>
-      <a href="/graph/">World Graph</a>
-      <a href="/support/">Support</a>
-      <a href="/contact/">
-        <LocalIcon name="mail" />
-        <span>Contact</span>
-      </a>
-      <a href="/rss.xml">RSS</a>
-      <a href="/atom.xml">Atom</a>
-      <a href={siteConfig.githubRepoUrl} target="_blank" rel="noreferrer">
-        <LocalIcon name="github" />
-        <span>GitHub</span>
-        <span class="codex-sr-only"> (opens in a new tab)</span>
-      </a>
-    </nav>
-  </div>
-</footer>
+</div>
 
 <script is:inline>
   (() => {
-    const storageKey = 'viscerium-sidebar-collapsed';
     const root = document.documentElement;
     const runtime = window.__visceriumSidebar ??= {};
     const desktopQuery = window.matchMedia('(min-width: 800px)');
-
-    const readStoredState = () => {
-      try {
-        return localStorage.getItem(storageKey) === 'true';
-      } catch {
-        return false;
-      }
-    };
-
-    const writeStoredState = (collapsed) => {
-      try {
-        localStorage.setItem(storageKey, String(collapsed));
-      } catch {
-        // The sidebar still works when storage is unavailable.
-      }
-    };
 
     const setCollapsed = (button, collapsed) => {
       root.classList.toggle('codex-sidebar-collapsed', collapsed);
@@ -95,7 +58,7 @@ import siteConfig from '../../site.config.mjs';
       }
     };
 
-    runtime.sync = () => {
+    runtime.sync = (resetCollapsed = false) => {
       const button = document.querySelector('[data-codex-sidebar-toggle]');
       const sidebar = document.getElementById('starlight__sidebar');
       const hasDesktopSidebar = Boolean(sidebar && desktopQuery.matches);
@@ -112,24 +75,23 @@ import siteConfig from '../../site.config.mjs';
       }
 
       button.hidden = false;
-      setCollapsed(button, readStoredState());
+      setCollapsed(button, resetCollapsed || root.classList.contains('codex-sidebar-collapsed'));
 
       if (button.dataset.codexSidebarBound === 'true') return;
       button.dataset.codexSidebarBound = 'true';
       button.addEventListener('click', () => {
         const collapsed = !root.classList.contains('codex-sidebar-collapsed');
-        writeStoredState(collapsed);
         setCollapsed(button, collapsed);
       });
     };
 
     if (!runtime.pageLoadBound) {
-      document.addEventListener('astro:page-load', runtime.sync);
+      document.addEventListener('astro:page-load', () => runtime.sync(true));
       runtime.pageLoadBound = true;
     }
 
     if (!runtime.desktopQueryBound) {
-      desktopQuery.addEventListener('change', runtime.sync);
+      desktopQuery.addEventListener('change', () => runtime.sync(true));
       runtime.desktopQueryBound = true;
     }
 
@@ -138,14 +100,37 @@ import siteConfig from '../../site.config.mjs';
       runtime.mobileTocObserver.observe(document.body, { childList: true, subtree: true });
     }
 
-    runtime.sync();
+    runtime.sync(true);
   })();
 </script>
 
 <style>
+  /* Prevent an open-sidebar flash before the desktop runtime claims the shell. */
+  @media (min-width: 800px) {
+    :global(html:not([data-codex-desktop-sidebar]) #starlight__sidebar) {
+      visibility: hidden;
+      transform: translateX(-110%);
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
   @layer starlight.core {
     :global(body:not(:has(.home-gateway)) .codex-main-pane > main) {
       padding-block-end: 0;
+    }
+
+    /*
+      Contributor information, edit metadata, webmentions, and pagination remain
+      in Starlight's article footer. The global navigation rail now belongs to
+      the PageFrame, so this wrapper no longer owns page-level reveal geometry.
+    */
+    .codex-page-deck {
+      position: relative;
+      z-index: 2;
+      box-sizing: border-box;
+      padding-block-end: 1.25rem;
+      background: transparent;
     }
 
     .codex-site-footer {
@@ -154,6 +139,7 @@ import siteConfig from '../../site.config.mjs';
       box-sizing: border-box;
       max-width: none;
     }
+
     .meta {
       gap: 0.75rem 3rem;
       justify-content: space-between;
@@ -162,64 +148,24 @@ import siteConfig from '../../site.config.mjs';
       font-size: var(--sl-text-sm);
       color: var(--sl-color-gray-3);
     }
+
     .meta > :global(p:only-child) {
       margin-inline-start: auto;
     }
+
     .codex-edit-link {
       color: var(--sl-color-gray-3);
       text-decoration: none;
     }
+
     .codex-edit-link:hover {
       color: var(--sl-color-accent-high);
       text-decoration: underline;
     }
+
     :global(giscus-comments) {
       display: block;
       padding: 1.5rem var(--sl-content-pad-x);
-    }
-    .ion-codex-footer {
-      --ion-codex-footer-padding: 1rem;
-      box-sizing: border-box;
-      inline-size: 100vw;
-      max-inline-size: none;
-      gap: 1rem;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      margin-top: 3rem;
-      margin-inline: calc(50% - 50vw);
-      padding: var(--ion-codex-footer-padding);
-      border: 1px solid var(--sl-color-hairline-light);
-      border-radius: 0;
-      background: var(--codex-surface-raised-color);
-      font-size: var(--sl-text-sm);
-    }
-    @supports (width: 100dvw) {
-      .ion-codex-footer {
-        inline-size: 100dvw;
-        margin-inline: calc(50% - 50dvw);
-      }
-    }
-    .ion-codex-footer nav {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.75rem 1rem;
-    }
-    .ion-codex-footer nav a {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      color: var(--sl-color-gray-2);
-      text-decoration: none;
-    }
-    .ion-codex-footer nav a:hover {
-      color: var(--sl-color-accent-high);
-      text-decoration: underline;
-    }
-    .ion-codex-footer nav :global(svg) {
-      width: 1rem;
-      height: 1rem;
     }
   }
 </style>

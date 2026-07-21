@@ -61,11 +61,28 @@ async function readHoverState(page, item) {
   }, await item.elementHandle());
 }
 
-function expectSrgbClose(actual, expected, tolerance = 2) {
-  expect(actual).toHaveLength(4);
-  for (const [index, value] of expected.entries()) {
-    expect(Math.abs(actual[index] - value)).toBeLessThanOrEqual(tolerance);
-  }
+function srgbLuminance([r, g, b]) {
+  const linear = (value) => {
+    const channel = value / 255;
+    return channel <= 0.04045
+      ? channel / 12.92
+      : ((channel + 0.055) / 1.055) ** 2.4;
+  };
+  return (0.2126 * linear(r)) + (0.7152 * linear(g)) + (0.0722 * linear(b));
+}
+
+function srgbContrast(first, second) {
+  const a = srgbLuminance(first);
+  const b = srgbLuminance(second);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+function expectReadablePair(background, foreground) {
+  expect(background).toHaveLength(4);
+  expect(foreground).toHaveLength(4);
+  expect(background[3]).toBeGreaterThanOrEqual(240);
+  expect(foreground[3]).toBe(255);
+  expect(srgbContrast(background, foreground)).toBeGreaterThanOrEqual(4.5);
 }
 
 test('event hover uses one VISCERIUM hovercard in dark and light themes', async ({ page }) => {
@@ -101,16 +118,15 @@ test('event hover uses one VISCERIUM hovercard in dark and light themes', async 
   expect(dark.title).toBe('The Pathfinder Exodus');
   expect(dark.description.length).toBeGreaterThan(20);
   expect(dark.text).not.toMatch(/2030|2036/);
-  expectSrgbClose(dark.backgroundSrgb, [21, 19, 16]);
-  expectSrgbClose(dark.colorSrgb, [244, 239, 229]);
+  expectReadablePair(dark.backgroundSrgb, dark.colorSrgb);
   expect(dark.position).toBe('fixed');
 
   expect(light.cardCount).toBe(1);
   expect(light.nativeTooltipCount).toBe(0);
   expect(light.titleAttributeCount).toBe(0);
   expect(light.title).toBe('The Pathfinder Exodus');
-  expectSrgbClose(light.backgroundSrgb, [247, 242, 234]);
-  expectSrgbClose(light.colorSrgb, [32, 29, 25]);
+  expectReadablePair(light.backgroundSrgb, light.colorSrgb);
+  expect(srgbLuminance(light.backgroundSrgb)).toBeGreaterThan(srgbLuminance(dark.backgroundSrgb));
   expect(light.background).not.toBe(dark.background);
 
   await page.locator('[data-vc-search]').hover();

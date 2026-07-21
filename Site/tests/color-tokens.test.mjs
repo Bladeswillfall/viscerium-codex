@@ -5,6 +5,8 @@ import path from 'node:path';
 
 const srcDir = new URL('../src/', import.meta.url);
 const tokensPath = new URL('../src/styles/color-tokens.css', import.meta.url);
+const eraStylesPath = new URL('../src/styles/era-styles.css', import.meta.url);
+const palettePaths = new Set([tokensPath.href, eraStylesPath.href]);
 const graphStylesPath = new URL('../src/styles/graph.css', import.meta.url);
 const graphCanvasStylesPath = new URL('../src/styles/graph-canvas.css', import.meta.url);
 const graphAdapterPaths = new Set([graphStylesPath.href, graphCanvasStylesPath.href]);
@@ -19,14 +21,14 @@ async function sourceFiles(directory) {
   return files.flat();
 }
 
-test('authored colours live in the progressive token palette', async () => {
+test('authored colours live in dedicated progressive palette files', async () => {
   const files = (await sourceFiles(srcDir)).filter(({ pathname }) => (
     pathname.endsWith('.css') || pathname.endsWith('.astro')
   ));
   const failures = [];
 
   for (const file of files) {
-    if (file.href === tokensPath.href) continue;
+    if (palettePaths.has(file.href)) continue;
     const source = (await readFile(file, 'utf8')).replace(/\/\*[\s\S]*?\*\//g, '');
     const css = file.pathname.endsWith('.astro')
       ? [...source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)].map((match) => match[1]).join('\n')
@@ -42,12 +44,20 @@ test('authored colours live in the progressive token palette', async () => {
     }
   }
 
-  assert.deepEqual(failures, [], `Move colour literals into styles/color-tokens.css:\n${failures.join('\n')}`);
+  assert.deepEqual(
+    failures,
+    [],
+    `Move colour literals into styles/color-tokens.css or styles/era-styles.css:\n${failures.join('\n')}`,
+  );
 
   const tokens = await readFile(tokensPath, 'utf8');
-  assert.match(tokens, /#[\da-f]{3,8}\b/i, 'palette needs an sRGB fallback');
-  assert.match(tokens, /@supports\s*\(color:\s*oklch\(/i, 'palette needs an OKLCH tier');
-  assert.match(tokens, /@media\s*\(color-gamut:\s*p3\)/i, 'palette needs a P3 tier');
+  const eraStyles = await readFile(eraStylesPath, 'utf8');
+  assert.match(tokens, /#[\da-f]{3,8}\b/i, 'core palette needs an sRGB fallback');
+  assert.match(tokens, /@supports\s*\(color:\s*oklch\(/i, 'core palette needs an OKLCH tier');
+  assert.match(tokens, /@media\s*\(color-gamut:\s*p3\)/i, 'core palette needs a P3 tier');
+  assert.match(eraStyles, /#[\da-f]{3,8}\b/i, 'era palette needs an sRGB fallback');
+  assert.match(eraStyles, /@supports\s*\(color:\s*oklch\(/i, 'era palette needs an OKLCH tier');
+  assert.match(eraStyles, /var\(--codex-chroma-scale\)/i, 'era palette needs shared P3 chroma support');
 });
 
 test('canvas graph colours use only the RGB-safe variable adapter', async () => {
@@ -75,14 +85,16 @@ test('the approved palette owns page and navigation surfaces', async () => {
     ink: '#101010',
     deep: '#484137',
     mid: '#888070',
+    pageLight: '#b9b4a9',
     light: '#c8bfa8',
   })) {
-    assert.match(tokens, new RegExp(`--codex-palette-${name}:\\s*${value};`, 'i'));
+    const tokenName = name === 'pageLight' ? 'page-light' : name;
+    assert.match(tokens, new RegExp(`--codex-palette-${tokenName}:\\s*${value};`, 'i'));
   }
 
   assert.match(tokens, /--codex-page-bg:\s*var\(--codex-palette-ink\)/);
   assert.match(tokens, /--codex-nav-bg:\s*var\(--codex-palette-oled\)/);
-  assert.match(tokens, /:root\[data-theme='light'\][\s\S]*--codex-page-bg:\s*var\(--codex-palette-mid\)/);
+  assert.match(tokens, /:root\[data-theme='light'\][\s\S]*--codex-page-bg:\s*var\(--codex-palette-page-light\)/);
   assert.match(tokens, /@layer\s+ion/);
 });
 

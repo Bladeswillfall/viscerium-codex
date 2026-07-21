@@ -24,64 +24,76 @@ function sidebarState(element) {
   return ancestry;
 }
 
-test('left navigation opens, collapses, persists and restores', async ({ page }) => {
+async function expectSidebarOpen(sidebar) {
+  await expect.poll(async () => sidebar.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return style.visibility === 'visible'
+      && style.opacity === '1'
+      && style.pointerEvents === 'auto'
+      && rect.right > 200;
+  })).toBe(true);
+}
+
+test('left navigation starts collapsed, can open, and resets closed on reload', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/start-here/', { waitUntil: 'networkidle' });
-  await page.evaluate(() => {
-    localStorage.removeItem('viscerium-sidebar-collapsed');
-  });
-  await page.reload({ waitUntil: 'networkidle' });
 
   const sidebar = page.locator('#starlight__sidebar');
-  const hideButton = page.getByRole('button', { name: 'Hide sidebar' });
-  const openAncestry = await sidebar.evaluate(sidebarState);
-  console.log(`[sidebar-open-state] ${JSON.stringify(openAncestry)}`);
-
-  await expect(hideButton).toBeVisible();
-  expect(openAncestry[0]?.width).toBeGreaterThan(200);
-  expect(openAncestry[0]?.height).toBeGreaterThan(200);
-  expect(openAncestry.every((entry) => entry.display !== 'none')).toBe(true);
-  expect(openAncestry.every((entry) => entry.visibility !== 'hidden')).toBe(true);
-  expect(openAncestry[0]?.opacity).toBe('1');
-  expect(openAncestry[0]?.pointerEvents).toBe('auto');
-  expect(await sidebar.getByRole('link').count()).toBeGreaterThan(3);
-
-  await hideButton.click();
   const showButton = page.getByRole('button', { name: 'Show sidebar' });
+
   await expect(showButton).toBeVisible();
   await expect(page.locator('html')).toHaveClass(/codex-sidebar-collapsed/);
+  expect(await sidebar.locator('a').count()).toBeGreaterThan(3);
 
   await expect.poll(async () => sidebar.evaluate((element) => {
     const style = getComputedStyle(element);
     return `${style.visibility}:${style.opacity}:${style.pointerEvents}`;
   })).toBe('hidden:0:none');
 
+  await showButton.click();
+  const hideButton = page.getByRole('button', { name: 'Hide sidebar' });
+
+  await expect(hideButton).toBeVisible();
+  await expect(page.locator('html')).not.toHaveClass(/codex-sidebar-collapsed/);
+  await expectSidebarOpen(sidebar);
+
+  const openAncestry = await sidebar.evaluate(sidebarState);
+  expect(openAncestry[0]?.width).toBeGreaterThan(200);
+  expect(openAncestry[0]?.height).toBeGreaterThan(200);
+  expect(openAncestry.every((entry) => entry.display !== 'none')).toBe(true);
+  expect(openAncestry.every((entry) => entry.visibility !== 'hidden')).toBe(true);
+  expect(openAncestry[0]?.opacity).toBe('1');
+  expect(openAncestry[0]?.pointerEvents).toBe('auto');
+
   await page.reload({ waitUntil: 'networkidle' });
   await expect(page.getByRole('button', { name: 'Show sidebar' })).toBeVisible();
   await expect(page.locator('html')).toHaveClass(/codex-sidebar-collapsed/);
-
-  await page.getByRole('button', { name: 'Show sidebar' }).click();
-  await expect(page.getByRole('button', { name: 'Hide sidebar' })).toBeVisible();
-  await expect(page.locator('html')).not.toHaveClass(/codex-sidebar-collapsed/);
   await expect.poll(async () => sidebar.evaluate((element) => {
     const style = getComputedStyle(element);
     return `${style.visibility}:${style.opacity}:${style.pointerEvents}`;
-  })).toBe('visible:1:auto');
+  })).toBe('hidden:0:none');
 });
 
-test('homepage renders the restored desktop navigation rail', async ({ page }) => {
+test('homepage loads without a reveal and keeps its desktop navigation closed initially', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/', { waitUntil: 'networkidle' });
-  await page.evaluate(() => {
-    localStorage.removeItem('viscerium-sidebar-collapsed');
-  });
-  await page.reload({ waitUntil: 'networkidle' });
 
   const sidebar = page.locator('#starlight__sidebar');
   const homeGateway = page.locator('.home-gateway');
 
-  await expect(sidebar).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Hide sidebar' })).toBeVisible();
+  await expect(page.locator('.home-reveal')).toHaveCount(0);
   await expect(homeGateway).toBeVisible();
-  expect(await sidebar.getByRole('link').count()).toBeGreaterThan(3);
+  await expect(page.getByRole('button', { name: 'Show sidebar' })).toBeVisible();
+  await expect(page.locator('html')).toHaveClass(/codex-sidebar-collapsed/);
+  expect(await sidebar.locator('a').count()).toBeGreaterThan(3);
+
+  await expect.poll(async () => sidebar.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return `${style.visibility}:${style.opacity}:${style.pointerEvents}`;
+  })).toBe('hidden:0:none');
+
+  await page.getByRole('button', { name: 'Show sidebar' }).click();
+  await expect(page.getByRole('button', { name: 'Hide sidebar' })).toBeVisible();
+  await expectSidebarOpen(sidebar);
 
   const geometry = await page.evaluate(() => {
     const sidebarRect = document.getElementById('starlight__sidebar')?.getBoundingClientRect();

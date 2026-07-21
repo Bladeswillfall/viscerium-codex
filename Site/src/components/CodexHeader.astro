@@ -36,6 +36,7 @@ const shouldRenderSearch =
 </div>
 
 <style is:global>
+  /* Restored pre-background-stack grain treatment. */
   body::before {
     content: '';
     position: fixed;
@@ -50,7 +51,7 @@ const shouldRenderSearch =
   }
 
   :root[data-theme='light'] body::before {
-    opacity: .1;
+    opacity: .2;
   }
 
   @media print, (forced-colors: active) {
