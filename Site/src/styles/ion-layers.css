@@ -3,9 +3,9 @@
 /*
  * Site-level stacking hierarchy.
  *
- * Local component stacking (for example timeline event bands/items) should stay
- * inside one of these page-level stacking contexts rather than competing with
- * navigation, floating controls, or the footer underlay.
+ * The final navigation rail now lives at PageFrame level, so page/component
+ * stacking can remain local without asking an article-column descendant to
+ * behave like a viewport-wide underlay.
  */
 :root {
   --codex-z-underlay: -1;
@@ -19,32 +19,20 @@
 }
 
 @layer ion {
-  /*
-   * container-type already introduces containment here; make the stacking
-   * boundary explicit so negative underlays cannot leak behind the document.
-   */
+  /* Keep local application/timeline stacking contained to the page shell. */
   .codex-two-column-content {
     position: relative;
     isolation: isolate;
     z-index: var(--codex-z-page);
   }
 
-  /*
-   * Normal Codex content paints an opaque surface above the sticky footer.
-   * Local page applications therefore stay inside the page tier instead of
-   * competing directly with the footer or global chrome.
-   */
   body:not(:has(.home-gateway)) .codex-main-pane > main > .content-panel {
     position: relative;
     z-index: var(--codex-z-surface);
     background-color: var(--codex-page-bg);
   }
 
-  /*
-   * A sticky/right sidebar is an elevated page surface. Keeping it one tier
-   * above the normal surface prevents the full-width end-deck surface from
-   * obscuring a long sidebar when the two overlap near the bottom of a page.
-   */
+  /* Sticky page sidebars sit above local article/application surfaces. */
   body:not(:has(.home-gateway)) .codex-main-pane > .right-sidebar-container {
     position: relative;
     z-index: var(--codex-z-elevated-surface);
@@ -55,51 +43,12 @@
     z-index: var(--codex-z-surface);
   }
 
-  /*
-   * The article deck marks the real end of the page. Its authored box lives in
-   * the left article track, so use the surrounding query container's width
-   * rather than viewport units. 100cqw is the full Codex page shell, including
-   * the right-sidebar track, and therefore stays correctly aligned whether the
-   * sidebar is present, absent, open, or collapsed.
-   *
-   * This pseudo-element owns the raised deck surface itself. The footer's
-   * literal -20px margin then tucks the black underlay beneath these full-width
-   * rounded corners without exposing an early black strip in an empty column.
-   */
-  body:not(:has(.home-gateway)) .codex-page-deck::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset-block: 0;
-    inset-inline-start: 0;
-    inline-size: 100%;
-    inline-size: 100cqw;
-    border-radius: 0 0 1.25rem 1.25rem;
-    background: var(--codex-page-bg);
-    box-shadow:
-      0 1.5rem 3.4375rem color-mix(in oklch, var(--codex-shadow-color) 46%, transparent),
-      0 1px 0 var(--sl-color-hairline-light);
-    pointer-events: none;
-  }
-
   .ion-codex-footer {
     z-index: var(--codex-z-underlay);
   }
 
   header.header {
     z-index: var(--codex-z-navigation);
-  }
-
-  @media (max-width: 40rem) {
-    body:not(:has(.home-gateway)) .codex-page-deck::before {
-      border-radius: 0 0 1rem 1rem;
-    }
-  }
-
-  @media print, (forced-colors: active) {
-    body:not(:has(.home-gateway)) .codex-page-deck::before {
-      display: none;
-    }
   }
 }
 
