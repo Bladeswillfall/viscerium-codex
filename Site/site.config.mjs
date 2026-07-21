@@ -1,4 +1,5 @@
 const env = process.env;
+const siteUrl = env.SITE_URL ?? 'https://codex.viscerium.co.uk';
 
 const webmentionUsername = env.PUBLIC_WEBMENTION_IO_USERNAME || 'codex.viscerium.co.uk';
 const webmentionEndpoint =
@@ -14,7 +15,7 @@ const ga4MeasurementId = env.PUBLIC_GA4_MEASUREMENT_ID ?? 'G-XXXXXXXXXX';
 export default {
   title: env.SITE_TITLE ?? 'VISCERIUM',
   description: env.SITE_DESCRIPTION ?? 'The public worldbuilding codex for VISCERIUM.',
-  site: env.SITE_URL ?? 'https://codex.viscerium.co.uk',
+  site: siteUrl,
   loreSourceDir: env.LORE_SOURCE_DIR ?? '../Vault/Lore',
   vaultAssetDir: '../Vault/Assets',
   githubRepoUrl: 'https://github.com/Bladeswillfall/viscerium-codex',
@@ -49,7 +50,7 @@ export default {
     inputPosition: env.PUBLIC_GISCUS_INPUT_POSITION ?? 'bottom',
     theme: {
       dark: env.PUBLIC_GISCUS_DARK_THEME ?? env.PUBLIC_GISCUS_THEME ?? 'noborder_dark',
-      light: env.PUBLIC_GISCUS_LIGHT_THEME ?? 'light',
+      light: env.PUBLIC_GISCUS_LIGHT_THEME ?? `${siteUrl}/giscus-light.css`,
     },
     lazy: env.PUBLIC_GISCUS_LOADING !== 'eager',
   },
