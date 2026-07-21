@@ -12,6 +12,7 @@ test('the Codex defines explicit site-level stacking tiers', () => {
   assert.match(layers, /--codex-z-underlay:\s*-1/);
   assert.match(layers, /--codex-z-page:\s*0/);
   assert.match(layers, /--codex-z-surface:\s*1/);
+  assert.match(layers, /--codex-z-elevated-surface:\s*2/);
   assert.match(layers, /--codex-z-navigation:\s*60/);
   assert.match(layers, /--codex-z-control:\s*1000/);
   assert.match(layers, /--codex-z-reveal:\s*9999/);
@@ -26,11 +27,25 @@ test('the two-column shell contains local stacking and normal page surfaces cove
 
   assert.match(
     layers,
-    /body:not\(:has\(\.home-gateway\)\) \.codex-main-pane > main > \.content-panel,[\s\S]*?position:\s*relative[\s\S]*?z-index:\s*var\(--codex-z-surface\)[\s\S]*?background-color:\s*var\(--codex-page-bg\)/,
+    /body:not\(:has\(\.home-gateway\)\) \.codex-main-pane > main > \.content-panel\s*\{[\s\S]*?position:\s*relative[\s\S]*?z-index:\s*var\(--codex-z-surface\)[\s\S]*?background-color:\s*var\(--codex-page-bg\)/,
+  );
+
+  assert.match(
+    layers,
+    /body:not\(:has\(\.home-gateway\)\) \.codex-main-pane > \.right-sidebar-container\s*\{[\s\S]*?z-index:\s*var\(--codex-z-elevated-surface\)[\s\S]*?background-color:\s*var\(--codex-page-bg\)/,
   );
 
   assert.match(layers, /\.codex-page-deck\s*\{[\s\S]*?z-index:\s*var\(--codex-z-surface\)/);
   assert.match(layers, /\.ion-codex-footer\s*\{[\s\S]*?z-index:\s*var\(--codex-z-underlay\)/);
+});
+
+test('the article end deck covers empty columns until the footer overlap zone', () => {
+  assert.match(
+    layers,
+    /body:not\(:has\(\.home-gateway\)\) \.codex-page-deck::before\s*\{[\s\S]*?z-index:\s*-1[\s\S]*?inset-block-end:\s*20px[\s\S]*?inline-size:\s*100vw[\s\S]*?background:\s*var\(--codex-page-bg\)/,
+  );
+  assert.match(layers, /@supports \(width:\s*100dvw\)[\s\S]*?\.codex-page-deck::before\s*\{[\s\S]*?inline-size:\s*100dvw/);
+  assert.match(layers, /@media print, \(forced-colors: active\)[\s\S]*?\.codex-page-deck::before\s*\{[\s\S]*?display:\s*none/);
 });
 
 test('global chrome and overlays use the shared hierarchy', () => {
