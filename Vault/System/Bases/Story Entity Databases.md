@@ -1,19 +1,22 @@
 # Story Entity Databases
 
-The fauna, flora, fungi and item databases use **Obsidian Bases** as creator-only card browsers over ordinary Markdown notes.
+The fauna, flora, fungi and item databases use **Obsidian Bases** as creator-only card browsers over ordinary Markdown notes. Myrkild retain their specialised database while also appearing in the cross-entity index.
 
 > [!important] Public presentation
 > Base cards do not publish to the Codex. The public consumer sees the Lore and Storyteller views. Structured properties from these notes can feed the Storyteller view later without exposing the authoring interface.
 
-## Open the card browsers
+## Open the databases
 
+- [[Story Entities.base]] — cross-entity navigation across fauna, flora, fungi, items and Myrkild units.
 - [[Fauna.base]]
 - [[Flora.base]]
 - [[Fungi.base]]
 - [[Items.base]]
 - [[Myrkild Units.base]]
 
-Each Base has a focused card view for browsing and a table view for comparison or bulk editing.
+Use **Story Entities** to answer broad creator questions such as what exists, what changed recently, what type an entry belongs to, or which entries remain stubs. Use the type-specific Bases for cards, detailed comparison and structured editing.
+
+The master index is deliberately not a completion dashboard. `development_level` remains a fitness state, not a percentage or obligation to fill more fields.
 
 ## Draft database folders
 
@@ -23,6 +26,7 @@ Working story-entity notes live under:
 - `Drafts/Databases/Flora/`
 - `Drafts/Databases/Fungi/`
 - `Drafts/Databases/Items/`
+- `Drafts/Databases/Myrkild Units/` for the existing specialised Myrkild workflow.
 
 Use folders for entity type, not era, nation or biome. Those relationships belong in note properties because a single entity may span many of them.
 
@@ -39,7 +43,7 @@ The template creates only the optional properties you select. Declining a module
 
 ## Create from a database folder
 
-When Templater's per-device **Trigger Templater on new file creation** switch is enabled, creating a normal new Markdown note directly inside one of the four folders above automatically launches the same [[New Story Entity]] workflow.
+When Templater's per-device **Trigger Templater on new file creation** switch is enabled, creating a normal new Markdown note directly inside one of the four ordinary story-entity folders automatically launches the same [[New Story Entity]] workflow.
 
 The folder supplies the entity type, so the Fauna / Flora / Fungi / Item question is skipped. All later prompts and generated properties remain identical to command-based creation.
 
@@ -50,6 +54,23 @@ The repository stores the folder-template rules, but the master trigger switch i
 Open an existing fauna, flora, fungi, item or Myrkild unit note, place the cursor where no inserted text will disrupt prose, then run **Templater: Insert template** and choose [[Add Storyteller Fields]].
 
 The injector adds only currently absent fields to the note's frontmatter. It does not add prose or change existing values.
+
+## Check creator-data health
+
+From the repository terminal:
+
+```bash
+cd Site
+npm run doctor:vault
+```
+
+Vault Doctor validates objective structure rather than creative completeness. It can fail on contradictions such as the wrong `type` for a database folder, malformed list properties, invalid era values, unknown development states or duplicate Myrkild unit IDs.
+
+Notices do **not** fail the check. They flag things worth human inspection, such as a plain-text location that closely resembles a canonical note title and may contain a typo.
+
+Missing optional Storyteller/worldbuilding properties are not errors or notices merely because they are absent.
+
+See [[Creator Command Reference]] for the wider Obsidian and terminal command knowledge base.
 
 ## Development levels
 
@@ -73,4 +94,4 @@ Use `eras`, `locations`, `biomes`, `rarity` and type-specific properties only wh
 
 ## Further guidance
 
-Follow [[Story Entity Workflow SOP]] for creation and filing, [[Entity Authoring SOP]] when deciding what to add, and [[Schema Change SOP]] before adding new shared properties or expanding a template.
+Follow [[Story Entity Workflow SOP]] for creation and filing, [[Entity Authoring SOP]] when deciding what to add, and [[Schema Change SOP]] before adding new shared properties or expanding a template. Use [[Creator Command Reference]] whenever you need to remember how to invoke the tooling.
