@@ -62,7 +62,7 @@ Avoid names such as `VISCERIUM-Codex Folder icons` for otherwise reusable behavi
 - VISCERIUM Homepage
 - VISCERIUM Homepage responsive
 
-`VISCERIUM Homepage` is scoped to notes with `cssclasses: viscerium-home` and currently applies only to [[Home]]. It owns the dashboard's visual treatment: functional colour families, panel hierarchy and the established section styling.
+`VISCERIUM Homepage` is scoped to notes with `cssclasses: viscerium-home` and currently applies only to [[Home]]. It owns the dashboard's visual treatment: functional colour families, flat panel hierarchy, quick-action styling, task/writing widgets and the creator-activity heatmap. The design deliberately uses solid surfaces, restrained borders and coloured title/accent lines rather than gradients or decorative shadows.
 
 `VISCERIUM Homepage responsive` is the layout/interaction compatibility layer for the same page. It resets Minimal/Obsidian readable-line-width constraints at every rendered width-bearing layer, makes paired panels fit the actual pane instead of the overall app window, and provides the compact top control deck: colour-matched quick-action buttons plus responsive recent-work cards. The same rules reflow for desktop split panes, tablets and phones without relying on the overall app-window width. It also hides Home's redundant inline title and Properties block in Reading View.
 
