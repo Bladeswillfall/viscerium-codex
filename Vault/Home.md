@@ -99,25 +99,26 @@ cssclasses:
 > > Guided creation for fauna, flora, fungi or an item. The workflow asks for a small core, offers only useful optional detail, and files the result into the correct draft database.
 > >
 > > ```dataviewjs
-> > const commands = Object.entries(app.commands.commands);
-> > const templaterCommand = commands.find(([id, command]) =>
-> >   id.startsWith("templater-obsidian:") && command.name === "Create new note from template"
+> > const templaterCommand = Object.entries(app.commands.commands).find(([id, command]) =>
+> >   id.startsWith("templater-obsidian:") && command.name === "Create New Story Entity"
 > > );
 > > const wrap = dv.container.createDiv({ cls: "vc-home-actions" });
 > > const button = wrap.createEl("button", {
-> >   text: "+ Create Story Entity…",
+> >   text: "+ Create Story Entity",
 > >   cls: "vc-home-button vc-home-button-primary",
 > > });
 > > if (!templaterCommand) {
 > >   button.disabled = true;
-> >   button.title = "Templater's create-from-template command is unavailable.";
+> >   button.title = "Templater's direct New Story Entity command is unavailable.";
 > > } else {
 > >   button.addEventListener("click", () => app.commands.executeCommandById(templaterCommand[0]));
 > > }
 > > ```
-> > Click the button, then choose **New Story Entity**.
+> > The button launches **New Story Entity** directly; there is no second template picker.
 > >
-> > Keyboard route: `Ctrl/Cmd + P` → **Templater: Create new note from template** → **New Story Entity**.
+> > Keyboard route: `Ctrl/Cmd + P` → **Templater: Create New Story Entity**.
+> >
+> > General fallback: `Ctrl/Cmd + P` → **Templater: Create new note from template** → **New Story Entity**.
 > >
 > > **Add detail later**  
 > > Open the entity note, then run `Ctrl/Cmd + P` → **Templater: Insert template** → **Add Storyteller Fields**. This belongs on the entity itself rather than as a Home button because it modifies the active note.
