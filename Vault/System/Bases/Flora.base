@@ -36,12 +36,7 @@ views:
       - growth_form
       - eras
       - locations
-      - biomes
       - rarity
-      - growth_conditions
-      - human_relevance
-      - hazards
-      - development_level
     sort:
       - property: title
         direction: ASC
