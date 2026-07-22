@@ -16,7 +16,7 @@ Good examples:
 - `Compact properties`
 - `Bases cards`
 
-The creator dashboard is deliberately project-specific, so `VISCERIUM Homepage` is an intentional exception.
+The creator dashboard is deliberately project-specific, so `VISCERIUM Homepage` and `VISCERIUM Homepage responsive` are intentional exceptions.
 
 Avoid names such as `VISCERIUM-Codex Folder icons` for otherwise reusable behaviour.
 
@@ -60,8 +60,13 @@ Avoid names such as `VISCERIUM-Codex Folder icons` for otherwise reusable behavi
 - Outline panel
 - Search results
 - VISCERIUM Homepage
+- VISCERIUM Homepage responsive
 
-`VISCERIUM Homepage` is scoped to notes with `cssclasses: viscerium-home` and currently applies only to [[Home]]. It provides the responsive two-column panel layout, creator-action button styling and recent-work table treatment. The underlying homepage remains ordinary Markdown callouts, wikilinks and creator-only Dataview blocks, so disabling the snippet changes presentation rather than information architecture.
+`VISCERIUM Homepage` is scoped to notes with `cssclasses: viscerium-home` and currently applies only to [[Home]]. It owns the dashboard's visual treatment: functional colour families, panel hierarchy, creator-action buttons and recent-work styling.
+
+`VISCERIUM Homepage responsive` is the layout-compatibility layer for the same page. It resets Minimal/Obsidian readable-line-width constraints at every rendered width-bearing layer, makes paired panels fit the actual pane instead of the overall app window, keeps Recent Work inside the pane, and adds pane-aware mobile/split-view reflow. It also hides Home's redundant inline title and Properties block in Reading View. Keeping this compatibility layer separate makes it easier to test width fixes without disturbing the established visual design.
+
+The underlying homepage remains ordinary Markdown callouts, wikilinks and creator-only Dataview blocks, so disabling the snippets changes presentation rather than information architecture.
 
 The file explorer uses stable section colours rather than assigning arbitrary colours by folder depth:
 
