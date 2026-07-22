@@ -4,7 +4,7 @@ Use this SOP for the practical creation, filing and later development of fauna, 
 
 The authoring system deliberately supports two entry points into the same schema. Use whichever matches how you are already working.
 
-For a lookup of commands rather than workflow judgement, use [[Creator Command Reference]].
+For a lookup of commands rather than workflow judgement, use [[Creator Command Reference]]. [[Home]] also exposes the common creation action as a one-click button while preserving the Command Palette route.
 
 ## One-time Templater setup per device
 
@@ -30,14 +30,24 @@ If the local trigger is disabled, the normal command-based workflow still works;
 
 Use this when an idea occurs outside a database folder.
 
-1. Open the Command Palette.
-2. Run **Templater: Create new note from template**.
-3. Choose [[New Story Entity]].
-4. Choose Fauna, Flora, Fungi or Item when prompted.
-5. Complete the small common core.
-6. Select only the optional modules that matter now.
+### Fast route
 
-The wrapper automatically files the completed note into the matching `Drafts/Databases/<Type>/` folder.
+1. From [[Home]], click **Create Story Entity**; or open the Command Palette and run **Templater: Create New Story Entity**.
+2. Choose Fauna, Flora, Fungi or Item when prompted.
+3. Complete the small common core.
+4. Select only the optional modules that matter now.
+
+The checked-in Templater configuration registers `New Story Entity` as a template-specific command, so the fast route does not require a second template picker.
+
+### General Templater fallback
+
+The generic route remains valid:
+
+1. Run **Templater: Create new note from template**.
+2. Choose [[New Story Entity]].
+3. Continue the same prompts.
+
+Both routes execute the same creator-facing wrapper, which automatically files the completed note into the matching `Drafts/Databases/<Type>/` folder.
 
 Do not run templates inside `Templates/_Internals/` directly. They contain shared implementation logic rather than creator-facing workflows.
 
@@ -69,6 +79,8 @@ Do not recreate an entry because new detail becomes relevant.
 4. Select only the field families now required by the story or worldbuilding task.
 
 Existing values are preserved. Unselected fields remain absent rather than becoming negative canon.
+
+This is intentionally **not** a homepage button: it changes the active entity note, so the action belongs in the context of that note rather than on a global dashboard.
 
 ## Browse and edit
 
@@ -112,6 +124,10 @@ Promote material only when it is genuinely ready to become canonical/public lore
 ### Creating a note in a database folder does nothing
 
 Check the per-device **Trigger Templater on new file creation** toggle first. The folder rules are committed to Git; the master switch is not.
+
+### The Home Create button is disabled
+
+Confirm Templater is enabled and restart Obsidian after pulling configuration changes. The button looks for the checked-in **Templater: Create New Story Entity** command and disables itself rather than falling back to an unrelated command if that command is unavailable.
 
 ### The type question appears during folder-first creation
 
