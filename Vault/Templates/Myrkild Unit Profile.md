@@ -35,8 +35,6 @@ tags:
   - unit
 ---
 
-# {{title}}
-
 > [!tip] Stop when usable
 > Keep the structured profile focused on placement, battlefield behaviour and counterplay. Add optional Storyteller fields later with [[Add Storyteller Fields]] only when a story needs signs of presence, encounter context, human response or consequences beyond combat.
 
@@ -46,15 +44,15 @@ Use the properties panel for structured fields. Keep the body for useful prose, 
 
 ## Tactics and behaviour
 
-_Not yet defined._
+%% Add prose only when the structured tactics field is not enough to explain how this construct actually behaves in a scene. %%
 
 ## Weaknesses and counterplay
 
-_Not yet defined._
+%% Record useful counterplay, constraints or failure modes. Do not add weaknesses merely to fill the section. %%
 
 ## Visual notes
 
-_Not yet defined._
+%% Describe only features that help distinguish or portray the construct consistently. %%
 
 ## Availability notes
 
