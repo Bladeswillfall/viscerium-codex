@@ -6,6 +6,7 @@ SOPs should govern judgement, review and maintenance. They should not repeat ste
 
 ## Current SOPs
 
+- [[Story Entity Workflow SOP]] — use Templater correctly, choose between command-based and folder-first creation, and understand automatic draft filing.
 - [[Entity Authoring SOP]] — decide what information is worth adding and when an entry is done enough.
 - [[Schema Change SOP]] — review new properties, templates and Base columns before expanding the authoring system.
 - [[Storyteller View SOP]] — decide what belongs in the public Storyteller view and how it should relate to lore.
