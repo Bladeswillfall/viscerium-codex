@@ -78,7 +78,9 @@
   border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.vc-storyline-timeline-kicker {
+.vc-storyline-timeline-header::before {
+  content: "STORYLINE → VISCERIUM TIMELINES";
+  display: block;
   margin-bottom: 0.35rem;
   color: color-mix(in srgb, var(--interactive-accent) 82%, var(--text-muted));
   font-family: var(--font-interface);
@@ -86,6 +88,21 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.vc-storyline-timeline-header::after {
+  content: "SOURCE · StoryLine scenes    DATE · storyDate    RENDERER · Chronos    MODE · read-only";
+  display: block;
+  margin-top: 0.7rem;
+  padding: 0.42rem 0.55rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  color: var(--text-muted);
+  background: var(--background-secondary);
+  font-family: var(--font-interface);
+  font-size: 0.67rem;
+  font-weight: 650;
+  line-height: 1.35;
 }
 
 .vc-storyline-timeline-header h2 {
@@ -98,29 +115,6 @@
   margin: 0.45rem 0 0;
   color: var(--text-muted);
   line-height: 1.5;
-}
-
-.vc-storyline-timeline-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-top: 0.7rem;
-}
-
-.vc-storyline-timeline-meta > span {
-  padding: 0.22rem 0.48rem;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 999px;
-  color: var(--text-muted);
-  background: var(--background-secondary);
-  font-family: var(--font-interface);
-  font-size: 0.67rem;
-  font-weight: 650;
-}
-
-.vc-storyline-timeline-meta > span:first-child {
-  border-color: color-mix(in srgb, var(--interactive-accent) 45%, var(--background-modifier-border));
-  color: color-mix(in srgb, var(--interactive-accent) 72%, var(--text-normal));
 }
 
 .vc-obsidian-timeline-mount .vc-timeline-app,
