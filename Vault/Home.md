@@ -45,7 +45,7 @@ cssclasses:
 > ```
 
 > [!home-grid]
-> > [!home-panel] WORLD DATABASES
+> > [!home-databases] WORLD DATABASES
 > > **[[System/Bases/Story Entities.base|Story Entities]]**  
 > > The master index across fauna, flora, fungi, items and Myrkild. Start here when you want to browse *what exists* rather than edit one specific category.
 > >
@@ -56,7 +56,7 @@ cssclasses:
 > > **[[System/Bases/Myrkild Units.base|Myrkild Units]]**  
 > > Specialised construct database for answering whether a Myrkild can plausibly exist in a particular era, place and context.
 >
-> > [!home-panel] STORIES & TIMELINES
+> > [!home-stories] STORIES & TIMELINES
 > > **StoryLine**  
 > > Private story and scene planning under `Stories/`. Story projects are writing material, not automatically canonical Lore. See [[System/StoryLine Integration|StoryLine Integration]].
 > >
@@ -94,7 +94,7 @@ cssclasses:
 > > Alternative route: `Ctrl/Cmd + P` → **VISCERIUM Timelines: Open StoryLine project timeline**.
 
 > [!home-grid]
-> > [!home-panel] CREATE
+> > [!home-create] CREATE
 > > **New Story Entity**  
 > > Guided creation for fauna, flora, fungi or an item. The workflow asks for a small core, offers only useful optional detail, and files the result into the correct draft database.
 > >
@@ -123,7 +123,7 @@ cssclasses:
 > > **Add detail later**  
 > > Open the entity note, then run `Ctrl/Cmd + P` → **Templater: Insert template** → **Add Storyteller Fields**. This belongs on the entity itself rather than as a Home button because it modifies the active note.
 >
-> > [!home-panel] CANON & PUBLISHING
+> > [!home-canon] CANON & PUBLISHING
 > > **[[System/Publishing Rules|Publishing Rules]]**  
 > > Explains what may become public Codex content and which frontmatter states are required.
 > >
@@ -155,7 +155,7 @@ cssclasses:
 > **[[System/SOPs/SOP Index|All SOPs & references]]**
 
 > [!home-grid]
-> > [!home-panel] SYSTEM HEALTH
+> > [!home-health] SYSTEM HEALTH
 > > **Creator-data check** — catches structural contradictions without judging creative completeness.
 > > ```bash
 > > cd Site
@@ -176,7 +176,7 @@ cssclasses:
 > >
 > > → [[System/SOPs/Creator Command Reference|Full command reference]]
 >
-> > [!home-panel] VISCERIUM AT A GLANCE
+> > [!home-glance] VISCERIUM AT A GLANCE
 > > **[[Lore/Eras/CITADEL|CITADEL]]**  
 > > Fortresses, mythic states and a world that only partly understands what lives beyond its walls.
 > >
