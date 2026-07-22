@@ -9,7 +9,7 @@ The publishing workflow does not require paid plugins. Keep the authoring stack 
 3. Enable **Templater** for guided entity creation, progressive Storyteller field injection and the checked-in startup homepage hook. Its configuration uses `Templates`, contains narrowly scoped folder-template rules for fauna, flora, fungi and items, registers a direct **Create New Story Entity** command, and registers the VISCERIUM Home startup template.
 4. On each device where folder-first creation should work, enable Templater's device-local **Trigger Templater on new file creation** switch. Do not add a vault-wide `/` catch-all rule.
 5. On each device where [[Home]] should open automatically, enable Templater's device-local **Enable startup templates** switch.
-6. Enable **Dataview** to render the shared sidebar in canonical templates and the creator-only Recent Work/action areas on [[Home]].
+6. Enable **Dataview** for the creator-only widgets and action surfaces on [[Home]] and for any deliberately authored creator queries. Canonical lore itself remains ordinary Markdown/YAML and does not depend on Dataview rendering.
 
 ## Optional conveniences
 
@@ -25,4 +25,4 @@ Dataview queries, Templater commands, plugin-only syntax, and theme-specific sty
 
 Templater commands should be executed during authoring so the resulting note contains ordinary Markdown and frontmatter. Important public content must remain available as normal Markdown or structured properties that the site explicitly consumes.
 
-`Home.md` is creator-only (`publish: false`) and may therefore use DataviewJS for convenience actions without establishing a public Codex authoring convention.
+`Home.md` is creator-only (`publish: false`) and may therefore use DataviewJS for convenience actions and widgets without establishing a public Codex authoring convention.

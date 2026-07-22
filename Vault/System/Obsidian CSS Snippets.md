@@ -20,12 +20,25 @@ The creator dashboard is deliberately project-specific, so `VISCERIUM Homepage` 
 
 Avoid names such as `VISCERIUM-Codex Folder icons` for otherwise reusable behaviour.
 
+## Article width
+
+Normal note width is owned by **Minimal Theme Settings**, not by a CSS snippet. The checked-in baseline is:
+
+- Normal line width: **64em**
+- Wide line width: **76em**
+- Maximum line width: **92% of the pane**
+- Readable line length: **enabled**
+
+This gives ordinary articles substantially more room while still preventing very wide desktop panes from turning prose into edge-to-edge lines. Minimal applies the same width model to Reading View and Live Preview and handles narrow/mobile panes responsively.
+
+Do not reintroduce a second global `markdown-preview-sizer` width rule. The old `Readable line width` snippet duplicated Minimal's own layout system and was the reason ordinary notes remained artificially narrow. Use Minimal's per-note `wide` or `max` helper classes only when a specific article genuinely benefits from a wider layout.
+
+[[Home]] is the deliberate exception: its two VISCERIUM Homepage snippets override the normal article measure because Home is a dashboard/control surface rather than long-form prose.
+
 ## Enabled by default
 
 ### Reading and rendered content
 
-- Infobox sidebar
-- Readable line width
 - Heading hierarchy
 - Paragraph spacing
 - Link styling
@@ -44,6 +57,8 @@ Avoid names such as `VISCERIUM-Codex Folder icons` for otherwise reusable behavi
 - Hover previews
 
 `Timeline styling` is the Obsidian presentation bridge for Chronos and the shared VISCERIUM timeline renderer. It maps the Codex/Starlight variables used by the shared renderer onto Obsidian theme variables, gives ordinary Chronos blocks an explicit `CHRONOS · PORTABLE TIMELINE` identity, and labels the StoryLine timeline projection with its source, date field, renderer and read-only role. It does not introduce timeline syntax or duplicate metadata.
+
+The old Obsidian-only Dataview infobox/sidebar has been removed. Templates should use clean frontmatter for structured data and ordinary Markdown for article content rather than rendering a floating duplicate of the same metadata inside the note.
 
 ### Workspace and navigation
 
@@ -64,7 +79,7 @@ Avoid names such as `VISCERIUM-Codex Folder icons` for otherwise reusable behavi
 
 `VISCERIUM Homepage` is scoped to notes with `cssclasses: viscerium-home` and currently applies only to [[Home]]. It owns the dashboard's visual treatment: functional colour families, flat panel hierarchy, quick-action styling, task/writing widgets and the creator-activity heatmap. The design deliberately uses solid surfaces, restrained borders and coloured title/accent lines rather than gradients or decorative shadows.
 
-`VISCERIUM Homepage responsive` is the layout/interaction compatibility layer for the same page. It resets Minimal/Obsidian readable-line-width constraints at every rendered width-bearing layer, makes paired panels fit the actual pane instead of the overall app window, and provides the compact top control deck: colour-matched quick-action buttons plus responsive recent-work cards. The same rules reflow for desktop split panes, tablets and phones without relying on the overall app-window width. It also hides Home's redundant inline title and Properties block in Reading View.
+`VISCERIUM Homepage responsive` is the layout/interaction compatibility layer for the same page. It overrides the normal Minimal article measure, makes paired panels fit the actual pane instead of the overall app window, and provides the compact top control deck: colour-matched quick-action buttons plus responsive recent-work cards. The same rules reflow for desktop split panes, tablets and phones without relying on the overall app-window width. It also hides Home's redundant inline title and Properties block in Reading View.
 
 The underlying homepage remains ordinary Markdown callouts, wikilinks and creator-only Dataview blocks, so disabling the snippets changes presentation rather than information architecture.
 

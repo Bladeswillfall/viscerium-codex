@@ -1,5 +1,5 @@
 ---
-title:
+title: "{{title}}"
 description:
 publish: false
 status: draft
@@ -7,9 +7,7 @@ type: timeline
 headerImage:
 ---
 
-# {{title}}
-
-%% Native Chronos timeline. This is ideal for quick comparisons, scene chronology, research notes and editorial sketches. It is not automatically merged into the canonical super or era timelines. %%
+%% Native Chronos timeline. Use this for quick comparisons, scene chronology, research notes and editorial sketches. It is not automatically merged into canonical VISCERIUM era or super timelines. %%
 
 ```chronos
 > NOTODAY
@@ -35,4 +33,4 @@ headerImage:
 
 ## Notes
 
-Chronos dates use its numeric ISO-like syntax. For canon events that must participate in registered VISCERIUM calendars, era validation, filters and the generated timelines, create an event note from `Event Template.md` instead.
+Chronos dates use its numeric ISO-like syntax. For canon events that must participate in registered VISCERIUM calendars, era validation, filters and generated timelines, create an event note from `Event Template.md` instead.
