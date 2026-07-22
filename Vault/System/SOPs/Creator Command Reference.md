@@ -10,6 +10,8 @@ Use this as the practical lookup for interacting with the VISCERIUM authoring sy
 | I want to... | Use |
 | --- | --- |
 | Return to the creator dashboard | Open [[Home]] |
+| See deliberate work I need to return to | [[Home]] → **Next Actions**, or open [[System/Creator Tasks|Creator Tasks]] |
+| Return to the active StoryLine project / recent scenes | [[Home]] → **Writing Desk** |
 | Create fauna, flora, fungi or an item | [[Home]] → **Create Story Entity**, or **Templater: Create New Story Entity** |
 | Add optional Storyteller/profile fields later | **Templater: Insert template** → `Add Storyteller Fields` |
 | Browse every structured story entity together | Open [[Story Entities.base]] |
@@ -22,18 +24,52 @@ Use this as the practical lookup for interacting with the VISCERIUM authoring sy
 
 ## Home — creator dashboard
 
-`Home.md` is intentionally a navigation/action layer rather than another source of canon. It provides:
+`Home.md` is intentionally a navigation/action layer rather than another source of canon. Its top section is a working dashboard; lower sections explain and navigate the wider authoring system.
 
-- recent creator work via Dataview;
+Home provides:
+
+- colour-matched quick actions for frequent creator commands;
+- **Next Actions**, sourced from ordinary unchecked Markdown tasks across creator notes;
+- **Writing Desk**, sourced from StoryLine's existing `activeProjectFile` plus recent project scenes;
+- **Jump Back In**, showing recently modified creator notes;
+- **Creator Activity**, a 52-week heatmap of creator-file changes recorded between vault sessions;
 - links to the cross-entity and type-specific Bases;
 - StoryLine and VISCERIUM timeline guidance;
-- a one-click **Create Story Entity** action;
-- Story Timeline and StoryLine diagnostic actions;
 - links to the SOPs/process documentation;
 - terminal health-check reminders;
 - direct links to the four VISCERIUM eras.
 
 Navigation remains ordinary Markdown/wikilinks. The action buttons use DataviewJS to invoke existing Obsidian commands and are conveniences rather than unique workflows.
+
+### Next Actions / Creator Tasks
+
+Use an ordinary Markdown checkbox inside a worldbuilding or story note when there is a real action you have deliberately decided to return to:
+
+```markdown
+- [ ] Decide how this species reacts to Resonance.
+```
+
+Home shows a small sample from recently modified creator notes. [[System/Creator Tasks|Creator Tasks]] shows the complete live list.
+
+Do **not** create tasks merely because optional lore fields are blank or an entry could be developed further. Missing optional detail is not work debt.
+
+### Writing Desk
+
+Writing Desk reads `.obsidian/plugins/storyline/data.json` and uses StoryLine's existing `activeProjectFile`. It shows the active project, scene count, dated-scene count and the most recently edited scenes under that project's `Scenes/` folder.
+
+It is read-only. StoryLine remains the owner of story-project structure and scene metadata.
+
+### Creator Activity
+
+Creator Activity is not a streak or productivity score. It records **creator Markdown files whose content changed between vault sessions** and renders that history as a GitHub-like heatmap.
+
+The existing Templater startup template maintains:
+
+`System/Data/Creator Activity.json`
+
+Change detection is content-hash based rather than timestamp based, so normal Git checkout/sync timestamp changes do not count as creative activity. The edit date attached to the changed file determines which day receives the activity mark.
+
+`System/`, `Templates/` and `Home.md` are excluded. The activity ledger is generated creator-system data and may change automatically after a session in which creator files changed.
 
 ## Obsidian commands
 
@@ -88,7 +124,12 @@ Keep the matching mode on **Folder templates**. The repository already contains 
 
 **Settings → Templater → Startup templates → Enable startup templates → On**
 
-The repository already registers `Templates/_Startup/Open VISCERIUM Home.md`. Once the device-local permission is enabled, `Home.md` opens in Reading View when the workspace is ready. Leave the toggle off if you prefer Obsidian to resume directly into the previous active note instead.
+The repository already registers `Templates/_Startup/Open VISCERIUM Home.md`. Once the device-local permission is enabled, the startup routine:
+
+1. scans creator Markdown files and updates the content-hash activity ledger only when creator content has changed;
+2. opens `Home.md` in Reading View when the workspace is ready.
+
+Leave the toggle off if you prefer Obsidian to resume directly into the previous active note; Creator Activity will then not automatically record between-session changes on that device.
 
 ## Terminal commands — Codex and vault
 
@@ -105,7 +146,7 @@ cd Site
 | `npm run validate:vault` | Validates **published Lore** requirements and active-content safety. This is different from Vault Doctor: it is publication-facing rather than creator-database-facing. | **No.** Read-only. |
 | `npm run validate:timelines` | Validates canonical timeline/event metadata without generating the final datasets. | **No.** Read-only. |
 | `npm run validate` | Checks generated public docs for required generated frontmatter such as title, description, slug and type. Run after sync/generation when diagnosing generated-content problems. | **No.** Read-only. |
-| `npm run test:unit` | Runs the Node unit-test suite, including Vault Doctor regression tests. | **No** source changes. |
+| `npm run test:unit` | Runs the Node unit-test suite, including Vault Doctor and homepage regression tests. | **No** source changes. |
 | `npm test` | Normal local confidence check: runs Vault Doctor, unit tests and the full Astro build. | Produces normal build/generated output as part of the build process. |
 | `npm run benchmark:timelines` | Runs timeline performance benchmarks used by CI. Useful before/after substantial timeline compiler changes. | **No** source changes intended. |
 | `npm run sync` | Rebuilds/synchronises publishable vault content into the generated site content used by Astro. Do not hand-edit generated copies instead of their vault sources. | **Yes.** Updates generated site content/data. |
@@ -178,5 +219,3 @@ They solve different problems and both are useful.
 ## Maintenance rule
 
 Whenever a creator-facing Obsidian command, Templater workflow, Base entry point, homepage action or `npm` script is added, renamed or removed, update this reference in the same change. Add something to [[Home]] only when it is a genuine top-level navigation or frequent action; the comprehensive catalogue belongs here rather than on the dashboard.
-
-For judgement about *what to write*, use [[Entity Authoring SOP]]. For the story-entity lifecycle, use [[Story Entity Workflow SOP]]. For schema changes, use [[Schema Change SOP]].

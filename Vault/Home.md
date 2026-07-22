@@ -56,6 +56,99 @@ cssclasses:
 > ```
 > `Ctrl/Cmd + P` remains the universal fallback. See [[System/SOPs/Creator Command Reference|Creator Command Reference]] for command names and what they do.
 
+> [!home-grid]
+> > [!home-tasks] NEXT ACTIONS
+> > ```dataviewjs
+> > const pages = dv.pages("")
+> >   .where((page) => {
+> >     const path = page.file.path;
+> >     return path !== "Home.md"
+> >       && !path.startsWith("System/")
+> >       && !path.startsWith("Templates/");
+> >   })
+> >   .sort((page) => page.file.mtime, "desc");
+> >
+> > const tasks = [];
+> > for (const page of pages) {
+> >   for (const task of page.file.tasks ?? []) {
+> >     if (!task.completed) tasks.push(task);
+> >     if (tasks.length >= 5) break;
+> >   }
+> >   if (tasks.length >= 5) break;
+> > }
+> >
+> > if (tasks.length === 0) {
+> >   dv.paragraph("No open creator tasks. Add an ordinary Markdown checkbox when there is something you deliberately want to return to.");
+> > } else {
+> >   dv.taskList(tasks, false);
+> > }
+> > ```
+> > → [[System/Creator Tasks|View all creator tasks]]
+> >
+> > Tasks are intentional next actions—not a measure of how complete the world is.
+> >
+> > [!home-writingdesk] WRITING DESK
+> > ```dataviewjs
+> > const settingsPath = ".obsidian/plugins/storyline/data.json";
+> > let settings = {};
+> > try {
+> >   settings = JSON.parse(await app.vault.adapter.read(settingsPath));
+> > } catch (error) {
+> >   console.warn("StoryLine settings could not be read from Home.", error);
+> > }
+> >
+> > const activeProjectFile = settings.activeProjectFile;
+> > if (!activeProjectFile) {
+> >   dv.paragraph("No active StoryLine project is currently configured.");
+> > } else {
+> >   const projectDir = activeProjectFile.slice(0, activeProjectFile.lastIndexOf("/"));
+> >   const scenesPrefix = `${projectDir}/Scenes/`;
+> >   const scenes = dv.pages("")
+> >     .where((page) => page.file.path.startsWith(scenesPrefix))
+> >     .sort((page) => page.file.mtime, "desc");
+> >
+> >   const dated = scenes.where((page) => Boolean(page.storyDate)).length;
+> >   const desk = dv.container.createDiv({ cls: "vc-home-writing-desk" });
+> >   const project = desk.createDiv({ cls: "vc-home-writing-project" });
+> >   const projectName = activeProjectFile.split("/").pop().replace(/\.md$/i, "");
+> >   const projectLink = project.createEl("a", {
+> >     text: projectName,
+> >     cls: "internal-link vc-home-writing-project-link",
+> >     attr: { href: activeProjectFile, "data-href": activeProjectFile },
+> >   });
+> >   projectLink.addEventListener("click", (event) => {
+> >     event.preventDefault();
+> >     app.workspace.openLinkText(activeProjectFile, "Home.md", event.ctrlKey || event.metaKey);
+> >   });
+> >   project.createDiv({
+> >     text: `${scenes.length} scene${scenes.length === 1 ? "" : "s"} · ${dated} dated`,
+> >     cls: "vc-home-writing-meta",
+> >   });
+> >
+> >   const recentScenes = Array.from(scenes).slice(0, 3);
+> >   if (recentScenes.length > 0) {
+> >     const list = desk.createDiv({ cls: "vc-home-writing-scenes" });
+> >     for (const scene of recentScenes) {
+> >       const row = list.createDiv({ cls: "vc-home-writing-scene" });
+> >       const link = row.createEl("a", {
+> >         text: scene.file.name,
+> >         cls: "internal-link vc-home-writing-scene-link",
+> >         attr: { href: scene.file.path, "data-href": scene.file.path },
+> >       });
+> >       link.addEventListener("click", (event) => {
+> >         event.preventDefault();
+> >         app.workspace.openLinkText(scene.file.path, "Home.md", event.ctrlKey || event.metaKey);
+> >       });
+> >       const detail = scene.storyDate
+> >         ? String(scene.storyDate)
+> >         : (scene.file.mtime.toRelative() ?? scene.file.mtime.toFormat("dd LLL yyyy"));
+> >       row.createSpan({ text: detail, cls: "vc-home-writing-scene-meta" });
+> >     }
+> >   }
+> > }
+> > ```
+> > → [[System/StoryLine Integration|How StoryLine fits into VISCERIUM]]
+
 > [!home-recent] JUMP BACK IN
 > ```dataviewjs
 > const pages = dv.pages("")
@@ -87,20 +180,77 @@ cssclasses:
 >     const link = top.createEl("a", {
 >       text: page.file.name,
 >       cls: "internal-link vc-home-recent-link",
->       attr: {
->         href: page.file.path,
->         "data-href": page.file.path,
->       },
+>       attr: { href: page.file.path, "data-href": page.file.path },
 >     });
 >     link.addEventListener("click", (event) => {
 >       event.preventDefault();
 >       app.workspace.openLinkText(page.file.path, "Home.md", event.ctrlKey || event.metaKey);
 >     });
 >     top.createSpan({ text: zone.label, cls: "vc-home-recent-area" });
->     item.createDiv({ text: page.file.mtime.toRelative() ?? page.file.mtime.toFormat("dd LLL yyyy"), cls: "vc-home-recent-time" });
+>     item.createDiv({
+>       text: page.file.mtime.toRelative() ?? page.file.mtime.toFormat("dd LLL yyyy"),
+>       cls: "vc-home-recent-time",
+>     });
 >   }
 > }
 > ```
+
+> [!home-activity] CREATOR ACTIVITY
+> ```dataviewjs
+> const activityPath = "System/Data/Creator Activity.json";
+> let activity = { days: {}, lastScan: null };
+> try {
+>   activity = { ...activity, ...JSON.parse(await app.vault.adapter.read(activityPath)) };
+> } catch (error) {
+>   console.warn("Creator activity ledger could not be read from Home.", error);
+> }
+>
+> const keyFor = (date) => {
+>   const year = date.getFullYear();
+>   const month = String(date.getMonth() + 1).padStart(2, "0");
+>   const day = String(date.getDate()).padStart(2, "0");
+>   return `${year}-${month}-${day}`;
+> };
+>
+> const today = new Date();
+> today.setHours(0, 0, 0, 0);
+> const start = new Date(today);
+> start.setDate(today.getDate() - (51 * 7 + today.getDay()));
+>
+> const levelFor = (count) => {
+>   if (!count) return 0;
+>   if (count === 1) return 1;
+>   if (count <= 3) return 2;
+>   if (count <= 6) return 3;
+>   return 4;
+> };
+>
+> const heatmap = dv.container.createDiv({ cls: "vc-home-heatmap" });
+> for (let week = 0; week < 52; week += 1) {
+>   const column = heatmap.createDiv({ cls: "vc-home-heatmap-week" });
+>   for (let weekday = 0; weekday < 7; weekday += 1) {
+>     const date = new Date(start);
+>     date.setDate(start.getDate() + week * 7 + weekday);
+>     const future = date > today;
+>     const key = keyFor(date);
+>     const count = future ? 0 : Number(activity.days?.[key] ?? 0);
+>     column.createDiv({
+>       cls: `vc-home-heatmap-cell level-${levelFor(count)}${future ? " is-future" : ""}`,
+>       attr: {
+>         title: future
+>           ? key
+>           : `${key}: ${count} creator file${count === 1 ? "" : "s"} changed`,
+>       },
+>     });
+>   }
+> }
+>
+> const total = Object.values(activity.days ?? {}).reduce((sum, value) => sum + Number(value || 0), 0);
+> const footer = dv.container.createDiv({ cls: "vc-home-activity-meta" });
+> footer.createSpan({ text: "52 weeks · files changed between vault sessions" });
+> footer.createSpan({ text: `${total} recorded file change${total === 1 ? "" : "s"}` });
+> ```
+> This is a **history of creator-file changes**, not a streak, score or completion metric. The startup routine records changed Markdown files automatically; `System/`, `Templates/` and Home itself are excluded.
 
 > [!home-grid]
 > > [!home-databases] WORLD DATABASES
@@ -113,7 +263,7 @@ cssclasses:
 > >
 > > **[[System/Bases/Myrkild Units.base|Myrkild Units]]**  
 > > Specialised construct database for answering whether a Myrkild can plausibly exist in a particular era, place and context.
->
+> >
 > > [!home-stories] STORIES & TIMELINES
 > > **StoryLine**  
 > > Private story and scene planning under `Stories/`. Story projects are writing material, not automatically canonical Lore. See [[System/StoryLine Integration|StoryLine Integration]].
@@ -132,7 +282,7 @@ cssclasses:
 > >
 > > **Add detail later**  
 > > Open an existing entity, then run **Templater: Insert template → Add Storyteller Fields**. This remains contextual because it modifies the active note.
->
+> >
 > > [!home-canon] CANON & PUBLISHING
 > > **[[System/Publishing Rules|Publishing Rules]]**  
 > > Explains what may become public Codex content and which frontmatter states are required.
@@ -185,7 +335,7 @@ cssclasses:
 > > ```
 > >
 > > → [[System/SOPs/Creator Command Reference|Full command reference]]
->
+> >
 > > [!home-glance] VISCERIUM AT A GLANCE
 > > **[[Lore/Eras/CITADEL|CITADEL]]**  
 > > Fortresses, mythic states and a world that only partly understands what lives beyond its walls.
