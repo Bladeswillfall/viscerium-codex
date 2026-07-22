@@ -39,11 +39,7 @@ views:
       - size_class
       - eras
       - locations
-      - biomes
       - rarity
-      - threat_level
-      - human_relevance
-      - development_level
     sort:
       - property: title
         direction: ASC
