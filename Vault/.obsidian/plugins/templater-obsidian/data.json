@@ -3,11 +3,28 @@
   "command_timeout": 5,
   "templates_folder": "Templates",
   "templates_pairs": [],
-  "trigger_on_file_creation_mode": "none",
+  "trigger_on_file_creation_mode": "folder",
   "auto_jump_to_cursor": false,
   "shell_path": "",
   "user_scripts_folder": "",
-  "folder_templates": [],
+  "folder_templates": [
+    {
+      "folder": "Drafts/Databases/Fauna",
+      "template": "Templates/New Story Entity.md"
+    },
+    {
+      "folder": "Drafts/Databases/Flora",
+      "template": "Templates/New Story Entity.md"
+    },
+    {
+      "folder": "Drafts/Databases/Fungi",
+      "template": "Templates/New Story Entity.md"
+    },
+    {
+      "folder": "Drafts/Databases/Items",
+      "template": "Templates/New Story Entity.md"
+    }
+  ],
   "file_templates": [],
   "syntax_highlighting": true,
   "syntax_highlighting_mobile": true,
