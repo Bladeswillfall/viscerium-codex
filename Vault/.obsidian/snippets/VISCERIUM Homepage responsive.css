@@ -1,9 +1,8 @@
 /*
  * VISCERIUM Homepage — responsive layout compatibility
  *
- * Keeps Home.md pane-responsive under Minimal's readable-line-width system.
- * This file deliberately contains layout compatibility only; visual colour and
- * section styling remain in VISCERIUM Homepage.css.
+ * Keeps Home.md pane-responsive under Minimal's readable-line-width system and
+ * provides the compact top control deck used by the creator homepage.
  */
 
 /*
@@ -102,10 +101,160 @@
   min-width: 0;
 }
 
+/* Top control deck. Buttons perform actions; explanatory sections below remain navigation/documentation. */
+.viscerium-home .callout[data-callout="home-actions"],
+.viscerium-home .callout[data-callout="home-recent"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0 !important;
+  justify-self: stretch;
+}
+
+.viscerium-home .callout[data-callout="home-actions"] {
+  --callout-icon: lucide-zap;
+  --callout-color: var(--vc-neutral);
+  margin-block: 0.65rem;
+  border: 1px solid color-mix(in srgb, rgb(var(--vc-neutral)) 34%, var(--background-modifier-border));
+  border-radius: 10px;
+  background: color-mix(in srgb, rgb(var(--vc-neutral)) 5%, var(--background-primary-alt));
+}
+
+.viscerium-home .callout[data-callout="home-actions"] > .callout-title {
+  padding-bottom: 0.35rem;
+  color: color-mix(in srgb, rgb(var(--vc-neutral)) 68%, var(--text-normal));
+  font-family: var(--font-interface);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.viscerium-home .callout[data-callout="home-actions"] > .callout-content {
+  min-width: 0;
+}
+
+.viscerium-home .callout[data-callout="home-actions"] > .callout-content > p:last-child {
+  margin: 0.5rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.viscerium-home .vc-home-action-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.viscerium-home .vc-home-action-strip .vc-home-button {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.45rem;
+  margin: 0;
+  white-space: normal;
+}
+
+.viscerium-home .vc-home-action-create {
+  color: var(--text-on-accent);
+  border-color: color-mix(in srgb, rgb(var(--vc-reuse)) 78%, var(--interactive-accent));
+  background: color-mix(in srgb, rgb(var(--vc-reuse)) 72%, var(--interactive-accent));
+}
+
+.viscerium-home .vc-home-action-stories {
+  color: var(--text-on-accent);
+  border-color: color-mix(in srgb, rgb(var(--vc-writing)) 78%, var(--interactive-accent));
+  background: color-mix(in srgb, rgb(var(--vc-writing)) 74%, var(--interactive-accent));
+}
+
+.viscerium-home .vc-home-action-stories-secondary {
+  color: color-mix(in srgb, rgb(var(--vc-writing)) 72%, var(--text-normal));
+  border-color: color-mix(in srgb, rgb(var(--vc-writing)) 58%, var(--background-modifier-border));
+  background: color-mix(in srgb, rgb(var(--vc-writing)) 9%, transparent);
+}
+
+.viscerium-home .vc-home-action-create:hover,
+.viscerium-home .vc-home-action-stories:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.viscerium-home .vc-home-action-stories-secondary:hover {
+  border-color: rgb(var(--vc-writing));
+  background: color-mix(in srgb, rgb(var(--vc-writing)) 15%, transparent);
+}
+
+/* Compact recent-work cards replace the width-sensitive table. */
+.viscerium-home .callout[data-callout="home-recent"] {
+  margin-block: 0.65rem 0.9rem;
+}
+
+.viscerium-home .callout[data-callout="home-recent"] > .callout-content {
+  min-width: 0;
+  padding-top: 0.1rem;
+}
+
+.viscerium-home .vc-home-recent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12.5rem), 1fr));
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.viscerium-home .vc-home-recent-item {
+  --vc-recent-rgb: var(--vc-neutral);
+  min-width: 0;
+  padding: 0.58rem 0.65rem;
+  border: 1px solid color-mix(in srgb, rgb(var(--vc-recent-rgb)) 28%, var(--background-modifier-border));
+  border-radius: 8px;
+  background: color-mix(in srgb, rgb(var(--vc-recent-rgb)) 6%, var(--background-primary));
+  box-shadow: inset 3px 0 0 color-mix(in srgb, rgb(var(--vc-recent-rgb)) 58%, transparent);
+}
+
+.viscerium-home .vc-home-recent-wip { --vc-recent-rgb: var(--vc-wip); }
+.viscerium-home .vc-home-recent-writing { --vc-recent-rgb: var(--vc-writing); }
+.viscerium-home .vc-home-recent-canon { --vc-recent-rgb: var(--vc-canon); }
+.viscerium-home .vc-home-recent-private { --vc-recent-rgb: var(--vc-private); }
+
+.viscerium-home .vc-home-recent-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.viscerium-home .vc-home-recent-link {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.87rem;
+  font-weight: 700;
+}
+
+.viscerium-home .vc-home-recent-area {
+  flex: 0 0 auto;
+  color: color-mix(in srgb, rgb(var(--vc-recent-rgb)) 72%, var(--text-muted));
+  font-family: var(--font-interface);
+  font-size: 0.58rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.viscerium-home .vc-home-recent-time {
+  margin-top: 0.18rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
 /* Never let long command text, links or buttons force the dashboard wider. */
 .viscerium-home .callout-content,
 .viscerium-home .block-language-dataviewjs,
 .viscerium-home .vc-home-actions,
+.viscerium-home .vc-home-action-strip,
+.viscerium-home .vc-home-recent-grid,
 .viscerium-home pre,
 .viscerium-home code,
 .viscerium-home a.internal-link {
@@ -124,11 +273,7 @@
   white-space: normal;
 }
 
-/* Recent-work table stays inside the pane and wraps rather than widening Home. */
-.viscerium-home .callout[data-callout="home-recent"] .callout-content {
-  min-width: 0;
-}
-
+/* Keep any legacy Recent Work table safely contained if an older Home.md is opened. */
 .viscerium-home .callout[data-callout="home-recent"] table {
   width: 100%;
   max-width: 100%;
@@ -142,52 +287,21 @@
   vertical-align: top;
 }
 
-.viscerium-home .callout[data-callout="home-recent"] th:nth-child(1),
-.viscerium-home .callout[data-callout="home-recent"] td:nth-child(1) {
-  width: 45%;
-}
-
-.viscerium-home .callout[data-callout="home-recent"] th:nth-child(2),
-.viscerium-home .callout[data-callout="home-recent"] td:nth-child(2) {
-  width: 16%;
-}
-
-.viscerium-home .callout[data-callout="home-recent"] th:nth-child(3),
-.viscerium-home .callout[data-callout="home-recent"] td:nth-child(3) {
-  width: 39%;
-}
-
 /*
  * Pane-aware responsive behaviour. Container queries respond to the Home leaf,
  * not the overall Obsidian window, so split panes behave like mobile when narrow.
  */
 @container viscerium-home (max-width: 46rem) {
-  .viscerium-home .vc-home-actions {
-    align-items: stretch;
-    flex-direction: column;
+  .viscerium-home .vc-home-action-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .viscerium-home button.vc-home-button {
-    width: 100%;
+  .viscerium-home .vc-home-action-create {
+    grid-column: 1 / -1;
   }
 
   .viscerium-home .callout[data-callout="home-process"] > .callout-content {
     grid-template-columns: 1fr;
-  }
-
-  .viscerium-home .callout[data-callout="home-recent"] th:nth-child(2),
-  .viscerium-home .callout[data-callout="home-recent"] td:nth-child(2) {
-    display: none;
-  }
-
-  .viscerium-home .callout[data-callout="home-recent"] th:nth-child(1),
-  .viscerium-home .callout[data-callout="home-recent"] td:nth-child(1) {
-    width: 56%;
-  }
-
-  .viscerium-home .callout[data-callout="home-recent"] th:nth-child(3),
-  .viscerium-home .callout[data-callout="home-recent"] td:nth-child(3) {
-    width: 44%;
   }
 }
 
@@ -205,12 +319,20 @@
     letter-spacing: 0.08em;
   }
 
-  .viscerium-home .callout[data-callout="home-recent"] table {
-    font-size: 0.8rem;
+  .viscerium-home .vc-home-action-strip {
+    grid-template-columns: 1fr;
   }
 
-  .viscerium-home .callout[data-callout="home-recent"] th {
-    font-size: 0.6rem;
+  .viscerium-home .vc-home-action-create {
+    grid-column: auto;
+  }
+
+  .viscerium-home .vc-home-recent-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .viscerium-home .callout[data-callout="home-actions"] > .callout-content > p:last-child {
+    font-size: 0.72rem;
   }
 }
 
@@ -225,9 +347,13 @@
     grid-template-columns: 1fr !important;
   }
 
-  .viscerium-home .vc-home-actions {
-    align-items: stretch;
-    flex-direction: column;
+  .viscerium-home .vc-home-action-strip,
+  .viscerium-home .vc-home-recent-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .viscerium-home .vc-home-action-create {
+    grid-column: auto;
   }
 
   .viscerium-home button.vc-home-button {

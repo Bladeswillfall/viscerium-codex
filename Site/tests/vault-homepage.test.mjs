@@ -30,10 +30,13 @@ test('VISCERIUM Home remains creator-only and wired to its presentation/action d
   assert.ok(templater.enabled_templates_hotkeys.includes('Templates/New Story Entity.md'));
   assert.ok(templater.startup_templates.includes('Templates/_Startup/Open VISCERIUM Home.md'));
 
+  assert.match(home.content, /vc-home-action-strip/);
+  assert.match(home.content, /vc-home-recent-grid/);
   assert.match(home.content, /Create Story Entity/);
   assert.match(home.content, /Create New Story Entity/);
   assert.match(home.content, /viscerium-timelines:open-storyline-project-timeline/);
   assert.match(home.content, /viscerium-timelines:diagnose-storyline-integration/);
+  assert.doesNotMatch(home.content, /dv\.table\(/);
 });
 
 test('homepage responsive layer resets readable width and avoids fixed two-column overflow', async () => {
@@ -45,6 +48,18 @@ test('homepage responsive layer resets readable width and avoids fixed two-colum
   assert.match(responsiveCss, /@container\s+viscerium-home/);
   assert.match(responsiveCss, /metadata-container/);
   assert.doesNotMatch(responsiveCss, /repeat\(2,\s*minmax\(340px,\s*1fr\)\)/);
+});
+
+test('homepage control deck remains compact and pane-responsive', async () => {
+  const responsiveCss = await readText('.obsidian/snippets/VISCERIUM Homepage responsive.css');
+
+  assert.match(responsiveCss, /vc-home-action-strip/);
+  assert.match(responsiveCss, /grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(responsiveCss, /vc-home-action-create/);
+  assert.match(responsiveCss, /vc-home-action-stories/);
+  assert.match(responsiveCss, /vc-home-recent-grid/);
+  assert.match(responsiveCss, /grid-template-columns:\s*repeat\(auto-fit,\s*minmax\(min\(100%,\s*12\.5rem\),\s*1fr\)\)/);
+  assert.match(responsiveCss, /@container\s+viscerium-home\s*\(max-width:\s*34rem\)/);
 });
 
 test('homepage startup template opens Home through the workspace after layout is ready', async () => {
