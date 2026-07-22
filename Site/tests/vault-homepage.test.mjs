@@ -32,11 +32,30 @@ test('VISCERIUM Home remains creator-only and wired to its presentation/action d
 
   assert.match(home.content, /vc-home-action-strip/);
   assert.match(home.content, /vc-home-recent-grid/);
+  assert.match(home.content, /NEXT ACTIONS/);
+  assert.match(home.content, /WRITING DESK/);
+  assert.match(home.content, /CREATOR ACTIVITY/);
+  assert.match(home.content, /System\/Creator Tasks/);
+  assert.match(home.content, /activeProjectFile/);
+  assert.match(home.content, /Creator Activity\.json/);
+  assert.match(home.content, /vc-home-heatmap/);
   assert.match(home.content, /Create Story Entity/);
   assert.match(home.content, /Create New Story Entity/);
   assert.match(home.content, /viscerium-timelines:open-storyline-project-timeline/);
   assert.match(home.content, /viscerium-timelines:diagnose-storyline-integration/);
   assert.doesNotMatch(home.content, /dv\.table\(/);
+});
+
+test('homepage visual layer stays flat and keeps functional colour roles', async () => {
+  const visualCss = await readText('.obsidian/snippets/VISCERIUM Homepage.css');
+
+  assert.match(visualCss, /home-tasks/);
+  assert.match(visualCss, /home-writingdesk/);
+  assert.match(visualCss, /home-activity/);
+  assert.match(visualCss, /vc-home-heatmap/);
+  assert.match(visualCss, /border-left:/);
+  assert.doesNotMatch(visualCss, /linear-gradient\(/);
+  assert.doesNotMatch(visualCss, /radial-gradient\(/);
 });
 
 test('homepage responsive layer resets readable width and avoids fixed two-column overflow', async () => {
@@ -62,10 +81,29 @@ test('homepage control deck remains compact and pane-responsive', async () => {
   assert.match(responsiveCss, /@container\s+viscerium-home\s*\(max-width:\s*34rem\)/);
 });
 
-test('homepage startup template opens Home through the workspace after layout is ready', async () => {
-  const startup = await readText('Templates/_Startup/Open VISCERIUM Home.md');
+test('creator task hub uses ordinary Markdown tasks without introducing a task plugin', async () => {
+  const taskHub = await readText('System/Creator Tasks.md');
+  const plugins = await readJson('.obsidian/community-plugins.json');
 
-  assert.match(startup, /getAbstractFileByPath\("Home\.md"\)/);
-  assert.match(startup, /workspace\.onLayoutReady\(openHome\)/);
+  assert.match(taskHub, /dv\.taskList/);
+  assert.match(taskHub, /ordinary Markdown checkboxes/i);
+  assert.doesNotMatch(taskHub, /completion percentage/i);
+  assert.ok(!plugins.includes('tasknotes'));
+});
+
+test('homepage startup records durable creator activity before opening Home', async () => {
+  const startup = await readText('Templates/_Startup/Open VISCERIUM Home.md');
+  const ledger = await readJson('System/Data/Creator Activity.json');
+
+  assert.equal(ledger.version, 1);
+  assert.deepEqual(ledger.days, {});
+  assert.match(startup, /Creator Activity\.json/);
+  assert.match(startup, /getMarkdownFiles\(\)/);
+  assert.match(startup, /!path\.startsWith\("System\/"\)/);
+  assert.match(startup, /!path\.startsWith\("Templates\/"\)/);
+  assert.match(startup, /recordCreatorActivity/);
+  assert.match(startup, /workspace\.onLayoutReady\(async\s*\(\)\s*=>/);
+  assert.match(startup, /await recordCreatorActivity\(\)/);
+  assert.match(startup, /await openHome\(\)/);
   assert.match(startup, /mode:\s*"preview"/);
 });
