@@ -36,9 +36,12 @@ Avoid names such as `VISCERIUM-Codex Folder icons`.
 - Image styling
 - Callout styling
 - Embed styling
+- Timeline styling
 - Tag styling
 - Checkbox styling
 - Hover previews
+
+`Timeline styling` is the Obsidian presentation bridge for Chronos and the shared VISCERIUM timeline renderer. It maps the Codex/Starlight variables used by the shared renderer onto Obsidian theme variables, gives ordinary Chronos blocks an explicit `CHRONOS · PORTABLE TIMELINE` identity, and labels the StoryLine timeline projection with its source, date field, renderer and read-only role. It does not introduce timeline syntax or duplicate metadata.
 
 ### Workspace and navigation
 
@@ -48,6 +51,7 @@ Avoid names such as `VISCERIUM-Codex Folder icons`.
 - Article list colors
 - Active file indicator
 - Folder hierarchy
+- Workspace labels
 - Compact tabs
 - Scrollbars
 - Compact status bar
@@ -57,6 +61,7 @@ Avoid names such as `VISCERIUM-Codex Folder icons`.
 The file explorer uses stable section colours rather than assigning arbitrary colours by folder depth:
 
 - Lore — cyan
+- Stories — orange
 - Drafts — amber
 - Private — rose
 - System — violet
@@ -64,17 +69,28 @@ The file explorer uses stable section colours rather than assigning arbitrary co
 
 Nested folders inherit their root section's colour family. Article titles receive a restrained tint, while the currently active article gets a stronger section-coloured background and left indicator.
 
+`Workspace labels` adds small functional labels to the six root folders so the architecture remains obvious while navigating:
+
+- Lore — `CANON`
+- Stories — `WRITING`
+- Drafts — `WIP`
+- Private — `PRIVATE`
+- System — `TOOLS`
+- Templates — `REUSE`
+
+These labels are file-explorer presentation only; the folder paths remain the actual architectural boundary.
+
 ### Bases and snippet management
 
 - Bases cards
 - Bases table
 - MySnippets menu
 
-## Optional snippets
+### Behavioural
 
-### Autohide properties
+- Autohide properties
 
-Available but intentionally disabled by default. It collapses the Properties block in Live Preview until hovered or focused. This is a behavioural change rather than a purely visual one, so enable it only when useful.
+`Autohide properties` collapses the Properties block in Live Preview until hovered or focused. It is a behavioural change rather than a purely visual one and remains independently toggleable in MySnippets.
 
 ## MySnippets plugin
 
