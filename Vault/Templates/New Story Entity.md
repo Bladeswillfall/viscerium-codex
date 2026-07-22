@@ -1,7 +1,6 @@
 <%*
 const ERA_OPTIONS = ["CITADEL", "SMOG", "NEARSIGHT", "ENTROPY"];
-const RARITY_LABELS = ["Leave undefined", "Common", "Uncommon", "Rare", "Singular"];
-const RARITY_VALUES = ["", "Common", "Uncommon", "Rare", "Singular"];
+const RARITY_FIELD = { key: "rarity", label: "Rarity", options: ["Leave undefined", "Common", "Uncommon", "Rare", "Singular"], values: ["", "Common", "Uncommon", "Rare", "Singular"] };
 
 const entityTypes = {
   fauna: {
@@ -291,22 +290,17 @@ if (type !== "item") {
   biomes = biomesText.split(",").map((value) => value.trim()).filter(Boolean);
 }
 
-const rarity = await tp.system.suggester(
-  RARITY_LABELS,
-  RARITY_VALUES,
+const PROFILE_OPTION = "__profile";
+const selectedOptions = await tp.system.multi_suggester(
+  ["Profile — basic traits and rarity", ...config.modules.map((module) => module.label)],
+  [PROFILE_OPTION, ...config.modules.map((module) => module.id)],
   false,
-  "Rarity — leave undefined unless it helps place or use the subject"
-) ?? "";
-
-const selectedModules = await tp.system.multi_suggester(
-  config.modules.map((module) => module.label),
-  config.modules.map((module) => module.id),
-  false,
-  "Optional modules — select only what matters to the current story"
+  "Optional detail — select only what matters to the current story"
 ) ?? [];
 
 const values = {};
 const propertyOrder = [];
+const populatedModules = new Set();
 
 async function collectField(field) {
   let value = "";
@@ -315,16 +309,24 @@ async function collectField(field) {
   } else {
     value = (await tp.system.prompt(field.prompt, "", false) ?? "").trim();
   }
-  if (value !== "") {
-    values[field.key] = value;
-    propertyOrder.push(field.key);
-  }
+  if (value === "") return false;
+  values[field.key] = value;
+  propertyOrder.push(field.key);
+  return true;
 }
 
-for (const field of config.quickFields) await collectField(field);
+if (selectedOptions.includes(PROFILE_OPTION)) {
+  for (const field of config.quickFields) await collectField(field);
+  await collectField(RARITY_FIELD);
+}
+
 for (const module of config.modules) {
-  if (!selectedModules.includes(module.id)) continue;
-  for (const field of module.fields) await collectField(field);
+  if (!selectedOptions.includes(module.id)) continue;
+  let populated = false;
+  for (const field of module.fields) {
+    if (await collectField(field)) populated = true;
+  }
+  if (populated) populatedModules.add(module.id);
 }
 
 const yamlString = (value) => JSON.stringify(value);
@@ -337,12 +339,11 @@ const frontmatter = [
   "publish: false",
   "status: draft",
   `type: ${type}`,
-  "development_level: stub",
-  `eras: ${yamlList(eras)}`
+  "development_level: stub"
 ];
+if (eras.length) frontmatter.push(`eras: ${yamlList(eras)}`);
 if (locations.length) frontmatter.push(`locations: ${yamlList(locations)}`);
 if (biomes.length) frontmatter.push(`biomes: ${yamlList(biomes)}`);
-if (rarity) frontmatter.push(`rarity: ${yamlString(rarity)}`);
 for (const key of propertyOrder) frontmatter.push(`${key}: ${yamlString(values[key])}`);
 frontmatter.push(`tags: ${yamlList(["story-entity", type])}`);
 frontmatter.push("---");
@@ -363,7 +364,7 @@ const body = [
 ];
 
 for (const module of config.modules) {
-  if (!selectedModules.includes(module.id)) continue;
+  if (!populatedModules.has(module.id)) continue;
   body.push("", `## ${module.heading}`, "", `%% ${module.bodyPrompt} The concise Storyteller value lives in the note properties; use this section for fuller canon only when needed. %%`);
 }
 
