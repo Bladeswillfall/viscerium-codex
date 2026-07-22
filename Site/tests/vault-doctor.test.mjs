@@ -30,6 +30,24 @@ test('valid ordinary entity passes without requiring optional detail', () => {
   assert.equal(result.errors.length, 0);
 });
 
+test('templates are excluded from creator entity counts and diagnostics', () => {
+  const result = diagnoseCreatorVault({
+    records: [record('Templates/Myrkild Unit Profile.md', {
+      title: '{{title}}',
+      description: 'Template.',
+      type: 'myrkild-unit',
+      era: 'FUTURE',
+      unit_id: 'DUPLICATE-TEMPLATE-ID',
+      locations: [],
+      biomes: [],
+      tags: ['myrkild', 'unit'],
+    })],
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.entityCount, 0);
+  assert.deepEqual(result.diagnostics, []);
+});
+
 test('folder and type contradictions are errors', () => {
   const result = diagnoseCreatorVault({
     records: [record('Drafts/Databases/Fauna/Red Reed.md', ordinary())],
