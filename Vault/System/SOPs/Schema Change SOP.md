@@ -39,6 +39,19 @@ Treat the visible size of a new note as a limited budget.
 
 The budget is a pressure against bloat, not a rigid numerical rule.
 
+## Template synchronization
+
+`New Story Entity` and `Add Storyteller Fields` deliberately describe the same optional field families from two different workflows: creation and later development.
+
+When an optional property is added, renamed or removed:
+
+1. update both templates in the same change, unless the field is explicitly creation-only or injection-only;
+2. update the relevant Base table when the field needs comparison or bulk editing;
+3. keep the creator card view compact — a field does not belong on a card merely because it exists in the schema;
+4. update the Storyteller View SOP only when the public interpretation changes.
+
+A schema change is incomplete if one workflow can create a property that the other workflow no longer understands.
+
 ## Naming rules
 
 - Use plain, reusable names such as `signs_of_presence` or `human_relevance`.
