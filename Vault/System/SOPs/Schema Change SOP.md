@@ -41,14 +41,17 @@ The budget is a pressure against bloat, not a rigid numerical rule.
 
 ## Template synchronization
 
-`New Story Entity` and `Add Storyteller Fields` deliberately describe the same optional field families from two different workflows: creation and later development.
+`Templates/_Internals/Story Entity Core.md` and [[Add Storyteller Fields]] deliberately describe the same optional field families from two different workflows: initial creation and later development.
+
+[[New Story Entity]] is only the creator-facing routing wrapper. It should not become a second copy of the schema.
 
 When an optional property is added, renamed or removed:
 
-1. update both templates in the same change, unless the field is explicitly creation-only or injection-only;
+1. update the internal Story Entity Core and `Add Storyteller Fields` in the same change, unless the field is explicitly creation-only or injection-only;
 2. update the relevant Base table when the field needs comparison or bulk editing;
 3. keep the creator card view compact — a field does not belong on a card merely because it exists in the schema;
-4. update the Storyteller View SOP only when the public interpretation changes.
+4. update `New Story Entity` only when routing, folder inference or workflow behaviour changes;
+5. update the Storyteller View SOP only when the public interpretation changes.
 
 A schema change is incomplete if one workflow can create a property that the other workflow no longer understands.
 
