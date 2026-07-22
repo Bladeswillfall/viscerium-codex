@@ -28,7 +28,9 @@
   "file_templates": [],
   "syntax_highlighting": true,
   "syntax_highlighting_mobile": true,
-  "enabled_templates_hotkeys": [],
+  "enabled_templates_hotkeys": [
+    "Templates/New Story Entity.md"
+  ],
   "startup_templates": [
     "Templates/_Startup/Open VISCERIUM Home.md"
   ],
