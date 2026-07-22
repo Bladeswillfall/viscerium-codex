@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseStoryLineDate } from '../src/lib/timeline/storyline-adapter.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, '../..');
@@ -46,6 +47,21 @@ test('StoryLine timeline uses an in-memory adapter instead of duplicate source f
   assert.match(plugin, /buildStoryLineTimelineDataset/);
   assert.match(adapter, /parseStoryLineDate\(scene\.storyDate\)/);
   assert.doesNotMatch(adapter, /scene\.calendarDate/);
+});
+
+test('real StoryLine test scene is placeable on the VISCERIUM calendar', () => {
+  const scene = read('Vault/Stories/My Trilogy/My Novel/Scenes/Act 1/01-01 Test scene.md');
+  const storyDate = scene.match(/^storyDate:\s*["']?(.+?)["']?\s*$/m)?.[1];
+
+  assert.ok(storyDate, 'test scene should contain storyDate');
+  assert.doesNotMatch(scene, /^calendarDate:/m);
+
+  const parsed = parseStoryLineDate(storyDate);
+  assert.ok(parsed, `storyDate should parse: ${storyDate}`);
+  assert.equal(parsed.year, 9250);
+  assert.equal(parsed.day, 16);
+  assert.equal(parsed.precision, 'day');
+  assert.equal(parsed.certainty, 'exact');
 });
 
 test('StoryLine bridge resolves the active project outside Markdown views', () => {
