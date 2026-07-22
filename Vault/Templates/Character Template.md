@@ -1,9 +1,11 @@
 ---
-title:
+title: "{{title}}"
 description:
 publish: false
 status: draft
 type: character
+icon: character
+era:
 faction:
 location:
 species:
@@ -15,59 +17,47 @@ imageTitle:
 artist:
 headerImage:
 alt:
-tags:
+tags: []
 relationships:
-  allies:
-  rivals:
+  allies: []
+  rivals: []
+related: []
 ---
 
-# {{title}}
-
-%% Sidebar portrait: set `image` to `/assets/images/example.webp` or just `example.webp`. %%
-%% Image details: set `imagePage` to the published image metadata page, e.g. `/eras/citadel/images/example-portrait/`. %%
-%% Use `imageTitle` and `artist` to show the artwork name and artist beneath the sidebar image. %%
-%% Header image: set `headerImage` to a vault asset path that can publish to `/assets/images/...`; in Obsidian, preview it here when useful. %%
-
-```dataviewjs
-await dv.view('Views/viscerium-sidebar', {
-  accent: 'crimson',
-  sections: [
-    { label: 'Faction', field: 'faction' },
-    { label: 'Location', field: 'location' },
-    { label: 'Era', field: 'era' },
-    { label: 'Species', field: 'species' },
-    { label: 'Occupation', field: 'occupation' },
-    { label: 'Alignment', field: 'alignment' },
-    { label: 'Allies', field: 'relationships.allies' },
-    { label: 'Rivals', field: 'relationships.rivals' }
-  ]
-});
-```
+%% Before publishing: write a reader-safe description, establish the relevant era/context, and remove anything that should remain secret. Optional image fields are publishing metadata; leave them blank until useful. %%
 
 ## Summary
 
+Who are they, what do they want, what makes them distinctive, and why do they matter?
+
 ## Appearance
 
+Describe only the visual details that help somebody recognise or portray them consistently.
+
 ## Personality
+
+Focus on motives, contradictions, habits, fears, humour, loyalties, and breaking points that change how they behave.
 
 ## Biography
 
 ### Early Life
 
+Record the experiences that actually shaped their worldview: family, class, region, oath, debt, wound, faith, disgrace, or opportunity.
+
 ### Major Events
+
+Link to established events when they materially changed the character.
 
 ## Abilities and Resources
 
+Record capabilities that change scenes: authority, training, money, allies, local knowledge, Resonance, equipment, land, debts, or leverage.
+
 ## Relationships
 
-## Notes and Secrets
+Use prose for nuance and wikilinks for meaningful relationships. Keep the frontmatter relationship lists concise enough to remain useful for navigation and queries.
 
-Keep private information in `Vault/Private/` or leave `publish: false`.
+%% Keep unrevealed loyalties, future consequences, secret identities, and other spoiler material in Vault/Private rather than in a note you may later publish. %%
 
 ## Related
 
----
-
-## Comments
-
-Keep public discussion notes or moderation reminders here. Published site comments render in their own bottom section via Giscus.
+Add only links that help a reader or creator understand the character in context.
