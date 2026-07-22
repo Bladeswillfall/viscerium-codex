@@ -1,0 +1,83 @@
+/*
+ * Workspace labels
+ * Adds small role labels to the vault's top-level sections so their purpose is
+ * obvious at a glance. Uses existing file-explorer paths only; no note syntax.
+ */
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is(
+  [data-path="Lore"],
+  [data-path="Stories"],
+  [data-path="Drafts"],
+  [data-path="Private"],
+  [data-path="System"],
+  [data-path="Templates"]
+) .nav-folder-title-content {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title:is(
+  [data-path="Lore"],
+  [data-path="Stories"],
+  [data-path="Drafts"],
+  [data-path="Private"],
+  [data-path="System"],
+  [data-path="Templates"]
+) .nav-folder-title-content::after {
+  margin-inline-start: auto;
+  padding: 0.08rem 0.34rem;
+  border: 1px solid color-mix(in srgb, var(--workspace-role-color) 32%, var(--background-modifier-border));
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--workspace-role-color) 74%, var(--text-muted));
+  background: color-mix(in srgb, var(--workspace-role-color) 8%, transparent);
+  font-family: var(--font-interface);
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="Lore"] {
+  --workspace-role-color: var(--explorer-lore, #5ac8fa);
+}
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="Lore"] .nav-folder-title-content::after {
+  content: "CANON";
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="Stories"] {
+  --workspace-role-color: var(--explorer-stories, #f97316);
+}
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="Stories"] .nav-folder-title-content::after {
+  content: "WRITING";
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="Drafts"] {
+  --workspace-role-color: var(--explorer-drafts, #f2b84b);
+}
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="Drafts"] .nav-folder-title-content::after {
+  content: "WIP";
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="Private"] {
+  --workspace-role-color: var(--explorer-private, #ef6f91);
+}
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="Private"] .nav-folder-title-content::after {
+  content: "PRIVATE";
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="System"] {
+  --workspace-role-color: var(--explorer-system, #a78bfa);
+}
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="System"] .nav-folder-title-content::after {
+  content: "TOOLS";
+}
+
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="Templates"] {
+  --workspace-role-color: var(--explorer-templates, #65d6ad);
+}
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder-title[data-path="Templates"] .nav-folder-title-content::after {
+  content: "REUSE";
+}
