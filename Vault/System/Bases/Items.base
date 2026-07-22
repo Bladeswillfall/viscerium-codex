@@ -38,13 +38,8 @@ views:
       - item_type
       - origin
       - eras
-      - locations
       - rarity
       - primary_use
-      - limitations
-      - availability
-      - common_users
-      - development_level
     sort:
       - property: title
         direction: ASC
