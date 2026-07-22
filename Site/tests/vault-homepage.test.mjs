@@ -91,14 +91,18 @@ test('creator task hub uses ordinary Markdown tasks without introducing a task p
   assert.ok(!plugins.includes('tasknotes'));
 });
 
-test('homepage startup records durable creator activity before opening Home', async () => {
+test('homepage startup records durable content-based creator activity before opening Home', async () => {
   const startup = await readText('Templates/_Startup/Open VISCERIUM Home.md');
   const ledger = await readJson('System/Data/Creator Activity.json');
 
   assert.equal(ledger.version, 1);
-  assert.deepEqual(ledger.days, {});
+  assert.equal(typeof ledger.files, 'object');
+  assert.equal(typeof ledger.days, 'object');
   assert.match(startup, /Creator Activity\.json/);
   assert.match(startup, /getMarkdownFiles\(\)/);
+  assert.match(startup, /cachedRead\(file\)/);
+  assert.match(startup, /hashText/);
+  assert.match(startup, /previousHash\s*===\s*hash/);
   assert.match(startup, /!path\.startsWith\("System\/"\)/);
   assert.match(startup, /!path\.startsWith\("Templates\/"\)/);
   assert.match(startup, /recordCreatorActivity/);
