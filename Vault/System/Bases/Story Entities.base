@@ -8,7 +8,7 @@ filters:
         - type == "item"
         - type == "myrkild-unit"
 formulas:
-  era_context: 'if(eras, eras, era)'
+  era_context: 'if(eras, eras, if(era, list(era), null))'
 properties:
   title:
     displayName: Entity
@@ -57,10 +57,56 @@ views:
       - property: title
         direction: ASC
   - type: table
-    name: By Era
-    groupBy:
-      property: formula.era_context
-      direction: ASC
+    name: CITADEL
+    filters:
+      or:
+        - era == "CITADEL"
+        - list(eras).contains("CITADEL")
+    order:
+      - title
+      - type
+      - locations
+      - development_level
+      - file.mtime
+    sort:
+      - property: title
+        direction: ASC
+  - type: table
+    name: SMOG
+    filters:
+      or:
+        - era == "SMOG"
+        - list(eras).contains("SMOG")
+    order:
+      - title
+      - type
+      - locations
+      - development_level
+      - file.mtime
+    sort:
+      - property: title
+        direction: ASC
+  - type: table
+    name: NEARSIGHT
+    filters:
+      or:
+        - era == "NEARSIGHT"
+        - list(eras).contains("NEARSIGHT")
+    order:
+      - title
+      - type
+      - locations
+      - development_level
+      - file.mtime
+    sort:
+      - property: title
+        direction: ASC
+  - type: table
+    name: ENTROPY
+    filters:
+      or:
+        - era == "ENTROPY"
+        - list(eras).contains("ENTROPY")
     order:
       - title
       - type
