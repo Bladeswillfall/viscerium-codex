@@ -1,17 +1,24 @@
 # Recommended Plugins
 
-The publishing workflow does not require paid plugins. Start simple, then add optional plugins only if they help your writing.
+The publishing workflow does not require paid plugins. Keep the authoring stack small and add optional plugins only when they remove more work than they create.
 
-## Recommended actions
+## Required for the checked-in creator workflow
 
-1. Enable the built-in **Templates** plugin and set `Vault/Templates/` as the template folder.
-2. Install **Dataview** to render the shared sidebar in canonical templates.
-3. Optional: install **Advanced Tables** if you want table-style infobox editing.
-4. Optional: install **Editing Toolbar** if you prefer a more visual editing experience.
-5. Optional: install **Style Settings** and a theme you like for Obsidian-only appearance changes.
+1. Enable the built-in **Templates** plugin and keep `Templates` as its template folder.
+2. Enable the built-in **Bases** plugin for creator-only card and database views.
+3. Enable **Templater** for guided entity creation and progressive Storyteller field injection. Its checked-in configuration uses `Templates` and does not run automatically on file creation.
+4. Enable **Dataview** to render the shared sidebar in canonical templates.
+
+## Optional conveniences
+
+1. **Advanced Tables** or the checked-in table editor can help with table-style editing.
+2. **Editing Toolbar** can provide a more visual editing experience.
+3. **Style Settings** and a preferred theme can change Obsidian-only appearance.
+
+Do not add a plugin merely to expose more fields, forms or dashboards. The creator workflow should remain understandable from the Markdown notes, templates, Bases and SOPs committed to the repository.
 
 ## Publishing caution
 
-Dataview queries, plugin-only syntax, and theme-specific styling may not render the same way on the Astro site. For public pages, write important content as normal Markdown and keep required publishing metadata in frontmatter.
+Dataview queries, Templater commands, plugin-only syntax, and theme-specific styling may not render on the Astro site.
 
-Templates and Dataview support the checked-in authoring workflow. Other editor plugins are personal conveniences; the publishing workflow does not require them or any paid plugin.
+Templater commands should be executed during authoring so the resulting note contains ordinary Markdown and frontmatter. Important public content must remain available as normal Markdown or structured properties that the site explicitly consumes.
