@@ -29,6 +29,7 @@ jobs:
           cache-dependency-path: Site/package-lock.json
 
       - run: npm ci --silent --no-audit --no-fund
+      - run: npm run doctor:vault
       - run: npm run test:unit
       - run: npm run benchmark:timelines
       - run: npm run build
