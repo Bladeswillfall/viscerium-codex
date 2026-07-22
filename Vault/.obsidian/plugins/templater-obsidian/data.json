@@ -28,8 +28,12 @@
   "file_templates": [],
   "syntax_highlighting": true,
   "syntax_highlighting_mobile": true,
-  "enabled_templates_hotkeys": [],
-  "startup_templates": [],
+  "enabled_templates_hotkeys": [
+    "Templates/New Story Entity.md"
+  ],
+  "startup_templates": [
+    "Templates/_Startup/Open VISCERIUM Home.md"
+  ],
   "intellisense_render": "1",
   "ignore_folders_on_creation": []
 }

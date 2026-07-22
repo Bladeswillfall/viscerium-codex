@@ -3,21 +3,37 @@
 Use this as the practical lookup for interacting with the VISCERIUM authoring system. It records creator-facing Obsidian commands and supported terminal commands so they do not need to be remembered from previous setup work.
 
 > [!tip] Start here when you forget a command
-> Open the Obsidian Command Palette with **Ctrl/Cmd + P**, or open a terminal at the repository root and use the sections below. This page documents what each command does and whether it changes files.
+> [[Home]] is the front door for common actions and navigation. Open the Obsidian Command Palette with **Ctrl/Cmd + P**, or open a terminal at the repository root and use the sections below. This page documents what each command does and whether it changes files.
 
 ## Quick lookup
 
 | I want to... | Use |
 | --- | --- |
-| Create fauna, flora, fungi or an item | **Templater: Create new note from template** → `New Story Entity` |
+| Return to the creator dashboard | Open [[Home]] |
+| Create fauna, flora, fungi or an item | [[Home]] → **Create Story Entity**, or **Templater: Create New Story Entity** |
 | Add optional Storyteller/profile fields later | **Templater: Insert template** → `Add Storyteller Fields` |
 | Browse every structured story entity together | Open [[Story Entities.base]] |
 | Check creator data for structural mistakes | `cd Site` then `npm run doctor:vault` |
 | Check whether public Lore is safe to publish | `cd Site` then `npm run validate:vault` |
 | Run the normal local test/build suite | `cd Site` then `npm test` |
 | Start the Codex locally | `cd Site` then `npm run dev` |
-| Open the current StoryLine project on the VISCERIUM calendar | **VISCERIUM Timelines: Open StoryLine project timeline** |
-| Diagnose StoryLine ↔ VISCERIUM timeline integration | **VISCERIUM Timelines: Diagnose StoryLine integration** |
+| Open the current StoryLine project on the VISCERIUM calendar | [[Home]] → **Open Story Timeline**, or **VISCERIUM Timelines: Open StoryLine project timeline** |
+| Diagnose StoryLine ↔ VISCERIUM timeline integration | [[Home]] → **Troubleshoot StoryLine**, or **VISCERIUM Timelines: Diagnose StoryLine integration** |
+
+## Home — creator dashboard
+
+`Home.md` is intentionally a navigation/action layer rather than another source of canon. It provides:
+
+- recent creator work via Dataview;
+- links to the cross-entity and type-specific Bases;
+- StoryLine and VISCERIUM timeline guidance;
+- a one-click **Create Story Entity** action;
+- Story Timeline and StoryLine diagnostic actions;
+- links to the SOPs/process documentation;
+- terminal health-check reminders;
+- direct links to the four VISCERIUM eras.
+
+Navigation remains ordinary Markdown/wikilinks. The action buttons use DataviewJS to invoke existing Obsidian commands and are conveniences rather than unique workflows.
 
 ## Obsidian commands
 
@@ -27,12 +43,13 @@ Run these through **Ctrl/Cmd + P** unless stated otherwise.
 
 | Command / action | What it does | Changes files? |
 | --- | --- | --- |
-| **Templater: Create new note from template** → `New Story Entity` | Guided creation for fauna, flora, fungi and items. Asks for the small core, then only the optional detail families selected. The finished note is automatically filed into `Drafts/Databases/<Type>/`. | **Yes.** Creates and files a Markdown note. |
+| **Templater: Create New Story Entity** | Direct template-specific creation command for fauna, flora, fungi and items. Runs the same guided workflow as `New Story Entity` and automatically files the result into `Drafts/Databases/<Type>/`. This is what the Home **Create Story Entity** button invokes. | **Yes.** Creates and files a Markdown note. |
+| **Templater: Create new note from template** → `New Story Entity` | General fallback route to the same workflow when you deliberately want the Templater template picker. | **Yes.** Creates and files a Markdown note. |
 | Create a normal blank note directly inside `Drafts/Databases/Fauna`, `Flora`, `Fungi` or `Items` | Folder-first version of the same workflow. Templater infers the type from the folder and skips the redundant type question. Requires the per-device **Trigger Templater on new file creation** switch. | **Yes.** The new note is populated by Templater. |
 | **Templater: Insert template** → `Add Storyteller Fields` | Adds only selected, currently absent optional properties to an existing fauna, flora, fungi, item or Myrkild unit. Existing values are preserved. | **Yes.** Updates frontmatter only for values actually supplied. |
 | **Templates: Insert template** | Uses Obsidian's built-in Templates plugin for static/non-interactive templates. Use Templater instead for the workflows above. | **Yes.** Inserts the chosen static template. |
 
-Do **not** run files inside `Templates/_Internals/` directly. They are shared implementation used by creator-facing templates.
+Do **not** run files inside `Templates/_Internals/` or `Templates/_Startup/` directly. They contain shared implementation or startup behaviour used by creator-facing workflows.
 
 ### Bases and browsing
 
@@ -54,16 +71,24 @@ Cards are for browsing. Database/table views are for comparison and structured e
 | Command | What it does | Changes files? |
 | --- | --- | --- |
 | **VISCERIUM Timelines: Refresh compiled timelines** | Invalidates the local timeline cache and recompiles canonical VISCERIUM timeline data from vault notes. Useful after timeline metadata changes if a rendered timeline appears stale. | **No.** Rebuilds the in-memory view. |
-| **VISCERIUM Timelines: Open StoryLine project timeline** | Finds the active/current StoryLine project, reads its scene `storyDate` metadata and opens a read-only VISCERIUM calendar timeline for that project. | **No.** Reads StoryLine scene files. |
-| **VISCERIUM Timelines: Diagnose StoryLine integration** | Reports whether StoryLine is loaded, which project/root VISCERIUM resolved, and whether dated scenes can be placed on the calendar. Use this first when StoryLine timelines are not behaving as expected. | **No.** Diagnostic only. |
+| **VISCERIUM Timelines: Open StoryLine project timeline** | Finds the active/current StoryLine project, reads its scene `storyDate` metadata and opens a read-only VISCERIUM calendar timeline for that project. Also exposed as **Open Story Timeline** on Home. | **No.** Reads StoryLine scene files. |
+| **VISCERIUM Timelines: Diagnose StoryLine integration** | Reports whether StoryLine is loaded, which project/root VISCERIUM resolved, and whether dated scenes can be placed on the calendar. Also exposed as the secondary **Troubleshoot StoryLine** action on Home. | **No.** Diagnostic only. |
 
-## One-time Obsidian setting per device
+## One-time Obsidian settings per device
 
-Folder-first story-entity creation depends on a Templater setting that Git cannot enable because Templater stores it locally on each device:
+Templater deliberately stores dangerous automatic-execution permissions in local device storage rather than Git.
+
+### Folder-first entity creation
 
 **Settings → Templater → File creation → Trigger Templater on new file creation → On**
 
 Keep the matching mode on **Folder templates**. The repository already contains the four narrow folder rules; do not add a `/` catch-all rule.
+
+### Open Home at startup
+
+**Settings → Templater → Startup templates → Enable startup templates → On**
+
+The repository already registers `Templates/_Startup/Open VISCERIUM Home.md`. Once the device-local permission is enabled, `Home.md` opens in Reading View when the workspace is ready. Leave the toggle off if you prefer Obsidian to resume directly into the previous active note instead.
 
 ## Terminal commands — Codex and vault
 
@@ -152,6 +177,6 @@ They solve different problems and both are useful.
 
 ## Maintenance rule
 
-Whenever a creator-facing Obsidian command, Templater workflow, Base entry point or `npm` script is added, renamed or removed, update this reference in the same change. The purpose of this document is to remain a reliable interaction map rather than historical documentation.
+Whenever a creator-facing Obsidian command, Templater workflow, Base entry point, homepage action or `npm` script is added, renamed or removed, update this reference in the same change. Add something to [[Home]] only when it is a genuine top-level navigation or frequent action; the comprehensive catalogue belongs here rather than on the dashboard.
 
 For judgement about *what to write*, use [[Entity Authoring SOP]]. For the story-entity lifecycle, use [[Story Entity Workflow SOP]]. For schema changes, use [[Schema Change SOP]].

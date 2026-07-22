@@ -16,7 +16,9 @@ Good examples:
 - `Compact properties`
 - `Bases cards`
 
-Avoid names such as `VISCERIUM-Codex Folder icons`.
+The creator dashboard is deliberately project-specific, so `VISCERIUM Homepage` is an intentional exception.
+
+Avoid names such as `VISCERIUM-Codex Folder icons` for otherwise reusable behaviour.
 
 ## Enabled by default
 
@@ -57,6 +59,9 @@ Avoid names such as `VISCERIUM-Codex Folder icons`.
 - Compact status bar
 - Outline panel
 - Search results
+- VISCERIUM Homepage
+
+`VISCERIUM Homepage` is scoped to notes with `cssclasses: viscerium-home` and currently applies only to [[Home]]. It provides the responsive two-column panel layout, creator-action button styling and recent-work table treatment. The underlying homepage remains ordinary Markdown callouts, wikilinks and creator-only Dataview blocks, so disabling the snippet changes presentation rather than information architecture.
 
 The file explorer uses stable section colours rather than assigning arbitrary colours by folder depth:
 
@@ -117,5 +122,7 @@ Local compatibility notes live in:
 Prefer CSS that styles Obsidian's UI and rendered Markdown without requiring extra frontmatter, special tags, image syntax, or duplicate layout conventions.
 
 If a visual feature requires authoring syntax, it should either use syntax already supported by the Codex or be implemented through an automated shared renderer. Do not create separate authoring conventions for Obsidian and the public Codex.
+
+Creator-only control surfaces such as [[Home]] may use a dedicated `cssclasses` value when the class is clearly scoped to the interface note rather than ordinary lore content.
 
 Standard Markdown constructs such as links, blockquotes, lists, fenced code, horizontal rules, tags, and task checkboxes may be styled freely because their source syntax is already valid Markdown and does not create a second Obsidian-only authoring system.
