@@ -49,13 +49,16 @@ const recordCreatorActivity = async () => {
   ledger.files ??= {};
   ledger.days ??= {};
 
+  const isBaselineScan = !ledger.lastScan && Object.keys(ledger.files).length === 0;
   const nextFiles = {};
-  let changed = false;
+  let changed = isBaselineScan;
 
   for (const file of tp.app.vault.getMarkdownFiles().filter(isCreatorFile)) {
     const text = await tp.app.vault.cachedRead(file);
     const hash = hashText(text);
     nextFiles[file.path] = hash;
+
+    if (isBaselineScan) continue;
 
     const previousHash = String(ledger.files[file.path] ?? "");
     if (previousHash === hash) continue;
