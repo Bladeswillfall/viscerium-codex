@@ -102,7 +102,9 @@ test('homepage startup records durable content-based creator activity before ope
   assert.match(startup, /getMarkdownFiles\(\)/);
   assert.match(startup, /cachedRead\(file\)/);
   assert.match(startup, /hashText/);
-  assert.match(startup, /previousHash\s*===\s*hash/);
+  assert.match(startup, /previous\.hash\s*===\s*hash/);
+  assert.match(startup, /previous\.mtime\s*===\s*mtime/);
+  assert.match(startup, /isBaselineScan/);
   assert.match(startup, /!path\.startsWith\("System\/"\)/);
   assert.match(startup, /!path\.startsWith\("Templates\/"\)/);
   assert.match(startup, /recordCreatorActivity/);
