@@ -1,0 +1,73 @@
+filters:
+  and:
+    - type == "fungi"
+    - '!file.inFolder("Templates")'
+properties:
+  title:
+    displayName: Fungi
+  description:
+    displayName: Identity
+  growth_form:
+    displayName: Growth form
+  substrate:
+    displayName: Substrate
+  eras:
+    displayName: Eras
+  locations:
+    displayName: Locations
+  biomes:
+    displayName: Biomes
+  rarity:
+    displayName: Rarity
+  fruiting_conditions:
+    displayName: Fruiting conditions
+  human_relevance:
+    displayName: Why people care
+  hazards:
+    displayName: Hazards
+  development_level:
+    displayName: Development
+  image:
+    displayName: Artwork
+views:
+  - type: cards
+    name: Fungi Cards
+    order:
+      - title
+      - description
+      - growth_form
+      - substrate
+      - eras
+      - locations
+      - rarity
+    sort:
+      - property: title
+        direction: ASC
+    cardSize: 260
+    imageFit: cover
+    imageAspectRatio: 1.5
+    image: image
+  - type: table
+    name: Database
+    order:
+      - title
+      - growth_form
+      - substrate
+      - eras
+      - locations
+      - biomes
+      - rarity
+      - identification
+      - signs_of_presence
+      - fruiting_conditions
+      - spread
+      - human_relevance
+      - hazards
+      - cultural_significance
+      - story_complication
+      - development_level
+      - status
+      - file.mtime
+    sort:
+      - property: title
+        direction: ASC

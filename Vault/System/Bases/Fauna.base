@@ -1,0 +1,72 @@
+filters:
+  and:
+    - type == "fauna"
+    - '!file.inFolder("Templates")'
+properties:
+  title:
+    displayName: Fauna
+  description:
+    displayName: Identity
+  fauna_kind:
+    displayName: Kind
+  size_class:
+    displayName: Size
+  eras:
+    displayName: Eras
+  locations:
+    displayName: Locations
+  biomes:
+    displayName: Biomes
+  rarity:
+    displayName: Rarity
+  threat_level:
+    displayName: Threat
+  encounter_behaviour:
+    displayName: Encounter behaviour
+  human_relevance:
+    displayName: Why people care
+  development_level:
+    displayName: Development
+  image:
+    displayName: Artwork
+views:
+  - type: cards
+    name: Fauna Cards
+    order:
+      - title
+      - description
+      - fauna_kind
+      - size_class
+      - eras
+      - locations
+      - rarity
+    sort:
+      - property: title
+        direction: ASC
+    cardSize: 260
+    imageFit: cover
+    imageAspectRatio: 1.5
+    image: image
+  - type: table
+    name: Database
+    order:
+      - title
+      - fauna_kind
+      - size_class
+      - eras
+      - locations
+      - biomes
+      - rarity
+      - threat_level
+      - signs_of_presence
+      - encounter_behaviour
+      - ecology_summary
+      - human_relevance
+      - cultural_significance
+      - story_complication
+      - development_level
+      - status
+      - file.mtime
+    sort:
+      - property: title
+        direction: ASC
