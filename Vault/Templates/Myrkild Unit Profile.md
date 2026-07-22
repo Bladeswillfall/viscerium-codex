@@ -25,6 +25,7 @@ weaknesses: null
 visual_notes: null
 image: null
 review_status: draft
+development_level: stub
 source: null
 source_sheet: null
 source_row: null
@@ -35,6 +36,9 @@ tags:
 ---
 
 # {{title}}
+
+> [!tip] Stop when usable
+> Keep the structured profile focused on placement, battlefield behaviour and counterplay. Add optional Storyteller fields later with [[Add Storyteller Fields]] only when a story needs signs of presence, encounter context, human response or consequences beyond combat.
 
 ## Battlefield profile
 
@@ -55,3 +59,7 @@ _Not yet defined._
 ## Availability notes
 
 Add `locations`, `biomes`, and `rarity` when the unit's distribution is known. The Base can then be filtered to answer whether this unit plausibly appears in a given era and place.
+
+## Storyteller development
+
+Do not add optional fields to make the profile look complete. Follow [[Entity Authoring SOP]] and use [[Add Storyteller Fields]] only when the current story needs them.
