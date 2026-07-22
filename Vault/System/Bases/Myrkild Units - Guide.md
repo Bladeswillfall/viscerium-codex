@@ -34,11 +34,23 @@ Repeated constructs across eras are treated as era-specific profiles. This prese
 1. Create the note inside the appropriate `Drafts/Databases/Myrkild Units/<Origin>/<ERA>/` folder.
 2. Apply the [[Myrkild Unit Profile]] template.
 3. Give it a unique `unit_id`.
-4. Fill in the structured properties.
+4. Fill in the structured properties needed to place and use it.
 5. Add artwork using an Obsidian attachment link in `image`, for example `"[[Assets/Images/Myrkild/example.webp]]"`.
 6. Review the result in [[Myrkild Units.base]].
 
 Because the Base filters on `type: myrkild-unit` rather than folder path, a reviewed unit can later move into `Lore/` without disappearing from the database.
+
+## Progressive Storyteller fields
+
+The default unit template remains focused on battlefield role, tactics, weaknesses and availability.
+
+When a specific story needs more, run **Templater: Insert template** and choose [[Add Storyteller Fields]]. For Myrkild units, this can add:
+
+- signs of presence and encounter context;
+- what informed people know or do in response;
+- a consequence or complication beyond combat.
+
+Do not add these fields simply to make the profile look complete. Follow [[Entity Authoring SOP]].
 
 ## Availability model
 
