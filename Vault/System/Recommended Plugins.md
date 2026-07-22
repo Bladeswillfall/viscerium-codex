@@ -6,8 +6,9 @@ The publishing workflow does not require paid plugins. Keep the authoring stack 
 
 1. Enable the built-in **Templates** plugin and keep `Templates` as its template folder.
 2. Enable the built-in **Bases** plugin for creator-only card and database views.
-3. Enable **Templater** for guided entity creation and progressive Storyteller field injection. Its checked-in configuration uses `Templates` and does not run automatically on file creation.
-4. Enable **Dataview** to render the shared sidebar in canonical templates.
+3. Enable **Templater** for guided entity creation and progressive Storyteller field injection. Its checked-in configuration uses `Templates` and contains narrowly scoped folder-template rules for fauna, flora, fungi and items.
+4. On each device where folder-first creation should work, enable Templater's device-local **Trigger Templater on new file creation** switch. Do not add a vault-wide `/` catch-all rule.
+5. Enable **Dataview** to render the shared sidebar in canonical templates.
 
 ## Optional conveniences
 
