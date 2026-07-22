@@ -25,6 +25,7 @@ test('VISCERIUM Home remains creator-only and wired to its presentation/action d
   assert.equal(home.data.publish, false);
   assert.ok(home.data.cssclasses?.includes('viscerium-home'));
   assert.ok(appearance.enabledCssSnippets.includes('VISCERIUM Homepage'));
+  assert.ok(appearance.enabledCssSnippets.includes('VISCERIUM Homepage responsive'));
 
   assert.ok(templater.enabled_templates_hotkeys.includes('Templates/New Story Entity.md'));
   assert.ok(templater.startup_templates.includes('Templates/_Startup/Open VISCERIUM Home.md'));
@@ -33,6 +34,17 @@ test('VISCERIUM Home remains creator-only and wired to its presentation/action d
   assert.match(home.content, /Create New Story Entity/);
   assert.match(home.content, /viscerium-timelines:open-storyline-project-timeline/);
   assert.match(home.content, /viscerium-timelines:diagnose-storyline-integration/);
+});
+
+test('homepage responsive layer resets readable width and avoids fixed two-column overflow', async () => {
+  const responsiveCss = await readText('.obsidian/snippets/VISCERIUM Homepage responsive.css');
+
+  assert.match(responsiveCss, /--line-width-adaptive:\s*300em/);
+  assert.match(responsiveCss, /markdown-preview-sizer\s*>\s*div/);
+  assert.match(responsiveCss, /repeat\(auto-fit,\s*minmax\(min\(100%,\s*22rem\),\s*1fr\)\)/);
+  assert.match(responsiveCss, /@container\s+viscerium-home/);
+  assert.match(responsiveCss, /metadata-container/);
+  assert.doesNotMatch(responsiveCss, /repeat\(2,\s*minmax\(340px,\s*1fr\)\)/);
 });
 
 test('homepage startup template opens Home through the workspace after layout is ready', async () => {
