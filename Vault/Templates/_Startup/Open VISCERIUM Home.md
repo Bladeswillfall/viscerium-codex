@@ -9,6 +9,15 @@ const dayKey = (timestamp) => {
   return `${year}-${month}-${day}`;
 };
 
+const hashText = (text) => {
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+};
+
 const isCreatorFile = (file) => {
   const path = file.path;
   return file.extension === "md"
@@ -44,13 +53,14 @@ const recordCreatorActivity = async () => {
   let changed = false;
 
   for (const file of tp.app.vault.getMarkdownFiles().filter(isCreatorFile)) {
-    const mtime = Number(file.stat?.mtime ?? 0);
-    if (!mtime) continue;
+    const text = await tp.app.vault.cachedRead(file);
+    const hash = hashText(text);
+    nextFiles[file.path] = hash;
 
-    nextFiles[file.path] = mtime;
-    const previous = Number(ledger.files[file.path] ?? 0);
-    if (previous && mtime <= previous) continue;
+    const previousHash = String(ledger.files[file.path] ?? "");
+    if (previousHash === hash) continue;
 
+    const mtime = Number(file.stat?.mtime ?? Date.now());
     const key = dayKey(mtime);
     ledger.days[key] = Number(ledger.days[key] ?? 0) + 1;
     changed = true;
