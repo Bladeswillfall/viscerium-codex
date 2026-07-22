@@ -10,7 +10,7 @@ Open only the `Vault/` folder in Obsidian.
 1. Enable Obsidian's built-in **Templates** core plugin.
 2. Enable Obsidian's built-in **Bases** core plugin. It is already enabled in the checked-in vault configuration.
 3. Enable the **Templater** community plugin. It is included and enabled in the checked-in vault configuration.
-4. Enable **Dataview**. The homepage uses it for recent-work summaries and its small creator-action buttons; database and lore source data remain ordinary Markdown/YAML.
+4. Enable **Dataview**. The homepage uses it for creator widgets and small action surfaces; database and lore source data remain ordinary Markdown/YAML.
 5. Keep both template folder locations set to `Templates`. The checked-in configuration already does this.
 6. In **Settings → Templater → File creation**, enable **Trigger Templater on new file creation** on each device where folder-first story-entity creation should work. This master toggle is device-local and cannot be enabled by Git.
 7. Leave Templater's matching mode on **Folder templates**. The repository already contains narrowly scoped rules for `Drafts/Databases/Fauna`, `Flora`, `Fungi` and `Items`; do not add a `/` catch-all rule.
@@ -20,6 +20,12 @@ Open only the `Vault/` folder in Obsidian.
 11. Put images in `Assets/Images/` and fictional map images in `Assets/Maps/`.
 
 Restart Obsidian after first opening the vault if Templater commands do not appear immediately.
+
+## Article width
+
+Minimal Theme Settings is the single source of truth for ordinary note width. The checked-in baseline uses **64em normal**, **76em wide**, and **92% maximum pane width** with Readable line length enabled.
+
+This intentionally gives lore, templates and SOPs more horizontal room than Minimal's default 40em measure while keeping very wide desktop panes readable. Do not add another global `markdown-preview-sizer` width snippet on top of Minimal. [[Home]] is intentionally wider because it is a dashboard and carries its own scoped compatibility CSS.
 
 ## Startup homepage
 
@@ -39,6 +45,22 @@ Use **Templater: Insert template** and choose [[Add Storyteller Fields]] to add 
 
 Do not invoke templates under `Templates/_Internals/` or `Templates/_Startup/` directly. They contain shared implementation or startup behaviour rather than creator-facing workflows.
 
+## Template roles
+
+Use the template that matches the kind of work rather than treating every file in `Templates/` as interchangeable:
+
+- **New Story Entity** — guided Templater workflow for fauna, flora, fungi and items. This is the default structured-worldbuilding entry point.
+- **Add Storyteller Fields** — inserts only currently absent optional Storyteller properties into an existing supported entity.
+- **Myrkild Unit Profile** — specialised structured profile for the Myrkild unit database; it intentionally retains import/provenance fields that ordinary story entities do not need.
+- **Character / Faction / Location / Event / Era** — plain publishable-Lore skeletons. Create/rename the note first, then insert the relevant template with Obsidian's core Templates command so `{{title}}` resolves from the filename.
+- **Map / Image Metadata** — publishing metadata skeletons for map pages and image provenance records.
+- **Timeline Template** — generated canonical VISCERIUM timeline page backed by event metadata.
+- **Chronos Timeline Template** — note-local/editorial timeline that does not automatically enter canonical era/super timelines.
+- **`_Internals/Story Entity Core`** — shared implementation used by New Story Entity; never invoke directly.
+- **`_Startup/Open VISCERIUM Home`** — startup automation; never invoke as an authoring template.
+
+Public-Lore templates deliberately do **not** render an Obsidian-only infobox/sidebar. Structured metadata remains in Properties/frontmatter; the article body stays focused on readable worldbuilding.
+
 ## Story entity workflow
 
 Creator-facing fauna, flora, fungi and item cards live in Obsidian Bases. [[Story Entities.base]] provides the cross-entity navigation view and includes Myrkild units without replacing their specialised Base.
@@ -47,12 +69,13 @@ Follow [[Story Entity Workflow SOP]] for the practical creation and filing proce
 
 ## WorldAnvil/Wikipedia-style writing workflow
 
-The templates use a simple wiki-style shape:
+Templates use a simple wiki-style shape:
 
-- YAML frontmatter for machine-readable publishing fields and Bases.
-- An Obsidian callout infobox near the top where useful.
-- A summary section first.
-- Topic sections such as history, culture, relationships, geography, and related links.
+- YAML frontmatter for machine-readable publishing fields, Bases and relationships.
+- A concise summary first.
+- Topic sections only where they help explain or use the subject.
+- Wikilinks for meaningful relationships and navigation.
+- Creator-only guidance inside `%% comments %%` where it should not become public prose.
 
 Bases are authoring and browsing views over the same Markdown properties. Keep canonical information in the notes themselves rather than relying on view-only configuration.
 
