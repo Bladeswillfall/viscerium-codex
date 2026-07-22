@@ -15,16 +15,35 @@ The fauna, flora, fungi and item databases use **Obsidian Bases** as creator-onl
 
 Each Base has a focused card view for browsing and a table view for comparison or bulk editing.
 
-## Create a story entity
+## Draft database folders
+
+Working story-entity notes live under:
+
+- `Drafts/Databases/Fauna/`
+- `Drafts/Databases/Flora/`
+- `Drafts/Databases/Fungi/`
+- `Drafts/Databases/Items/`
+
+Use folders for entity type, not era, nation or biome. Those relationships belong in note properties because a single entity may span many of them.
+
+## Create from anywhere
 
 1. Run **Templater: Create new note from template**.
 2. Choose [[New Story Entity]].
 3. Select Fauna, Flora, Fungi or Item.
 4. Complete the small common core.
 5. Select only the optional modules that matter to the current story.
-6. Keep the note in `Drafts/` until it is ready for review.
+6. The finished note is automatically filed into the matching draft database folder.
 
 The template creates only the optional properties you select. Declining a module does not establish negative canon and does not leave a visible checklist of missing work.
+
+## Create from a database folder
+
+When Templater's per-device **Trigger Templater on new file creation** switch is enabled, creating a normal new Markdown note directly inside one of the four folders above automatically launches the same [[New Story Entity]] workflow.
+
+The folder supplies the entity type, so the Fauna / Flora / Fungi / Item question is skipped. All later prompts and generated properties remain identical to command-based creation.
+
+The repository stores the folder-template rules, but the master trigger switch is local to each Obsidian device. See [[Story Entity Workflow SOP]] for setup and troubleshooting.
 
 ## Add detail later
 
@@ -54,4 +73,4 @@ Use `eras`, `locations`, `biomes`, `rarity` and type-specific properties only wh
 
 ## Further guidance
 
-Follow [[Entity Authoring SOP]] when deciding what to add, and [[Schema Change SOP]] before adding new shared properties or expanding a template.
+Follow [[Story Entity Workflow SOP]] for creation and filing, [[Entity Authoring SOP]] when deciding what to add, and [[Schema Change SOP]] before adding new shared properties or expanding a template.
