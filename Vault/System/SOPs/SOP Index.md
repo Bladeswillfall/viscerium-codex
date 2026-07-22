@@ -1,11 +1,12 @@
 # Standard Operating Procedures
 
-This folder holds creator guidance that cannot be reliably enforced by templates, Bases or publishing code.
+This folder holds creator guidance that cannot be reliably enforced by templates, Bases or publishing code, plus the practical command reference used to interact with those systems.
 
 SOPs should govern judgement, review and maintenance. They should not repeat steps already made obvious or automatic by the tools.
 
-## Current SOPs
+## Current SOPs and references
 
+- [[Creator Command Reference]] — lookup for creator-facing Obsidian commands, Bases, terminal commands, validation and common system interactions.
 - [[Story Entity Workflow SOP]] — use Templater correctly, choose between command-based and folder-first creation, and understand automatic draft filing.
 - [[Entity Authoring SOP]] — decide what information is worth adding and when an entry is done enough.
 - [[Schema Change SOP]] — review new properties, templates and Base columns before expanding the authoring system.
@@ -20,3 +21,5 @@ Add an SOP only when all three are true:
 3. The decision cannot be prevented more cleanly through defaults, templates, validation or interface design.
 
 Do not create SOPs for one-off preferences or obvious actions. A process library can become administrative clutter just as easily as a database can.
+
+The [[Creator Command Reference]] is deliberately an exception to the judgement-only rule: it is a maintained lookup surface so operational commands do not have to be memorised or rediscovered.
