@@ -26,6 +26,15 @@ const isCreatorFile = (file) => {
     && !path.startsWith("Templates/");
 };
 
+const normalisePrevious = (value) => {
+  if (!value) return { hash: "", mtime: 0 };
+  if (typeof value === "string") return { hash: value, mtime: 0 };
+  return {
+    hash: String(value.hash ?? ""),
+    mtime: Number(value.mtime ?? 0),
+  };
+};
+
 const recordCreatorActivity = async () => {
   const adapter = tp.app.vault.adapter;
   let ledger = {
@@ -54,17 +63,21 @@ const recordCreatorActivity = async () => {
   let changed = isBaselineScan;
 
   for (const file of tp.app.vault.getMarkdownFiles().filter(isCreatorFile)) {
+    const mtime = Number(file.stat?.mtime ?? 0);
+    const previous = normalisePrevious(ledger.files[file.path]);
+
+    if (!isBaselineScan && previous.hash && previous.mtime === mtime) {
+      nextFiles[file.path] = previous;
+      continue;
+    }
+
     const text = await tp.app.vault.cachedRead(file);
     const hash = hashText(text);
-    nextFiles[file.path] = hash;
+    nextFiles[file.path] = { hash, mtime };
 
-    if (isBaselineScan) continue;
+    if (isBaselineScan || previous.hash === hash) continue;
 
-    const previousHash = String(ledger.files[file.path] ?? "");
-    if (previousHash === hash) continue;
-
-    const mtime = Number(file.stat?.mtime ?? Date.now());
-    const key = dayKey(mtime);
+    const key = dayKey(mtime || Date.now());
     ledger.days[key] = Number(ledger.days[key] ?? 0) + 1;
     changed = true;
   }
