@@ -49,9 +49,12 @@ When an optional property is added, renamed or removed:
 
 1. update the internal Story Entity Core and `Add Storyteller Fields` in the same change, unless the field is explicitly creation-only or injection-only;
 2. update the relevant Base table when the field needs comparison or bulk editing;
-3. keep the creator card view compact — a field does not belong on a card merely because it exists in the schema;
-4. update `New Story Entity` only when routing, folder inference or workflow behaviour changes;
-5. update the Storyteller View SOP only when the public interpretation changes.
+3. update [[Story Entities.base]] only when the property belongs in the cross-entity navigation surface;
+4. keep the creator card view compact — a field does not belong on a card merely because it exists in the schema;
+5. update `New Story Entity` only when routing, folder inference or workflow behaviour changes;
+6. update Vault Doctor when the change introduces or alters an objective structural invariant worth checking;
+7. update the Storyteller View SOP only when the public interpretation changes;
+8. update [[Creator Command Reference]] when a creator-facing command or terminal script changes.
 
 A schema change is incomplete if one workflow can create a property that the other workflow no longer understands.
 
@@ -78,10 +81,11 @@ Do not use `false` merely to clear a perceived checklist.
 Before changing or renaming an existing shared property:
 
 1. Search the vault for current usage.
-2. Check templates, Bases, Dataview scripts and site code.
+2. Check templates, Bases, Dataview scripts, Vault Doctor and site code.
 3. Decide whether old notes need migration or compatibility support.
 4. Update the relevant guide and SOP if creator behaviour changes.
 5. Test at least one existing note and one newly created note.
+6. Run `cd Site && npm run doctor:vault` and address structural errors before merging.
 
 ## Removal rule
 

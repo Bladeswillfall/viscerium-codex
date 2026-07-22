@@ -17,6 +17,7 @@ Thanks for helping improve this codex.
 - Use Obsidian embeds like `![[example-banner.svg]]` for vault assets copied during sync.
 - Do not publish raw `dataviewjs`.
 - Native fenced `chronos` blocks are supported for note-local editorial timelines and are transformed into Starlight Chronos embeds during sync.
+- Creator-facing commands and terminal workflows are documented in `Vault/System/SOPs/Creator Command Reference.md`.
 
 ## Timeline authoring
 
@@ -33,24 +34,26 @@ See `Site/TIMELINES.md` for the complete event and era schemas, Chronos integrat
 
 ## Validation
 
-Run the full validation before opening a pull request:
+Run the full local confidence check before opening a pull request:
 
 ```bash
 cd Site
-npm install
+npm ci
 npm test
 npm run benchmark:timelines
 ```
+
+`npm test` now runs Vault Doctor, unit tests and the production site build. Vault Doctor checks creator-database structure; it does not require optional worldbuilding fields to be filled.
 
 Useful focused checks:
 
 ```bash
 cd Site
+npm run doctor:vault
 npm run sync
 npm run validate:vault
 npm run validate:timelines
 npm run validate
-npm run generate:graph
 npm run generate:maps
 npm run generate:timelines
 npm run test:unit
@@ -60,7 +63,7 @@ Build the local Obsidian integration when timeline renderer or compiler code cha
 
 ```bash
 cd Tools/obsidian-viscerium-timelines
-npm install
+npm ci
 npm run build
 ```
 

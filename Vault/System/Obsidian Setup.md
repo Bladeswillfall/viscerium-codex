@@ -2,6 +2,9 @@
 
 Open only the `Vault/` folder in Obsidian.
 
+> [!tip] Command lookup
+> Use [[Creator Command Reference]] whenever you need to remember which Obsidian or terminal command interacts with a VISCERIUM system and what that command does.
+
 ## Required setup
 
 1. Enable Obsidian's built-in **Templates** core plugin.
@@ -30,9 +33,9 @@ Do not invoke templates under `Templates/_Internals/` directly. They contain sha
 
 ## Story entity workflow
 
-Creator-facing fauna, flora, fungi and item cards live in Obsidian Bases. They do not publish to the Codex.
+Creator-facing fauna, flora, fungi and item cards live in Obsidian Bases. [[Story Entities.base]] provides the cross-entity navigation view and includes Myrkild units without replacing their specialised Base.
 
-Follow [[Story Entity Workflow SOP]] for the practical creation and filing process, then [[Entity Authoring SOP]] when deciding how much detail is enough.
+Follow [[Story Entity Workflow SOP]] for the practical creation and filing process, then [[Entity Authoring SOP]] when deciding how much detail is enough. Use [[Creator Command Reference]] for the exact commands and terminal health checks.
 
 ## WorldAnvil/Wikipedia-style writing workflow
 

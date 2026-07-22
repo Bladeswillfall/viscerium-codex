@@ -4,6 +4,8 @@ Use this SOP for the practical creation, filing and later development of fauna, 
 
 The authoring system deliberately supports two entry points into the same schema. Use whichever matches how you are already working.
 
+For a lookup of commands rather than workflow judgement, use [[Creator Command Reference]].
+
 ## One-time Templater setup per device
 
 The repository stores the folder-template rules, but Templater stores its master **Trigger Templater on new file creation** switch locally on each Obsidian device.
@@ -72,10 +74,30 @@ Existing values are preserved. Unselected fields remain absent rather than becom
 
 Use the relevant Obsidian Base:
 
-- **Cards** for browsing and visual recognition.
-- **Database** for comparison, filtering and structured editing.
+- [[Story Entities.base]] for cross-entity navigation, recent edits, era/type context and stubs.
+- Type-specific **Cards** for browsing and visual recognition.
+- Type-specific **Database** views for comparison, filtering and structured editing.
 
 The Markdown note and its properties remain the source of truth.
+
+## Check structural health
+
+Vault Doctor is the creator-data safety net. It checks structure, not creative completeness.
+
+From the repository terminal:
+
+```bash
+cd Site
+npm run doctor:vault
+```
+
+Run it after broad manual property edits, folder moves, imports or schema work, and rely on CI to run it on pull requests as well.
+
+**Errors** are objective contradictions likely to break or corrupt the creator model, such as a fauna note filed as Flora, invalid era values, malformed list properties, unknown development states or duplicate Myrkild unit IDs.
+
+**Notices** are non-blocking prompts for human review, such as a location spelling that closely resembles a canonical note title.
+
+The Doctor must not report missing optional Storyteller fields merely because they are absent. Absence remains a valid state.
 
 ## Promotion
 
@@ -102,6 +124,14 @@ Use [[New Story Entity]], not the internal core template. The creator-facing wra
 ### The template appears to run twice
 
 Check Templater's folder rules for extra parent-folder or `/` catch-all rules. The repository should contain only the four specific story-entity folder rules.
+
+### Vault Doctor reports a notice
+
+Read the suggestion and decide whether it is a real inconsistency. Notices deliberately do not fail CI because unusual worldbuilding can be valid.
+
+### Vault Doctor reports an error
+
+Fix the structural contradiction rather than silencing the check. If the model itself has legitimately changed, update the validator and [[Schema Change SOP]] in the same change.
 
 ## Stop condition
 
