@@ -1,10 +1,12 @@
 ---
-title:
+title: "{{title}}"
 description:
 publish: false
 status: draft
-headerImage:
+type: image
+era:
 asset:
+image:
 alt:
 artist:
 editor:
@@ -16,28 +18,24 @@ rights:
 usage:
 width:
 height:
-related:
+tags: []
+related: []
 ---
 
-# {{title}}
-
-%% Image asset: set `asset` to the image filename stored in `Vault/Assets/Images/`, e.g. `portrait.webp`. Published image pages automatically render the asset and copy it to `/assets/images/...`. %%
-%% Link articles back to this metadata note with `imagePage: /path/to/this/image-page/`. %%
+%% Image metadata notes are provenance records. Set asset to the filename stored in Vault/Assets/Images/. Use image when another Codex surface needs the same asset as its display image. Before publishing, provide meaningful alt text and enough rights/provenance information to know whether the artwork may be used. %%
 
 ## Description
 
+Describe what the image depicts and why it exists in the VISCERIUM project.
+
 ## Provenance
 
-Record where this image came from, who made it, who edited it, and whether it is original, commissioned, reference-only, AI-generated, placeholder, or due to be replaced.
+Record who made it, where it came from, who edited it, and whether it is original, commissioned, AI-generated, placeholder/reference material, or due to be replaced.
 
 ## Usage Notes
 
-Describe where this image is used in the codex and whether it may be reused elsewhere.
+Record where the image is used and any restrictions or expectations around reuse.
 
 ## Related
 
----
-
-## Comments
-
-Keep public discussion notes or moderation reminders here. Published site comments render in their own bottom section via Giscus.
+Link the lore, project, faction, character, location, or other material this image meaningfully depicts or supports.
