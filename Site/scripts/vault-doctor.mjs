@@ -121,6 +121,7 @@ export function diagnoseCreatorVault(manifest) {
 
   for (const record of records) {
     const file = recordPath(record);
+    if (file.startsWith('Templates/')) continue;
     const data = record.data ?? {};
     const type = data.type;
     const ordinaryFolderEntry = [...ORDINARY_ENTITY_FOLDERS].find(([, folder]) => file.startsWith(`${folder}/`));
@@ -181,7 +182,7 @@ export function diagnoseCreatorVault(manifest) {
           'Ordinary story entities use plural "eras" in the creator database; singular "era" may be legacy or accidental.',
         );
       }
-      if (!file.includes('/') || !file.startsWith('Drafts/') && !file.startsWith('Lore/')) {
+      if (!file.includes('/') || (!file.startsWith('Drafts/') && !file.startsWith('Lore/'))) {
         addDiagnostic(
           diagnostics,
           'notice',
