@@ -1,0 +1,168 @@
+/*
+ * Timeline styling
+ * Makes Chronos and VISCERIUM timelines feel native to the Obsidian workspace.
+ * Presentation only: no timeline authoring syntax or metadata is introduced here.
+ */
+
+:root {
+  /* Chronos exposes these variables as its supported theming surface. */
+  --chronos-bg-primary: var(--background-primary);
+  --chronos-text-normal: var(--text-normal);
+  --chronos-accent: var(--interactive-accent);
+}
+
+/*
+ * The shared VISCERIUM renderer is also used by the public Codex, where these
+ * variables come from Starlight/Codex. Map them onto Obsidian when rendered
+ * inside the vault so the component inherits the active Obsidian theme.
+ */
+.vc-obsidian-timeline-mount,
+.vc-storyline-timeline-view {
+  --codex-surface-raised-color: var(--background-secondary);
+  --codex-bg: var(--background-primary);
+  --codex-border: var(--background-modifier-border);
+  --codex-border-strong: var(--background-modifier-border-hover, var(--background-modifier-border));
+  --sl-color-white: var(--text-normal);
+  --sl-color-gray-3: var(--text-muted);
+  --sl-color-accent-high: var(--interactive-accent);
+  --codex-fixed-light: var(--text-on-accent, #fff);
+  --codex-shadow-color: #000;
+  --codex-radius: var(--radius-l);
+  --vc-font-ui: var(--font-interface);
+}
+
+/* Give ordinary Chronos code blocks an immediately recognisable role. */
+.block-language-chronos {
+  position: relative;
+  margin-block: 1rem;
+  padding: 0.65rem 0.75rem 0.75rem;
+  overflow: clip;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-l);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--interactive-accent) 7%, transparent), transparent 34%),
+    var(--background-primary);
+  box-shadow: 0 8px 24px color-mix(in srgb, #000 16%, transparent);
+}
+
+.block-language-chronos::before {
+  content: "CHRONOS · PORTABLE TIMELINE";
+  display: block;
+  margin: 0 0 0.55rem;
+  color: color-mix(in srgb, var(--interactive-accent) 78%, var(--text-muted));
+  font-family: var(--font-interface);
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+/* The VISCERIUM story projection is a workspace view, not a manuscript note. */
+.workspace-leaf-content[data-type="viscerium-storyline-timeline"] .view-content {
+  padding: 0;
+  background: var(--background-primary);
+}
+
+.vc-storyline-timeline-view {
+  min-height: 100%;
+  padding: 1rem clamp(0.9rem, 2vw, 1.4rem) 1.4rem;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--interactive-accent) 5%, transparent), transparent 28%),
+    var(--background-primary);
+}
+
+.vc-storyline-timeline-header {
+  margin: 0 0 1rem;
+  padding: 0 0 0.9rem;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.vc-storyline-timeline-kicker {
+  margin-bottom: 0.35rem;
+  color: color-mix(in srgb, var(--interactive-accent) 82%, var(--text-muted));
+  font-family: var(--font-interface);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.vc-storyline-timeline-header h2 {
+  margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+}
+
+.vc-storyline-timeline-header > p {
+  max-width: 70ch;
+  margin: 0.45rem 0 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.vc-storyline-timeline-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.7rem;
+}
+
+.vc-storyline-timeline-meta > span {
+  padding: 0.22rem 0.48rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: var(--background-secondary);
+  font-family: var(--font-interface);
+  font-size: 0.67rem;
+  font-weight: 650;
+}
+
+.vc-storyline-timeline-meta > span:first-child {
+  border-color: color-mix(in srgb, var(--interactive-accent) 45%, var(--background-modifier-border));
+  color: color-mix(in srgb, var(--interactive-accent) 72%, var(--text-normal));
+}
+
+.vc-obsidian-timeline-mount .vc-timeline-app,
+.vc-storyline-timeline-view .vc-timeline-app {
+  margin-block: 0;
+  border-radius: var(--radius-l);
+  box-shadow: 0 10px 30px color-mix(in srgb, #000 18%, transparent);
+}
+
+.vc-obsidian-timeline-mount .vc-timeline-toolbar,
+.vc-storyline-timeline-view .vc-timeline-toolbar,
+.vc-obsidian-timeline-mount .vc-timeline-stage,
+.vc-storyline-timeline-view .vc-timeline-stage,
+.vc-obsidian-timeline-mount .vc-timeline-filters,
+.vc-storyline-timeline-view .vc-timeline-filters,
+.vc-obsidian-timeline-mount .vc-timeline-minimap-wrap,
+.vc-storyline-timeline-view .vc-timeline-minimap-wrap {
+  border-radius: var(--radius-s);
+}
+
+.vc-obsidian-timeline-mount .vc-timeline-field :is(input, select),
+.vc-storyline-timeline-view .vc-timeline-field :is(input, select),
+.vc-obsidian-timeline-mount .vc-timeline-app button,
+.vc-storyline-timeline-view .vc-timeline-app button {
+  border-radius: var(--radius-s);
+}
+
+.vc-storyline-timeline-issues {
+  margin-top: 0.9rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  color: var(--text-muted);
+  background: var(--background-secondary);
+}
+
+.vc-storyline-timeline-issues > summary {
+  color: var(--text-normal);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.vc-storyline-timeline-issues ul {
+  margin-bottom: 0;
+}
