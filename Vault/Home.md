@@ -12,9 +12,51 @@ cssclasses:
 >
 > **CANON** → `Lore/` · **WIP** → `Drafts/` · **WRITING** → `Stories/` · **TOOLS** → `System/`
 
-> [!home-recent] JUMP BACK IN
-> The most recently modified worldbuilding and story notes. System documentation and templates are intentionally excluded.
+> [!home-actions] QUICK ACTIONS
+> ```dataviewjs
+> const findCommand = (name) => Object.entries(app.commands.commands)
+>   .find(([id, command]) => id.startsWith("templater-obsidian:") && command.name === name)?.[0];
 >
+> const actions = [
+>   {
+>     label: "+ Create Story Entity",
+>     id: findCommand("Create New Story Entity"),
+>     tone: "create",
+>     title: "Create fauna, flora, fungi or an item through the guided Story Entity workflow.",
+>   },
+>   {
+>     label: "Open Story Timeline",
+>     id: "viscerium-timelines:open-storyline-project-timeline",
+>     tone: "stories",
+>     title: "Open the active StoryLine project on the VISCERIUM calendar.",
+>   },
+>   {
+>     label: "Troubleshoot StoryLine",
+>     id: "viscerium-timelines:diagnose-storyline-integration",
+>     tone: "stories-secondary",
+>     title: "Diagnose StoryLine project detection and storyDate placement without changing files.",
+>   },
+> ];
+>
+> const strip = dv.container.createDiv({ cls: "vc-home-action-strip" });
+> for (const action of actions) {
+>   const button = strip.createEl("button", {
+>     text: action.label,
+>     cls: `vc-home-button vc-home-action-${action.tone}`,
+>     attr: { title: action.title },
+>   });
+>   const exists = action.id && Boolean(app.commands.commands[action.id]);
+>   if (!exists) {
+>     button.disabled = true;
+>     button.title = "Required Obsidian command is unavailable. See Creator Command Reference.";
+>   } else {
+>     button.addEventListener("click", () => app.commands.executeCommandById(action.id));
+>   }
+> }
+> ```
+> `Ctrl/Cmd + P` remains the universal fallback. See [[System/SOPs/Creator Command Reference|Creator Command Reference]] for command names and what they do.
+
+> [!home-recent] JUMP BACK IN
 > ```dataviewjs
 > const pages = dv.pages("")
 >   .where((page) => {
@@ -27,20 +69,36 @@ cssclasses:
 >   .limit(6);
 >
 > const area = (path) => {
->   if (path.startsWith("Lore/")) return "CANON";
->   if (path.startsWith("Stories/")) return "WRITING";
->   if (path.startsWith("Drafts/")) return "WIP";
->   if (path.startsWith("Private/")) return "PRIVATE";
->   return "NOTE";
+>   if (path.startsWith("Lore/")) return { label: "CANON", key: "canon" };
+>   if (path.startsWith("Stories/")) return { label: "WRITING", key: "writing" };
+>   if (path.startsWith("Drafts/")) return { label: "WIP", key: "wip" };
+>   if (path.startsWith("Private/")) return { label: "PRIVATE", key: "private" };
+>   return { label: "NOTE", key: "note" };
 > };
 >
 > if (pages.length === 0) {
 >   dv.paragraph("No recent creator notes found yet.");
 > } else {
->   dv.table(
->     ["Note", "Area", "Modified"],
->     pages.map((page) => [page.file.link, area(page.file.path), page.file.mtime]),
->   );
+>   const grid = dv.container.createDiv({ cls: "vc-home-recent-grid" });
+>   for (const page of pages) {
+>     const zone = area(page.file.path);
+>     const item = grid.createDiv({ cls: `vc-home-recent-item vc-home-recent-${zone.key}` });
+>     const top = item.createDiv({ cls: "vc-home-recent-top" });
+>     const link = top.createEl("a", {
+>       text: page.file.name,
+>       cls: "internal-link vc-home-recent-link",
+>       attr: {
+>         href: page.file.path,
+>         "data-href": page.file.path,
+>       },
+>     });
+>     link.addEventListener("click", (event) => {
+>       event.preventDefault();
+>       app.workspace.openLinkText(page.file.path, "Home.md", event.ctrlKey || event.metaKey);
+>     });
+>     top.createSpan({ text: zone.label, cls: "vc-home-recent-area" });
+>     item.createDiv({ text: page.file.mtime.toRelative() ?? page.file.mtime.toFormat("dd LLL yyyy"), cls: "vc-home-recent-time" });
+>   }
 > }
 > ```
 
@@ -63,65 +121,17 @@ cssclasses:
 > > **VISCERIUM Story Timeline**  
 > > Projects the current StoryLine project's `storyDate` metadata onto Errack's calendar without creating duplicate chronology.
 > >
-> > ```dataviewjs
-> > const actions = [
-> >   {
-> >     label: "Open Story Timeline",
-> >     id: "viscerium-timelines:open-storyline-project-timeline",
-> >     kind: "primary",
-> >   },
-> >   {
-> >     label: "Troubleshoot StoryLine",
-> >     id: "viscerium-timelines:diagnose-storyline-integration",
-> >     kind: "secondary",
-> >   },
-> > ];
-> > const wrap = dv.container.createDiv({ cls: "vc-home-actions" });
-> > for (const action of actions) {
-> >   const button = wrap.createEl("button", {
-> >     text: action.label,
-> >     cls: `vc-home-button vc-home-button-${action.kind}`,
-> >   });
-> >   const exists = Boolean(app.commands.commands[action.id]);
-> >   if (!exists) {
-> >     button.disabled = true;
-> >     button.title = "Required VISCERIUM command is unavailable.";
-> >   } else {
-> >     button.addEventListener("click", () => app.commands.executeCommandById(action.id));
-> >   }
-> > }
-> > ```
-> > Alternative route: `Ctrl/Cmd + P` → **VISCERIUM Timelines: Open StoryLine project timeline**.
+> > **Quick action above:** **Open Story Timeline**. Command Palette fallback: **VISCERIUM Timelines: Open StoryLine project timeline**.
 
 > [!home-grid]
 > > [!home-create] CREATE
 > > **New Story Entity**  
-> > Guided creation for fauna, flora, fungi or an item. The workflow asks for a small core, offers only useful optional detail, and files the result into the correct draft database.
+> > Guided creation for fauna, flora, fungi or an item. It asks for a small core, offers only useful optional detail, and files the result into the correct draft database.
 > >
-> > ```dataviewjs
-> > const templaterCommand = Object.entries(app.commands.commands).find(([id, command]) =>
-> >   id.startsWith("templater-obsidian:") && command.name === "Create New Story Entity"
-> > );
-> > const wrap = dv.container.createDiv({ cls: "vc-home-actions" });
-> > const button = wrap.createEl("button", {
-> >   text: "+ Create Story Entity",
-> >   cls: "vc-home-button vc-home-button-primary",
-> > });
-> > if (!templaterCommand) {
-> >   button.disabled = true;
-> >   button.title = "Templater's direct New Story Entity command is unavailable.";
-> > } else {
-> >   button.addEventListener("click", () => app.commands.executeCommandById(templaterCommand[0]));
-> > }
-> > ```
-> > The button launches **New Story Entity** directly; there is no second template picker.
-> >
-> > Keyboard route: `Ctrl/Cmd + P` → **Templater: Create New Story Entity**.
-> >
-> > General fallback: `Ctrl/Cmd + P` → **Templater: Create new note from template** → **New Story Entity**.
+> > **Quick action above:** **Create Story Entity**. Command Palette fallback: **Templater: Create New Story Entity**.
 > >
 > > **Add detail later**  
-> > Open the entity note, then run `Ctrl/Cmd + P` → **Templater: Insert template** → **Add Storyteller Fields**. This belongs on the entity itself rather than as a Home button because it modifies the active note.
+> > Open an existing entity, then run **Templater: Insert template → Add Storyteller Fields**. This remains contextual because it modifies the active note.
 >
 > > [!home-canon] CANON & PUBLISHING
 > > **[[System/Publishing Rules|Publishing Rules]]**  
