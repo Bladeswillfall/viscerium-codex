@@ -18,6 +18,8 @@ Use **Story Entities** to answer broad creator questions such as what exists, wh
 
 The master index is deliberately not a completion dashboard. `development_level` remains a fitness state, not a percentage or obligation to fill more fields.
 
+[[Home]] links to the same database entry points with short explanations of what each surface is for.
+
 ## Draft database folders
 
 Working story-entity notes live under:
@@ -32,12 +34,15 @@ Use folders for entity type, not era, nation or biome. Those relationships belon
 
 ## Create from anywhere
 
-1. Run **Templater: Create new note from template**.
-2. Choose [[New Story Entity]].
-3. Select Fauna, Flora, Fungi or Item.
-4. Complete the small common core.
-5. Select only the optional modules that matter to the current story.
-6. The finished note is automatically filed into the matching draft database folder.
+The fastest routes are equivalent:
+
+1. On [[Home]], click **Create Story Entity**; or run **Templater: Create New Story Entity** from the Command Palette.
+2. Select Fauna, Flora, Fungi or Item.
+3. Complete the small common core.
+4. Select only the optional modules that matter to the current story.
+5. The finished note is automatically filed into the matching draft database folder.
+
+The direct command is registered from the same [[New Story Entity]] template. The general Templater route remains available: **Templater: Create new note from template** → [[New Story Entity]].
 
 The template creates only the optional properties you select. Declining a module does not establish negative canon and does not leave a visible checklist of missing work.
 
