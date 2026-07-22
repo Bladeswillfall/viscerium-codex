@@ -1,0 +1,236 @@
+/*
+ * VISCERIUM Homepage — responsive layout compatibility
+ *
+ * Keeps Home.md pane-responsive under Minimal's readable-line-width system.
+ * This file deliberately contains layout compatibility only; visual colour and
+ * section styling remain in VISCERIUM Homepage.css.
+ */
+
+/*
+ * Minimal calculates rendered block widths from --line-width-adaptive and
+ * --max-width. Reset those variables for Home so top-level blocks can actually
+ * consume the pane instead of remaining at normal article width.
+ */
+.markdown-preview-view.viscerium-home {
+  --line-width-adaptive: 300em;
+  --line-width-wide: 300em;
+  --max-width: 100%;
+  --file-line-width: 100%;
+  --file-margins: clamp(0.75rem, 2.2vw, 2.5rem);
+  container-name: viscerium-home;
+  container-type: inline-size;
+}
+
+/* Home already has a purpose-built hero; these normal note controls only waste space. */
+.markdown-preview-view.viscerium-home .inline-title,
+.markdown-preview-view.viscerium-home .metadata-container {
+  display: none;
+}
+
+/*
+ * Reset every width-bearing layer used by Obsidian/Minimal in Reading View.
+ * The direct-child rule is important: Minimal applies its adaptive line width
+ * there even when the preview sizer itself is full width.
+ */
+.markdown-preview-view.viscerium-home .markdown-preview-sizer,
+.markdown-preview-view.viscerium-home.is-readable-line-width .markdown-preview-sizer {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0 !important;
+  padding-inline: var(--file-margins) !important;
+  box-sizing: border-box;
+}
+
+.markdown-preview-view.viscerium-home .markdown-preview-sizer > div,
+.markdown-preview-view.viscerium-home .markdown-preview-section,
+.markdown-preview-view.viscerium-home .markdown-preview-section > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0 !important;
+  box-sizing: border-box;
+}
+
+/* Keep Live Preview/Source usable without inheriting the normal article width. */
+.markdown-source-view.mod-cm6.viscerium-home {
+  --line-width-adaptive: 300em;
+  --line-width-wide: 300em;
+  --max-width: 100%;
+  --file-line-width: 100%;
+}
+
+.markdown-source-view.mod-cm6.viscerium-home .cm-sizer,
+.markdown-source-view.mod-cm6.viscerium-home .cm-contentContainer,
+.markdown-source-view.mod-cm6.viscerium-home .cm-content {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0 !important;
+  box-sizing: border-box;
+}
+
+.markdown-source-view.mod-cm6.viscerium-home .cm-line {
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/*
+ * Fit cards to the space the Home pane actually has. The previous fixed
+ * 340px + 340px grid could overflow a narrow split pane when the overall app
+ * window was still wide. auto-fit removes that dependency on viewport width.
+ */
+.viscerium-home .callout[data-callout="home-grid"] > .callout-content {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)) !important;
+  width: 100%;
+  min-width: 0;
+}
+
+.viscerium-home .callout[data-callout="home-grid"] > .callout-content > .callout,
+.viscerium-home .callout[data-callout="home-grid"] .callout-content {
+  min-width: 0;
+}
+
+/* Process/reference entries also reflow from two columns to one based on pane width. */
+.viscerium-home .callout[data-callout="home-process"] > .callout-content {
+  columns: unset !important;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  gap: 0.65rem clamp(1.25rem, 2vw, 2.5rem);
+}
+
+.viscerium-home .callout[data-callout="home-process"] > .callout-content > p {
+  margin: 0;
+  min-width: 0;
+}
+
+/* Never let long command text, links or buttons force the dashboard wider. */
+.viscerium-home .callout-content,
+.viscerium-home .block-language-dataviewjs,
+.viscerium-home .vc-home-actions,
+.viscerium-home pre,
+.viscerium-home code,
+.viscerium-home a.internal-link {
+  max-width: 100%;
+}
+
+.viscerium-home .callout-content,
+.viscerium-home pre,
+.viscerium-home code,
+.viscerium-home a.internal-link {
+  overflow-wrap: anywhere;
+}
+
+.viscerium-home button.vc-home-button {
+  max-width: 100%;
+  white-space: normal;
+}
+
+/* Recent-work table stays inside the pane and wraps rather than widening Home. */
+.viscerium-home .callout[data-callout="home-recent"] .callout-content {
+  min-width: 0;
+}
+
+.viscerium-home .callout[data-callout="home-recent"] table {
+  width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+.viscerium-home .callout[data-callout="home-recent"] th,
+.viscerium-home .callout[data-callout="home-recent"] td {
+  overflow-wrap: anywhere;
+  word-break: normal;
+  vertical-align: top;
+}
+
+.viscerium-home .callout[data-callout="home-recent"] th:nth-child(1),
+.viscerium-home .callout[data-callout="home-recent"] td:nth-child(1) {
+  width: 45%;
+}
+
+.viscerium-home .callout[data-callout="home-recent"] th:nth-child(2),
+.viscerium-home .callout[data-callout="home-recent"] td:nth-child(2) {
+  width: 16%;
+}
+
+.viscerium-home .callout[data-callout="home-recent"] th:nth-child(3),
+.viscerium-home .callout[data-callout="home-recent"] td:nth-child(3) {
+  width: 39%;
+}
+
+/*
+ * Pane-aware responsive behaviour. Container queries respond to the Home leaf,
+ * not the overall Obsidian window, so split panes behave like mobile when narrow.
+ */
+@container viscerium-home (max-width: 46rem) {
+  .viscerium-home .vc-home-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .viscerium-home button.vc-home-button {
+    width: 100%;
+  }
+
+  .viscerium-home .callout[data-callout="home-process"] > .callout-content {
+    grid-template-columns: 1fr;
+  }
+
+  .viscerium-home .callout[data-callout="home-recent"] th:nth-child(2),
+  .viscerium-home .callout[data-callout="home-recent"] td:nth-child(2) {
+    display: none;
+  }
+
+  .viscerium-home .callout[data-callout="home-recent"] th:nth-child(1),
+  .viscerium-home .callout[data-callout="home-recent"] td:nth-child(1) {
+    width: 56%;
+  }
+
+  .viscerium-home .callout[data-callout="home-recent"] th:nth-child(3),
+  .viscerium-home .callout[data-callout="home-recent"] td:nth-child(3) {
+    width: 44%;
+  }
+}
+
+@container viscerium-home (max-width: 34rem) {
+  .markdown-preview-view.viscerium-home .markdown-preview-sizer {
+    padding-inline: 0.55rem !important;
+  }
+
+  .viscerium-home .callout[data-callout="home-hero"] {
+    padding: 0.95rem;
+  }
+
+  .viscerium-home .callout[data-callout="home-hero"] h1 {
+    font-size: clamp(1.8rem, 11cqi, 2.65rem);
+    letter-spacing: 0.08em;
+  }
+
+  .viscerium-home .callout[data-callout="home-recent"] table {
+    font-size: 0.8rem;
+  }
+
+  .viscerium-home .callout[data-callout="home-recent"] th {
+    font-size: 0.6rem;
+  }
+}
+
+/* Mobile fallback for Obsidian builds without container-query support. */
+@media (max-width: 700px) {
+  .markdown-preview-view.viscerium-home .markdown-preview-sizer {
+    padding-inline: 0.55rem !important;
+  }
+
+  .viscerium-home .callout[data-callout="home-grid"] > .callout-content,
+  .viscerium-home .callout[data-callout="home-process"] > .callout-content {
+    grid-template-columns: 1fr !important;
+  }
+
+  .viscerium-home .vc-home-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .viscerium-home button.vc-home-button {
+    width: 100%;
+  }
+}
