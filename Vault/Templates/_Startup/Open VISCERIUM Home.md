@@ -1,5 +1,6 @@
 <%*
 const ACTIVITY_PATH = "System/Data/Creator Activity.json";
+const CACHE_KEY = `viscerium-creator-activity-mtimes:${tp.app.vault.getName()}`;
 
 const dayKey = (timestamp) => {
   const date = new Date(timestamp);
@@ -26,13 +27,13 @@ const isCreatorFile = (file) => {
     && !path.startsWith("Templates/");
 };
 
-const normalisePrevious = (value) => {
-  if (!value) return { hash: "", mtime: 0 };
-  if (typeof value === "string") return { hash: value, mtime: 0 };
-  return {
-    hash: String(value.hash ?? ""),
-    mtime: Number(value.mtime ?? 0),
-  };
+const readLocalMtimeCache = () => {
+  try {
+    return JSON.parse(localStorage.getItem(CACHE_KEY) ?? "{}") ?? {};
+  } catch (error) {
+    console.warn("VISCERIUM creator activity local cache could not be read; rebuilding it.", error);
+    return {};
+  }
 };
 
 const recordCreatorActivity = async () => {
@@ -58,24 +59,27 @@ const recordCreatorActivity = async () => {
   ledger.files ??= {};
   ledger.days ??= {};
 
+  const localMtimes = readLocalMtimeCache();
+  const nextLocalMtimes = {};
   const isBaselineScan = !ledger.lastScan && Object.keys(ledger.files).length === 0;
   const nextFiles = {};
   let changed = isBaselineScan;
 
   for (const file of tp.app.vault.getMarkdownFiles().filter(isCreatorFile)) {
     const mtime = Number(file.stat?.mtime ?? 0);
-    const previous = normalisePrevious(ledger.files[file.path]);
+    const previousHash = String(ledger.files[file.path] ?? "");
+    nextLocalMtimes[file.path] = mtime;
 
-    if (!isBaselineScan && previous.hash && previous.mtime === mtime) {
-      nextFiles[file.path] = previous;
+    if (!isBaselineScan && previousHash && Number(localMtimes[file.path] ?? 0) === mtime) {
+      nextFiles[file.path] = previousHash;
       continue;
     }
 
     const text = await tp.app.vault.cachedRead(file);
     const hash = hashText(text);
-    nextFiles[file.path] = { hash, mtime };
+    nextFiles[file.path] = hash;
 
-    if (isBaselineScan || previous.hash === hash) continue;
+    if (isBaselineScan || previousHash === hash) continue;
 
     const key = dayKey(mtime || Date.now());
     ledger.days[key] = Number(ledger.days[key] ?? 0) + 1;
@@ -88,6 +92,7 @@ const recordCreatorActivity = async () => {
   }
 
   ledger.files = nextFiles;
+  localStorage.setItem(CACHE_KEY, JSON.stringify(nextLocalMtimes));
 
   if (!changed && ledger.lastScan) return;
 
