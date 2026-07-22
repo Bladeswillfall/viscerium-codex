@@ -1,0 +1,250 @@
+/*
+ * VISCERIUM Homepage
+ * Practical creator-dashboard styling scoped to Home.md via cssclasses: viscerium-home.
+ * The note remains readable without this snippet; the CSS only improves hierarchy,
+ * responsive layout and the distinction between navigation and actions.
+ */
+
+.markdown-preview-view.viscerium-home .markdown-preview-sizer,
+.markdown-source-view.mod-cm6.viscerium-home .cm-sizer {
+  --vc-home-accent: var(--interactive-accent, #b1a98c);
+  --vc-home-border: color-mix(in srgb, var(--vc-home-accent) 24%, var(--background-modifier-border));
+  --vc-home-panel: color-mix(in srgb, var(--background-secondary) 78%, transparent);
+  --vc-home-panel-strong: color-mix(in srgb, var(--background-secondary-alt) 82%, transparent);
+  max-width: 1120px;
+}
+
+/* Hero */
+.viscerium-home .callout[data-callout="home-hero"] {
+  --callout-icon: lucide-orbit;
+  --callout-color: 177, 169, 140;
+  margin-block: 0.4rem 1.1rem;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--vc-home-border);
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--vc-home-accent) 11%, transparent), transparent 58%),
+    var(--background-primary-alt);
+  box-shadow: none;
+}
+
+.viscerium-home .callout[data-callout="home-hero"] > .callout-title {
+  display: none;
+}
+
+.viscerium-home .callout[data-callout="home-hero"] h1 {
+  margin: 0 0 0.12rem;
+  font-family: var(--font-interface);
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+.viscerium-home .callout[data-callout="home-hero"] p {
+  margin-block: 0.35rem;
+}
+
+.viscerium-home .callout[data-callout="home-hero"] strong {
+  font-family: var(--font-interface);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+}
+
+/* Section callouts */
+.viscerium-home .callout[data-callout="home-recent"],
+.viscerium-home .callout[data-callout="home-process"],
+.viscerium-home .callout[data-callout="home-help"] {
+  border: 1px solid var(--vc-home-border);
+  border-radius: 10px;
+  background: var(--vc-home-panel);
+  box-shadow: none;
+}
+
+.viscerium-home .callout[data-callout="home-recent"] {
+  --callout-icon: lucide-history;
+  --callout-color: 177, 169, 140;
+}
+
+.viscerium-home .callout[data-callout="home-process"] {
+  --callout-icon: lucide-book-open-check;
+  --callout-color: 167, 139, 250;
+}
+
+.viscerium-home .callout[data-callout="home-help"] {
+  --callout-icon: lucide-compass;
+  --callout-color: 101, 214, 173;
+}
+
+.viscerium-home .callout[data-callout="home-recent"] > .callout-title,
+.viscerium-home .callout[data-callout="home-process"] > .callout-title,
+.viscerium-home .callout[data-callout="home-help"] > .callout-title,
+.viscerium-home .callout[data-callout="home-panel"] > .callout-title {
+  font-family: var(--font-interface);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+/* Grid wrapper. It is a semantic callout so the Markdown remains portable. */
+.viscerium-home .callout[data-callout="home-grid"] {
+  margin-block: 0.8rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.viscerium-home .callout[data-callout="home-grid"] > .callout-title {
+  display: none;
+}
+
+.viscerium-home .callout[data-callout="home-grid"] > .callout-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  padding: 0;
+}
+
+.viscerium-home .callout[data-callout="home-grid"] > .callout-content > p {
+  display: none;
+}
+
+.viscerium-home .callout[data-callout="home-panel"] {
+  --callout-icon: lucide-square-library;
+  --callout-color: 177, 169, 140;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--vc-home-border);
+  border-radius: 10px;
+  background: var(--vc-home-panel);
+  box-shadow: none;
+}
+
+.viscerium-home .callout[data-callout="home-panel"] > .callout-content {
+  padding-top: 0.2rem;
+}
+
+.viscerium-home .callout[data-callout="home-panel"] p {
+  line-height: 1.48;
+}
+
+.viscerium-home .callout[data-callout="home-panel"] strong:first-child {
+  color: var(--text-normal);
+}
+
+/* Links are navigation; buttons are actions. */
+.viscerium-home a.internal-link {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+.viscerium-home .vc-home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.55rem 0 0.7rem;
+}
+
+.viscerium-home button.vc-home-button {
+  min-height: 2.2rem;
+  padding: 0.42rem 0.78rem;
+  border: 1px solid var(--vc-home-border);
+  border-radius: 6px;
+  font-family: var(--font-interface);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: none;
+  transform: none;
+}
+
+.viscerium-home button.vc-home-button-primary {
+  color: var(--text-on-accent);
+  border-color: var(--vc-home-accent);
+  background: var(--vc-home-accent);
+}
+
+.viscerium-home button.vc-home-button-primary:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+}
+
+.viscerium-home button.vc-home-button-secondary {
+  color: var(--text-normal);
+  background: transparent;
+}
+
+.viscerium-home button.vc-home-button-secondary:hover {
+  border-color: var(--vc-home-accent);
+  background: color-mix(in srgb, var(--vc-home-accent) 9%, transparent);
+}
+
+.viscerium-home button.vc-home-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
+/* Recent-work Dataview table */
+.viscerium-home .callout[data-callout="home-recent"] table {
+  width: 100%;
+  margin-top: 0.55rem;
+  font-size: 0.88rem;
+}
+
+.viscerium-home .callout[data-callout="home-recent"] th {
+  font-family: var(--font-interface);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.viscerium-home .callout[data-callout="home-recent"] td:nth-child(2) {
+  color: var(--text-muted);
+  font-family: var(--font-interface);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+}
+
+/* Commands should look like operational reference, not primary UI. */
+.viscerium-home pre {
+  border-color: color-mix(in srgb, var(--vc-home-accent) 16%, var(--background-modifier-border));
+  background: color-mix(in srgb, var(--background-primary) 84%, black 4%);
+}
+
+.viscerium-home code:not(pre code) {
+  font-size: 0.88em;
+}
+
+/* Keep the source editor usable when editing Home.md. */
+.markdown-source-view.mod-cm6.viscerium-home .HyperMD-callout {
+  max-width: 100%;
+}
+
+@media (max-width: 800px) {
+  .viscerium-home .callout[data-callout="home-grid"] > .callout-content {
+    grid-template-columns: 1fr;
+  }
+
+  .viscerium-home .callout[data-callout="home-hero"] {
+    padding: 1rem;
+  }
+
+  .viscerium-home .callout[data-callout="home-hero"] h1 {
+    font-size: 2rem;
+    letter-spacing: 0.09em;
+  }
+
+  .viscerium-home .vc-home-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .viscerium-home button.vc-home-button {
+    width: 100%;
+  }
+}
