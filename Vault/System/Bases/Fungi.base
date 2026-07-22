@@ -39,12 +39,7 @@ views:
       - substrate
       - eras
       - locations
-      - biomes
       - rarity
-      - fruiting_conditions
-      - human_relevance
-      - hazards
-      - development_level
     sort:
       - property: title
         direction: ASC
