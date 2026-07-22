@@ -1,0 +1,98 @@
+filters:
+  and:
+    - '!file.inFolder("Templates")'
+    - or:
+        - type == "fauna"
+        - type == "flora"
+        - type == "fungi"
+        - type == "item"
+        - type == "myrkild-unit"
+formulas:
+  era_context: 'if(eras, eras, era)'
+properties:
+  title:
+    displayName: Entity
+  description:
+    displayName: Identity
+  type:
+    displayName: Type
+  development_level:
+    displayName: Development
+  formula.era_context:
+    displayName: Era context
+  locations:
+    displayName: Locations
+  rarity:
+    displayName: Rarity
+  file.mtime:
+    displayName: Modified
+views:
+  - type: table
+    name: All Entities
+    order:
+      - title
+      - type
+      - description
+      - formula.era_context
+      - locations
+      - rarity
+      - development_level
+      - file.mtime
+    sort:
+      - property: title
+        direction: ASC
+  - type: table
+    name: By Type
+    groupBy:
+      property: type
+      direction: ASC
+    order:
+      - title
+      - description
+      - formula.era_context
+      - locations
+      - development_level
+      - file.mtime
+    sort:
+      - property: title
+        direction: ASC
+  - type: table
+    name: By Era
+    groupBy:
+      property: formula.era_context
+      direction: ASC
+    order:
+      - title
+      - type
+      - locations
+      - development_level
+      - file.mtime
+    sort:
+      - property: title
+        direction: ASC
+  - type: table
+    name: Recently Modified
+    order:
+      - title
+      - type
+      - formula.era_context
+      - development_level
+      - file.mtime
+    sort:
+      - property: file.mtime
+        direction: DESC
+  - type: table
+    name: Stubs
+    filters:
+      and:
+        - development_level == "stub"
+    order:
+      - title
+      - type
+      - description
+      - formula.era_context
+      - locations
+      - file.mtime
+    sort:
+      - property: file.mtime
+        direction: DESC
