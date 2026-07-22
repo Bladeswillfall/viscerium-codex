@@ -87,9 +87,13 @@ cd Site
 | `npm run generate:maps` | Regenerates map data from source metadata. | **Yes.** Updates generated map data. |
 | `npm run generate:timelines` | Regenerates canonical timeline datasets from source metadata. | **Yes.** Updates generated timeline data. |
 | `npm run dev` | Builds content in development mode and starts the local Astro development server. | May refresh generated development content; then keeps a local server running. |
+| `npm run dev:sync` | Alias of `npm run dev`; retained for compatibility with the earlier development-sync command name. | Same behaviour as `npm run dev`. |
 | `npm run build` | Runs the production content build and Astro production build; post-build icon validation runs automatically. | **Yes.** Produces build output/generated content. |
 | `npm run validate:icons` | Checks generated/public icon output. Normally runs automatically after `npm run build`. | **No.** Read-only. |
 | `npm run preview` | Serves the already-built production site locally. Run `npm run build` first if needed. | **No** source changes. |
+| `npm run astro -- <args>` | Passes arguments directly to the Astro CLI. This is an escape hatch for Astro-specific commands; prefer the named `dev`, `build` and `preview` scripts for normal work. | Depends on the Astro command supplied. |
+
+`prebuild` and `postbuild` are npm lifecycle hooks rather than commands you normally invoke directly: `prebuild` prepares content before `npm run build`, and `postbuild` runs icon validation afterwards.
 
 ### Recommended pre-PR check
 
