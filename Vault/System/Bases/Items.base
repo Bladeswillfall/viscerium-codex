@@ -1,0 +1,77 @@
+filters:
+  and:
+    - type == "item"
+    - '!file.inFolder("Templates")'
+properties:
+  title:
+    displayName: Item
+  description:
+    displayName: Identity
+  item_type:
+    displayName: Type
+  origin:
+    displayName: Origin
+  eras:
+    displayName: Eras
+  locations:
+    displayName: Regions or markets
+  rarity:
+    displayName: Rarity
+  primary_use:
+    displayName: Use
+  limitations:
+    displayName: Limitations
+  availability:
+    displayName: Availability
+  common_users:
+    displayName: Common users
+  development_level:
+    displayName: Development
+  image:
+    displayName: Artwork
+views:
+  - type: cards
+    name: Item Cards
+    order:
+      - title
+      - description
+      - item_type
+      - origin
+      - eras
+      - locations
+      - rarity
+      - primary_use
+      - limitations
+      - availability
+      - common_users
+      - development_level
+    sort:
+      - property: title
+        direction: ASC
+    cardSize: 260
+    imageFit: cover
+    imageAspectRatio: 1.5
+    image: image
+  - type: table
+    name: Database
+    order:
+      - title
+      - item_type
+      - origin
+      - eras
+      - locations
+      - rarity
+      - primary_use
+      - limitations
+      - materials
+      - construction
+      - availability
+      - common_users
+      - cultural_significance
+      - story_complication
+      - development_level
+      - status
+      - file.mtime
+    sort:
+      - property: title
+        direction: ASC
