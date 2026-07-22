@@ -1,6 +1,13 @@
 <%*
+const RARITY_FIELD = { key: "rarity", label: "Rarity", options: ["Leave undefined", "Common", "Uncommon", "Rare", "Singular"], values: ["", "Common", "Uncommon", "Rare", "Singular"] };
+
 const configs = {
   fauna: [
+    { id: "profile", label: "Profile — kind, size and rarity", fields: [
+      { key: "fauna_kind", prompt: "Broad kind of animal (for example: browsing herd animal, burrowing scavenger)" },
+      { key: "size_class", label: "Size", options: ["Leave undefined", "Tiny", "Small", "Human-scale", "Large", "Massive"], values: ["", "Tiny", "Small", "Human-scale", "Large", "Massive"] },
+      RARITY_FIELD
+    ] },
     { id: "encounter", label: "Encounter — signs, behaviour and danger", fields: [
       { key: "signs_of_presence", prompt: "How might someone know it is nearby before seeing it?" },
       { key: "encounter_behaviour", prompt: "How does it usually react when encountered?" },
@@ -20,6 +27,10 @@ const configs = {
     ] }
   ],
   flora: [
+    { id: "profile", label: "Profile — growth form and rarity", fields: [
+      { key: "growth_form", prompt: "Growth form (for example: tree, creeping vine, reed, thorn scrub)" },
+      RARITY_FIELD
+    ] },
     { id: "identification", label: "Identification — appearance and signs", fields: [
       { key: "identification", prompt: "What is the quickest reliable way to identify it?" },
       { key: "signs_of_presence", prompt: "What nearby sign might reveal it before the plant itself is seen?" }
@@ -42,6 +53,11 @@ const configs = {
     ] }
   ],
   fungi: [
+    { id: "profile", label: "Profile — growth form, substrate and rarity", fields: [
+      { key: "growth_form", prompt: "Growth form (for example: shelf fungus, mould, fruiting caps, subterranean network)" },
+      { key: "substrate", prompt: "Primary substrate or host, if important" },
+      RARITY_FIELD
+    ] },
     { id: "identification", label: "Identification — appearance and signs", fields: [
       { key: "identification", prompt: "What is the quickest reliable way to identify it?" },
       { key: "signs_of_presence", prompt: "What might reveal a colony before its fruiting bodies are seen?" }
@@ -64,6 +80,11 @@ const configs = {
     ] }
   ],
   item: [
+    { id: "profile", label: "Profile — type, origin and rarity", fields: [
+      { key: "item_type", prompt: "Item type (for example: field tool, weapon, ritual object, household good)" },
+      { key: "origin", prompt: "Place, culture, faction or maker of origin, if important" },
+      RARITY_FIELD
+    ] },
     { id: "use", label: "Use — purpose and limitations", fields: [
       { key: "primary_use", prompt: "What is this item actually used for?" },
       { key: "limitations", prompt: "What practical limitation, cost or trade-off matters?" }
@@ -114,7 +135,7 @@ const available = modules.filter((module) =>
 );
 
 if (!available.length) {
-  new tp.obsidian.Notice("All supported Storyteller fields are already present on this note.");
+  new tp.obsidian.Notice("All supported optional fields are already present on this note.");
   tR = "";
   return;
 }
@@ -127,7 +148,7 @@ const selected = await tp.system.multi_suggester(
 ) ?? [];
 
 if (!selected.length) {
-  new tp.obsidian.Notice("No Storyteller fields added.");
+  new tp.obsidian.Notice("No fields added.");
   tR = "";
   return;
 }
@@ -151,7 +172,7 @@ for (const module of available) {
 
 const keys = Object.keys(additions);
 if (!keys.length) {
-  new tp.obsidian.Notice("No Storyteller values were entered.");
+  new tp.obsidian.Notice("No values were entered.");
   tR = "";
   return;
 }
@@ -161,6 +182,6 @@ await tp.app.fileManager.processFrontMatter(tp.config.target_file, (frontmatter)
   if (!frontmatter.development_level) frontmatter.development_level = "stub";
 });
 
-new tp.obsidian.Notice(`Added ${keys.length} Storyteller field${keys.length === 1 ? "" : "s"}.`);
+new tp.obsidian.Notice(`Added ${keys.length} field${keys.length === 1 ? "" : "s"}.`);
 tR = "";
 %>
