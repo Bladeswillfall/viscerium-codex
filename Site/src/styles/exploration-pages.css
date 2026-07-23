@@ -34,6 +34,10 @@
   max-width: none;
 }
 
+.relationship-explorer {
+  --relationship-label-bg: var(--relationship-node-bg);
+}
+
 /* Keep headings and controls comfortably inset while the actual tools use the full viewport width. */
 .codex-exploration-page .atlas__header,
 .codex-exploration-page .atlas__toolbar,
