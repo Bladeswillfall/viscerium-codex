@@ -12,7 +12,6 @@ const groupIcons = {
   characters: 'character',
   citadel: 'faction',
   'degel-system': 'spark',
-  demo: 'codex',
   entropy: 'spark',
   eras: 'event',
   events: 'event',
