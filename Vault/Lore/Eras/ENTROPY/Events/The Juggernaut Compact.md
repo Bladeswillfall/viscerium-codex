@@ -1,8 +1,7 @@
 ---
 title: "The Juggernaut Compact"
 description: "Independent fortress-fleets agreed to mutual rescue, ammunition interchange and shared Naranor contact protocols."
-publish: true
-status: canon
+status: published
 type: event
 era: ENTROPY
 calendarDate:

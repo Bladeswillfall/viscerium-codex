@@ -1,8 +1,7 @@
 ---
 title: Eras
 description: Index of public VISCERIUM pages in the Eras category.
-publish: true
-status: canon
+status: published
 slug: eras
 type: category
 pagefind: true

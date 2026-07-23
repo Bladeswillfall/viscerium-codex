@@ -7,7 +7,6 @@ import { isMainModule } from './script-entry.mjs';
 const siteRoot = process.cwd();
 const requiredPublicFields = ['title', 'description'];
 const iconFields = ['icon', 'sidebarIcon', 'titleIcon'];
-const allowedStatuses = new Set(['canon']);
 const forbiddenActiveTag = /<\s*\/?\s*(?:script|iframe|object|embed|base)\b/i;
 const inlineEventHandler = /<[^>]*\son[a-z][\w:-]*\s*=/i;
 const unsafeUrlScheme = /(?:\b(?:href|src|action|formaction)\s*=\s*["']?\s*|\]\(\s*)(?:javascript:|data\s*:\s*text\/html)/i;
@@ -56,15 +55,17 @@ export function validateVaultNotes(manifest) {
   }
 
   for (const { file, data, content } of manifest.records) {
-    if (data.publish !== true) continue;
+    if (Object.hasOwn(data, 'publish')) {
+      fail(`Lore note uses retired frontmatter "publish"; remove it and use status: published when public: ${relative(file)}`);
+    }
+    if (data.status === 'canon') {
+      fail(`Lore note uses retired status: canon; use status: published when public: ${relative(file)}`);
+      continue;
+    }
+    if (data.status !== 'published') continue;
 
     if (Object.hasOwn(data, 'slug')) {
       fail(`Published note routes are derived from file paths; remove frontmatter "slug": ${relative(file)}`);
-    }
-
-    if (!allowedStatuses.has(data.status)) {
-      fail(`Published note must use status: canon: ${relative(file)}${data.status ? ` (found status: ${data.status})` : ''}`);
-      continue;
     }
 
     for (const field of requiredPublicFields) {

@@ -21,13 +21,12 @@ Add this frontmatter to a Markdown note inside `Vault/Lore/`:
 ---
 title: Example Title
 description: "A short SEO-safe page description."
-publish: true
-status: canon
+status: published
 type: article
 ---
 ```
 
-The public route is derived from the note path relative to `Vault/Lore/`, so moving a note changes its URL. The build fails if a public note is missing `title` or `description`, or does not use `status: canon`.
+The public route is derived from the note path relative to `Vault/Lore/`, so moving a note changes its URL. The build fails if a public note is missing `title` or `description`, or does not use `status: published`.
 
 ## Typography
 

@@ -1,8 +1,7 @@
 ---
 title: "The Opening of the Bone Road"
 description: "The first guarded caravan crossed the ossuary causeway linking the Dominion interior to the western salt kingdoms."
-publish: true
-status: canon
+status: published
 type: event
 era: CITADEL
 calendarDate:

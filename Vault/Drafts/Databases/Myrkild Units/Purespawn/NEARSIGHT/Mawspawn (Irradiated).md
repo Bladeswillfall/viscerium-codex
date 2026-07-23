@@ -1,7 +1,6 @@
 ---
 title: "Mawspawn (Irradiated)"
 description: "An imported NEARSIGHT purespawn Gluttony Myrkild unit profile."
-publish: false
 status: "draft"
 type: "myrkild-unit"
 unit_id: "MYR-PUR-0029-RAD"

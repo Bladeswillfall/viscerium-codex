@@ -1,8 +1,7 @@
 ---
 title: "The Silence After Seven Bells"
 description: "On the morning after the bells rang, every child born within Karn Vey was silent until sunset."
-publish: true
-status: canon
+status: published
 type: event
 era: CITADEL
 calendarDate:
@@ -39,7 +38,7 @@ tags:
 slug: eras/citadel/events/the-silence-after-seven-bells
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The Silence After Seven Bells.md"
-updated: "2026-07-10T20:48:59Z"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 On the morning after the bells rang, every child born within Karn Vey was silent until sunset.

@@ -1,7 +1,6 @@
 ---
 title: "Ripper Thrall"
 description: "An imported CITADEL mutated Wrath Myrkild unit profile."
-publish: false
 status: "draft"
 type: "myrkild-unit"
 unit_id: "MYR-MUT-0007"

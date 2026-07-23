@@ -1,8 +1,7 @@
 ---
 title: Degel System
 description: Index of public VISCERIUM pages in the Degel System category.
-publish: true
-status: canon
+status: published
 slug: degel-system
 type: category
 pagefind: true

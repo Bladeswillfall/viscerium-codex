@@ -205,7 +205,7 @@ const entries = [];
 for (const file of generatedFiles) {
   let raw = await fs.readFile(file, 'utf8');
   const parsed = matter(raw);
-  if (parsed.data.publish !== true || parsed.data.status !== 'canon' || parsed.data.type === 'category') continue;
+  if (parsed.data.status !== 'published' || parsed.data.type === 'category') continue;
 
   if (!entryDate(parsed.data) && typeof parsed.data.sourcePath === 'string') {
     const updated = updatedBySourcePath.get(toPosixPath(parsed.data.sourcePath));
@@ -265,8 +265,7 @@ for (const category of categoryList) {
   const frontmatter = {
     title: category.title,
     description: `Index of public VISCERIUM pages in the ${category.title} category.`,
-    publish: true,
-    status: 'canon',
+    status: 'published',
     slug: category.slug,
     type: 'category',
     pagefind: true,

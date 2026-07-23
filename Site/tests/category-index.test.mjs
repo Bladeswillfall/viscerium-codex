@@ -12,8 +12,7 @@ function fixture({ title, slug, description = '', type = 'article' }) {
   return `---
 title: ${JSON.stringify(title)}
 description: ${JSON.stringify(description)}
-publish: true
-status: canon
+status: 'published'
 slug: ${slug}
 type: ${type}
 ---

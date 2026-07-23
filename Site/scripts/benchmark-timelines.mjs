@@ -8,8 +8,7 @@ function era(id, order, startYear, endYear, allowGapAfter = false) {
     data: {
       title: id.toUpperCase(),
       description: `${id} era`,
-      publish: true,
-      status: 'canon',
+      status: 'published',
       type: 'era',
       eraId: id,
       calendarDate: { calendar: 'okse', year: startYear, month: 'niewmonath', day: 1, precision: 'year' },
@@ -46,8 +45,7 @@ function makeEvents(count) {
       data: {
         title: `Synthetic Event ${String(index).padStart(5, '0')}`,
         description: 'A concise synthetic timeline event used only for performance verification.',
-        publish: true,
-        status: 'canon',
+        status: 'published',
         type: 'event',
         era: eraName,
         calendarDate: { calendar: 'okse', year, month: 'niewmonath', day: (index % 28) + 1, precision: 'day', certainty: 'exact' },

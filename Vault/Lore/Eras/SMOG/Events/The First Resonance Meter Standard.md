@@ -1,8 +1,7 @@
 ---
 title: "The First Resonance Meter Standard"
 description: "Guild laboratories agreed on a reproducible scale for comparing Resonant activity across instruments and cities."
-publish: true
-status: canon
+status: published
 type: event
 era: SMOG
 calendarDate:

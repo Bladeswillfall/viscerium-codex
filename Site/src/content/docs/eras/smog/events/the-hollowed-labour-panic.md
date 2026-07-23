@@ -1,8 +1,7 @@
 ---
 title: "The Hollowed Labour Panic"
 description: "Rumours that missing workers had returned altered spread across the industrial wards and triggered violent inspections."
-publish: true
-status: canon
+status: published
 type: event
 era: SMOG
 calendarDate:
@@ -40,7 +39,7 @@ tags:
 slug: eras/smog/events/the-hollowed-labour-panic
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Hollowed Labour Panic.md"
-updated: "2026-07-10T20:48:59Z"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Rumours that missing workers had returned altered spread across the industrial wards and triggered violent inspections.

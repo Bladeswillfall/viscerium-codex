@@ -1,7 +1,6 @@
 ---
 title: "Stagnant Idol"
 description: "An imported CITADEL purespawn Sloth Myrkild unit profile."
-publish: false
 status: "draft"
 type: "myrkild-unit"
 unit_id: "MYR-PUR-0005"

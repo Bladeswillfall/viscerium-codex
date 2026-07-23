@@ -1,8 +1,7 @@
 ---
 title: "The Breaking of Lorndale"
 description: "Lorndale fell during a Resonant assault remembered as both a military victory and a spiritual catastrophe."
-publish: true
-status: canon
+status: published
 type: event
 era: CITADEL
 calendarDate:

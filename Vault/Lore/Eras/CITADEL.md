@@ -1,8 +1,7 @@
 ---
 title: CITADEL
 description: "A time of steel, bone and thrones: VISCERIUM's medieval age of walled realms, early gunpowder and open occult practice."
-publish: true
-status: canon
+status: published
 type: era
 eraId: citadel
 calendarDate:

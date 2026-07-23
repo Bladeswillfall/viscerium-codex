@@ -13,6 +13,9 @@ Use this as the practical lookup for interacting with the VISCERIUM authoring sy
 | See deliberate work I need to return to | [[Home]] → **Next Actions**, or open [[System/Creator Tasks|Creator Tasks]] |
 | Return to the active StoryLine project / recent scenes | [[Home]] → **Writing Desk** |
 | Create fauna, flora, fungi or an item | [[Home]] → **Create Story Entity**, or **Templater: Create New Story Entity** |
+| Create a character, faction, location, event or species | [[Home]] → **Create Lore Entity**, or **Templater: Create New Lore Entity** |
+| Create a Myrkild unit | [[Home]] → **Create Myrkild Unit**, or **Templater: Create New Myrkild Unit** |
+| Open active-note creator context | [[Home]] → **Open Creator Context** |
 | Add optional Storyteller/profile fields later | **Templater: Insert template** → `Add Storyteller Fields` |
 | Browse every structured story entity together | Open [[Story Entities.base]] |
 | Check creator data and image assets for structural mistakes | `cd Site` then `npm run doctor:vault` |
@@ -69,7 +72,7 @@ The existing Templater startup template maintains:
 
 Change detection is content-hash based rather than timestamp based, so normal Git checkout/sync timestamp changes do not count as creative activity. The edit date attached to the changed file determines which day receives the activity mark.
 
-`System/`, `Templates/` and `Home.md` are excluded. The activity ledger is generated creator-system data and may change automatically after a session in which creator files changed.
+`System/`, `Templates/`, `Demo/` and `Home.md` are excluded. The activity ledger is generated creator-system data and may change automatically after a session in which creator files changed.
 
 ## Obsidian commands
 
@@ -80,12 +83,15 @@ Run these through **Ctrl/Cmd + P** unless stated otherwise.
 | Command / action | What it does | Changes files? |
 | --- | --- | --- |
 | **Templater: Create New Story Entity** | Direct template-specific creation command for fauna, flora, fungi and items. Runs the same guided workflow as `New Story Entity` and automatically files the result into `Drafts/Databases/<Type>/`. This is what the Home **Create Story Entity** button invokes. | **Yes.** Creates and files a Markdown note. |
+| **Templater: Create New Lore Entity** | Guided creation for characters, factions, locations, events and species. Controlled/reference fields are searchable; **Create new…** explicitly creates a task-bearing stub under `Drafts/Inbox/`. | **Yes.** Creates and files a Markdown note and may create referenced stubs. |
+| **Templater: Create New Myrkild Unit** | Guided Myrkild unit creation with controlled era/species/origin choices and relationship-aware locations. | **Yes.** Creates and files a Markdown note and may create location stubs. |
+| [[Home]] → **Open Creator Context** | Opens Outline, Backlinks and Local Graph in the right sidebar without committing workspace state. | **No.** Changes the local workspace layout only. |
 | **Templater: Create new note from template** → `New Story Entity` | General fallback route to the same workflow when you deliberately want the Templater template picker. | **Yes.** Creates and files a Markdown note. |
 | Create a normal blank note directly inside `Drafts/Databases/Fauna`, `Flora`, `Fungi` or `Items` | Folder-first version of the same workflow. Templater infers the type from the folder and skips the redundant type question. Requires the per-device **Trigger Templater on new file creation** switch. | **Yes.** The new note is populated by Templater. |
 | **Templater: Insert template** → `Add Storyteller Fields` | Adds only selected, currently absent optional properties to an existing fauna, flora, fungi, item or Myrkild unit. Existing values are preserved. | **Yes.** Updates frontmatter only for values actually supplied. |
 | **Templates: Insert template** | Uses Obsidian's built-in Templates plugin for static/non-interactive templates. Use Templater instead for the workflows above. | **Yes.** Inserts the chosen static template. |
 
-Do **not** run files inside `Templates/_Internals/` or `Templates/_Startup/` directly. They contain shared implementation or startup behaviour used by creator-facing workflows.
+Do **not** run files inside `Templates/_Internals/`, `Templates/_Scripts/` or `Templates/_Startup/` directly. They contain shared implementation or startup behaviour used by creator-facing workflows.
 
 ### Bases and browsing
 

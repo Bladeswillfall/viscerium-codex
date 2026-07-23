@@ -5,7 +5,7 @@ Thanks for helping improve this codex.
 ## Source of truth
 
 1. Edit source lore in `Vault/Lore/`, not generated files in `Site/src/content/docs/` or `Site/src/data/timelines/`.
-2. Public notes need `publish: true`, `status: canon`, `title`, and `description`.
+2. Public notes need `status: published`, `title`, and `description`.
 3. Public routes are derived from paths relative to `Vault/Lore/`; do not add `slug` frontmatter, and treat file moves as URL changes.
 4. Use frontmatter for reader-facing structure such as `type`, `era`, `faction`, `location`, `participants`, `tags`, `related`, images, maps, timeline metadata and calendar dates.
 5. Keep private lore, unreleased spoilers, credentials and personal data out of public issues, pull requests and published notes.

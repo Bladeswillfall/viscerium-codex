@@ -1,8 +1,7 @@
 ---
 title: "The Nine-Stack Lockout"
 description: "Factory owners sealed the ward gates hours after recognising the union, trapping night crews inside and day crews outside."
-publish: true
-status: canon
+status: published
 type: event
 era: SMOG
 calendarDate:
@@ -39,7 +38,7 @@ tags:
 slug: eras/smog/events/the-nine-stack-lockout
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Nine-Stack Lockout.md"
-updated: "2026-07-10T20:48:59Z"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Factory owners sealed the ward gates hours after recognising the union, trapping night crews inside and day crews outside.

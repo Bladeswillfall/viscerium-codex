@@ -1,8 +1,7 @@
 ---
 title: "Formation of ASTU"
 description: "Several threatened states combined specialist forces into the fast-moving Allied Special Tactics Union."
-publish: true
-status: canon
+status: published
 type: event
 era: NEARSIGHT
 calendarDate:

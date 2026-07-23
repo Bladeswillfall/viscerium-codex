@@ -1,8 +1,7 @@
 ---
 title: "The Garmir Quarantine"
 description: "A mechanised exclusion cordon sealed the Garmir basin after instrument stations detected a moving subterranean signal."
-publish: true
-status: canon
+status: published
 type: event
 era: NEARSIGHT
 calendarDate:
@@ -48,7 +47,7 @@ tags:
 slug: eras/nearsight/events/the-garmir-quarantine
 eraStyle: e3
 sourcePath: "Eras/NEARSIGHT/Events/The Garmir Quarantine.md"
-updated: "2026-07-10T20:48:59Z"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 A mechanised exclusion cordon sealed the Garmir basin after instrument stations detected a moving subterranean signal.

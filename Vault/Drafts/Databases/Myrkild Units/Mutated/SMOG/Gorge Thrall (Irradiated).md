@@ -1,7 +1,6 @@
 ---
 title: "Gorge Thrall (Irradiated)"
 description: "An imported SMOG mutated Gluttony Myrkild unit profile."
-publish: false
 status: "draft"
 type: "myrkild-unit"
 unit_id: "MYR-MUT-0015-RAD"

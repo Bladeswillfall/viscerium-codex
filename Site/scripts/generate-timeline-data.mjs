@@ -29,7 +29,7 @@ export async function generateTimelineData({ manifest, validateOnly = false } = 
   const records = [];
 
   for (const record of vault.records) {
-    if (record.data.publish !== true || record.data.status !== 'canon') continue;
+    if (record.data.status !== 'published') continue;
     const data = { ...record.data };
     data.type ||= inferNoteType(record.file, vault.rootDir);
     const slug = slugFromRecord(record);

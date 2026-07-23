@@ -8,7 +8,7 @@ The codex publishes two static web feeds:
 Both feeds are generated from the `docs` content collection and include public canon pages only:
 
 ```ts
-data.publish === true && data.status === 'canon'
+data.status === 'published'
 ```
 
 ## Feed metadata
@@ -47,8 +47,7 @@ Recommended frontmatter:
 ---
 title: Example Title
 description: "A short SEO-safe page description."
-publish: true
-status: canon
+status: published
 type: article
 published: 2026-07-08
 updated: 2026-07-08

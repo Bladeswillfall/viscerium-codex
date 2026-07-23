@@ -9,8 +9,7 @@ function era(id, order, startYear, endYear, allowGapAfter = false) {
     data: {
       title: id.toUpperCase(),
       description: `${id} era`,
-      publish: true,
-      status: 'canon',
+      status: 'published',
       type: 'era',
       eraId: id,
       calendarDate: { calendar: 'okse', year: startYear, month: 'niewmonath', day: 1, precision: 'year' },
@@ -36,8 +35,7 @@ function event(name, year, overrides = {}) {
     data: {
       title: name,
       description: `${name} description`,
-      publish: true,
-      status: 'canon',
+      status: 'published',
       type: 'event',
       era: 'CITADEL',
       calendarDate: { calendar: 'okse', year, month: 'niewmonath', day: 1, precision: 'day', certainty: 'exact' },

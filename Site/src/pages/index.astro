@@ -8,8 +8,7 @@ import '../styles/homepage-content.css';
 import '../styles/homepage-responsive.css';
 
 const canonEntries = await getCollection('docs', ({ data }) => (
-  data.publish === true
-  && data.status === 'canon'
+  data.status === 'published'
   && data.type !== 'category'
 ));
 const globalTimelines = timelineManifest.timelines.filter(({ id }) => id === 'super');

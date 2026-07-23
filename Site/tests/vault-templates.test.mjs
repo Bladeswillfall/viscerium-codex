@@ -17,24 +17,43 @@ async function readJson(relativePath) {
   return JSON.parse(await readText(relativePath));
 }
 
+function topLevelFrontmatterKeys(source) {
+  if (!source.startsWith('---')) return [];
+  const closing = source.indexOf('\n---', 3);
+  if (closing < 0) return [];
+  return source
+    .slice(source.indexOf('\n') + 1, closing)
+    .split(/\r?\n/)
+    .filter((line) => /^[A-Za-z_][A-Za-z0-9_-]*\s*:/.test(line))
+    .map((line) => line.slice(0, line.indexOf(':')).trim());
+}
+
 const publicSkeletons = [
-  ['Templates/Character Template.md', 'character'],
-  ['Templates/Faction Template.md', 'faction'],
-  ['Templates/Location Template.md', 'location'],
-  ['Templates/Event Template.md', 'event'],
-  ['Templates/Era Template.md', 'era'],
-  ['Templates/Map Template.md', 'map'],
-  ['Templates/Image Metadata Template.md', 'image'],
-  ['Templates/Timeline Template.md', 'timeline'],
-  ['Templates/Chronos Timeline Template.md', 'timeline'],
+  ['Templates/Lore/Character Template.md', 'character'],
+  ['Templates/Lore/Faction Template.md', 'faction'],
+  ['Templates/Lore/Location Template.md', 'location'],
+  ['Templates/Lore/Event Template.md', 'event'],
+  ['Templates/Lore/Era Template.md', 'era'],
+  ['Templates/Publishing/Map Template.md', 'map'],
+  ['Templates/Publishing/Image Metadata Template.md', 'image'],
+  ['Templates/Timelines/Timeline Template.md', 'timeline'],
+  ['Templates/Timelines/Chronos Timeline Template.md', 'timeline'],
+];
+
+const literalFrontmatterTemplates = [
+  ...publicSkeletons.map(([relativePath]) => relativePath),
+  'Templates/Databases/Myrkild Unit Profile.md',
 ];
 
 const creatorTemplates = [
-  'Templates/New Story Entity.md',
-  'Templates/Add Storyteller Fields.md',
-  'Templates/Myrkild Unit Profile.md',
+  'Templates/Databases/New Story Entity.md',
+  'Templates/Databases/Add Storyteller Fields.md',
+  'Templates/Databases/Myrkild Unit Profile.md',
   'Templates/_Internals/Story Entity Core.md',
   'Templates/_Startup/Open VISCERIUM Home.md',
+  'Templates/Lore/New Lore Entity.md',
+  'Templates/Databases/New Myrkild Unit.md',
+  'Templates/_Scripts/reference_picker.js',
 ];
 
 test('publishable Lore skeletons start safe and avoid duplicate rendered chrome', async () => {
@@ -42,7 +61,7 @@ test('publishable Lore skeletons start safe and avoid duplicate rendered chrome'
     const parsed = matter(await readText(relativePath));
 
     assert.equal(parsed.data.title, '{{title}}', `${relativePath} should derive title from the note filename`);
-    assert.equal(parsed.data.publish, false, `${relativePath} must start unpublished`);
+    assert.equal(parsed.data.publish, undefined, `${relativePath} must not carry the legacy publish boolean`);
     assert.equal(parsed.data.status, 'draft', `${relativePath} must start as a draft`);
     assert.equal(parsed.data.type, expectedType, `${relativePath} should declare its semantic type`);
     assert.doesNotMatch(parsed.content, /^#\s+\{\{title\}\}/m, `${relativePath} should not duplicate the note/page title as a body H1`);
@@ -58,19 +77,31 @@ test('publishable Lore skeletons start safe and avoid duplicate rendered chrome'
   }
 });
 
+test('literal template frontmatter contains no duplicate top-level fields', async () => {
+  for (const relativePath of literalFrontmatterTemplates) {
+    const keys = topLevelFrontmatterKeys(await readText(relativePath));
+    assert.equal(new Set(keys).size, keys.length, `${relativePath} contains a duplicate top-level frontmatter field`);
+  }
+});
+
 test('creator-facing and internal Templater workflows remain present after the template audit', async () => {
   for (const relativePath of creatorTemplates) {
     const content = await readText(relativePath);
     assert.ok(content.trim().length > 0, `${relativePath} should not be empty`);
   }
 
-  const wrapper = await readText('Templates/New Story Entity.md');
-  const injector = await readText('Templates/Add Storyteller Fields.md');
+  const wrapper = await readText('Templates/Databases/New Story Entity.md');
+  const injector = await readText('Templates/Databases/Add Storyteller Fields.md');
   const core = await readText('Templates/_Internals/Story Entity Core.md');
+  const lore = await readText('Templates/Lore/New Lore Entity.md');
+  const unit = await readText('Templates/Databases/New Myrkild Unit.md');
 
   assert.match(wrapper, /Story Entity Core/);
   assert.match(injector, /processFrontMatter/);
   assert.match(core, /Stop when usable/);
+  assert.match(core, /tp\.user\.reference_picker/);
+  assert.match(lore, /tp\.user\.reference_picker/);
+  assert.match(unit, /tp\.user\.reference_picker/);
 });
 
 test('Minimal owns ordinary article width without competing global width or infobox snippets', async () => {
@@ -98,7 +129,7 @@ test('Minimal owns ordinary article width without competing global width or info
 });
 
 test('era template never emits an unresolved custom template variable as a timeline shortcode', async () => {
-  const era = await readText('Templates/Era Template.md');
+  const era = await readText('Templates/Lore/Era Template.md');
   assert.doesNotMatch(era, /\[Timeline:\{\{eraId\}\}\]/);
   assert.match(era, /\[Timeline:<eraId>\]/);
 });

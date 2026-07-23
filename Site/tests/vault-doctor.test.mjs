@@ -10,7 +10,6 @@ function ordinary(overrides = {}) {
   return {
     title: 'Red Reed',
     description: 'A test plant.',
-    publish: false,
     status: 'draft',
     type: 'flora',
     development_level: 'stub',
@@ -30,9 +29,22 @@ test('valid ordinary entity passes without requiring optional detail', () => {
   assert.equal(result.errors.length, 0);
 });
 
+test('legacy publish booleans are rejected outside templates', () => {
+  const result = diagnoseCreatorVault({
+    records: [record('Drafts/Notes/Old Workflow.md', {
+      title: 'Old Workflow',
+      status: 'draft',
+      type: 'article',
+      publish: false,
+    })],
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.errors.some((item) => item.code === 'legacy-publish-field'), true);
+});
+
 test('templates are excluded from creator entity counts and diagnostics', () => {
   const result = diagnoseCreatorVault({
-    records: [record('Templates/Myrkild Unit Profile.md', {
+    records: [record('Templates/Databases/Myrkild Unit Profile.md', {
       title: '{{title}}',
       description: 'Template.',
       type: 'myrkild-unit',
@@ -80,8 +92,7 @@ test('near matches to canonical titles are notices, not errors', () => {
       record('Lore/Degel System/Okse Dominion.md', {
         title: 'Okse Dominion',
         description: 'Canonical faction.',
-        publish: true,
-        status: 'canon',
+        status: 'published',
         type: 'faction',
       }),
       record('Drafts/Databases/Flora/Red Reed.md', ordinary({ locations: ['Okse Dominon'] })),
@@ -103,7 +114,6 @@ test('Myrkild keep their specialised singular era and unique unit IDs', () => {
   const base = {
     title: 'Mawspawn',
     description: 'Imported unit.',
-    publish: false,
     status: 'draft',
     type: 'myrkild-unit',
     era: 'CITADEL',

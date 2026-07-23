@@ -51,8 +51,7 @@ function getEntryDate(data: Record<string, unknown>): Date | null {
 export async function getFeedEntries(base: URL | string = siteConfig.site): Promise<FeedEntry[]> {
   const maxItems = siteConfig.feeds?.maxItems ?? 50;
   const docs = await getCollection('docs', ({ data }) => (
-    data.publish === true
-    && data.status === 'canon'
+    data.status === 'published'
     && data.type !== 'category'
   ));
 

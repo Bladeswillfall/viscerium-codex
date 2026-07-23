@@ -76,7 +76,6 @@ export const collections = {
     loader: docsLoader(),
     schema: docsSchema({
       extend: pageSiteGraphSchema.merge(starlightTagsExtension).extend({
-        publish: z.boolean().optional(),
         status: optionalString,
         slug: optionalString,
         sourcePath: optionalString,

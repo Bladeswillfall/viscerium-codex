@@ -11,13 +11,13 @@ Open only the `Vault/` folder in Obsidian.
 2. Enable Obsidian's built-in **Bases** core plugin. It is already enabled in the checked-in vault configuration.
 3. Enable the **Templater** community plugin. It is included and enabled in the checked-in vault configuration.
 4. Enable **Dataview**. The homepage uses it for creator widgets and small action surfaces; database and lore source data remain ordinary Markdown/YAML.
-5. Keep both template folder locations set to `Templates`. The checked-in configuration already does this.
+5. Keep both template folder locations set to `Templates`. The checked-in configuration already does this; role-specific templates live in subfolders beneath that single root.
 6. In **Settings → Templater → File creation**, enable **Trigger Templater on new file creation** on each device where folder-first story-entity creation should work. This master toggle is device-local and cannot be enabled by Git.
 7. Leave Templater's matching mode on **Folder templates**. The repository already contains narrowly scoped rules for `Drafts/Databases/Fauna`, `Flora`, `Fungi` and `Items`; do not add a `/` catch-all rule.
 8. In **Settings → Templater → Startup templates**, enable **Enable startup templates** on each device where [[Home]] should open automatically when Obsidian starts. The repository already registers `Templates/_Startup/Open VISCERIUM Home.md`; only the device-local permission must be enabled.
 9. Write publishable lore in `Lore/`.
-10. Keep drafts in `Drafts/`, private notes in `Private/`, and process notes, SOPs and Bases in `System/`.
-11. Put images in `Assets/Images/` and fictional map images in `Assets/Maps/`.
+10. Keep drafts in `Drafts/`, private notes in `Private/`, process notes, SOPs and Bases in `System/`, and demonstration material in `Demo/`.
+11. Put real project images in `Assets/Images/` and fictional map images in `Assets/Maps/`. Demo assets stay beneath `Demo/Assets/`.
 
 Restart Obsidian after first opening the vault if Templater commands do not appear immediately.
 
@@ -35,29 +35,33 @@ Templater intentionally stores **Enable startup templates** in local device stor
 
 ## Template commands
 
-For the normal creator workflow, use **Templater: Create New Story Entity**. This template-specific command is registered by the checked-in Templater configuration and launches [[New Story Entity]] directly without a second template picker.
+For fauna, flora, fungi and items, use **Templater: Create New Story Entity**. This template-specific command launches [[New Story Entity]] directly without a second template picker.
 
-The older/general route remains valid: **Templater: Create new note from template** → [[New Story Entity]].
+For characters, factions, locations, events and species, use **Templater: Create New Lore Entity**. Relationship fields are searchable. When the referenced thing does not exist, explicitly choose **Create new…**; the workflow creates a task-bearing stub under `Drafts/Inbox/` rather than silently accepting an untracked free-text value.
 
-Creating a normal new Markdown note directly inside one of the four database folders uses the same [[New Story Entity]] workflow automatically when the per-device creation trigger is enabled. The folder supplies the entity type, so that question is skipped.
+For structured Myrkild profiles, use **Templater: Create New Myrkild Unit**. Era, Myrkild species, origin, size and known locations are guided during creation.
+
+The older/general route remains valid: **Templater: Create new note from template** → choose the creator-facing template.
+
+Creating a normal new Markdown note directly inside one of the four ordinary database folders uses the same [[New Story Entity]] workflow automatically when the per-device creation trigger is enabled. The folder supplies the entity type, so that question is skipped.
 
 Use **Templater: Insert template** and choose [[Add Storyteller Fields]] to add currently absent optional fields to an existing fauna, flora, fungi, item or Myrkild unit note.
 
-Do not invoke templates under `Templates/_Internals/` or `Templates/_Startup/` directly. They contain shared implementation or startup behaviour rather than creator-facing workflows.
+Do not invoke templates under `Templates/_Internals/`, `Templates/_Scripts/` or `Templates/_Startup/` directly. They contain shared implementation, user-script helpers or startup behaviour rather than creator-facing workflows.
+
+Use [[Home]] → **Open Creator Context** to open Outline, Backlinks and Local Graph in the right sidebar without committing device-local workspace state.
 
 ## Template roles
 
-Use the template that matches the kind of work rather than treating every file in `Templates/` as interchangeable:
+All templates live beneath the single `Templates/` root and are grouped by purpose:
 
-- **New Story Entity** — guided Templater workflow for fauna, flora, fungi and items. This is the default structured-worldbuilding entry point.
-- **Add Storyteller Fields** — inserts only currently absent optional Storyteller properties into an existing supported entity.
-- **Myrkild Unit Profile** — specialised structured profile for the Myrkild unit database; it intentionally retains import/provenance fields that ordinary story entities do not need.
-- **Character / Faction / Location / Event / Era** — plain publishable-Lore skeletons. Create/rename the note first, then insert the relevant template with Obsidian's core Templates command so `{{title}}` resolves from the filename.
-- **Map / Image Metadata** — publishing metadata skeletons for map pages and image provenance records.
-- **Timeline Template** — generated canonical VISCERIUM timeline page backed by event metadata.
-- **Chronos Timeline Template** — note-local/editorial timeline that does not automatically enter canonical era/super timelines.
-- **`_Internals/Story Entity Core`** — shared implementation used by New Story Entity; never invoke directly.
-- **`_Startup/Open VISCERIUM Home`** — startup automation; never invoke as an authoring template.
+- **`Templates/Lore/`** — guided Lore creation plus static Character, Faction, Location, Event and Era skeletons.
+- **`Templates/Databases/`** — Story Entity, Myrkild unit and progressive Storyteller-field workflows.
+- **`Templates/Publishing/`** — Map and Image Metadata skeletons.
+- **`Templates/Timelines/`** — canonical and note-local timeline templates.
+- **`Templates/_Internals/`** — shared implementation; never invoke directly.
+- **`Templates/_Scripts/`** — Templater user-script helpers such as the relationship picker; never invoke directly.
+- **`Templates/_Startup/`** — startup automation; never invoke directly.
 
 Public-Lore templates deliberately do **not** render an Obsidian-only infobox/sidebar. Structured metadata remains in Properties/frontmatter; the article body stays focused on readable worldbuilding.
 
