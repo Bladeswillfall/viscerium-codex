@@ -1,0 +1,32 @@
+name: Exploration UI diagnostic
+
+on:
+  push:
+    branches:
+      - feat/exploration-ui-polish
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tail:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Site
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: Site/package-lock.json
+      - run: npm ci --silent --no-audit --no-fund
+      - name: Unit test diagnostic tail
+        shell: bash
+        run: |
+          set +e
+          npm run test:unit > "$RUNNER_TEMP/unit.log" 2>&1
+          status=$?
+          tail -n 120 "$RUNNER_TEMP/unit.log"
+          exit $status
