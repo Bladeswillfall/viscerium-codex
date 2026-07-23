@@ -12,7 +12,6 @@ const groupIcons = {
   characters: 'character',
   citadel: 'faction',
   'degel-system': 'spark',
-  demo: 'codex',
   entropy: 'spark',
   eras: 'event',
   events: 'event',
@@ -84,8 +83,9 @@ export async function buildSidebar() {
       for (const segment of segments.slice(1, -1)) {
         group = ensureGroup(group.groups, segment);
       }
+      const sidebarIcon = segments[0] === 'demo' ? undefined : articleIcon;
       group.links.push({
-        label: iconLabel(articleIcon, segments.at(-1) === 'index' ? 'Overview' : title),
+        label: iconLabel(sidebarIcon, segments.at(-1) === 'index' ? 'Overview' : title),
         link,
       });
     }
