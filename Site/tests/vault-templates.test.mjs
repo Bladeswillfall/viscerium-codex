@@ -28,6 +28,13 @@ function topLevelFrontmatterKeys(source) {
     .map((line) => line.slice(0, line.indexOf(':')).trim());
 }
 
+function templaterScript(source) {
+  const start = source.indexOf('<%*');
+  const end = source.lastIndexOf('%>');
+  if (start < 0 || end < start) return null;
+  return source.slice(start + 3, end);
+}
+
 const publicSkeletons = [
   ['Templates/Lore/Character Template.md', 'character'],
   ['Templates/Lore/Faction Template.md', 'faction'],
@@ -82,6 +89,19 @@ test('literal template frontmatter contains no duplicate top-level fields', asyn
   for (const relativePath of literalFrontmatterTemplates) {
     const keys = topLevelFrontmatterKeys(await readText(relativePath));
     assert.equal(new Set(keys).size, keys.length, `${relativePath} contains a duplicate top-level frontmatter field`);
+  }
+});
+
+test('interactive Templater script blocks parse as async JavaScript', async () => {
+  for (const relativePath of creatorTemplates) {
+    const source = await readText(relativePath);
+    const script = templaterScript(source);
+    if (!script) continue;
+
+    assert.doesNotThrow(
+      () => new Function(`return async function __visceriumTemplate__() {\n${script}\n}`),
+      `${relativePath} contains invalid Templater JavaScript`,
+    );
   }
 });
 
