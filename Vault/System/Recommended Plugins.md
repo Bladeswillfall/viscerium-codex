@@ -13,9 +13,10 @@ The publishing workflow does not require paid plugins. Keep the authoring stack 
 
 ## Optional conveniences
 
-1. **Advanced Tables** or the checked-in table editor can help with table-style editing.
-2. **Editing Toolbar** can provide a more visual editing experience.
-3. **Style Settings** and a preferred theme can change Obsidian-only appearance.
+1. **Iconic** is the checked-in file/folder icon layer. Its `showAllFolderIcons` setting owns ordinary explorer folder icons; do not reintroduce a competing CSS folder-icon pseudo-element.
+2. **Advanced Tables** or the checked-in table editor can help with table-style editing.
+3. **Editing Toolbar** can provide a more visual editing experience.
+4. **Style Settings** and a preferred theme can change Obsidian-only appearance.
 
 Do not add a plugin merely to expose more fields, forms, dashboards or buttons. The homepage deliberately reuses Templater and Dataview already required by the vault instead of introducing a separate dashboard/button stack.
 
@@ -29,4 +30,4 @@ Templater commands should be executed during authoring so the resulting note con
 
 ## Creator sidebar
 
-No additional sidebar plugin is required. The checked-in Home **Open Creator Context** action uses Obsidian's core Outline, Backlinks and Local Graph panes; Obsidian Git remains available as a utility tab. Workspace state stays device-local and ignored by Git.
+No additional sidebar plugin is required. The checked-in Home **Open Creator Context** action removes an open global Graph, ensures Obsidian's core Outline, Backlinks and Local Graph panes are available, and leaves Obsidian Git untouched as a utility pane. Workspace state stays device-local and ignored by Git.

@@ -1,15 +1,17 @@
 /* Keep Home pinned and visually distinct from ordinary root notes. */
-.workspace-leaf-content[data-type="file-explorer"] .nav-folder.mod-root > .nav-folder-children {
+.workspace-leaf-content[data-type="file-explorer"] :is(.nav-files-container, .nav-folder-children):has(> .nav-file > .nav-file-title[data-path="Home.md"]) {
   display: flex;
   flex-direction: column;
 }
-.workspace-leaf-content[data-type="file-explorer"] .nav-folder.mod-root > .nav-folder-children > .nav-file:has(> .nav-file-title[data-path="Home.md"]) {
+
+.workspace-leaf-content[data-type="file-explorer"] :is(.nav-files-container, .nav-folder-children):has(> .nav-file > .nav-file-title[data-path="Home.md"]) > .nav-file:has(> .nav-file-title[data-path="Home.md"]) {
   order: -1000;
   position: sticky;
   top: 0;
   z-index: 6;
   background: var(--background-primary);
 }
+
 .workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path="Home.md"] {
   margin-block: 0.15rem 0.35rem;
   border: 1px solid var(--interactive-accent);
@@ -17,6 +19,7 @@
   box-shadow: 0 0.35rem 0.8rem rgba(0, 0, 0, 0.18);
   font-weight: 750;
 }
+
 .workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path="Home.md"] .nav-file-title-content::before {
   content: "⌂";
   display: inline-grid;
