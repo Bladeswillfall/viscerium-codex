@@ -55,6 +55,13 @@ export function validateVaultNotes(manifest) {
   }
 
   for (const { file, data, content } of manifest.records) {
+    if (Object.hasOwn(data, 'publish')) {
+      fail(`Lore note uses retired frontmatter "publish"; remove it and use status: published when public: ${relative(file)}`);
+    }
+    if (data.status === 'canon') {
+      fail(`Lore note uses retired status: canon; use status: published when public: ${relative(file)}`);
+      continue;
+    }
     if (data.status !== 'published') continue;
 
     if (Object.hasOwn(data, 'slug')) {
