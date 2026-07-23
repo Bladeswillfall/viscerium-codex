@@ -28,6 +28,8 @@ Before adding a field to a shared template:
 
 Do not expand a schema using hypothetical examples alone.
 
+Non-canon demo notes may be used as **pipeline canaries** to prove that experimental fields survive authoring, sync and build behaviour. They do not replace the later content test against real VISCERIUM canon.
+
 ## Field budget
 
 Treat the visible size of a new note as a limited budget.
@@ -45,18 +47,24 @@ The budget is a pressure against bloat, not a rigid numerical rule.
 
 [[New Story Entity]] is only the creator-facing routing wrapper. It should not become a second copy of the schema.
 
+Location authoring follows a different progressive pattern:
+
+- [[New Lore Entity]] owns the small initial location core, including the optional broad `location_kind`.
+- [[Add Location Fields]] owns the optional settlement, wilderness, site and route field families used for later development.
+- [[Add Storyteller Fields]] owns concise story-facing fields for locations and factions; do not move world facts into that layer merely because they are useful in a story.
+
 When an optional property is added, renamed or removed:
 
-1. update the internal Story Entity Core and `Add Storyteller Fields` in the same change, unless the field is explicitly creation-only or injection-only;
+1. update every workflow that can create or inject that property;
 2. update the relevant Base table when the field needs comparison or bulk editing;
 3. update [[Story Entities.base]] only when the property belongs in the cross-entity navigation surface;
-4. keep the creator card view compact — a field does not belong on a card merely because it exists in the schema;
-5. update `New Story Entity` only when routing, folder inference or workflow behaviour changes;
+4. keep creator card views compact — a field does not belong on a card merely because it exists in the schema;
+5. update routing templates only when routing, folder inference or workflow behaviour changes;
 6. update Vault Doctor when the change introduces or alters an objective structural invariant worth checking;
 7. update the Storyteller View SOP only when the public interpretation changes;
 8. update [[Creator Command Reference]] when a creator-facing command or terminal script changes.
 
-A schema change is incomplete if one workflow can create a property that the other workflow no longer understands.
+A schema change is incomplete if one supported workflow can create a property that the rest of the authoring system no longer understands.
 
 ## Naming rules
 
