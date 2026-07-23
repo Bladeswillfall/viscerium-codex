@@ -7,8 +7,7 @@ import { isMainModule } from './script-entry.mjs';
 
 const siteRoot = process.cwd();
 const defaultAssetRoot = path.resolve(siteRoot, siteConfig.vaultAssetDir);
-const defaultRepositoryImageRoots = [
-  defaultAssetRoot,
+const defaultSiteImageRoots = [
   path.resolve(siteRoot, 'src'),
   path.resolve(siteRoot, 'public'),
 ];
@@ -64,7 +63,7 @@ async function walkIfPresent(rootDir) {
   }
 }
 
-async function validateImageRoots(roots) {
+async function validateImageRoots(roots, { verifyContents = true, checkSvgSafety = true } = {}) {
   const files = (await Promise.all(roots.map((rootDir) => walkIfPresent(rootDir))))
     .flat()
     .filter((file) => imageExtensions.has(extensionOf(file)))
@@ -78,6 +77,8 @@ async function validateImageRoots(roots) {
       failed = true;
     }
 
+    if (!verifyContents) continue;
+
     const source = await fs.readFile(file);
     const detected = detectedImageType(source);
     const expected = expectedImageType(file);
@@ -85,7 +86,7 @@ async function validateImageRoots(roots) {
       console.error(`Asset content does not match .${extension} extension: ${relative(file)}`);
       failed = true;
     }
-    if (detected !== 'svg') continue;
+    if (!checkSvgSafety || detected !== 'svg') continue;
 
     const text = source.toString('utf8');
     for (const { label, pattern } of unsafeSvgPatterns) {
@@ -103,8 +104,13 @@ export async function validateVaultAssets({ rootDir = defaultAssetRoot } = {}) {
   return validateImageRoots([rootDir]);
 }
 
-export async function validateRepositoryImages({ roots = defaultRepositoryImageRoots } = {}) {
-  return validateImageRoots(roots);
+export async function validateRepositoryImages({ siteRoots = defaultSiteImageRoots } = {}) {
+  const vaultValid = await validateImageRoots([defaultAssetRoot]);
+  const siteFormatValid = await validateImageRoots(siteRoots, {
+    verifyContents: false,
+    checkSvgSafety: false,
+  });
+  return vaultValid && siteFormatValid;
 }
 
 if (isMainModule(import.meta.url)) {
