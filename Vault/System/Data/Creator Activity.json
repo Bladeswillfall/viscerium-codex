@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastScan": "2026-07-23T17:21:20.133Z",
+  "lastScan": "2026-07-23T21:19:26.279Z",
   "files": {
     "timelines/example-history.md": "811c9dc5",
     "maps/example-world.md": "811c9dc5",
@@ -56,19 +56,19 @@
     "Lore/Eras/CITADEL/Events/The Ash-Winter Pilgrimage.md": "b0f495a4",
     "Lore/Demo/Exploration Demo.md": "cbc4846e",
     "Lore/Demo/Exploration Demo World.md": "e52874cc",
-    "Lore/Demo/Demo Trade Port.md": "8bd8ed7a",
+    "Lore/Demo/Demo Trade Port.md": "6c345373",
     "Lore/Demo/Demo Rift Site.md": "d893f8ab",
     "Lore/Demo/Demo Marshal.md": "d2bc3ae9",
-    "Lore/Demo/Demo Market Ward.md": "b4a01b4c",
+    "Lore/Demo/Demo Market Ward.md": "04ab7c51",
     "Lore/Demo/Demo League.md": "00350c5b",
     "Lore/Demo/Demo Hidden Ruin.md": "9de2aae9",
     "Lore/Demo/Demo Gate City.md": "edb5c504",
-    "Lore/Demo/Demo Frontier Fort.md": "20d44f38",
+    "Lore/Demo/Demo Frontier Fort.md": "27d2898b",
     "Lore/Demo/Demo Directorate.md": "40c3a488",
     "Lore/Demo/Demo Concord.md": "feacfb34",
     "Lore/Demo/Demo Archive Tower.md": "794e0854",
-    "Lore/Degel System/The Shards.md": "2927a617",
     "Lore/Degel System/Eye of Vordr.md": "a4ff246c",
+    "Lore/Degel System/The Shards.md": "2927a617",
     "Lore/Degel System/Eye of Visi.md": "c8f00b64",
     "Lore/Degel System/Errack.md": "667129c8",
     "Lore/Degel System/Degel.md": "530e6d4b",
@@ -98,6 +98,6 @@
     "Drafts/Databases/Flora/Test flora item.md": "4119e6b4"
   },
   "days": {
-    "2026-07-23": 90
+    "2026-07-23": 93
   }
 }
