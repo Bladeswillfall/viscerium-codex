@@ -1,0 +1,62 @@
+name: Patch Home quick actions
+
+on:
+  push:
+    branches: [fix/obsidian-home-iconic-polish]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: true
+
+      - name: Patch Home and regression test
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          home_path = Path('Vault/Home.md')
+          home = home_path.read_text(encoding='utf-8')
+          old = '''> const findCommand = (name) => Object.entries(app.commands.commands)\n>   .find(([id, command]) => id.startsWith("templater-obsidian:") && command.name === name)?.[0];'''
+          new = '''> const templaterCreateCommand = (templatePath) => `templater-obsidian:create-${templatePath}`;'''
+          if old not in home:
+              raise SystemExit('Expected legacy findCommand block not found in Home.md')
+          home = home.replace(old, new, 1)
+          replacements = {
+              '>     id: findCommand("Create New Story Entity"),': '>     id: templaterCreateCommand("Templates/Databases/New Story Entity.md"),',
+              '>     id: findCommand("Create New Lore Entity"),': '>     id: templaterCreateCommand("Templates/Lore/New Lore Entity.md"),',
+              '>     id: findCommand("Create New Myrkild Unit"),': '>     id: templaterCreateCommand("Templates/Databases/New Myrkild Unit.md"),',
+          }
+          for before, after in replacements.items():
+              if before not in home:
+                  raise SystemExit(f'Expected Home action line not found: {before}')
+              home = home.replace(before, after, 1)
+          home_path.write_text(home, encoding='utf-8')
+
+          test_path = Path('Site/tests/vault-homepage.test.mjs')
+          test = test_path.read_text(encoding='utf-8')
+          old_asserts = '''  assert.match(home.content, /Create Story Entity/);\n  assert.match(home.content, /Create New Story Entity/);'''
+          new_asserts = '''  assert.match(home.content, /Create Story Entity/);\n  assert.match(home.content, /templater-obsidian:create-\\$\\{templatePath\\}/);\n  for (const templatePath of templater.enabled_templates_hotkeys) {\n    if (!/New (?:Story Entity|Lore Entity|Myrkild Unit)\\.md$/.test(templatePath)) continue;\n    assert.match(home.content, new RegExp(templatePath.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')));\n  }'''
+          if old_asserts not in test:
+              raise SystemExit('Expected homepage command assertions not found')
+          test = test.replace(old_asserts, new_asserts, 1)
+          test_path.write_text(test, encoding='utf-8')
+          PY
+
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Vault/Home.md Site/tests/vault-homepage.test.mjs
+          if git diff --cached --quiet; then
+            echo 'No patch required.'
+            exit 0
+          fi
+          git commit -m 'fix: wire Home creation actions to Templater commands'
+          git push origin HEAD:fix/obsidian-home-iconic-polish
