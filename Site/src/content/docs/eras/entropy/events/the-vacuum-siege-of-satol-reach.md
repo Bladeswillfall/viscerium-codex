@@ -46,7 +46,7 @@ tags:
 slug: eras/entropy/events/the-vacuum-siege-of-satol-reach
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The Vacuum Siege of Satol Reach.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Naranor vessels isolated Satol Reach and fought a siege in which distance, momentum and memory became contested terrain.

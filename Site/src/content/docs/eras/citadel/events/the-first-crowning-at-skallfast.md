@@ -37,7 +37,7 @@ tags:
 slug: eras/citadel/events/the-first-crowning-at-skallfast
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The First Crowning at Skallfast.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 The oath-crowning that transformed a ring of fortified valleys into the first recognised Okse Dominion.

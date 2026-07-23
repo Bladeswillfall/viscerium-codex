@@ -37,7 +37,7 @@ tags:
 slug: eras/citadel/events/the-night-of-seven-bells
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The Night of Seven Bells.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Seven citadel bells rang together without being struck, drawing thousands into the streets before dawn.

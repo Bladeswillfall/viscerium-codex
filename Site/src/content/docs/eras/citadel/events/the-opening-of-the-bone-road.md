@@ -39,7 +39,7 @@ tags:
 slug: eras/citadel/events/the-opening-of-the-bone-road
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The Opening of the Bone Road.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 The first guarded caravan crossed the ossuary causeway linking the Dominion interior to the western salt kingdoms.

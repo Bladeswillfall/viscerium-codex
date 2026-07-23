@@ -38,7 +38,7 @@ tags:
 slug: eras/smog/events/the-skyhook-demonstration
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Skyhook Demonstration.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 An armoured observation gondola climbed above the smog ceiling on a tethered electric cable before a military audience.

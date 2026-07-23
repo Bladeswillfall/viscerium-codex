@@ -214,7 +214,7 @@
 
 .viscerium-home .vc-home-recent-wip { --vc-recent-rgb: var(--vc-wip); }
 .viscerium-home .vc-home-recent-writing { --vc-recent-rgb: var(--vc-writing); }
-.viscerium-home .vc-home-recent-canon { --vc-recent-rgb: var(--vc-canon); }
+.viscerium-home .vc-home-recent-lore { --vc-recent-rgb: var(--vc-canon); }
 .viscerium-home .vc-home-recent-private { --vc-recent-rgb: var(--vc-private); }
 
 .viscerium-home .vc-home-recent-top {

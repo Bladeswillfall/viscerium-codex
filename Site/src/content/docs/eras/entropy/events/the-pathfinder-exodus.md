@@ -46,7 +46,7 @@ tags:
 slug: eras/entropy/events/the-pathfinder-exodus
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The Pathfinder Exodus.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Civilian pathfinder fleets departed Errack in staggered waves to establish redundant human settlements beyond mapped war corridors.

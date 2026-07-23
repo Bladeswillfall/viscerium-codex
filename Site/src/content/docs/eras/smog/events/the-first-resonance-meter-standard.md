@@ -38,7 +38,7 @@ tags:
 slug: eras/smog/events/the-first-resonance-meter-standard
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The First Resonance Meter Standard.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Guild laboratories agreed on a reproducible scale for comparing Resonant activity across instruments and cities.

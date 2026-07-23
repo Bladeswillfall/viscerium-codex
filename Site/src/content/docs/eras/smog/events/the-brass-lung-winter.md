@@ -45,7 +45,7 @@ tags:
 slug: eras/smog/events/the-brass-lung-winter
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Brass Lung Winter.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 A four-year respiratory crisis spread through factory cities as coal smoke, metal dust and Resonant contamination combined.

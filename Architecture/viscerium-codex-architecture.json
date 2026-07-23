@@ -47,7 +47,7 @@
       "label": "Canonical Lore boundary",
       "paths": ["Vault/Lore", "Vault/Assets"],
       "responsibilities": ["public/canonical notes", "canonical event metadata", "source media"],
-      "notes": "Only notes under Lore with publish:true and status: published may publish. Routes derive from relative paths."
+      "notes": "Only notes under Lore with status:published may publish. Routes derive from relative paths."
     },
     {
       "id": "pipeline",
@@ -106,7 +106,7 @@
       "validate published Lore using validate-vault-notes.mjs",
       "enforce WebP/SVG asset policy using validate-vault-assets.mjs",
       "validate/generate canonical timeline records",
-      "sync publish:true + status: published notes with sync-public-notes.mjs",
+      "sync status:published notes with sync-public-notes.mjs",
       "rewrite Obsidian wikilinks/embeds and copy referenced assets",
       "transform timeline/Chronos shortcodes and generate category pages",
       "emit Site/src/content/docs",

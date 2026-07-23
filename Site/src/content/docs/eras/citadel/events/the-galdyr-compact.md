@@ -38,7 +38,7 @@ tags:
 slug: eras/citadel/events/the-galdyr-compact
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The Galdyr Compact.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 A month-long conclave bound rival smith-priests to shared measures for powder, steel and Resonant workmanship.

@@ -39,7 +39,7 @@ tags:
 slug: eras/entropy/events/garmir-gate-ignition
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/GARMIR Gate Ignition.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 The GARMIR transit structure opened a stable corridor through folded space for eleven minutes.

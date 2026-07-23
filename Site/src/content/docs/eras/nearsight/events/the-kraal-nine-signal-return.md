@@ -39,7 +39,7 @@ tags:
 slug: eras/nearsight/events/the-kraal-nine-signal-return
 eraStyle: e3
 sourcePath: "Eras/NEARSIGHT/Events/The Kraal Nine Signal Return.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 The recovered Kraal Nine core transmitted a reply to a signal no monitoring station had recorded sending.

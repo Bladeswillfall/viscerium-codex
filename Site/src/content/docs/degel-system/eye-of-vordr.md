@@ -5,6 +5,6 @@ status: published
 type: article
 slug: degel-system/eye-of-vordr
 sourcePath: "Degel System/Eye of Vordr.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 

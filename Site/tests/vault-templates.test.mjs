@@ -37,8 +37,7 @@ const creatorTemplates = [
   'Templates/_Startup/Open VISCERIUM Home.md',
   'Templates/Lore/New Lore Entity.md',
   'Templates/Databases/New Myrkild Unit.md',
-  'Templates/Workspace/Setup Creator Sidebar.md',
-  'Templates/_Scripts/reference-picker.js',
+  'Templates/_Scripts/reference_picker.js',
 ];
 
 test('publishable Lore skeletons start safe and avoid duplicate rendered chrome', async () => {
@@ -46,6 +45,7 @@ test('publishable Lore skeletons start safe and avoid duplicate rendered chrome'
     const parsed = matter(await readText(relativePath));
 
     assert.equal(parsed.data.title, '{{title}}', `${relativePath} should derive title from the note filename`);
+    assert.equal(parsed.data.publish, undefined, `${relativePath} must not carry the legacy publish boolean`);
     assert.equal(parsed.data.status, 'draft', `${relativePath} must start as a draft`);
     assert.equal(parsed.data.type, expectedType, `${relativePath} should declare its semantic type`);
     assert.doesNotMatch(parsed.content, /^#\s+\{\{title\}\}/m, `${relativePath} should not duplicate the note/page title as a body H1`);

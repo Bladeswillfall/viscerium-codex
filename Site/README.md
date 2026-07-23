@@ -23,10 +23,9 @@ npm run preview
 
 ## Publishing Rules
 
-Only notes with both fields below are published:
+Only notes with `status: published` are published:
 
 ```yaml
-publish: true
 status: published
 ```
 

@@ -265,7 +265,6 @@ for (const category of categoryList) {
   const frontmatter = {
     title: category.title,
     description: `Index of public VISCERIUM pages in the ${category.title} category.`,
-    publish: true,
     status: 'published',
     slug: category.slug,
     type: 'category',

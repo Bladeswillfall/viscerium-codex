@@ -38,7 +38,7 @@ tags:
 slug: eras/nearsight/events/first-jade-current-compact-deployment
 eraStyle: e3
 sourcePath: "Eras/NEARSIGHT/Events/First Jade Current Compact Deployment.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 The Jade Current Compact deployed a civil-compatible expeditionary force after a coastal infrastructure collapse.

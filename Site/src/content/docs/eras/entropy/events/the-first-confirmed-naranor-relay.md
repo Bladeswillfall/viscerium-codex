@@ -38,7 +38,7 @@ tags:
 slug: eras/entropy/events/the-first-confirmed-naranor-relay
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The First Confirmed Naranor Relay.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 A deep-range array identified an artificial relay whose geometry matched no human or Myrkild construction.

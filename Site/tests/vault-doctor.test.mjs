@@ -80,7 +80,6 @@ test('near matches to canonical titles are notices, not errors', () => {
       record('Lore/Degel System/Okse Dominion.md', {
         title: 'Okse Dominion',
         description: 'Canonical faction.',
-        publish: true,
         status: 'published',
         type: 'faction',
       }),

@@ -38,7 +38,7 @@ tags:
 slug: eras/smog/events/the-grey-armistice
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Grey Armistice.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 The last continental trench fronts fell silent beneath an ash-coloured sky, ending the wars that consumed the late industrial age.

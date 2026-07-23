@@ -9,7 +9,7 @@ The Astro/Starlight site is configured to use [`starlight-site-graph`](https://g
 
 ## How to prepare notes in Obsidian
 
-- Keep canon, public worldbuilding notes in `Vault/Lore/` with `publish: true` and `status: published`.
+- Keep canon, public worldbuilding notes in `Vault/Lore/` with `status: published`.
 - Use normal Markdown links or Obsidian wikilinks between lore notes so the site graph can discover relationships after sync.
 - Add optional `tags` frontmatter to expose thematic groupings to the site graph.
 - Use the optional `links` frontmatter field for explicit extra graph links when a relationship should appear even if it is not linked in the note body.

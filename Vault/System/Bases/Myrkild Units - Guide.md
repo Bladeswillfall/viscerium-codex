@@ -78,5 +78,5 @@ Imported notes are WIP. When a unit is ready for the Codex:
 1. Review and rewrite the imported profile.
 2. Resolve any source-sheet discrepancy warning.
 3. Move it into an appropriate folder under `Lore/`.
-4. Set `publish: true` and `status: published`.
+4. Set `status: published`.
 5. Ensure `title` and `description` are suitable for publication.

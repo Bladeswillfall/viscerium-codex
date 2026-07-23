@@ -37,7 +37,7 @@ tags:
 slug: eras/smog/events/the-nine-stack-strike
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Nine-Stack Strike.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Workers across nine adjoining furnace stacks stopped production at the midday siren.

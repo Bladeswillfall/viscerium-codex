@@ -22,6 +22,7 @@ test('VISCERIUM Home remains creator-only and wired to its presentation/action d
   const appearance = await readJson('.obsidian/appearance.json');
   const templater = await readJson('.obsidian/plugins/templater-obsidian/data.json');
 
+  assert.equal(home.data.publish, undefined, 'Home must not carry the legacy publish boolean');
   assert.ok(home.data.cssclasses?.includes('viscerium-home'));
   assert.ok(appearance.enabledCssSnippets.includes('VISCERIUM Homepage'));
   assert.ok(appearance.enabledCssSnippets.includes('VISCERIUM Homepage responsive'));

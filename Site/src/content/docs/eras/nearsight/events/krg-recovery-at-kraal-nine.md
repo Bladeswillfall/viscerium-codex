@@ -39,7 +39,7 @@ tags:
 slug: eras/nearsight/events/krg-recovery-at-kraal-nine
 eraStyle: e3
 sourcePath: "Eras/NEARSIGHT/Events/KRG Recovery at Kraal Nine.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Karoo Recovery Group contractors extracted a damaged sensor core from a collapsed underground relay.

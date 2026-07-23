@@ -42,7 +42,7 @@ tags:
 slug: eras/citadel/events/the-breaking-of-lorndale
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The Breaking of Lorndale.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Lorndale fell during a Resonant assault remembered as both a military victory and a spiritual catastrophe.

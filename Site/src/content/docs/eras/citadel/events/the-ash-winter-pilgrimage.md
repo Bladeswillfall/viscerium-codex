@@ -46,7 +46,7 @@ tags:
 slug: eras/citadel/events/the-ash-winter-pilgrimage
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The Ash-Winter Pilgrimage.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 A disputed three-year migration in which Resonant penitents crossed the burned north and returned speaking in borrowed voices.

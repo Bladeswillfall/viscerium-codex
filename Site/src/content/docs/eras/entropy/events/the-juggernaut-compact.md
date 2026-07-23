@@ -38,7 +38,7 @@ tags:
 slug: eras/entropy/events/the-juggernaut-compact
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The Juggernaut Compact.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Independent fortress-fleets agreed to mutual rescue, ammunition interchange and shared Naranor contact protocols.

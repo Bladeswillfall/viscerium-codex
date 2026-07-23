@@ -16,12 +16,43 @@ cssclasses:
 > const findCommand = (name) => Object.entries(app.commands.commands)
 >   .find(([id, command]) => id.startsWith("templater-obsidian:") && command.name === name)?.[0];
 >
+> const openCreatorContext = async () => {
+>   const views = [
+>     { type: "outline", name: "Outline" },
+>     { type: "backlink", name: "Backlinks" },
+>     { type: "localgraph", name: "Local Graph" },
+>   ];
+>   for (const view of views) {
+>     if (app.workspace.getLeavesOfType(view.type).length > 0) continue;
+>     const leaf = app.workspace.getRightLeaf(true);
+>     if (leaf) await leaf.setViewState({ type: view.type, active: false });
+>   }
+> };
+>
 > const actions = [
 >   {
 >     label: "+ Create Story Entity",
 >     id: findCommand("Create New Story Entity"),
 >     tone: "create",
 >     title: "Create fauna, flora, fungi or an item through the guided Story Entity workflow.",
+>   },
+>   {
+>     label: "+ Create Lore Entity",
+>     id: findCommand("Create New Lore Entity"),
+>     tone: "create",
+>     title: "Create a character, faction, location, event or species with guided relationship fields.",
+>   },
+>   {
+>     label: "+ Create Myrkild Unit",
+>     id: findCommand("Create New Myrkild Unit"),
+>     tone: "create",
+>     title: "Create a structured Myrkild unit with guided era, species, origin and location fields.",
+>   },
+>   {
+>     label: "Open Creator Context",
+>     run: openCreatorContext,
+>     tone: "stories-secondary",
+>     title: "Open Outline, Backlinks and Local Graph in the right sidebar.",
 >   },
 >   {
 >     label: "Open Story Timeline",
@@ -44,12 +75,12 @@ cssclasses:
 >     cls: `vc-home-button vc-home-action-${action.tone}`,
 >     attr: { title: action.title },
 >   });
->   const exists = action.id && Boolean(app.commands.commands[action.id]);
+>   const exists = Boolean(action.run) || (action.id && Boolean(app.commands.commands[action.id]));
 >   if (!exists) {
 >     button.disabled = true;
 >     button.title = "Required Obsidian command is unavailable. See Creator Command Reference.";
 >   } else {
->     button.addEventListener("click", () => app.commands.executeCommandById(action.id));
+>     button.addEventListener("click", () => action.run ? action.run() : app.commands.executeCommandById(action.id));
 >   }
 > }
 > ```
@@ -64,7 +95,7 @@ cssclasses:
 > >     return path !== "Home.md"
 > >       && !path.startsWith("System/")
 > >       && !path.startsWith("Templates/")
-      && !path.startsWith("Demo/");
+> >       && !path.startsWith("Demo/");
 > >   })
 > >   .sort((page) => page.file.mtime, "desc");
 > >
@@ -157,7 +188,7 @@ cssclasses:
 >     return path !== "Home.md"
 >       && !path.startsWith("System/")
 >       && !path.startsWith("Templates/")
-      && !path.startsWith("Demo/");
+> >       && !path.startsWith("Demo/");
 >   })
 >   .sort((page) => page.file.mtime, "desc")
 >   .limit(6);
@@ -251,7 +282,7 @@ cssclasses:
 > footer.createSpan({ text: "52 weeks · files changed between vault sessions" });
 > footer.createSpan({ text: `${total} recorded file change${total === 1 ? "" : "s"}` });
 > ```
-> This is a **history of creator-file changes**, not a streak, score or completion metric. The startup routine records changed Markdown files automatically; `System/`, `Templates/` and Home itself are excluded.
+> This is a **history of creator-file changes**, not a streak, score or completion metric. The startup routine records changed Markdown files automatically; `System/`, `Templates/`, `Demo/` and Home itself are excluded.
 
 > [!home-grid]
 > > [!home-databases] WORLD DATABASES
@@ -281,6 +312,15 @@ cssclasses:
 > >
 > > **Quick action above:** **Create Story Entity**. Command Palette fallback: **Templater: Create New Story Entity**.
 > >
+> > **New Lore Entity**  
+> > Guided creation for characters, factions, locations, events and species. Era and relationship fields use searchable choices; explicitly choosing **Create new…** makes a draft stub under `Drafts/Inbox/` and adds a follow-up task. Command Palette: **Templater: Create New Lore Entity**.
+> >
+> > **New Myrkild Unit**  
+> > Guided unit creation for era, Myrkild species, origin, size and known locations. Command Palette: **Templater: Create New Myrkild Unit**.
+> >
+> > **Creator context**  
+> > **Open Creator Context** opens Outline, Backlinks and Local Graph in the right sidebar. Git remains available as a utility tab.
+> >
 > > **Add detail later**  
 > > Open an existing entity, then run **Templater: Insert template → Add Storyteller Fields**. This remains contextual because it modifies the active note.
 > >
@@ -295,9 +335,9 @@ cssclasses:
 > > Structured database entries and unfinished material can remain useful here indefinitely.
 > >
 > > **[[System/Creator Sidebar|Creator Sidebar]]** — *What should live in the right sidebar while I work?*  
-Outline, Backlinks and Local Graph provide active-note context; Git remains a utility tab.
->
-> **[[System/SOPs/Storyteller View SOP|Storyteller View SOP]]**  
+> > Outline, Backlinks and Local Graph provide active-note context; Git remains a utility tab.
+> >
+> > **[[System/SOPs/Storyteller View SOP|Storyteller View SOP]]**  
 > > Defines how structured creator data should eventually become a public, system-agnostic Storyteller presentation.
 
 > [!home-process] HOW THIS VAULT WORKS

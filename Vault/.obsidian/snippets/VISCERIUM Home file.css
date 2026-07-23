@@ -1,8 +1,16 @@
-/* Keep Home visually distinct from ordinary notes in the File Explorer. */
-.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path="Home.md"] {
+/* Keep Home pinned and visually distinct from ordinary root notes. */
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder.mod-root > .nav-folder-children {
+  display: flex;
+  flex-direction: column;
+}
+.workspace-leaf-content[data-type="file-explorer"] .nav-folder.mod-root > .nav-folder-children > .nav-file:has(> .nav-file-title[data-path="Home.md"]) {
+  order: -1000;
   position: sticky;
   top: 0;
   z-index: 6;
+  background: var(--background-primary);
+}
+.workspace-leaf-content[data-type="file-explorer"] .nav-file-title[data-path="Home.md"] {
   margin-block: 0.15rem 0.35rem;
   border: 1px solid var(--interactive-accent);
   background: color-mix(in srgb, var(--interactive-accent) 14%, var(--background-secondary));

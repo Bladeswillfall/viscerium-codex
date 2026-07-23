@@ -6,7 +6,7 @@ type: article
 headerImage: /assets/images/viscerium-banner.webp
 slug: start-here
 sourcePath: "Start Here.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 VISCERIUM is one continuous history told across four eras. Kingdoms become republics, ritual becomes science, and humanity's wars eventually escape the planet—but the old forces beneath civilisation never disappear.

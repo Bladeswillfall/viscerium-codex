@@ -45,7 +45,7 @@ tags:
 slug: eras/nearsight/events/the-nearsight-blackout
 eraStyle: e3
 sourcePath: "Eras/NEARSIGHT/Events/The Nearsight Blackout.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 A coordinated systems failure blinded military, civic and orbital sensors across multiple continents.

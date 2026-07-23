@@ -38,7 +38,7 @@ tags:
 slug: eras/citadel/events/the-silence-after-seven-bells
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The Silence After Seven Bells.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 On the morning after the bells rang, every child born within Karn Vey was silent until sunset.

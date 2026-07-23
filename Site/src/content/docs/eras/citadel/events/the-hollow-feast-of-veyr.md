@@ -39,7 +39,7 @@ tags:
 slug: eras/citadel/events/the-hollow-feast-of-veyr
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The Hollow Feast of Veyr.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 A legendary winter banquet at which an entire court is said to have eaten, spoken and departed without casting shadows.

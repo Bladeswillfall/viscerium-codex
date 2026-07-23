@@ -45,7 +45,7 @@ tags:
 slug: eras/citadel/events/the-verigoth-chain-census
 eraStyle: e1
 sourcePath: "Eras/CITADEL/Events/The Verigoth Chain Census.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 A six-year accounting of captives, debts and hereditary bondage conducted across the Verigoth chain-holds.

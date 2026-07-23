@@ -38,7 +38,7 @@ tags:
 slug: eras/entropy/events/the-abberath-disclosure
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The Abberath Disclosure.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 Leaked archives revealed that Abberath manifestations had been catalogued, cultivated and suppressed for centuries.

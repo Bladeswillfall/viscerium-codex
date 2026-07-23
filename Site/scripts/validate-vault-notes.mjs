@@ -7,7 +7,6 @@ import { isMainModule } from './script-entry.mjs';
 const siteRoot = process.cwd();
 const requiredPublicFields = ['title', 'description'];
 const iconFields = ['icon', 'sidebarIcon', 'titleIcon'];
-const allowedStatuses = new Set(['published']);
 const forbiddenActiveTag = /<\s*\/?\s*(?:script|iframe|object|embed|base)\b/i;
 const inlineEventHandler = /<[^>]*\son[a-z][\w:-]*\s*=/i;
 const unsafeUrlScheme = /(?:\b(?:href|src|action|formaction)\s*=\s*["']?\s*|\]\(\s*)(?:javascript:|data\s*:\s*text\/html)/i;
@@ -60,11 +59,6 @@ export function validateVaultNotes(manifest) {
 
     if (Object.hasOwn(data, 'slug')) {
       fail(`Published note routes are derived from file paths; remove frontmatter "slug": ${relative(file)}`);
-    }
-
-    if (!allowedStatuses.has(data.status)) {
-      fail(`Published note must use status: 'published': ${relative(file)}${data.status ? ` (found status: ${data.status})` : ''}`);
-      continue;
     }
 
     for (const field of requiredPublicFields) {

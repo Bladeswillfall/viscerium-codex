@@ -17,6 +17,14 @@ const era = type === "species" ? "" : (await tp.system.suggester(["Leave undefin
 const pick = (options) => tp.user.reference_picker(tp, options);
 const data = {};
 
+async function ensureFolder(folderPath) {
+  let current = "";
+  for (const segment of folderPath.split("/").filter(Boolean)) {
+    current = current ? `${current}/${segment}` : segment;
+    if (!tp.app.vault.getAbstractFileByPath(current)) await tp.app.vault.createFolder(current);
+  }
+}
+
 if (type === "character") {
   data.faction = await pick({ types: ["faction"], multiple: true, label: "faction", stubType: "faction", stubFolder: "Drafts/Inbox/Factions" });
   data.location = await pick({ types: ["location"], multiple: true, label: "location", stubType: "location", stubFolder: "Drafts/Inbox/Locations" });
@@ -53,5 +61,6 @@ const bodies = {
 };
 const body = [...bodies[type], "", "## Related", "", "- [ ] Review this inbox draft and promote it deliberately when established.", ""];
 tR += `${frontmatter.join("\n")}\n\n${body.join("\n")}`;
+await ensureFolder(config.folder);
 if (tp.file.folder(true) !== config.folder) await tp.file.move(`${config.folder}/${tp.file.title}`);
 %>

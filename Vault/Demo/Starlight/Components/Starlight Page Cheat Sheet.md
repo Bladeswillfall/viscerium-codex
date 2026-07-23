@@ -95,7 +95,6 @@ A minimal public article needs:
 ---
 title: Example Article
 description: "A short reader-safe description for search and previews."
-publish: true
 status: published
 type: article
 ---

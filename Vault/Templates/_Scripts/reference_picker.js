@@ -19,7 +19,6 @@ function candidates(tp, types) {
   for (const file of tp.app.vault.getMarkdownFiles()) {
     const path = file.path;
     if (!(path.startsWith("Lore/") || path.startsWith("Drafts/"))) continue;
-    if (path.startsWith("Drafts/Inbox/Inbox")) continue;
     const fm = tp.app.metadataCache.getFileCache(file)?.frontmatter ?? {};
     if (!allowed.has(normalise(fm.type))) continue;
     const title = String(fm.title ?? file.basename).trim();

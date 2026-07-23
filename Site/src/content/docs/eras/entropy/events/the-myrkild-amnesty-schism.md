@@ -39,7 +39,7 @@ tags:
 slug: eras/entropy/events/the-myrkild-amnesty-schism
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The Myrkild Amnesty Schism.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 A proposal to recognise selected Myrkild intelligences as legal persons divided human governments and hunter orders.

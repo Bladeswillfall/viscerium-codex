@@ -37,7 +37,7 @@ tags:
 slug: eras/smog/events/the-engimanutur-explosion
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Engimanutur Explosion.md"
-updated: "2026-07-21T13:06:10+01:00"
+updated: "2026-07-23T13:47:19Z"
 ---
 
 A leap-day pressure failure destroyed the experimental lower furnaces beneath Harkworks and opened a persistent Resonant scar.
