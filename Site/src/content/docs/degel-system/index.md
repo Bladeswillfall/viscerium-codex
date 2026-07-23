@@ -47,15 +47,6 @@ Browse every public Codex page filed beneath **Degel System**.
 </li>
 </ul>
 </section>
-<section class="codex-alpha-index__group" aria-labelledby="pages-o">
-<h3 id="pages-o" class="codex-alpha-index__letter">O</h3>
-<ul class="codex-alpha-index__items">
-<li class="codex-alpha-index__item">
-<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/degel-system/okse-dominion/">Okse Dominion</a><span class="codex-alpha-index__meta">faction</span></div>
-<p class="codex-alpha-index__description">A harsh mountain dominion of the Oksmun, built on endurance, fortification, oil, slave labour, and old Vetruxi blood.</p>
-</li>
-</ul>
-</section>
 <section class="codex-alpha-index__group" aria-labelledby="pages-s">
 <h3 id="pages-s" class="codex-alpha-index__letter">S</h3>
 <ul class="codex-alpha-index__items">

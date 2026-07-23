@@ -16,7 +16,7 @@ Browse every public Codex page filed beneath **Eras**.
 <h3 id="subcategories-c" class="codex-alpha-index__letter">C</h3>
 <ul class="codex-alpha-index__items">
 <li class="codex-alpha-index__item">
-<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/">CITADEL</a><span class="codex-alpha-index__meta">9 pages</span></div>
+<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/">CITADEL</a><span class="codex-alpha-index__meta">10 pages</span></div>
 </li>
 </ul>
 </section>
@@ -240,6 +240,10 @@ Browse every public Codex page filed beneath **Eras**.
 <section class="codex-alpha-index__group" aria-labelledby="pages-o">
 <h3 id="pages-o" class="codex-alpha-index__letter">O</h3>
 <ul class="codex-alpha-index__items">
+<li class="codex-alpha-index__item">
+<div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/okse-dominion/">Okse Dominion</a><span class="codex-alpha-index__meta">faction</span></div>
+<p class="codex-alpha-index__description">A harsh mountain dominion of the Oksmun, built on endurance, fortification, oil, slave labour, and old Vetruxi blood.</p>
+</li>
 <li class="codex-alpha-index__item">
 <div class="codex-alpha-index__line"><a class="codex-alpha-index__link" href="/eras/citadel/events/the-opening-of-the-bone-road/">The Opening of the Bone Road</a><span class="codex-alpha-index__meta">event</span></div>
 <p class="codex-alpha-index__description">The first guarded caravan crossed the ossuary causeway linking the Dominion interior to the western salt kingdoms.</p>

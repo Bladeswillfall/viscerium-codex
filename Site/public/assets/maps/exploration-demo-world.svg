@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">VISCERIUM exploration demo world</title>
+  <desc id="desc">A deliberately fictional test map used only to exercise Atlas controls.</desc>
+  <rect width="1600" height="900" fill="#1a1c1b"/>
+  <path d="M130 165 C260 75 430 100 515 225 C585 330 525 455 405 505 C270 560 130 505 90 390 C60 300 75 220 130 165Z" fill="#4e5550" stroke="#9aa39c" stroke-width="8"/>
+  <path d="M620 120 C790 45 1025 80 1110 225 C1185 350 1115 505 960 540 C790 580 640 510 600 390 C565 290 555 180 620 120Z" fill="#59605a" stroke="#a6aea8" stroke-width="8"/>
+  <path d="M1110 555 C1220 470 1410 490 1500 610 C1570 705 1515 815 1375 845 C1235 875 1105 820 1065 725 C1035 655 1055 600 1110 555Z" fill="#454b47" stroke="#929a94" stroke-width="8"/>
+  <path d="M290 670 C370 610 505 630 555 715 C605 805 520 860 405 845 C300 830 245 760 290 670Z" fill="#3d433f" stroke="#8b938d" stroke-width="8"/>
+  <path d="M0 545 C250 490 505 600 760 560 C1010 520 1290 405 1600 455" fill="none" stroke="#6d7670" stroke-width="18" opacity="0.45"/>
+  <g fill="#d7ddd8" font-family="system-ui, sans-serif" font-size="34" font-weight="700" opacity="0.78">
+    <text x="180" y="300">WEST TESTLAND</text>
+    <text x="735" y="320">CENTRAL TESTLAND</text>
+    <text x="1190" y="700">SOUTH TESTLAND</text>
+  </g>
+  <text x="800" y="855" fill="#c7cec9" font-family="system-ui, sans-serif" font-size="26" text-anchor="middle">NON-CANON EXPLORATION DEMO</text>
+</svg>

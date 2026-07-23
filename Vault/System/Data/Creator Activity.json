@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastScan": "2026-07-23T15:00:40.584Z",
+  "lastScan": "2026-07-23T17:21:20.133Z",
   "files": {
     "timelines/example-history.md": "811c9dc5",
     "maps/example-world.md": "811c9dc5",
@@ -44,6 +44,7 @@
     "Lore/Eras/ENTROPY/Events/The Abberath Disclosure.md": "7aa29ef2",
     "Lore/Eras/ENTROPY/Events/GARMIR Gate Ignition.md": "57a6aaf0",
     "Lore/Eras/CITADEL.md": "e60d6c8a",
+    "Lore/Eras/CITADEL/Okse Dominion.md": "c6110432",
     "Lore/Eras/CITADEL/Events/The Verigoth Chain Census.md": "dcf29a2d",
     "Lore/Eras/CITADEL/Events/The Silence After Seven Bells.md": "a195d5b0",
     "Lore/Eras/CITADEL/Events/The Opening of the Bone Road.md": "d91d9b47",
@@ -53,8 +54,20 @@
     "Lore/Eras/CITADEL/Events/The First Crowning at Skallfast.md": "bed5f2db",
     "Lore/Eras/CITADEL/Events/The Breaking of Lorndale.md": "c19c4924",
     "Lore/Eras/CITADEL/Events/The Ash-Winter Pilgrimage.md": "b0f495a4",
+    "Lore/Demo/Exploration Demo.md": "cbc4846e",
+    "Lore/Demo/Exploration Demo World.md": "e52874cc",
+    "Lore/Demo/Demo Trade Port.md": "8bd8ed7a",
+    "Lore/Demo/Demo Rift Site.md": "d893f8ab",
+    "Lore/Demo/Demo Marshal.md": "d2bc3ae9",
+    "Lore/Demo/Demo Market Ward.md": "b4a01b4c",
+    "Lore/Demo/Demo League.md": "00350c5b",
+    "Lore/Demo/Demo Hidden Ruin.md": "9de2aae9",
+    "Lore/Demo/Demo Gate City.md": "edb5c504",
+    "Lore/Demo/Demo Frontier Fort.md": "20d44f38",
+    "Lore/Demo/Demo Directorate.md": "40c3a488",
+    "Lore/Demo/Demo Concord.md": "feacfb34",
+    "Lore/Demo/Demo Archive Tower.md": "794e0854",
     "Lore/Degel System/The Shards.md": "2927a617",
-    "Lore/Degel System/Okse Dominion.md": "c6110432",
     "Lore/Degel System/Eye of Vordr.md": "a4ff246c",
     "Lore/Degel System/Eye of Visi.md": "c8f00b64",
     "Lore/Degel System/Errack.md": "667129c8",
@@ -85,6 +98,6 @@
     "Drafts/Databases/Flora/Test flora item.md": "4119e6b4"
   },
   "days": {
-    "2026-07-23": 76
+    "2026-07-23": 90
   }
 }
