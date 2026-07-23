@@ -48,6 +48,7 @@ const literalFrontmatterTemplates = [
 const creatorTemplates = [
   'Templates/Databases/New Story Entity.md',
   'Templates/Databases/Add Storyteller Fields.md',
+  'Templates/Lore/Add Location Fields.md',
   'Templates/Databases/Myrkild Unit Profile.md',
   'Templates/_Internals/Story Entity Core.md',
   'Templates/_Startup/Open VISCERIUM Home.md',
@@ -92,16 +93,59 @@ test('creator-facing and internal Templater workflows remain present after the t
 
   const wrapper = await readText('Templates/Databases/New Story Entity.md');
   const injector = await readText('Templates/Databases/Add Storyteller Fields.md');
+  const locationInjector = await readText('Templates/Lore/Add Location Fields.md');
   const core = await readText('Templates/_Internals/Story Entity Core.md');
   const lore = await readText('Templates/Lore/New Lore Entity.md');
   const unit = await readText('Templates/Databases/New Myrkild Unit.md');
 
   assert.match(wrapper, /Story Entity Core/);
   assert.match(injector, /processFrontMatter/);
+  assert.match(injector, /\blocation:\s*\[/);
+  assert.match(injector, /\bfaction:\s*\[/);
+  assert.match(injector, /current_wants/);
+  assert.match(injector, /local_tension/);
+  assert.match(locationInjector, /type:\s*location/);
+  assert.match(locationInjector, /location_kind/);
+  assert.match(locationInjector, /settlement_scale/);
+  assert.match(locationInjector, /route_connections/);
+  assert.match(locationInjector, /tp\.user\.reference_picker/);
   assert.match(core, /Stop when usable/);
   assert.match(core, /tp\.user\.reference_picker/);
   assert.match(lore, /tp\.user\.reference_picker/);
+  assert.match(lore, /LOCATION_KINDS/);
+  assert.match(lore, /Add Location Fields/);
   assert.match(unit, /tp\.user\.reference_picker/);
+});
+
+test('sourcebook location fields survive in representative non-canon location notes', async () => {
+  const port = matter(await readText('Lore/Demo/Demo Trade Port.md')).data;
+  const fort = matter(await readText('Lore/Demo/Demo Frontier Fort.md')).data;
+  const ward = matter(await readText('Lore/Demo/Demo Market Ward.md')).data;
+
+  assert.equal(port.type, 'location');
+  assert.equal(port.location_kind, 'settlement');
+  assert.match(port.economic_role, /cargo|trade/i);
+  assert.ok(port.local_services);
+
+  assert.equal(fort.type, 'location');
+  assert.equal(fort.location_kind, 'site');
+  assert.ok(fort.access_conditions);
+  assert.ok(fort.notable_features);
+
+  assert.equal(ward.type, 'location');
+  assert.equal(ward.location_kind, 'settlement');
+  assert.ok(ward.population_band);
+  assert.ok(ward.governance_summary);
+});
+
+test('sourcebook-readiness guidance stays anti-checklist and preserves progressive authoring', async () => {
+  const sourcebook = await readText('System/SOPs/Sourcebook Readiness SOP.md');
+
+  assert.match(sourcebook, /not.*completion checklist/i);
+  assert.match(sourcebook, /Everyday world prompts/);
+  assert.match(sourcebook, /When a concept becomes its own entity/);
+  assert.match(sourcebook, /Okse Dominion/);
+  assert.match(sourcebook, /Safe to invent later/);
 });
 
 test('Minimal owns ordinary article width without competing global width or infobox snippets', async () => {
