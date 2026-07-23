@@ -6,6 +6,23 @@ import { isMainModule } from './script-entry.mjs';
 
 const outFile = path.resolve(process.cwd(), 'src/data/maps.json');
 
+function asFiniteNumber(value) {
+  if (value === undefined || value === null || value === '') return undefined;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : undefined;
+}
+
+function asStringList(value, fallback = []) {
+  if (Array.isArray(value)) return value.map((entry) => String(entry).trim()).filter(Boolean);
+  if (typeof value === 'string' && value.trim()) return [value.trim()];
+  return fallback;
+}
+
+function pageForRecord(record, id) {
+  if (record.data.type === 'map' && record.data.mapId) return `/maps/${encodeURIComponent(record.data.mapId)}/`;
+  return `/${id}/`;
+}
+
 export async function generateMapData({ manifest } = {}) {
   const docs = manifest ?? await loadGeneratedDocs();
   const maps = {};
@@ -19,8 +36,11 @@ export async function generateMapData({ manifest } = {}) {
         title: data.title,
         description: data.description,
         image: data.image,
-        width: data.width,
-        height: data.height,
+        width: asFiniteNumber(data.width),
+        height: asFiniteNumber(data.height),
+        defaultZoom: asFiniteNumber(data.defaultZoom),
+        minZoom: asFiniteNumber(data.minZoom),
+        maxZoom: asFiniteNumber(data.maxZoom),
         page: `/${id}/`,
         markers: [],
       };
@@ -30,18 +50,37 @@ export async function generateMapData({ manifest } = {}) {
   for (const record of docs.records) {
     const id = record.relativePath.replace(/\.(md|mdx)$/i, '');
     const { data } = record;
-    if (data.map?.id) {
-      maps[data.map.id] ??= { id: data.map.id, title: data.map.id, description: '', markers: [] };
-      maps[data.map.id].markers.push({
-        title: data.title,
-        description: data.description,
-        x: data.map.x,
-        y: data.map.y,
-        marker: data.map.marker,
-        layer: data.map.layer,
-        page: `/${id}/`,
-      });
-    }
+    if (!data.map?.id) continue;
+
+    maps[data.map.id] ??= {
+      id: data.map.id,
+      title: data.map.id,
+      description: '',
+      markers: [],
+    };
+
+    const markerLayers = asStringList(data.map.layer, ['locations']);
+    maps[data.map.id].markers.push({
+      title: data.title,
+      description: data.description,
+      x: asFiniteNumber(data.map.x),
+      y: asFiniteNumber(data.map.y),
+      marker: data.map.marker || data.type || 'location',
+      layers: markerLayers,
+      layer: markerLayers[0],
+      minZoom: asFiniteNumber(data.map.minZoom),
+      maxZoom: asFiniteNumber(data.map.maxZoom),
+      type: data.type,
+      era: data.era,
+      faction: data.faction,
+      region: data.region,
+      page: pageForRecord(record, id),
+      childMapId: data.type === 'map' && data.mapId ? data.mapId : undefined,
+    });
+  }
+
+  for (const map of Object.values(maps)) {
+    map.markers.sort((a, b) => String(a.title ?? '').localeCompare(String(b.title ?? '')));
   }
 
   await fs.mkdir(path.dirname(outFile), { recursive: true });
