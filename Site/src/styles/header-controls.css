@@ -68,10 +68,25 @@ header.header *::after,
   outline-offset: 2px;
 }
 
-html[data-codex-mobile-header] .page {
-  padding-block-start: var(--sl-nav-height, 3.5rem);
+/*
+  Starlight fixes the header and reserves its height inside `.main-frame` by default.
+  On wide displays the Codex deliberately returns the header to normal flow as a
+  sticky ribbon, so remove that otherwise duplicated navigation-height offset.
+*/
+html[data-codex-wide-header] header.header {
+  position: sticky !important;
+  inset-block-start: 0;
 }
 
+html[data-codex-wide-header] .main-frame {
+  padding-top: var(--sl-mobile-toc-height, 0rem);
+}
+
+/*
+  Mobile keeps Starlight's fixed-header geometry, but the ribbon can translate out
+  of view. Main-frame retains Starlight's normal nav-height padding, preventing
+  layout movement when the fixed ribbon hides or returns.
+*/
 html[data-codex-mobile-header] header.header {
   position: fixed !important;
   inset-block-start: 0;
