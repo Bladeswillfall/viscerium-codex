@@ -64,8 +64,16 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
       .replace(/\b\w/g, (character) => character.toUpperCase());
   }
 
-  function cssValue(styles, name, fallback) {
-    return styles.getPropertyValue(name).trim() || fallback;
+  function resolvedCssColor(root, name, fallback) {
+    const probe = document.createElement('span');
+    probe.style.position = 'absolute';
+    probe.style.visibility = 'hidden';
+    probe.style.pointerEvents = 'none';
+    probe.style.color = `var(${name}, ${fallback})`;
+    root.append(probe);
+    const resolved = getComputedStyle(probe).color || fallback;
+    probe.remove();
+    return resolved;
   }
 
   function appendMetadata(container, values) {
@@ -94,13 +102,13 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
       return;
     }
 
-    const rootStyles = getComputedStyle(root);
-    const accent = cssValue(rootStyles, '--codex-accent', '#b59058');
-    const surface = cssValue(rootStyles, '--relationship-node-bg', '#1d1d1d');
-    const text = cssValue(rootStyles, '--relationship-node-text', '#f5f5f5');
-    const muted = cssValue(rootStyles, '--relationship-edge-label', '#a4a4a4');
-    const border = cssValue(rootStyles, '--relationship-edge', '#62605a');
-    const canvasBackground = cssValue(rootStyles, '--relationship-canvas', '#111');
+    const accent = resolvedCssColor(root, '--codex-accent', '#b59058');
+    const surface = resolvedCssColor(root, '--relationship-node-bg', '#1d1d1d');
+    const text = resolvedCssColor(root, '--relationship-node-text', '#f5f5f5');
+    const muted = resolvedCssColor(root, '--relationship-edge-label', '#a4a4a4');
+    const border = resolvedCssColor(root, '--relationship-edge', '#62605a');
+    const canvasBackground = resolvedCssColor(root, '--relationship-canvas', '#111111');
+    const labelBackground = resolvedCssColor(root, '--relationship-label-bg', '#1d1d1d');
 
     const elements = [
       ...(graph.nodes || []).map((node) => ({
@@ -186,12 +194,15 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
             label: 'data(label)',
             color: muted,
             'font-family': 'IBM Plex Sans, system-ui, sans-serif',
-            'font-size': 8,
-            'font-weight': 550,
-            'text-background-color': canvasBackground,
-            'text-background-opacity': 0.92,
-            'text-background-padding': 3,
+            'font-size': 9,
+            'font-weight': 650,
+            'text-background-color': labelBackground,
+            'text-background-opacity': 1,
+            'text-background-padding': 4,
             'text-background-shape': 'roundrectangle',
+            'text-border-color': border,
+            'text-border-width': 1,
+            'text-border-opacity': 0.7,
             'text-rotation': 'autorotate',
           },
         },
@@ -210,6 +221,7 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
             'line-color': accent,
             'target-arrow-color': accent,
             color: text,
+            'text-border-color': accent,
             opacity: 1,
           },
         },
