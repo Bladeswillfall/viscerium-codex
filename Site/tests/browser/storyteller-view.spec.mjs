@@ -80,3 +80,49 @@ test('Okse uses the same public switch with canon-grounded faction sections', as
   await expect(storytellerPanel).toContainText('Leysingi');
   await expect(page).toHaveURL(okseDominionUrl);
 });
+
+test('CITADEL presents Lore and Storyteller as overlapping slanted chronicle tabs', async ({ page }) => {
+  await page.goto(okseDominionUrl, { waitUntil: 'networkidle' });
+
+  const root = page.locator('[data-codex-view-root]');
+  const loreTab = page.getByRole('tab', { name: 'Lore' });
+  const storytellerTab = page.getByRole('tab', { name: 'Storyteller' });
+
+  await expect(root).toHaveAttribute('data-era-style', 'e1');
+
+  const geometry = await page.evaluate(() => {
+    const lore = document.querySelector('[data-codex-view-tab="lore"]');
+    const storyteller = document.querySelector('[data-codex-view-tab="storyteller"]');
+    if (!(lore instanceof HTMLElement) || !(storyteller instanceof HTMLElement)) return null;
+    const loreRect = lore.getBoundingClientRect();
+    const storytellerRect = storyteller.getBoundingClientRect();
+    return {
+      loreClip: getComputedStyle(lore).clipPath,
+      storytellerClip: getComputedStyle(storyteller).clipPath,
+      overlap: loreRect.right - storytellerRect.left,
+      loreTop: loreRect.top,
+      storytellerTop: storytellerRect.top,
+    };
+  });
+
+  expect(geometry).not.toBeNull();
+  expect(geometry.loreClip).not.toBe('none');
+  expect(geometry.storytellerClip).not.toBe('none');
+  expect(geometry.overlap).toBeGreaterThan(0);
+  expect(geometry.loreTop).toBeLessThan(geometry.storytellerTop);
+
+  await storytellerTab.click();
+  const switched = await page.evaluate(() => {
+    const lore = document.querySelector('[data-codex-view-tab="lore"]');
+    const storyteller = document.querySelector('[data-codex-view-tab="storyteller"]');
+    if (!(lore instanceof HTMLElement) || !(storyteller instanceof HTMLElement)) return null;
+    return {
+      loreTop: lore.getBoundingClientRect().top,
+      storytellerTop: storyteller.getBoundingClientRect().top,
+    };
+  });
+
+  expect(switched).not.toBeNull();
+  expect(switched.storytellerTop).toBeLessThan(switched.loreTop);
+  await expect(loreTab).toHaveAttribute('aria-selected', 'false');
+});
