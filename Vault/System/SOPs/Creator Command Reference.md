@@ -15,7 +15,7 @@ Use this as the practical lookup for interacting with the VISCERIUM authoring sy
 | Create fauna, flora, fungi or an item | [[Home]] → **Create Story Entity**, or **Templater: Create New Story Entity** |
 | Add optional Storyteller/profile fields later | **Templater: Insert template** → `Add Storyteller Fields` |
 | Browse every structured story entity together | Open [[Story Entities.base]] |
-| Check creator data for structural mistakes | `cd Site` then `npm run doctor:vault` |
+| Check creator data and image assets for structural mistakes | `cd Site` then `npm run doctor:vault` |
 | Check whether public Lore is safe to publish | `cd Site` then `npm run validate:vault` |
 | Run the normal local test/build suite | `cd Site` then `npm test` |
 | Start the Codex locally | `cd Site` then `npm run dev` |
@@ -131,6 +131,16 @@ The repository already registers `Templates/_Startup/Open VISCERIUM Home.md`. On
 
 Leave the toggle off if you prefer Obsidian to resume directly into the previous active note; Creator Activity will then not automatically record between-session changes on that device.
 
+### Image assets
+
+The checked-in **Image Converter** configuration uses the **WebP 75** preset for raster artwork. The repository policy is:
+
+- raster artwork → `.webp`;
+- genuine vector artwork/icons/maps → `.svg` is allowed;
+- PNG/JPEG/JPG and other raster originals stay outside the repository.
+
+Vault Doctor and the sync/dev/build pipeline enforce this rule, so the Image Converter is the convenient authoring route rather than the only line of defence.
+
 ## Terminal commands — Codex and vault
 
 Run these from the repository's `Site/` directory unless the table says otherwise.
@@ -142,19 +152,19 @@ cd Site
 | Command | What it does | Writes generated files? |
 | --- | --- | --- |
 | `npm ci` | Installs the exact dependencies recorded in `package-lock.json`. Preferred after pulling dependency changes or when reproducing CI. | Installs `node_modules`; does not change source files. |
-| `npm run doctor:vault` | Runs **Vault Doctor** across creator entities. Fails on objective structural errors; prints non-failing notices for suspicious data such as a near-miss canonical place name. | **No.** Read-only. |
+| `npm run doctor:vault` | Runs **Vault Doctor** across creator entities, then checks the repository image policy. Fails on objective structural errors or non-WebP raster assets; prints non-failing notices for suspicious creator data such as a near-miss canonical place name. | **No.** Read-only. |
 | `npm run validate:vault` | Validates **published Lore** requirements and active-content safety. This is different from Vault Doctor: it is publication-facing rather than creator-database-facing. | **No.** Read-only. |
 | `npm run validate:timelines` | Validates canonical timeline/event metadata without generating the final datasets. | **No.** Read-only. |
 | `npm run validate` | Checks generated public docs for required generated frontmatter such as title, description, slug and type. Run after sync/generation when diagnosing generated-content problems. | **No.** Read-only. |
-| `npm run test:unit` | Runs the Node unit-test suite, including Vault Doctor and homepage regression tests. | **No** source changes. |
+| `npm run test:unit` | Runs the Node unit-test suite, including Vault Doctor, image-policy and homepage regression tests. | **No** source changes. |
 | `npm test` | Normal local confidence check: runs Vault Doctor, unit tests and the full Astro build. | Produces normal build/generated output as part of the build process. |
 | `npm run benchmark:timelines` | Runs timeline performance benchmarks used by CI. Useful before/after substantial timeline compiler changes. | **No** source changes intended. |
-| `npm run sync` | Rebuilds/synchronises publishable vault content into the generated site content used by Astro. Do not hand-edit generated copies instead of their vault sources. | **Yes.** Updates generated site content/data. |
+| `npm run sync` | Rebuilds/synchronises publishable vault content into the generated site content used by Astro. It validates the WebP-only raster policy before copying assets; it does not re-encode PNG/JPEG into WebP. | **Yes.** Updates generated site content/data. |
 | `npm run generate:maps` | Regenerates map data from source metadata. | **Yes.** Updates generated map data. |
 | `npm run generate:timelines` | Regenerates canonical timeline datasets from source metadata. | **Yes.** Updates generated timeline data. |
-| `npm run dev` | Builds content in development mode and starts the local Astro development server. | May refresh generated development content; then keeps a local server running. |
+| `npm run dev` | Builds content in development mode and starts the local Astro development server. The same image policy is checked before the server starts. | May refresh generated development content; then keeps a local server running. |
 | `npm run dev:sync` | Alias of `npm run dev`; retained for compatibility with the earlier development-sync command name. | Same behaviour as `npm run dev`. |
-| `npm run build` | Runs the production content build and Astro production build; post-build icon validation runs automatically. | **Yes.** Produces build output/generated content. |
+| `npm run build` | Runs the production content build and Astro production build; image-policy and post-build icon validation run automatically. | **Yes.** Produces build output/generated content. |
 | `npm run validate:icons` | Checks generated/public icon output. Normally runs automatically after `npm run build`. | **No.** Read-only. |
 | `npm run preview` | Serves the already-built production site locally. Run `npm run build` first if needed. | **No** source changes. |
 | `npm run astro -- <args>` | Passes arguments directly to the Astro CLI. This is an escape hatch for Astro-specific commands; prefer the named `dev`, `build` and `preview` scripts for normal work. | Depends on the Astro command supplied. |
@@ -206,9 +216,9 @@ Destructive recovery commands are deliberately omitted from this quick reference
 
 **Vault Doctor** asks:
 
-> Is the creator data structurally coherent?
+> Is the creator data structurally coherent, and are repository image assets in the allowed formats?
 
-Examples: correct entity folder/type pairing, valid eras, list-shaped relationship fields, unique Myrkild IDs.
+Examples: correct entity folder/type pairing, valid eras, list-shaped relationship fields, unique Myrkild IDs, and WebP-only raster artwork with SVG reserved for genuine vectors.
 
 **`validate:vault`** asks:
 
