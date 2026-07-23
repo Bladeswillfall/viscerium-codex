@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 const storytellerDemoUrl = 'http://127.0.0.1:4321/demo/demo-trade-port/';
 const okseDominionUrl = 'http://127.0.0.1:4321/eras/citadel/okse-dominion/';
 
+const almostEqual = (left, right, tolerance = 1) => Math.abs(left - right) <= tolerance;
+
 test.use({ viewport: { width: 1280, height: 900 } });
 
 test('Lore is the default and Storyteller replaces the article body without becoming a second route', async ({ page }) => {
@@ -12,14 +14,14 @@ test('Lore is the default and Storyteller replaces the article body without beco
   const storytellerTab = page.getByRole('tab', { name: 'Storyteller' });
   const loreBody = page.locator('.sl-markdown-content');
   const storytellerPanel = page.locator('[data-codex-storyteller-panel]');
-  const toc = page.locator('.right-sidebar-container');
+  const sidebar = page.locator('.right-sidebar-container');
 
   await expect(loreTab).toHaveAttribute('aria-selected', 'true');
   await expect(storytellerTab).toHaveAttribute('aria-selected', 'false');
   await expect(loreBody).toBeVisible();
   await expect(loreBody.getByRole('heading', { name: 'Port function' })).toBeVisible();
   await expect(storytellerPanel).toBeHidden();
-  await expect(toc).toBeVisible();
+  await expect(sidebar).toBeVisible();
 
   await storytellerTab.click();
 
@@ -31,14 +33,14 @@ test('Lore is the default and Storyteller replaces the article body without beco
   await expect(storytellerPanel.getByRole('heading', { name: 'Use' })).toBeVisible();
   await expect(storytellerPanel.getByRole('heading', { name: 'Knowledge' })).toBeVisible();
   await expect(storytellerPanel.getByRole('heading', { name: 'Local pressure' })).toBeVisible();
-  await expect(toc).toBeHidden();
+  await expect(sidebar).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-codex-article-view', 'storyteller');
   await expect(page).toHaveURL(storytellerDemoUrl);
 
   await loreTab.click();
   await expect(loreBody).toBeVisible();
   await expect(storytellerPanel).toBeHidden();
-  await expect(toc).toBeVisible();
+  await expect(sidebar).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-codex-article-view', 'lore');
 });
 
@@ -64,6 +66,7 @@ test('Okse uses the same public switch with canon-grounded faction sections', as
   const loreTab = page.getByRole('tab', { name: 'Lore' });
   const storytellerTab = page.getByRole('tab', { name: 'Storyteller' });
   const storytellerPanel = page.locator('[data-codex-storyteller-panel]');
+  const sidebar = page.locator('.right-sidebar-container');
 
   await expect(loreTab).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('.sl-markdown-content')).toContainText('Iron roots, blood fruit.');
@@ -71,6 +74,7 @@ test('Okse uses the same public switch with canon-grounded faction sections', as
   await storytellerTab.click();
 
   await expect(storytellerPanel).toBeVisible();
+  await expect(sidebar).toBeVisible();
   await expect(storytellerPanel.getByRole('heading', { name: 'Presence' })).toBeVisible();
   await expect(storytellerPanel.getByRole('heading', { name: 'Agenda' })).toBeVisible();
   await expect(storytellerPanel.getByRole('heading', { name: 'Reach' })).toBeVisible();
@@ -81,7 +85,7 @@ test('Okse uses the same public switch with canon-grounded faction sections', as
   await expect(page).toHaveURL(okseDominionUrl);
 });
 
-test('CITADEL presents Lore and Storyteller as overlapping slanted chronicle tabs', async ({ page }) => {
+test('CITADEL presents anchored overlapping chronicle tabs without hairline chrome', async ({ page }) => {
   await page.goto(okseDominionUrl, { waitUntil: 'networkidle' });
 
   const root = page.locator('[data-codex-view-root]');
@@ -89,26 +93,40 @@ test('CITADEL presents Lore and Storyteller as overlapping slanted chronicle tab
   const storytellerTab = page.getByRole('tab', { name: 'Storyteller' });
 
   await expect(root).toHaveAttribute('data-era-style', 'e1');
+  await page.waitForTimeout(180);
 
   const geometry = await page.evaluate(() => {
+    const tabs = document.querySelector('.codex-article-view-tabs');
     const lore = document.querySelector('[data-codex-view-tab="lore"]');
     const storyteller = document.querySelector('[data-codex-view-tab="storyteller"]');
-    if (!(lore instanceof HTMLElement) || !(storyteller instanceof HTMLElement)) return null;
+    if (!(tabs instanceof HTMLElement) || !(lore instanceof HTMLElement) || !(storyteller instanceof HTMLElement)) return null;
     const loreRect = lore.getBoundingClientRect();
     const storytellerRect = storyteller.getBoundingClientRect();
     return {
+      baselineBorder: getComputedStyle(tabs).borderBottomWidth,
       loreClip: getComputedStyle(lore).clipPath,
       storytellerClip: getComputedStyle(storyteller).clipPath,
+      loreShadow: getComputedStyle(lore).boxShadow,
+      storytellerShadow: getComputedStyle(storyteller).boxShadow,
       overlap: loreRect.right - storytellerRect.left,
       loreTop: loreRect.top,
       storytellerTop: storytellerRect.top,
+      loreBottom: loreRect.bottom,
+      storytellerBottom: storytellerRect.bottom,
+      loreHeight: loreRect.height,
+      storytellerHeight: storytellerRect.height,
     };
   });
 
   expect(geometry).not.toBeNull();
+  expect(geometry.baselineBorder).toBe('0px');
   expect(geometry.loreClip).not.toBe('none');
   expect(geometry.storytellerClip).not.toBe('none');
+  expect(geometry.loreShadow).toBe('none');
+  expect(geometry.storytellerShadow).toBe('none');
   expect(geometry.overlap).toBeGreaterThan(0);
+  expect(almostEqual(geometry.loreBottom, geometry.storytellerBottom)).toBe(true);
+  expect(geometry.loreHeight).toBeGreaterThan(geometry.storytellerHeight);
   expect(geometry.loreTop).toBeLessThan(geometry.storytellerTop);
 
   await storytellerTab.click();
@@ -120,12 +138,20 @@ test('CITADEL presents Lore and Storyteller as overlapping slanted chronicle tab
     const lore = document.querySelector('[data-codex-view-tab="lore"]');
     const storyteller = document.querySelector('[data-codex-view-tab="storyteller"]');
     if (!(lore instanceof HTMLElement) || !(storyteller instanceof HTMLElement)) return null;
+    const loreRect = lore.getBoundingClientRect();
+    const storytellerRect = storyteller.getBoundingClientRect();
     return {
-      loreTop: lore.getBoundingClientRect().top,
-      storytellerTop: storyteller.getBoundingClientRect().top,
+      loreTop: loreRect.top,
+      storytellerTop: storytellerRect.top,
+      loreBottom: loreRect.bottom,
+      storytellerBottom: storytellerRect.bottom,
+      loreHeight: loreRect.height,
+      storytellerHeight: storytellerRect.height,
     };
   });
 
   expect(switched).not.toBeNull();
+  expect(almostEqual(switched.loreBottom, switched.storytellerBottom)).toBe(true);
+  expect(switched.storytellerHeight).toBeGreaterThan(switched.loreHeight);
   expect(switched.storytellerTop).toBeLessThan(switched.loreTop);
 });
