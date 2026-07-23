@@ -16,7 +16,7 @@
     "generate:relationships": "node scripts/generate-relationship-data.mjs",
     "generate:timelines": "node scripts/generate-timeline-data.mjs",
     "benchmark:timelines": "node scripts/benchmark-timelines.mjs",
-    "test:unit": "bash -o pipefail -c 'node --test tests/*.test.mjs 2>&1 | tail -n 120'",
+    "test:unit": "node --test --test-reporter=dot tests/*.test.mjs",
     "prebuild": "node scripts/build-content.mjs --mode=build",
     "build": "astro build",
     "postbuild": "npm run validate:icons",
