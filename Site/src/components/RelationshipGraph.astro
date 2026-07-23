@@ -108,7 +108,6 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
     const muted = resolvedCssColor(root, '--relationship-edge-label', '#a4a4a4');
     const border = resolvedCssColor(root, '--relationship-edge', '#62605a');
     const canvasBackground = resolvedCssColor(root, '--relationship-canvas', '#111111');
-    const labelBackground = resolvedCssColor(root, '--relationship-label-bg', '#1d1d1d');
 
     const elements = [
       ...(graph.nodes || []).map((node) => ({
@@ -190,19 +189,15 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
             width: 1.6,
             'line-color': border,
             'curve-style': 'bezier',
-            opacity: 0.82,
+            opacity: 0.88,
             label: 'data(label)',
             color: muted,
             'font-family': 'IBM Plex Sans, system-ui, sans-serif',
-            'font-size': 9,
+            'font-size': 10,
             'font-weight': 650,
-            'text-background-color': labelBackground,
-            'text-background-opacity': 1,
-            'text-background-padding': 4,
-            'text-background-shape': 'roundrectangle',
-            'text-border-color': border,
-            'text-border-width': 1,
-            'text-border-opacity': 0.7,
+            'text-outline-color': canvasBackground,
+            'text-outline-width': 2,
+            'text-outline-opacity': 1,
             'text-rotation': 'autorotate',
           },
         },
@@ -221,7 +216,7 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
             'line-color': accent,
             'target-arrow-color': accent,
             color: text,
-            'text-border-color': accent,
+            'text-outline-color': canvasBackground,
             opacity: 1,
           },
         },
