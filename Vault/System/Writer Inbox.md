@@ -11,11 +11,13 @@ Review captures when it is useful. A capture can be moved into a proper Lore/Dra
 ```dataview
 TABLE WITHOUT ID
 file.link AS "Capture",
-dateformat(file.ctime, "dd LLL yyyy HH:mm") AS "Captured"
+dateformat(date(created), "dd LLL yyyy HH:mm") AS "Captured"
 FROM "Drafts/Inbox"
 WHERE status = "inbox"
-SORT file.ctime DESC
+SORT date(created) DESC
 ```
+
+The explicit `created` value comes from the capture itself, so Git checkout/sync filesystem timestamps do not reorder the inbox.
 
 ## Working rule
 
