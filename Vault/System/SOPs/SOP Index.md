@@ -13,6 +13,10 @@ SOPs should govern judgement, review and maintenance. They should not repeat ste
 - [[Schema Change SOP]] — review new properties, templates and Base columns before expanding the authoring system.
 - [[Storyteller View SOP]] — decide what belongs in the public Storyteller view and how it should relate to lore.
 
+## Current audits
+
+- [[System/Audits/Okse Sourcebook Readiness Audit|Okse Sourcebook Readiness Audit]] — first product-scoped stress test of the model; use it as an editorial example, not a completion score.
+
 ## When to add an SOP
 
 Add an SOP only when all three are true:
