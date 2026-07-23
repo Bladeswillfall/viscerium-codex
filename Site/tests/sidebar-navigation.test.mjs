@@ -44,7 +44,7 @@ test('desktop sidebar overlay uses an explicit unlayered state', () => {
   assert.match(navigation, /transform: translateX\(-110%\)/);
 });
 
-test('desktop sidebar toggle lives in the header while the sidebar runtime rebinds safely', () => {
+test('desktop sidebar toggle lives in the sticky header while the sidebar runtime rebinds safely', () => {
   const header = read('../src/components/CodexHeader.astro');
   const footer = read('../src/components/StarlightFooter.astro');
   const headerControls = read('../src/styles/header-controls.css');
@@ -56,6 +56,8 @@ test('desktop sidebar toggle lives in the header while the sidebar runtime rebin
   assert.doesNotMatch(footer, /data-codex-sidebar-toggle/);
   assert.match(headerControls, /\.codex-header \.codex-sidebar-toggle\s*\{[\s\S]*?position:\s*static/);
   assert.match(headerControls, /\.codex-header \.title-wrapper\s*\{[\s\S]*?gap:\s*\.4rem/);
+  assert.match(headerControls, /html\[data-codex-wide-header\] header\.header\s*\{[\s\S]*?position:\s*sticky !important/);
+  assert.match(headerControls, /html\[data-codex-wide-header\] \.main-frame\s*\{[\s\S]*?padding-top:\s*var\(--sl-mobile-toc-height, 0rem\)/);
 
   assert.match(footer, /document\.getElementById\('starlight__sidebar'\)/);
   assert.match(footer, /window\.matchMedia\('\(min-width: 800px\)'\)/);
@@ -81,10 +83,10 @@ test('mobile header uses thresholded fixed reveal and hide states', () => {
   assert.match(header, /runtime\.mobileScrollDistance \+= Math\.abs\(delta\)/);
   assert.match(header, /window\.addEventListener\('scroll', runtime\.onMobileScroll, \{ passive: true \}\)/);
 
-  assert.match(headerControls, /html\[data-codex-mobile-header\] \.page\s*\{[\s\S]*?padding-block-start:\s*var\(--sl-nav-height, 3\.5rem\)/);
   assert.match(headerControls, /html\[data-codex-mobile-header\] header\.header\s*\{[\s\S]*?position:\s*fixed !important/);
   assert.match(headerControls, /transition:\s*transform \.28s cubic-bezier\(\.22, \.61, \.36, 1\)/);
   assert.match(headerControls, /html\[data-codex-mobile-header\]\[data-codex-mobile-header-hidden\] header\.header\s*\{[\s\S]*?translateY\(calc\(-100% - 1px\)\)/);
+  assert.doesNotMatch(headerControls, /html\[data-codex-mobile-header\] \.page\s*\{/);
 });
 
 test('homepage has no first-load reveal and still supports the sidebar rail', () => {
