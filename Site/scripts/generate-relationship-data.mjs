@@ -104,18 +104,17 @@ function inferDirected(type, entry) {
   return directedRelationNames.has(type);
 }
 
-export async function generateRelationshipData({ manifest } = {}) {
-  const docs = manifest ?? await loadGeneratedDocs();
-  const allNodes = docs.records.map(nodeFromRecord);
+export function compileRelationshipData(records) {
+  const allNodes = records.map(nodeFromRecord);
   const nodeById = new Map(allNodes.map((node) => [node.id, node]));
-  const recordsByNodeId = new Map(docs.records.map((record, index) => [allNodes[index].id, record]));
+  const recordsByNodeId = new Map(records.map((record, index) => [allNodes[index].id, record]));
   const lookup = buildLookup(allNodes, recordsByNodeId);
   const participating = new Set();
   const edges = [];
   const seenEdges = new Set();
   const warnings = [];
 
-  for (const record of docs.records) {
+  for (const record of records) {
     const sourceNode = nodeFromRecord(record);
     const relationships = record.data.relationships;
     if (!relationships || typeof relationships !== 'object' || Array.isArray(relationships)) continue;
@@ -169,11 +168,20 @@ export async function generateRelationshipData({ manifest } = {}) {
     .map(([id, count]) => ({ id, label: relationLabel(id), count }))
     .sort((a, b) => a.label.localeCompare(b.label));
 
-  const graph = { nodes, edges, relationTypes };
+  return {
+    graph: { nodes, edges, relationTypes },
+    warnings,
+  };
+}
+
+export async function generateRelationshipData({ manifest } = {}) {
+  const docs = manifest ?? await loadGeneratedDocs();
+  const { graph, warnings } = compileRelationshipData(docs.records);
+
   await fs.mkdir(path.dirname(outFile), { recursive: true });
   await fs.writeFile(outFile, `${JSON.stringify(graph, null, 2)}\n`, 'utf8');
 
-  console.log(`Generated relationship graph with ${nodes.length} node(s) and ${edges.length} edge(s).`);
+  console.log(`Generated relationship graph with ${graph.nodes.length} node(s) and ${graph.edges.length} edge(s).`);
   if (warnings.length) {
     console.warn('Relationship graph warnings:');
     for (const warning of warnings) console.warn(`- ${warning}`);
