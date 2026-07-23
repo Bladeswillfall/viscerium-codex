@@ -142,6 +142,14 @@ const ga4Head = ga4Enabled
   : [];
 
 const sidebar = [
+  {
+    label: '[map] Explore',
+    collapsed: false,
+    items: [
+      { label: '[map] Atlas', link: '/maps/' },
+      { label: '[faction] Relationships', link: '/relationships/' },
+    ],
+  },
   ...(await buildSidebar()),
   {
     label: '[event] Releases',
@@ -191,6 +199,7 @@ export default defineConfig({
         './src/styles/graph.css',
         './src/styles/timelines.css',
         './src/styles/maps.css',
+        './src/styles/relationships.css',
         './src/styles/calendar.css',
         './src/styles/category-index.css',
         './src/styles/support.css',
