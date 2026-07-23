@@ -25,6 +25,12 @@ cssclasses:
 >     title: "Create fauna, flora, fungi or an item through the guided Story Entity workflow.",
 >   },
 >   {
+>     label: "Capture Idea",
+>     id: findCommand("Create Capture Idea"),
+>     tone: "capture",
+>     title: "Capture a rough thought into the Writer Inbox without leaving the writing flow to worldbuild it now.",
+>   },
+>   {
 >     label: "Open Story Timeline",
 >     id: "viscerium-timelines:open-storyline-project-timeline",
 >     tone: "stories",
@@ -147,7 +153,7 @@ cssclasses:
 > >   }
 > > }
 > > ```
-> > → [[System/StoryLine Integration|How StoryLine fits into VISCERIUM]]
+> > → [[System/Continuity Desk|Continuity Desk]] · [[System/Writer Inbox|Writer Inbox]] · [[System/StoryLine Integration|StoryLine integration]]
 
 > [!home-recent] JUMP BACK IN
 > ```dataviewjs
@@ -268,6 +274,12 @@ cssclasses:
 > > **StoryLine**  
 > > Private story and scene planning under `Stories/`. Story projects are writing material, not automatically canonical Lore. See [[System/StoryLine Integration|StoryLine Integration]].
 > >
+> > **[[System/Continuity Desk|Continuity Desk]]**  
+> > A live read-only overview of the active StoryLine project's scene order, POVs, locations, characters and placed/unplaced dates.
+> >
+> > **[[System/Writer Inbox|Writer Inbox]]**  
+> > A low-friction holding area for thoughts captured while writing so an interruption does not become an accidental worldbuilding session.
+> >
 > > **VISCERIUM Story Timeline**  
 > > Projects the current StoryLine project's `storyDate` metadata onto Errack's calendar without creating duplicate chronology.
 > >
@@ -278,7 +290,10 @@ cssclasses:
 > > **New Story Entity**  
 > > Guided creation for fauna, flora, fungi or an item. It asks for a small core, offers only useful optional detail, and files the result into the correct draft database.
 > >
-> > **Quick action above:** **Create Story Entity**. Command Palette fallback: **Templater: Create New Story Entity**.
+> > **Capture without worldbuilding**  
+> > Use **Capture Idea** when a thought interrupts writing. It creates a deliberately tiny note in `Drafts/Inbox/`; decide what the idea becomes later.
+> >
+> > **Quick actions above:** **Create Story Entity** and **Capture Idea**. Command Palette fallbacks: **Templater: Create New Story Entity** and **Templater: Create Capture Idea**.
 > >
 > > **Add detail later**  
 > > Open an existing entity, then run **Templater: Insert template → Add Storyteller Fields**. This remains contextual because it modifies the active note.
@@ -316,13 +331,19 @@ cssclasses:
 
 > [!home-grid]
 > > [!home-health] SYSTEM HEALTH
-> > **Creator-data check** — catches structural contradictions without judging creative completeness.
+> > **Creator-data check** — catches structural contradictions and image-policy violations without judging creative completeness.
 > > ```bash
 > > cd Site
 > > npm run doctor:vault
 > > ```
 > >
-> > **Full confidence check** — Vault Doctor, unit tests and production site build.
+> > **Story check** — validates StoryLine scene structure, dates and link integrity without requiring optional planning fields.
+> > ```bash
+> > cd Site
+> > npm run doctor:stories
+> > ```
+> >
+> > **Full confidence check** — Vault Doctor, Story Doctor, unit tests and production site build.
 > > ```bash
 > > cd Site
 > > npm test
