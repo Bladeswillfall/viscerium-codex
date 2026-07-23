@@ -1,0 +1,300 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "application_architecture_agent_handoff",
+  "project": "VISCERIUM Codex",
+  "snapshot": {
+    "repository": "Bladeswillfall/viscerium-codex",
+    "branch": "main",
+    "commit": "f63326112626ae25e81f65366420fd7b8f376c3b",
+    "date": "2026-07-23"
+  },
+  "summary": "Markdown-first knowledge system: Obsidian is the creator workspace; Vault/Lore is the only canonical public source; Node build scripts validate and compile Lore into generated Astro/Starlight content and datasets; the fictional calendar/timeline core is shared by the website and a maintained local Obsidian plugin.",
+  "source_of_truth": {
+    "creator_entities": "Markdown/YAML notes in Vault/Drafts/Databases or Vault/Lore",
+    "public_canon": "Vault/Lore",
+    "source_assets": "Vault/Assets",
+    "private_stories": "Vault/Stories",
+    "calendar_definitions": "Site/src/data/calendars",
+    "calendar_runtime": "Site/src/lib/calendar",
+    "timeline_domain_logic": "Site/src/lib/timeline",
+    "obsidian_timeline_plugin": "Tools/obsidian-viscerium-timelines"
+  },
+  "generated_artifacts": [
+    "Site/src/content/docs",
+    "Site/src/data/timelines/*.json",
+    "Site/src/data/maps.json",
+    "Site/dist",
+    "Tools/obsidian-viscerium-timelines/dist",
+    "Vault/.obsidian/plugins/viscerium-timelines runtime bundle"
+  ],
+  "zones": [
+    {
+      "id": "authoring",
+      "label": "Obsidian authoring",
+      "paths": ["Vault/Home.md", "Vault/Drafts", "Vault/System", "Vault/Templates", "Vault/.obsidian"],
+      "responsibilities": ["creator dashboard", "Templater workflows", "Dataview/Bases browsing", "creator SOPs", "draft databases"],
+      "notes": "Bases are views. Markdown/YAML notes remain authoritative."
+    },
+    {
+      "id": "stories",
+      "label": "Private StoryLine workspace",
+      "paths": ["Vault/Stories", "Vault/.obsidian/plugins/storyline/data.json"],
+      "responsibilities": ["scene prose", "sequence", "chronologicalOrder", "POV/characters/locations", "storyDate"],
+      "notes": "Hard private boundary. Never scanned as public canon. VISCERIUM Timelines reads scenes in memory only."
+    },
+    {
+      "id": "canon",
+      "label": "Canonical Lore boundary",
+      "paths": ["Vault/Lore", "Vault/Assets"],
+      "responsibilities": ["public/canonical notes", "canonical event metadata", "source media"],
+      "notes": "Only notes under Lore with publish:true and status:canon may publish. Routes derive from relative paths."
+    },
+    {
+      "id": "pipeline",
+      "label": "Content/build pipeline",
+      "paths": ["Site/scripts"],
+      "responsibilities": ["scan", "validate", "sync", "transform", "generate timelines", "generate maps"],
+      "notes": "Site/scripts/build-content.mjs is the orchestration choke point for sync/dev/build."
+    },
+    {
+      "id": "shared",
+      "label": "Shared chronology core",
+      "paths": ["Site/src/data/calendars", "Site/src/lib/calendar", "Site/src/lib/timeline"],
+      "responsibilities": ["fictional calendars", "absolute world-day conversion", "timeline validation", "era membership", "Chronos adapters", "StoryLine adapter"],
+      "notes": "Shared by Node/Astro and the local Obsidian plugin. Do not duplicate calendar arithmetic in UI/generators."
+    },
+    {
+      "id": "web",
+      "label": "Astro/Starlight web runtime",
+      "paths": ["Site/src/content.config.ts", "Site/astro.config.mjs", "Site/site.config.mjs", "Site/sidebar.mjs", "Site/src/components", "Site/src/pages", "Site/src/styles"],
+      "responsibilities": ["Starlight shell", "content schema", "article presentation", "timeline/map routes", "feeds", "graph", "giscus/webmentions", "optional analytics"],
+      "notes": "Static site. Private server secrets are intentionally excluded."
+    },
+    {
+      "id": "plugin",
+      "label": "VISCERIUM Timelines Obsidian runtime",
+      "paths": ["Tools/obsidian-viscerium-timelines", "Vault/.obsidian/plugins/viscerium-timelines"],
+      "responsibilities": ["canonical [Timeline:...] rendering", "read-only StoryLine timeline", "shared calendar/compiler/renderer reuse"],
+      "notes": "Tools is the implementation source. The Vault plugin bundle is generated/synchronized by CI."
+    },
+    {
+      "id": "quality",
+      "label": "Tests and CI",
+      "paths": ["Site/tests", ".github/workflows/checks.yml"],
+      "responsibilities": ["Vault Doctor", "unit/regression tests", "timeline benchmark", "production build", "plugin build", "Playwright browser checks", "main-only plugin bundle sync"],
+      "notes": "Node 24 is the supported build/CI runtime."
+    },
+    {
+      "id": "deploy",
+      "label": "Static deployment",
+      "paths": ["Site/dist"],
+      "responsibilities": ["Cloudflare Pages hosting"],
+      "notes": "Root Site; build npm run build; output dist; SITE_URL=https://codex.viscerium.co.uk; no required committed Wrangler file."
+    }
+  ],
+  "pipelines": {
+    "story_entity_authoring": [
+      "Vault/Home.md quick action or Templater command",
+      "Vault/Templates/New Story Entity workflow",
+      "create Markdown note in Vault/Drafts/Databases/<Type>",
+      "browse/edit through Obsidian Bases",
+      "run cd Site && npm run doctor:vault after broad structural edits",
+      "human promotion to Vault/Lore only when genuinely canonical/public"
+    ],
+    "public_build": [
+      "scan Vault/Lore using Site/scripts/content-manifest.mjs",
+      "validate published Lore using validate-vault-notes.mjs",
+      "enforce WebP/SVG asset policy using validate-vault-assets.mjs",
+      "validate/generate canonical timeline records",
+      "sync publish:true + status:canon notes with sync-public-notes.mjs",
+      "rewrite Obsidian wikilinks/embeds and copy referenced assets",
+      "transform timeline/Chronos shortcodes and generate category pages",
+      "emit Site/src/content/docs",
+      "validate generated docs in build mode",
+      "generate Site/src/data/maps.json from generated public metadata",
+      "Astro/Starlight builds Site/dist",
+      "Cloudflare Pages serves static output"
+    ],
+    "canonical_timeline": [
+      "author calendarDate/calendarEndDate in canonical Lore",
+      "Site/src/lib/calendar/runtime.mjs converts source date to absolute world-day",
+      "Site/src/lib/timeline/compiler.mjs validates chronology and era membership",
+      "Site/scripts/generate-timeline-data.mjs writes super/citadel/smog/nearsight/entropy datasets",
+      "Chronos adapter maps absolute days to presentation coordinates and metadata",
+      "Site/src/pages/timelines/[id].astro loads one dataset",
+      "TimelineApp.astro + TimelineIsland.tsx provide static fallback + client interaction"
+    ],
+    "native_chronos": [
+      "author fenced chronos block in a note",
+      "Chronos community plugin renders it in Obsidian",
+      "site sync transforms it to ChronosEmbed for Starlight",
+      "it remains note-local presentation data and is never imported into canonical chronology"
+    ],
+    "storyline_timeline": [
+      "StoryLine owns projects/scenes under Vault/Stories",
+      "scene may carry storyDate",
+      "VISCERIUM Timelines resolves active project",
+      "storyDate is converted in memory through the shared calendar model",
+      "read-only timeline opens scene notes",
+      "no calendarDate, shortcode or generated canonical file is written"
+    ],
+    "ci": [
+      "npm ci in Site",
+      "npm run doctor:vault",
+      "npm run test:unit",
+      "npm run benchmark:timelines",
+      "npm run build",
+      "build Tools/obsidian-viscerium-timelines",
+      "install Chromium and run Playwright against preview",
+      "on successful push to main only: rebuild/copy local plugin bundle and bot-commit if changed"
+    ]
+  },
+  "invariants": [
+    "Only Vault/Lore may become public Codex content.",
+    "Never manually edit Site/src/content/docs; it is emptied/regenerated.",
+    "Never author canonical events/maps in generated Site/src/data JSON.",
+    "StoryLine storyDate and canonical calendarDate are separate sources for separate scopes.",
+    "calendarDate is the sole canonical event start date; legacy timeline.id/year/date are invalid.",
+    "Obsidian Bases are views over Markdown/YAML, not the database of record.",
+    "Public routes derive from Vault/Lore relative paths; do not author slug frontmatter.",
+    "Raster repository artwork must be WebP; genuine vector SVG is allowed and Vault SVG is safety-checked.",
+    "Tools/obsidian-viscerium-timelines is the plugin implementation source of truth; the tracked Vault bundle is generated.",
+    "Shared schema additions must pass the documented admission test and stay synchronized across templates/Bases/validators/public schema where relevant.",
+    "The current public Codex is static; do not put private server secrets into client code."
+  ],
+  "feature_routing": [
+    {
+      "feature": "creator entity field/schema",
+      "start": ["Vault/System/SOPs/Schema Change SOP.md", "Vault/Templates/_Internals/Story Entity Core.md"],
+      "usually_touch": ["templates", "relevant Base", "Vault Doctor if objective invariant", "content.config.ts only if public output requires field", "creator docs"],
+      "tests": ["Site/tests/vault-templates.test.mjs", "Site/tests/vault-doctor.test.mjs", "npm test"]
+    },
+    {
+      "feature": "public content transform/article rendering",
+      "start": ["Site/scripts/sync-public-notes.mjs", "Site/scripts/codex-formatting.mjs", "Site/astro.config.mjs"],
+      "never": ["hand-edit Site/src/content/docs"],
+      "tests": ["Site/tests/codex-formatting.test.mjs", "Site/tests/content-manifest.test.mjs", "npm run build"]
+    },
+    {
+      "feature": "canonical timeline/event behavior",
+      "start": ["Site/TIMELINES.md", "Site/src/lib/timeline/compiler.mjs", "Site/src/lib/calendar/runtime.mjs"],
+      "never": ["create duplicate chronology fields", "put calendar arithmetic in generators/UI"],
+      "tests": ["timeline compiler/calendar/adapter/lifecycle tests", "npm run benchmark:timelines", "npm run build"]
+    },
+    {
+      "feature": "new fictional calendar",
+      "start": ["Site/CALENDAR.md", "Site/src/data/calendars", "Site/src/lib/calendar/runtime.mjs"],
+      "never": ["fork timeline compiler with calendar-specific arithmetic"],
+      "tests": ["source-to-absolute", "absolute-to-source", "leap/intercalary", "negative-day support where applicable"]
+    },
+    {
+      "feature": "timeline UI only",
+      "start": ["Site/src/components/timeline/TimelineIsland.tsx", "Site/src/lib/timeline/chronos-native-renderer.mjs"],
+      "never": ["change canonical source schema for a purely visual request"],
+      "tests": ["timeline toolbar/stacking/viewport/chronicle/browser regressions"]
+    },
+    {
+      "feature": "StoryLine integration",
+      "start": ["Vault/System/StoryLine Integration.md", "Site/src/lib/timeline/storyline-adapter.mjs", "Tools/obsidian-viscerium-timelines"],
+      "never": ["scan Stories as canon", "write duplicate calendarDate into scenes"],
+      "tests": ["storyline-integration.test.mjs", "storyline-adapter.test.mjs", "plugin npm run build"]
+    },
+    {
+      "feature": "map behavior",
+      "start": ["Site/scripts/generate-map-data.mjs", "Site/src/pages/maps/[id].astro", "Site/src/components/WorldMap.astro"],
+      "never": ["hand-maintain Site/src/data/maps.json"],
+      "tests": ["npm run build", "browser regression if interaction changes"]
+    },
+    {
+      "feature": "Obsidian creator UX",
+      "start": ["Vault/Home.md", "Vault/System/SOPs/Creator Command Reference.md", "Vault/.obsidian"],
+      "never": ["assume device-local Templater permissions are Git-controlled"],
+      "tests": ["vault-homepage.test.mjs", "vault-templates.test.mjs", "npm run doctor:vault"]
+    },
+    {
+      "feature": "assets/media",
+      "start": ["Site/scripts/validate-vault-assets.mjs", "README.md"],
+      "never": ["commit PNG/JPEG/JPG raster source artwork", "trust arbitrary SVG scripting"],
+      "tests": ["vault-assets-security.test.mjs", "npm run doctor:vault", "npm run build"]
+    },
+    {
+      "feature": "deployment/community/analytics",
+      "start": ["Site/site.config.mjs", "Site/astro.config.mjs", "README.md"],
+      "never": ["commit secrets into static client code", "assume a server endpoint exists"],
+      "tests": ["site-config.test.mjs", "deployment-config.test.mjs", "npm run build"]
+    }
+  ],
+  "commands": {
+    "site": {
+      "npm run doctor:vault": "creator-data structural checks + image policy",
+      "npm run validate:vault": "publication-facing Lore validation",
+      "npm run validate:timelines": "canonical timeline validation only",
+      "npm run sync": "regenerate public content projection",
+      "npm run generate:maps": "regenerate maps.json",
+      "npm run generate:timelines": "regenerate canonical timeline datasets",
+      "npm run dev": "build development content + Astro dev server",
+      "npm run test:unit": "Node unit/regression suite",
+      "npm run benchmark:timelines": "timeline compiler performance benchmark",
+      "npm run build": "production content pipeline + Astro build + icon validation",
+      "npm test": "Vault Doctor + unit tests + production build",
+      "npm run preview": "serve existing dist"
+    },
+    "plugin": {
+      "cwd": "Tools/obsidian-viscerium-timelines",
+      "npm run build": "production bundle",
+      "npm run dev": "development bundle"
+    }
+  },
+  "key_dependencies": {
+    "web": ["astro 7.x", "@astrojs/starlight", "preact", "@astrojs/mdx"],
+    "timeline": ["chronos-timeline-md 1.1.0", "vis-timeline 8.5.1"],
+    "content": ["gray-matter", "remark-math", "rehype-katex", "katex"],
+    "authoring_plugins": ["templater-obsidian", "dataview", "chronos", "storyline", "viscerium-timelines", "image-converter", "obsidian-git"]
+  },
+  "agent_protocol": {
+    "before_editing": [
+      "Classify the feature into Authoring, Canon schema, Pipeline, Shared chronology, Web UI, Obsidian plugin or Deployment.",
+      "Start from an authoritative source, never a generated artifact.",
+      "Read the nearest SOP/README and existing tests.",
+      "Check whether the change crosses the Lore/Stories privacy boundary or creates a second source of truth."
+    ],
+    "during_editing": [
+      "Keep source facts in Markdown/YAML and projections generated.",
+      "Reuse shared calendar/timeline libraries rather than duplicating domain logic.",
+      "Treat schema fields as maintenance liabilities; add only fields that pass the admission test.",
+      "For plugin changes, edit Tools source first and rebuild the runtime bundle."
+    ],
+    "before_handoff": [
+      "Run the narrowest relevant tests first.",
+      "Run cd Site && npm run doctor:vault for creator/schema changes.",
+      "Run cd Site && npm test for normal confidence.",
+      "Run npm run benchmark:timelines for timeline compiler/performance changes.",
+      "Build the Obsidian plugin when shared timeline/StoryLine/plugin code changes.",
+      "State which generated files were regenerated and which authoritative files changed."
+    ]
+  },
+  "evidence": [
+    "README.md",
+    "Site/package.json",
+    "Site/scripts/build-content.mjs",
+    "Site/scripts/content-manifest.mjs",
+    "Site/scripts/sync-public-notes.mjs",
+    "Site/scripts/generate-timeline-data.mjs",
+    "Site/scripts/generate-map-data.mjs",
+    "Site/scripts/validate-vault-assets.mjs",
+    "Site/scripts/vault-doctor.mjs",
+    "Site/src/content.config.ts",
+    "Site/astro.config.mjs",
+    "Site/site.config.mjs",
+    "Site/TIMELINES.md",
+    "Site/CALENDAR.md",
+    "Vault/Home.md",
+    "Vault/System/Publishing Rules.md",
+    "Vault/System/SOPs/Creator Command Reference.md",
+    "Vault/System/SOPs/Schema Change SOP.md",
+    "Vault/System/SOPs/Story Entity Workflow SOP.md",
+    "Vault/System/StoryLine Integration.md",
+    "Tools/obsidian-viscerium-timelines/README.md",
+    ".github/workflows/checks.yml"
+  ]
+}
