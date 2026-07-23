@@ -17,16 +17,26 @@ cssclasses:
 >   .find(([id, command]) => id.startsWith("templater-obsidian:") && command.name === name)?.[0];
 >
 > const openCreatorContext = async () => {
+>   for (const leaf of app.workspace.getLeavesOfType("graph")) leaf.detach();
+>
 >   const views = [
 >     { type: "outline", name: "Outline" },
 >     { type: "backlink", name: "Backlinks" },
 >     { type: "localgraph", name: "Local Graph" },
 >   ];
+>   let firstCreatorLeaf = null;
 >   for (const view of views) {
->     if (app.workspace.getLeavesOfType(view.type).length > 0) continue;
+>     const existing = app.workspace.getLeavesOfType(view.type)[0];
+>     if (existing) {
+>       firstCreatorLeaf ??= existing;
+>       continue;
+>     }
 >     const leaf = app.workspace.getRightLeaf(true);
->     if (leaf) await leaf.setViewState({ type: view.type, active: false });
+>     if (!leaf) continue;
+>     await leaf.setViewState({ type: view.type, active: false });
+>     firstCreatorLeaf ??= leaf;
 >   }
+>   if (firstCreatorLeaf) await app.workspace.revealLeaf(firstCreatorLeaf);
 > };
 >
 > const actions = [
@@ -52,7 +62,7 @@ cssclasses:
 >     label: "Open Creator Context",
 >     run: openCreatorContext,
 >     tone: "stories-secondary",
->     title: "Open Outline, Backlinks and Local Graph in the right sidebar.",
+>     title: "Replace the global Graph with Outline, Backlinks and Local Graph while leaving Git available.",
 >   },
 >   {
 >     label: "Open Story Timeline",
@@ -117,7 +127,7 @@ cssclasses:
 > > → [[System/Creator Tasks|View all creator tasks]]
 > >
 > > Tasks are intentional next actions—not a measure of how complete the world is.
-> >
+>
 > > [!home-writingdesk] WRITING DESK
 > > ```dataviewjs
 > > const settingsPath = ".obsidian/plugins/storyline/data.json";
@@ -188,7 +198,7 @@ cssclasses:
 >     return path !== "Home.md"
 >       && !path.startsWith("System/")
 >       && !path.startsWith("Templates/")
-> >       && !path.startsWith("Demo/");
+>       && !path.startsWith("Demo/");
 >   })
 >   .sort((page) => page.file.mtime, "desc")
 >   .limit(6);
@@ -295,7 +305,7 @@ cssclasses:
 > >
 > > **[[System/Bases/Myrkild Units.base|Myrkild Units]]**  
 > > Specialised construct database for answering whether a Myrkild can plausibly exist in a particular era, place and context.
-> >
+>
 > > [!home-stories] STORIES & TIMELINES
 > > **StoryLine**  
 > > Private story and scene planning under `Stories/`. Story projects are writing material, not automatically canonical Lore. See [[System/StoryLine Integration|StoryLine Integration]].
@@ -319,11 +329,11 @@ cssclasses:
 > > Guided unit creation for era, Myrkild species, origin, size and known locations. Command Palette: **Templater: Create New Myrkild Unit**.
 > >
 > > **Creator context**  
-> > **Open Creator Context** opens Outline, Backlinks and Local Graph in the right sidebar. Git remains available as a utility tab.
+> > **Open Creator Context** closes the global Graph, opens Outline, Backlinks and Local Graph in the right sidebar, and leaves Git available as a utility pane.
 > >
 > > **Add detail later**  
 > > Open an existing entity, then run **Templater: Insert template → Add Storyteller Fields**. This remains contextual because it modifies the active note.
-> >
+>
 > > [!home-canon] CANON & PUBLISHING
 > > **[[System/Publishing Rules|Publishing Rules]]**  
 > > Explains what may become public Codex content and which frontmatter states are required.
@@ -379,7 +389,7 @@ cssclasses:
 > > ```
 > >
 > > → [[System/SOPs/Creator Command Reference|Full command reference]]
-> >
+>
 > > [!home-glance] VISCERIUM AT A GLANCE
 > > **[[Lore/Eras/CITADEL|CITADEL]]**  
 > > Fortresses, mythic states and a world that only partly understands what lives beyond its walls.
