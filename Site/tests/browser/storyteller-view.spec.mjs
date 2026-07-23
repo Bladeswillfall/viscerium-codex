@@ -112,6 +112,10 @@ test('CITADEL presents Lore and Storyteller as overlapping slanted chronicle tab
   expect(geometry.loreTop).toBeLessThan(geometry.storytellerTop);
 
   await storytellerTab.click();
+  await expect(storytellerTab).toHaveAttribute('aria-selected', 'true');
+  await expect(loreTab).toHaveAttribute('aria-selected', 'false');
+  await page.waitForTimeout(180);
+
   const switched = await page.evaluate(() => {
     const lore = document.querySelector('[data-codex-view-tab="lore"]');
     const storyteller = document.querySelector('[data-codex-view-tab="storyteller"]');
@@ -124,5 +128,4 @@ test('CITADEL presents Lore and Storyteller as overlapping slanted chronicle tab
 
   expect(switched).not.toBeNull();
   expect(switched.storytellerTop).toBeLessThan(switched.loreTop);
-  await expect(loreTab).toHaveAttribute('aria-selected', 'false');
 });
