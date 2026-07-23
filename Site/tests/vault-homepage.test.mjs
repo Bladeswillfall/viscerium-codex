@@ -40,7 +40,16 @@ test('VISCERIUM Home remains creator-only and wired to its presentation/action d
   assert.match(home.content, /Creator Activity\.json/);
   assert.match(home.content, /vc-home-heatmap/);
   assert.match(home.content, /Create Story Entity/);
-  assert.match(home.content, /Create New Story Entity/);
+  assert.match(home.content, /templater-obsidian:create-\$\{templatePath\}/);
+  const creatorTemplatePaths = [
+    'Templates/Databases/New Story Entity.md',
+    'Templates/Lore/New Lore Entity.md',
+    'Templates/Databases/New Myrkild Unit.md',
+  ];
+  for (const templatePath of creatorTemplatePaths) {
+    assert.ok(templater.enabled_templates_hotkeys.includes(templatePath));
+    assert.ok(home.content.includes(`templaterCreateCommand(\"${templatePath}\")`));
+  }
   assert.match(home.content, /viscerium-timelines:open-storyline-project-timeline/);
   assert.match(home.content, /viscerium-timelines:diagnose-storyline-integration/);
   assert.doesNotMatch(home.content, /dv\.table\(/);

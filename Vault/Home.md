@@ -13,8 +13,7 @@ cssclasses:
 
 > [!home-actions] QUICK ACTIONS
 > ```dataviewjs
-> const findCommand = (name) => Object.entries(app.commands.commands)
->   .find(([id, command]) => id.startsWith("templater-obsidian:") && command.name === name)?.[0];
+> const templaterCreateCommand = (templatePath) => `templater-obsidian:create-${templatePath}`;
 >
 > const openCreatorContext = async () => {
 >   for (const leaf of app.workspace.getLeavesOfType("graph")) leaf.detach();
@@ -42,19 +41,19 @@ cssclasses:
 > const actions = [
 >   {
 >     label: "+ Create Story Entity",
->     id: findCommand("Create New Story Entity"),
+>     id: templaterCreateCommand("Templates/Databases/New Story Entity.md"),
 >     tone: "create",
 >     title: "Create fauna, flora, fungi or an item through the guided Story Entity workflow.",
 >   },
 >   {
 >     label: "+ Create Lore Entity",
->     id: findCommand("Create New Lore Entity"),
+>     id: templaterCreateCommand("Templates/Lore/New Lore Entity.md"),
 >     tone: "create",
 >     title: "Create a character, faction, location, event or species with guided relationship fields.",
 >   },
 >   {
 >     label: "+ Create Myrkild Unit",
->     id: findCommand("Create New Myrkild Unit"),
+>     id: templaterCreateCommand("Templates/Databases/New Myrkild Unit.md"),
 >     tone: "create",
 >     title: "Create a structured Myrkild unit with guided era, species, origin and location fields.",
 >   },
@@ -320,13 +319,13 @@ cssclasses:
 > > **New Story Entity**  
 > > Guided creation for fauna, flora, fungi or an item. It asks for a small core, offers only useful optional detail, and files the result into the correct draft database.
 > >
-> > **Quick action above:** **Create Story Entity**. Command Palette fallback: **Templater: Create New Story Entity**.
+> > **Quick action above:** **Create Story Entity**. Command Palette fallback: **Templater: Create Databases/New Story Entity**.
 > >
 > > **New Lore Entity**  
-> > Guided creation for characters, factions, locations, events and species. Era and relationship fields use searchable choices; explicitly choosing **Create new…** makes a draft stub under `Drafts/Inbox/` and adds a follow-up task. Command Palette: **Templater: Create New Lore Entity**.
+> > Guided creation for characters, factions, locations, events and species. Era and relationship fields use searchable choices; explicitly choosing **Create new…** makes a draft stub under `Drafts/Inbox/` and adds a follow-up task. Command Palette: **Templater: Create Lore/New Lore Entity**.
 > >
 > > **New Myrkild Unit**  
-> > Guided unit creation for era, Myrkild species, origin, size and known locations. Command Palette: **Templater: Create New Myrkild Unit**.
+> > Guided unit creation for era, Myrkild species, origin, size and known locations. Command Palette: **Templater: Create Databases/New Myrkild Unit**.
 > >
 > > **Creator context**  
 > > **Open Creator Context** closes the global Graph, opens Outline, Backlinks and Local Graph in the right sidebar, and leaves Git available as a utility pane.

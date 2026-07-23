@@ -35,11 +35,11 @@ Templater intentionally stores **Enable startup templates** in local device stor
 
 ## Template commands
 
-For fauna, flora, fungi and items, use **Templater: Create New Story Entity**. This template-specific command launches [[New Story Entity]] directly without a second template picker.
+For fauna, flora, fungi and items, use **Templater: Create Databases/New Story Entity**. This template-specific command launches [[New Story Entity]] directly without a second template picker.
 
-For characters, factions, locations, events and species, use **Templater: Create New Lore Entity**. Relationship fields are searchable. When the referenced thing does not exist, explicitly choose **Create new…**; the workflow creates a task-bearing stub under `Drafts/Inbox/` rather than silently accepting an untracked free-text value.
+For characters, factions, locations, events and species, use **Templater: Create Lore/New Lore Entity**. Relationship fields are searchable. When the referenced thing does not exist, explicitly choose **Create new…**; the workflow creates a task-bearing stub under `Drafts/Inbox/` rather than silently accepting an untracked free-text value.
 
-For structured Myrkild profiles, use **Templater: Create New Myrkild Unit**. Era, Myrkild species, origin, size and known locations are guided during creation.
+For structured Myrkild profiles, use **Templater: Create Databases/New Myrkild Unit**. Era, Myrkild species, origin, size and known locations are guided during creation.
 
 The older/general route remains valid: **Templater: Create new note from template** → choose the creator-facing template.
 
