@@ -2,6 +2,7 @@
 import CalendarDateBadge from './calendar/CalendarDateBadge.astro';
 import CodexIcon from './CodexIcon.astro';
 import DegelSystemExplorer from './degel-system/DegelSystemExplorer.astro';
+import StorytellerSwitcher from './StorytellerSwitcher.astro';
 
 const { starlightRoute } = Astro.locals;
 const entry = starlightRoute.entry.data;
@@ -65,7 +66,7 @@ const breadcrumbs = breadcrumbParts.map((part, index) => {
         maskUnits="objectBoundingBox"
         maskContentUnits="objectBoundingBox"
       >
-        <rect width="1" height="1" fill="url(#codex-header-inner-fade-gradient)" />
+        <rect width="1" height="1" fill="url('#codex-header-inner-fade-gradient')" />
       </mask>
       <filter
         id="codex-header-bottom-fade"
@@ -150,6 +151,7 @@ const breadcrumbs = breadcrumbParts.map((part, index) => {
   </nav>
 )}
 {entry.calendarDate && <CalendarDateBadge date={entry.calendarDate} title="Event date" />}
+<StorytellerSwitcher />
 {isDegelSystemIndex && <DegelSystemExplorer />}
 
 <style>
