@@ -1,7 +1,6 @@
 ---
 title: "Test flora item"
 description: "a test flower for testing"
-publish: false
 status: draft
 type: flora
 development_level: stub

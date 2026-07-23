@@ -1,8 +1,7 @@
 ---
 title: "The Night of Seven Bells"
 description: "Seven citadel bells rang together without being struck, drawing thousands into the streets before dawn."
-publish: true
-status: canon
+status: published
 type: event
 era: CITADEL
 calendarDate:

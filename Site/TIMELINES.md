@@ -64,7 +64,7 @@ Canonical routes are derived from note paths relative to `Vault/Lore/`; do not a
 title: Example Event
 description: "A concise public description."
 publish: true
-status: canon
+status: published
 type: event
 era: CITADEL
 
@@ -143,7 +143,7 @@ Lanes are optional identifiers for factions, nations, regions, organisations or 
 title: CITADEL
 description: "A time of steel, bone and thrones."
 publish: true
-status: canon
+status: published
 type: era
 eraId: citadel
 
@@ -232,12 +232,12 @@ The public Chronos plugin renders this block in Obsidian. During site sync, `tra
 
 Native Chronos dates use Chronos's numeric ISO-like syntax. They do not use the registered fictional-calendar parser. Use native blocks for local or editorial timelines; use canonical event notes when the event must participate in calendar switching, era validation, filters or generated timelines.
 
-`Vault/Templates/Chronos Timeline Template.md` provides a ready-to-edit example.
+`Vault/Templates/Timelines/Chronos Timeline Template.md` provides a ready-to-edit example.
 
 ## Adding a canonical event
 
-1. Create the note beneath `Vault/Lore/` using `Vault/Templates/Event Template.md`.
-2. Set `publish: true`, `status: canon`, `type: event` and a concise description.
+1. Create the note beneath `Vault/Lore/` using `Vault/Templates/Lore/Event Template.md`.
+2. Set `publish: true`, `status: published`, `type: event` and a concise description.
 3. Author exactly one `calendarDate`.
 4. Add `calendarEndDate` only for a range.
 5. Choose importance, categories and optional lanes.

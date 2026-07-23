@@ -1,0 +1,1424 @@
+
+> viscerium-codex@0.1.0 test
+> npm run doctor:vault && npm run test:unit && npm run build
+
+
+> viscerium-codex@0.1.0 doctor:vault
+> node scripts/vault-doctor.mjs && node scripts/validate-vault-assets.mjs
+
+NOTICE [near-canonical-name] Drafts/Databases/Flora/Test flora item.md: Location "Okse Dominon" closely resembles canonical note title "Okse Dominion". Check spelling or link it explicitly if they are the same place.
+Vault Doctor checked 21 creator entities: 0 error(s), 1 notice(s).
+Validated 3 image assets: WebP-only raster policy satisfied.
+Validated 38 image assets: WebP-only raster policy satisfied.
+
+> viscerium-codex@0.1.0 test:unit
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: article headings use the shared Era Spine hierarchy without new colours
+ok 1 - article headings use the shared Era Spine hierarchy without new colours
+  ---
+  duration_ms: 1.887837
+  type: 'test'
+  ...
+# Subtest: the bespoke landing page is excluded from the Era Spine hierarchy
+ok 2 - the bespoke landing page is excluded from the Era Spine hierarchy
+  ---
+  duration_ms: 0.424669
+  type: 'test'
+  ...
+# Subtest: era styles provide existing accents without restoring the old underline or ornament
+ok 3 - era styles provide existing accents without restoring the old underline or ornament
+  ---
+  duration_ms: 0.494634
+  type: 'test'
+  ...
+# Subtest: the borderless pass preserves the tested stylesheet registration graph
+ok 4 - the borderless pass preserves the tested stylesheet registration graph
+  ---
+  duration_ms: 1.130991
+  type: 'test'
+  ...
+# Subtest: structural borders are targeted without flattening article callouts, timelines or the landing page
+ok 5 - structural borders are targeted without flattening article callouts, timelines or the landing page
+  ---
+  duration_ms: 0.400779
+  type: 'test'
+  ...
+# Subtest: the Okse Dominion source uses responsive two-column authoring blocks
+ok 6 - the Okse Dominion source uses responsive two-column authoring blocks
+  ---
+  duration_ms: 2.360033
+  type: 'test'
+  ...
+# Subtest: calendar source date round-trips through absolute world-time
+ok 7 - calendar source date round-trips through absolute world-time
+  ---
+  duration_ms: 22.448274
+  type: 'test'
+  ...
+# Subtest: negative absolute days round-trip
+ok 8 - negative absolute days round-trip
+  ---
+  duration_ms: 0.364873
+  type: 'test'
+  ...
+# Subtest: leap and intercalary rules are enforced
+ok 9 - leap and intercalary rules are enforced
+  ---
+  duration_ms: 0.801122
+  type: 'test'
+  ...
+# Subtest: precision changes labels, never chronology
+ok 10 - precision changes labels, never chronology
+  ---
+  duration_ms: 0.807872
+  type: 'test'
+  ...
+# Subtest: synthetic UTC dates preserve one world day without timezone drift
+ok 11 - synthetic UTC dates preserve one world day without timezone drift
+  ---
+  duration_ms: 0.514697
+  type: 'test'
+  ...
+# Subtest: timeline-local synthetic origins keep distant world dates inside four-digit years
+ok 12 - timeline-local synthetic origins keep distant world dates inside four-digit years
+  ---
+  duration_ms: 0.223523
+  type: 'test'
+  ...
+# Subtest: era membership includes boundaries and overlapping periods
+ok 13 - era membership includes boundaries and overlapping periods
+  ---
+  duration_ms: 0.372354
+  type: 'test'
+  ...
+# Subtest: super inclusion follows importance and explicit overrides
+ok 14 - super inclusion follows importance and explicit overrides
+  ---
+  duration_ms: 0.193237
+  type: 'test'
+  ...
+# Subtest: same-day sorting uses importance, editorial order, title and stable id
+ok 15 - same-day sorting uses importance, editorial order, title and stable id
+  ---
+  duration_ms: 1.550198
+  type: 'test'
+  ...
+# Subtest: URL state rejects invalid calendars and remains shareable
+ok 16 - URL state rejects invalid calendars and remains shareable
+  ---
+  duration_ms: 1.241739
+  type: 'test'
+  ...
+# Subtest: missing timeline ranges remain undefined while explicit zero remains valid
+ok 17 - missing timeline ranges remain undefined while explicit zero remains valid
+  ---
+  duration_ms: 0.428418
+  type: 'test'
+  ...
+# Subtest: calendar selection priority is query, storage, timeline, global
+ok 18 - calendar selection priority is query, storage, timeline, global
+  ---
+  duration_ms: 0.228741
+  type: 'test'
+  ...
+# Subtest: category pages use alphabetically grouped responsive index markup
+ok 19 - category pages use alphabetically grouped responsive index markup
+  ---
+  duration_ms: 170.044046
+  type: 'test'
+  ...
+# Subtest: serializes canonical records through native Chronos syntax and parsing
+ok 20 - serializes canonical records through native Chronos syntax and parsing
+  ---
+  duration_ms: 8.277483
+  type: 'test'
+  ...
+# Subtest: lets Chronos create native groups from declared lanes without changing chronology
+ok 21 - lets Chronos create native groups from declared lanes without changing chronology
+  ---
+  duration_ms: 2.16292
+  type: 'test'
+  ...
+# Subtest: sanitizes parser delimiters while retaining canonical metadata
+ok 22 - sanitizes parser delimiters while retaining canonical metadata
+  ---
+  duration_ms: 1.380946
+  type: 'test'
+  ...
+# Subtest: maps distant VISCERIUM dates into Chronos four-digit parser years
+ok 23 - maps distant VISCERIUM dates into Chronos four-digit parser years
+  ---
+  duration_ms: 0.833911
+  type: 'test'
+  ...
+# Subtest: requires a VISCERIUM date formatter rather than exposing synthetic dates
+ok 24 - requires a VISCERIUM date formatter rather than exposing synthetic dates
+  ---
+  duration_ms: 0.618101
+  type: 'test'
+  ...
+# Subtest: uses native Starlight asides for authoring callouts
+ok 25 - uses native Starlight asides for authoring callouts
+  ---
+  duration_ms: 1.549207
+  type: 'test'
+  ...
+# Subtest: keeps responsive layouts with compact CSS variables
+ok 26 - keeps responsive layouts with compact CSS variables
+  ---
+  duration_ms: 1.172426
+  type: 'test'
+  ...
+# Subtest: does not transform authoring syntax inside fenced code
+ok 27 - does not transform authoring syntax inside fenced code
+  ---
+  duration_ms: 1.086668
+  type: 'test'
+  ...
+# Subtest: authored colours live in dedicated progressive palette files
+ok 28 - authored colours live in dedicated progressive palette files
+  ---
+  duration_ms: 35.536024
+  type: 'test'
+  ...
+# Subtest: canvas graph colours use only the RGB-safe variable adapter
+ok 29 - canvas graph colours use only the RGB-safe variable adapter
+  ---
+  duration_ms: 2.200986
+  type: 'test'
+  ...
+# Subtest: the approved palette owns page and navigation surfaces
+ok 30 - the approved palette owns page and navigation surfaces
+  ---
+  duration_ms: 8.993008
+  type: 'test'
+  ...
+# Subtest: text and gamut variants derive from shared colour bases
+ok 31 - text and gamut variants derive from shared colour bases
+  ---
+  duration_ms: 3.484403
+  type: 'test'
+  ...
+# Subtest: content manifests cache parsed markdown until explicitly refreshed
+ok 32 - content manifests cache parsed markdown until explicitly refreshed
+  ---
+  duration_ms: 24.404472
+  type: 'test'
+  ...
+# Subtest: Degel map objects use lightweight WebP placeholder paths
+ok 33 - Degel map objects use lightweight WebP placeholder paths
+  ---
+  duration_ms: 1.408397
+  type: 'test'
+  ...
+# Subtest: The Shards are Errack ring fortresses rather than an asteroid belt
+ok 34 - The Shards are Errack ring fortresses rather than an asteroid belt
+  ---
+  duration_ms: 0.358293
+  type: 'test'
+  ...
+# Subtest: Degel placeholder artwork is committed as valid WebP assets
+ok 35 - Degel placeholder artwork is committed as valid WebP assets
+  ---
+  duration_ms: 8.654424
+  type: 'test'
+  ...
+# Subtest: Degel system map uses a 4K design grid with valid unique placements
+ok 36 - Degel system map uses a 4K design grid with valid unique placements
+  ---
+  duration_ms: 1.246176
+  type: 'test'
+  ...
+# Subtest: Degel system explorer exposes equivalent map and list views with accessibility controls
+ok 37 - Degel system explorer exposes equivalent map and list views with accessibility controls
+  ---
+  duration_ms: 10.084242
+  type: 'test'
+  ...
+# Subtest: Degel orbit guides bow toward the outer system
+ok 38 - Degel orbit guides bow toward the outer system
+  ---
+  duration_ms: 1.427055
+  type: 'test'
+  ...
+# Subtest: Degel category page mounts the explorer and suppresses the generated table of contents
+ok 39 - Degel category page mounts the explorer and suppresses the generated table of contents
+  ---
+  duration_ms: 3.184961
+  type: 'test'
+  ...
+# Subtest: Degel category releases the explorer from Starlight article width limits
+ok 40 - Degel category releases the explorer from Starlight article width limits
+  ---
+  duration_ms: 1.035401
+  type: 'test'
+  ...
+# Subtest: font CDN origins are allowed by the report-only content security policy
+ok 41 - font CDN origins are allowed by the report-only content security policy
+  ---
+  duration_ms: 1.345984
+  type: 'test'
+  ...
+# Subtest: aggregated changelog headings have unique IDs
+ok 42 - aggregated changelog headings have unique IDs
+  ---
+  duration_ms: 0.364293
+  type: 'test'
+  ...
+# Subtest: era links clear AA contrast and gain contrast on hover in both themes
+ok 43 - era links clear AA contrast and gain contrast on hover in both themes
+  ---
+  duration_ms: 2.475485
+  type: 'test'
+  ...
+# Subtest: era buttons maintain component separation, stronger hover separation, and readable labels
+ok 44 - era buttons maintain component separation, stronger hover separation, and readable labels
+  ---
+  duration_ms: 0.543099
+  type: 'test'
+  ...
+# Subtest: era identity colours use OKLCH and the shared P3 chroma multiplier
+ok 45 - era identity colours use OKLCH and the shared P3 chroma multiplier
+  ---
+  duration_ms: 0.406666
+  type: 'test'
+  ...
+# Subtest: era four keeps teal navigation identity and brown control identity
+ok 46 - era four keeps teal navigation identity and brown control identity
+  ---
+  duration_ms: 0.273667
+  type: 'test'
+  ...
+# Subtest: the content sync maps era folders to generated eraStyle metadata
+ok 47 - the content sync maps era folders to generated eraStyle metadata
+  ---
+  duration_ms: 1.250262
+  type: 'test'
+  ...
+# Subtest: eraStyle stays out of authored Obsidian frontmatter and appears in generated site frontmatter
+ok 48 - eraStyle stays out of authored Obsidian frontmatter and appears in generated site frontmatter
+  ---
+  duration_ms: 0.944656
+  type: 'test'
+  ...
+# Subtest: Starlight exposes generated eraStyle as a DOM data attribute
+ok 49 - Starlight exposes generated eraStyle as a DOM data attribute
+  ---
+  duration_ms: 1.117333
+  type: 'test'
+  ...
+# Subtest: era palette application lives in the Codex ion layer and wins interactive link states
+ok 50 - era palette application lives in the Codex ion layer and wins interactive link states
+  ---
+  duration_ms: 0.459114
+  type: 'test'
+  ...
+# Subtest: normal Codex pages remove inherited main bottom padding without touching the homepage
+ok 51 - normal Codex pages remove inherited main bottom padding without touching the homepage
+  ---
+  duration_ms: 1.154809
+  type: 'test'
+  ...
+# Subtest: article metadata stays in Starlight Footer while the global rail is not nested there
+ok 52 - article metadata stays in Starlight Footer while the global rail is not nested there
+  ---
+  duration_ms: 0.383731
+  type: 'test'
+  ...
+# Subtest: PageFrame owns one global footer rail outside Starlight page content
+ok 53 - PageFrame owns one global footer rail outside Starlight page content
+  ---
+  duration_ms: 1.27652
+  type: 'test'
+  ...
+# Subtest: the whole Starlight page is the raised deck
+ok 54 - the whole Starlight page is the raised deck
+  ---
+  duration_ms: 0.387607
+  type: 'test'
+  ...
+# Subtest: the global navigation rail uses literal underlay geometry without breakout units
+ok 55 - the global navigation rail uses literal underlay geometry without breakout units
+  ---
+  duration_ms: 0.476339
+  type: 'test'
+  ...
+# Subtest: print and forced-colour modes disable the reveal treatment
+ok 56 - print and forced-colour modes disable the reveal treatment
+  ---
+  duration_ms: 0.344132
+  type: 'test'
+  ...
+# Subtest: graph canvas colours are explicit, theme-aware and parser-safe
+ok 57 - graph canvas colours are explicit, theme-aware and parser-safe
+  ---
+  duration_ms: 1.683536
+  type: 'test'
+  ...
+# Subtest: site graph uses tags, native interactions and a late canvas adapter
+ok 58 - site graph uses tags, native interactions and a late canvas adapter
+  ---
+  duration_ms: 0.552983
+  type: 'test'
+  ...
+# Subtest: the dedicated graph page hydrates its production sitemap
+ok 59 - the dedicated graph page hydrates its production sitemap
+  ---
+  duration_ms: 0.303452
+  type: 'test'
+  ...
+# Subtest: Starlight Pagefind and the owned header are explicitly enabled
+ok 60 - Starlight Pagefind and the owned header are explicitly enabled
+  ---
+  duration_ms: 1.718328
+  type: 'test'
+  ...
+# Subtest: the Codex header renders Starlight search and theme controls
+ok 61 - the Codex header renders Starlight search and theme controls
+  ---
+  duration_ms: 0.660453
+  type: 'test'
+  ...
+# Subtest: the Telescope plugin retains a visible top-ribbon mount
+ok 62 - the Telescope plugin retains a visible top-ribbon mount
+  ---
+  duration_ms: 1.783165
+  type: 'test'
+  ...
+# Subtest: the top ribbon is visually flat, centred and free of GitHub branding
+ok 63 - the top ribbon is visually flat, centred and free of GitHub branding
+  ---
+  duration_ms: 0.457932
+  type: 'test'
+  ...
+# Subtest: the complete header ribbon is borderless without removing focus indicators
+ok 64 - the complete header ribbon is borderless without removing focus indicators
+  ---
+  duration_ms: 0.399434
+  type: 'test'
+  ...
+# Subtest: theme controls are not duplicated inside the sidebar
+ok 65 - theme controls are not duplicated inside the sidebar
+  ---
+  duration_ms: 0.232687
+  type: 'test'
+  ...
+# Subtest: vendored MySnippets runtime is valid JavaScript
+ok 66 - vendored MySnippets runtime is valid JavaScript
+  ---
+  duration_ms: 5.886573
+  type: 'test'
+  ...
+# Subtest: MySnippets runtime keeps modern and legacy CSS toggle paths
+ok 67 - MySnippets runtime keeps modern and legacy CSS toggle paths
+  ---
+  duration_ms: 1.681613
+  type: 'test'
+  ...
+# Subtest: MySnippets manifest uses the compatibility baseline
+ok 68 - MySnippets manifest uses the compatibility baseline
+  ---
+  duration_ms: 1.906348
+  type: 'test'
+  ...
+# Subtest: infers an event from a nested Events folder
+ok 69 - infers an event from a nested Events folder
+  ---
+  duration_ms: 1.539192
+  type: 'test'
+  ...
+# Subtest: uses the nearest recognised source folder
+ok 70 - uses the nearest recognised source folder
+  ---
+  duration_ms: 0.208841
+  type: 'test'
+  ...
+# Subtest: falls back to article outside recognised folders
+ok 71 - falls back to article outside recognised folders
+  ---
+  duration_ms: 0.257263
+  type: 'test'
+  ...
+# Subtest: enabled Obsidian CSS snippets exist as files
+ok 72 - enabled Obsidian CSS snippets exist as files
+  ---
+  duration_ms: 6.668938
+  type: 'test'
+  ...
+# Subtest: snippet filenames stay plain and modular
+ok 73 - snippet filenames stay plain and modular
+  ---
+  duration_ms: 0.929083
+  type: 'test'
+  ...
+# Subtest: page headers render title, breadcrumbs, then calendar date
+ok 74 - page headers render title, breadcrumbs, then calendar date
+  ---
+  duration_ms: 1.357781
+  type: 'test'
+  ...
+# Subtest: release breadcrumbs omit the changelog plugin virtual version segment
+ok 75 - release breadcrumbs omit the changelog plugin virtual version segment
+  ---
+  duration_ms: 0.362159
+  type: 'test'
+  ...
+# Subtest: shared page headers own the grainy image fade implementation
+ok 76 - shared page headers own the grainy image fade implementation
+  ---
+  duration_ms: 1.549266
+  type: 'test'
+  ...
+# Subtest: per-page sidebars keep backlinks without rendering a graph
+ok 77 - per-page sidebars keep backlinks without rendering a graph
+  ---
+  duration_ms: 0.339305
+  type: 'test'
+  ...
+# Subtest: Codex noise source decodes to a WebP image
+ok 78 - Codex noise source decodes to a WebP image
+  ---
+  duration_ms: 1.074008
+  type: 'test'
+  ...
+# Subtest: Codex shell and build pipeline agree on the noise asset URL
+ok 79 - Codex shell and build pipeline agree on the noise asset URL
+  ---
+  duration_ms: 0.353656
+  type: 'test'
+  ...
+# Subtest: sidebar lists folders before articles at every level
+ok 80 - sidebar lists folders before articles at every level
+  ---
+  duration_ms: 76.93166
+  type: 'test'
+  ...
+# Subtest: desktop sidebar overlay uses an explicit unlayered state
+ok 81 - desktop sidebar overlay uses an explicit unlayered state
+  ---
+  duration_ms: 0.690348
+  type: 'test'
+  ...
+# Subtest: sidebar toggle rebinds safely and resets closed on each desktop page load
+ok 82 - sidebar toggle rebinds safely and resets closed on each desktop page load
+  ---
+  duration_ms: 0.286026
+  type: 'test'
+  ...
+# Subtest: homepage has no first-load reveal and still supports the sidebar rail
+ok 83 - homepage has no first-load reveal and still supports the sidebar rail
+  ---
+  duration_ms: 0.31565
+  type: 'test'
+  ...
+# Subtest: mobile page table of contents is owned by the responsive runtime
+ok 84 - mobile page table of contents is owned by the responsive runtime
+  ---
+  duration_ms: 0.412764
+  type: 'test'
+  ...
+# Subtest: site identity and lore source support environment overrides
+ok 85 - site identity and lore source support environment overrides
+  ---
+  duration_ms: 1.991956
+  type: 'test'
+  ...
+# Subtest: the Codex defines explicit site-level stacking tiers
+ok 86 - the Codex defines explicit site-level stacking tiers
+  ---
+  duration_ms: 1.010384
+  type: 'test'
+  ...
+# Subtest: the raised page and underlay rail are siblings in the document stack
+ok 87 - the raised page and underlay rail are siblings in the document stack
+  ---
+  duration_ms: 0.303041
+  type: 'test'
+  ...
+# Subtest: the two-column shell contains local application stacking
+ok 88 - the two-column shell contains local application stacking
+  ---
+  duration_ms: 0.24186
+  type: 'test'
+  ...
+# Subtest: article-local footer breakout hacks are gone
+ok 89 - article-local footer breakout hacks are gone
+  ---
+  duration_ms: 1.379844
+  type: 'test'
+  ...
+# Subtest: global chrome uses the shared hierarchy
+ok 90 - global chrome uses the shared hierarchy
+  ---
+  duration_ms: 0.24888
+  type: 'test'
+  ...
+# Subtest: timeline z-indexes remain local ordering values inside the page stacking surface
+ok 91 - timeline z-indexes remain local ordering values inside the page stacking surface
+  ---
+  duration_ms: 0.273858
+  type: 'test'
+  ...
+# Subtest: parses StoryLine human-readable VISCERIUM dates
+ok 92 - parses StoryLine human-readable VISCERIUM dates
+  ---
+  duration_ms: 4.645326
+  type: 'test'
+  ...
+# Subtest: parses compact StoryLine dates and explicit calendar prefix
+ok 93 - parses compact StoryLine dates and explicit calendar prefix
+  ---
+  duration_ms: 0.581967
+  type: 'test'
+  ...
+# Subtest: infers StoryLine project base from project and scene paths
+ok 94 - infers StoryLine project base from project and scene paths
+  ---
+  duration_ms: 0.557861
+  type: 'test'
+  ...
+# Subtest: builds a VISCERIUM timeline dataset directly from StoryLine scene metadata
+ok 95 - builds a VISCERIUM timeline dataset directly from StoryLine scene metadata
+  ---
+  duration_ms: 1.501705
+  type: 'test'
+  ...
+# Subtest: StoryLine is rooted in the private Stories workspace
+ok 96 - StoryLine is rooted in the private Stories workspace
+  ---
+  duration_ms: 1.726871
+  type: 'test'
+  ...
+# Subtest: VISCERIUM Timelines is installed and enabled beside StoryLine
+ok 97 - VISCERIUM Timelines is installed and enabled beside StoryLine
+  ---
+  duration_ms: 0.463039
+  type: 'test'
+  ...
+# Subtest: Codex source remains hard-gated to Lore
+ok 98 - Codex source remains hard-gated to Lore
+  ---
+  duration_ms: 0.651159
+  type: 'test'
+  ...
+# Subtest: StoryLine timeline uses an in-memory adapter instead of duplicate source fields
+ok 99 - StoryLine timeline uses an in-memory adapter instead of duplicate source fields
+  ---
+  duration_ms: 0.576819
+  type: 'test'
+  ...
+# Subtest: real StoryLine test scene is placeable on the VISCERIUM calendar
+ok 100 - real StoryLine test scene is placeable on the VISCERIUM calendar
+  ---
+  duration_ms: 2.845686
+  type: 'test'
+  ...
+# Subtest: StoryLine bridge resolves the active project outside Markdown views
+ok 101 - StoryLine bridge resolves the active project outside Markdown views
+  ---
+  duration_ms: 0.519664
+  type: 'test'
+  ...
+# Subtest: StoryLine bridge exposes a self-diagnostic command
+ok 102 - StoryLine bridge exposes a self-diagnostic command
+  ---
+  duration_ms: 0.314909
+  type: 'test'
+  ...
+# Subtest: global Starlight styles keep their tested explicit registration order
+ok 103 - global Starlight styles keep their tested explicit registration order
+  ---
+  duration_ms: 6.476561
+  type: 'test'
+  ...
+# Subtest: homepage styles keep their tested file and inline-style boundaries without a reveal layer
+ok 104 - homepage styles keep their tested file and inline-style boundaries without a reveal layer
+  ---
+  duration_ms: 1.718929
+  type: 'test'
+  ...
+# Subtest: server-rendered timeline styles remain direct Astro imports
+ok 105 - server-rendered timeline styles remain direct Astro imports
+  ---
+  duration_ms: 1.286224
+  type: 'test'
+  ...
+# Subtest: hydrated timeline styles remain direct Preact imports
+ok 106 - hydrated timeline styles remain direct Preact imports
+  ---
+  duration_ms: 2.160787
+  type: 'test'
+  ...
+# Subtest: the Preact island enhances only the existing timeline list panel
+ok 107 - the Preact island enhances only the existing timeline list panel
+  ---
+  duration_ms: 3.460872
+  type: 'test'
+  ...
+# Subtest: chronicle records include readable summaries, dossiers and graph/article actions
+ok 108 - chronicle records include readable summaries, dossiers and graph/article actions
+  ---
+  duration_ms: 0.399915
+  type: 'test'
+  ...
+# Subtest: compiler generates five fixed datasets with chronology-derived membership
+ok 109 - compiler generates five fixed datasets with chronology-derived membership
+  ---
+  duration_ms: 5.42104
+  type: 'test'
+  ...
+# Subtest: periods overlap every era they touch
+ok 110 - periods overlap every era they touch
+  ---
+  duration_ms: 0.680594
+  type: 'test'
+  ...
+# Subtest: unknown categories survive with deterministic sorting and multiple lanes
+ok 111 - unknown categories survive with deterministic sorting and multiple lanes
+  ---
+  duration_ms: 1.507905
+  type: 'test'
+  ...
+# Subtest: explicit global include and exclude override automatic super membership
+ok 112 - explicit global include and exclude override automatic super membership
+  ---
+  duration_ms: 0.612431
+  type: 'test'
+  ...
+# Subtest: compiler rejects missing start date
+ok 113 - compiler rejects missing start date
+  ---
+  duration_ms: 0.963825
+  type: 'test'
+  ...
+# Subtest: compiler rejects end before start
+ok 114 - compiler rejects end before start
+  ---
+  duration_ms: 1.300296
+  type: 'test'
+  ...
+# Subtest: compiler rejects mismatched era
+ok 115 - compiler rejects mismatched era
+  ---
+  duration_ms: 0.386536
+  type: 'test'
+  ...
+# Subtest: compiler rejects invalid importance
+ok 116 - compiler rejects invalid importance
+  ---
+  duration_ms: 0.28896
+  type: 'test'
+  ...
+# Subtest: compiler rejects period without end
+ok 117 - compiler rejects period without end
+  ---
+  duration_ms: 0.575957
+  type: 'test'
+  ...
+# Subtest: compiler rejects legacy timeline year
+ok 118 - compiler rejects legacy timeline year
+  ---
+  duration_ms: 0.69207
+  type: 'test'
+  ...
+# Subtest: compiler rejects unintended era overlap and gaps
+ok 119 - compiler rejects unintended era overlap and gaps
+  ---
+  duration_ms: 0.508958
+  type: 'test'
+  ...
+# Subtest: registers the official Preact renderer for Astro islands
+ok 120 - registers the official Preact renderer for Astro islands
+  ---
+  duration_ms: 1.515576
+  type: 'test'
+  ...
+# Subtest: TimelineApp delegates browser behaviour to a client-loaded island
+ok 121 - TimelineApp delegates browser behaviour to a client-loaded island
+  ---
+  duration_ms: 1.393745
+  type: 'test'
+  ...
+# Subtest: the Preact island owns one forked Chronos mount, one hovercard and ordered cleanup
+ok 122 - the Preact island owns one forked Chronos mount, one hovercard and ordered cleanup
+  ---
+  duration_ms: 0.40993
+  type: 'test'
+  ...
+# Subtest: timeline startup uses the resolved viewport once and defers the minimap
+ok 123 - timeline startup uses the resolved viewport once and defers the minimap
+  ---
+  duration_ms: 0.654965
+  type: 'test'
+  ...
+# Subtest: large timeline runtime bounds graph, list, search and minimap work
+ok 124 - large timeline runtime bounds graph, list, search and minimap work
+  ---
+  duration_ms: 0.441357
+  type: 'test'
+  ...
+# Subtest: group and item changes stay inside one forked Chronos instance
+ok 125 - group and item changes stay inside one forked Chronos instance
+  ---
+  duration_ms: 0.748014
+  type: 'test'
+  ...
+# Subtest: the fork owns axis and geometry while the site owns one non-layout hovercard
+ok 126 - the fork owns axis and geometry while the site owns one non-layout hovercard
+  ---
+  duration_ms: 0.778829
+  type: 'test'
+  ...
+# Subtest: canonical timeline pages explicitly omit the right sidebar and release content width constraints
+ok 127 - canonical timeline pages explicitly omit the right sidebar and release content width constraints
+  ---
+  duration_ms: 0.408929
+  type: 'test'
+  ...
+# Subtest: transforms native Chronos fences and canonical shortcodes into Starlight MDX
+ok 128 - transforms native Chronos fences and canonical shortcodes into Starlight MDX
+  ---
+  duration_ms: 100.988125
+  type: 'test'
+  ...
+# Subtest: range index returns points and long periods that overlap the requested window
+ok 129 - range index returns points and long periods that overlap the requested window
+  ---
+  duration_ms: 2.028911
+  type: 'test'
+  ...
+# Subtest: minimap density aggregation remains bounded while preserving event totals
+ok 130 - minimap density aggregation remains bounded while preserving event totals
+  ---
+  duration_ms: 12.563734
+  type: 'test'
+  ...
+# Subtest: search text is prepared once from all searchable event metadata
+ok 131 - search text is prepared once from all searchable event metadata
+  ---
+  duration_ms: 0.389059
+  type: 'test'
+  ...
+# Subtest: the Chronos fork owns timeline stacking without an injected SVG layer
+ok 132 - the Chronos fork owns timeline stacking without an injected SVG layer
+  ---
+  duration_ms: 1.90742
+  type: 'test'
+  ...
+# Subtest: the timeline island installs a scoped toolbar enhancement after existing behaviour
+ok 133 - the timeline island installs a scoped toolbar enhancement after existing behaviour
+  ---
+  duration_ms: 2.251632
+  type: 'test'
+  ...
+# Subtest: toolbar buttons retain visible labels, icons and accessible names
+ok 134 - toolbar buttons retain visible labels, icons and accessible names
+  ---
+  duration_ms: 0.48362
+  type: 'test'
+  ...
+# Subtest: the Astro island mounts the local Chronos renderer fork without host patches
+ok 135 - the Astro island mounts the local Chronos renderer fork without host patches
+  ---
+  duration_ms: 2.077933
+  type: 'test'
+  ...
+# Subtest: unified chronology keeps one canonical Chronos group without host remounting
+ok 136 - unified chronology keeps one canonical Chronos group without host remounting
+  ---
+  duration_ms: 1.458952
+  type: 'test'
+  ...
+# Subtest: the exact fictional-calendar axis and event rows share one stable fixed-height viewport
+ok 137 - the exact fictional-calendar axis and event rows share one stable fixed-height viewport
+  ---
+  duration_ms: 1.075791
+  type: 'test'
+  ...
+# Subtest: returns every individual calendar-year boundary in a visible range
+ok 138 - returns every individual calendar-year boundary in a visible range
+  ---
+  duration_ms: 2.716063
+  type: 'test'
+  ...
+# Subtest: selects readable legacy year labels from exact calendar boundaries
+ok 139 - selects readable legacy year labels from exact calendar boundaries
+  ---
+  duration_ms: 0.861422
+  type: 'test'
+  ...
+# Subtest: chooses 1-2-5 year scales from actual viewport density
+ok 140 - chooses 1-2-5 year scales from actual viewport density
+  ---
+  duration_ms: 1.143772
+  type: 'test'
+  ...
+# Subtest: descends from years through calendar months, weeks and days
+ok 141 - descends from years through calendar months, weeks and days
+  ---
+  duration_ms: 0.534946
+  type: 'test'
+  ...
+# Subtest: uses hysteresis to prevent scale flicker around a zoom boundary
+ok 142 - uses hysteresis to prevent scale flicker around a zoom boundary
+  ---
+  duration_ms: 0.491201
+  type: 'test'
+  ...
+# Subtest: generates exact calendar boundaries for close zoom levels
+ok 143 - generates exact calendar boundaries for close zoom levels
+  ---
+  duration_ms: 2.575034
+  type: 'test'
+  ...
+# Subtest: supports negative years and retains exact legacy background item classes
+ok 144 - supports negative years and retains exact legacy background item classes
+  ---
+  duration_ms: 0.949965
+  type: 'test'
+  ...
+# Subtest: the fork generates exact Okse boundaries instead of relabeling Gregorian ticks
+ok 145 - the fork generates exact Okse boundaries instead of relabeling Gregorian ticks
+  ---
+  duration_ms: 23.406777
+  type: 'test'
+  ...
+# Subtest: the fork draws exact calendar labels and grid lines as native vis-timeline components
+ok 146 - the fork draws exact calendar labels and grid lines as native vis-timeline components
+  ---
+  duration_ms: 1.306926
+  type: 'test'
+  ...
+# Subtest: SVG validation accepts ordinary vector markup
+ok 147 - SVG validation accepts ordinary vector markup
+  ---
+  duration_ms: 13.234042
+  type: 'test'
+  ...
+# Subtest: SVG validation rejects scriptable constructs
+    # Subtest: script
+    ok 1 - script
+      ---
+      duration_ms: 7.862565
+      type: 'test'
+      ...
+    # Subtest: foreignObject
+    ok 2 - foreignObject
+      ---
+      duration_ms: 5.836098
+      type: 'test'
+      ...
+    # Subtest: event handler
+    ok 3 - event handler
+      ---
+      duration_ms: 4.683412
+      type: 'test'
+      ...
+    # Subtest: javascript URL
+    ok 4 - javascript URL
+      ---
+      duration_ms: 3.151692
+      type: 'test'
+      ...
+    # Subtest: HTML data URL
+    ok 5 - HTML data URL
+      ---
+      duration_ms: 7.26843
+      type: 'test'
+      ...
+    1..5
+ok 148 - SVG validation rejects scriptable constructs
+  ---
+  duration_ms: 30.320038
+  type: 'test'
+  ...
+# Subtest: asset validation rejects content that does not match its extension
+ok 149 - asset validation rejects content that does not match its extension
+  ---
+  duration_ms: 2.558108
+  type: 'test'
+  ...
+# Subtest: asset validation accepts a matching WebP signature
+ok 150 - asset validation accepts a matching WebP signature
+  ---
+  duration_ms: 2.340885
+  type: 'test'
+  ...
+# Subtest: asset validation rejects a valid PNG because raster artwork must be WebP
+ok 151 - asset validation rejects a valid PNG because raster artwork must be WebP
+  ---
+  duration_ms: 5.330226
+  type: 'test'
+  ...
+# Subtest: asset validation rejects JPEG even when its extension matches its signature
+ok 152 - asset validation rejects JPEG even when its extension matches its signature
+  ---
+  duration_ms: 3.071873
+  type: 'test'
+  ...
+# Subtest: repository does not track non-WebP raster files
+ok 153 - repository does not track non-WebP raster files
+  ---
+  duration_ms: 8.843385
+  type: 'test'
+  ...
+# Subtest: valid ordinary entity passes without requiring optional detail
+ok 154 - valid ordinary entity passes without requiring optional detail
+  ---
+  duration_ms: 1.209431
+  type: 'test'
+  ...
+# Subtest: templates are excluded from creator entity counts and diagnostics
+ok 155 - templates are excluded from creator entity counts and diagnostics
+  ---
+  duration_ms: 0.722365
+  type: 'test'
+  ...
+# Subtest: folder and type contradictions are errors
+ok 156 - folder and type contradictions are errors
+  ---
+  duration_ms: 0.270233
+  type: 'test'
+  ...
+# Subtest: ordinary entity era structure is validated without demanding an era
+ok 157 - ordinary entity era structure is validated without demanding an era
+  ---
+  duration_ms: 0.466775
+  type: 'test'
+  ...
+# Subtest: near matches to canonical titles are notices, not errors
+ok 158 - near matches to canonical titles are notices, not errors
+  ---
+  duration_ms: 0.891448
+  type: 'test'
+  ...
+# Subtest: loose root entities produce a notice but do not fail
+ok 159 - loose root entities produce a notice but do not fail
+  ---
+  duration_ms: 0.16104
+  type: 'test'
+  ...
+# Subtest: Myrkild keep their specialised singular era and unique unit IDs
+ok 160 - Myrkild keep their specialised singular era and unique unit IDs
+  ---
+  duration_ms: 0.262501
+  type: 'test'
+  ...
+# Subtest: unknown development states and malformed list properties are errors
+ok 161 - unknown development states and malformed list properties are errors
+  ---
+  duration_ms: 7.857037
+  type: 'test'
+  ...
+# Subtest: VISCERIUM Home remains creator-only and wired to its presentation/action dependencies
+ok 162 - VISCERIUM Home remains creator-only and wired to its presentation/action dependencies
+  ---
+  duration_ms: 15.977767
+  type: 'test'
+  ...
+# Subtest: homepage visual layer stays flat and keeps functional colour roles
+ok 163 - homepage visual layer stays flat and keeps functional colour roles
+  ---
+  duration_ms: 4.12812
+  type: 'test'
+  ...
+# Subtest: homepage responsive layer resets readable width and avoids fixed two-column overflow
+ok 164 - homepage responsive layer resets readable width and avoids fixed two-column overflow
+  ---
+  duration_ms: 2.141008
+  type: 'test'
+  ...
+# Subtest: homepage control deck remains compact and pane-responsive
+ok 165 - homepage control deck remains compact and pane-responsive
+  ---
+  duration_ms: 1.521345
+  type: 'test'
+  ...
+# Subtest: creator task hub uses ordinary Markdown tasks without introducing a task plugin
+ok 166 - creator task hub uses ordinary Markdown tasks without introducing a task plugin
+  ---
+  duration_ms: 2.254957
+  type: 'test'
+  ...
+# Subtest: homepage startup records durable content-based creator activity before opening Home
+ok 167 - homepage startup records durable content-based creator activity before opening Home
+  ---
+  duration_ms: 2.501695
+  type: 'test'
+  ...
+# Validated 1 vault source note(s).
+# Subtest: published notes allow inert examples inside code spans and fences
+ok 168 - published notes allow inert examples inside code spans and fences
+  ---
+  duration_ms: 2.72767
+  type: 'test'
+  ...
+# Subtest: published notes reject active HTML and unsafe URL schemes
+    # Subtest: script tag
+    ok 1 - script tag
+      ---
+      duration_ms: 0.767542
+      type: 'test'
+      ...
+    # Subtest: iframe tag
+    ok 2 - iframe tag
+      ---
+      duration_ms: 0.214169
+      type: 'test'
+      ...
+    # Subtest: inline event handler
+    ok 3 - inline event handler
+      ---
+      duration_ms: 0.19485
+      type: 'test'
+      ...
+    # Subtest: HTML javascript URL
+    ok 4 - HTML javascript URL
+      ---
+      duration_ms: 0.129733
+      type: 'test'
+      ...
+    # Subtest: Markdown javascript URL
+    ok 5 - Markdown javascript URL
+      ---
+      duration_ms: 0.120579
+      type: 'test'
+      ...
+    # Subtest: HTML data document
+    ok 6 - HTML data document
+      ---
+      duration_ms: 0.212045
+      type: 'test'
+      ...
+    # Subtest: remote MDX module
+    ok 7 - remote MDX module
+      ---
+      duration_ms: 0.377733
+      type: 'test'
+      ...
+    # Subtest: remote MDX side-effect import
+    ok 8 - remote MDX side-effect import
+      ---
+      duration_ms: 0.40329
+      type: 'test'
+      ...
+    # Subtest: remote MDX re-export
+    ok 9 - remote MDX re-export
+      ---
+      duration_ms: 0.32231
+      type: 'test'
+      ...
+    # Subtest: remote dynamic import
+    ok 10 - remote dynamic import
+      ---
+      duration_ms: 0.149061
+      type: 'test'
+      ...
+    1..10
+ok 169 - published notes reject active HTML and unsafe URL schemes
+  ---
+  duration_ms: 4.99747
+  type: 'test'
+  ...
+# Subtest: published note routes are derived from their file paths
+ok 170 - published note routes are derived from their file paths
+  ---
+  duration_ms: 0.319085
+  type: 'test'
+  ...
+# Subtest: publishable Lore skeletons start safe and avoid duplicate rendered chrome
+ok 171 - publishable Lore skeletons start safe and avoid duplicate rendered chrome
+  ---
+  duration_ms: 14.080082
+  type: 'test'
+  ...
+# Subtest: creator-facing and internal Templater workflows remain present after the template audit
+ok 172 - creator-facing and internal Templater workflows remain present after the template audit
+  ---
+  duration_ms: 3.450187
+  type: 'test'
+  ...
+# Subtest: Minimal owns ordinary article width without competing global width or infobox snippets
+ok 173 - Minimal owns ordinary article width without competing global width or infobox snippets
+  ---
+  duration_ms: 2.754601
+  type: 'test'
+  ...
+# Subtest: era template never emits an unresolved custom template variable as a timeline shortcode
+ok 174 - era template never emits an unresolved custom template variable as a timeline shortcode
+  ---
+  duration_ms: 0.957926
+  type: 'test'
+  ...
+1..174
+# tests 189
+# suites 0
+# pass 189
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1320.005013
+
+> viscerium-codex@0.1.0 prebuild
+> node scripts/build-content.mjs --mode=build
+
+Validated 53 vault source note(s).
+Validated 3 image assets: WebP-only raster policy satisfied.
+Validated 39 image assets: WebP-only raster policy satisfied.
+Generated 5 timeline datasets from 39 event(s) and 4 era record(s).
+Published Calendar.md -> calendar.mdx
+Published Calendar/Okse.md -> calendar/okse.mdx
+Published Degel System/Crucibus.md -> degel-system/crucibus.md
+Published Degel System/Degel.md -> degel-system/degel.md
+Published Degel System/Errack.md -> degel-system/errack.md
+Published Degel System/Eye of Visi.md -> degel-system/eye-of-visi.md
+Published Degel System/Eye of Vordr.md -> degel-system/eye-of-vordr.md
+Published Degel System/Okse Dominion.md -> degel-system/okse-dominion.mdx
+Published Degel System/The Shards.md -> degel-system/the-shards.md
+Published Eras/CITADEL.md -> eras/citadel.md
+Published Eras/CITADEL/Events/The Ash-Winter Pilgrimage.md -> eras/citadel/events/the-ash-winter-pilgrimage.md
+Published Eras/CITADEL/Events/The Breaking of Lorndale.md -> eras/citadel/events/the-breaking-of-lorndale.md
+Published Eras/CITADEL/Events/The First Crowning at Skallfast.md -> eras/citadel/events/the-first-crowning-at-skallfast.md
+Published Eras/CITADEL/Events/The Galdyr Compact.md -> eras/citadel/events/the-galdyr-compact.md
+Published Eras/CITADEL/Events/The Hollow Feast of Veyr.md -> eras/citadel/events/the-hollow-feast-of-veyr.md
+Published Eras/CITADEL/Events/The Night of Seven Bells.md -> eras/citadel/events/the-night-of-seven-bells.md
+Published Eras/CITADEL/Events/The Opening of the Bone Road.md -> eras/citadel/events/the-opening-of-the-bone-road.md
+Published Eras/CITADEL/Events/The Silence After Seven Bells.md -> eras/citadel/events/the-silence-after-seven-bells.md
+Published Eras/CITADEL/Events/The Verigoth Chain Census.md -> eras/citadel/events/the-verigoth-chain-census.md
+Published Eras/ENTROPY.md -> eras/entropy.md
+Published Eras/ENTROPY/Events/GARMIR Gate Ignition.md -> eras/entropy/events/garmir-gate-ignition.md
+Published Eras/ENTROPY/Events/The Abberath Disclosure.md -> eras/entropy/events/the-abberath-disclosure.md
+Published Eras/ENTROPY/Events/The First Confirmed Naranor Relay.md -> eras/entropy/events/the-first-confirmed-naranor-relay.md
+Published Eras/ENTROPY/Events/The Gate Ignition Echo.md -> eras/entropy/events/the-gate-ignition-echo.md
+Published Eras/ENTROPY/Events/The Juggernaut Compact.md -> eras/entropy/events/the-juggernaut-compact.md
+Published Eras/ENTROPY/Events/The Last Calendar Correction.md -> eras/entropy/events/the-last-calendar-correction.md
+Published Eras/ENTROPY/Events/The Myrkild Amnesty Schism.md -> eras/entropy/events/the-myrkild-amnesty-schism.md
+Published Eras/ENTROPY/Events/The Pathfinder Exodus.md -> eras/entropy/events/the-pathfinder-exodus.md
+Published Eras/ENTROPY/Events/The Vacuum Siege of Satol Reach.md -> eras/entropy/events/the-vacuum-siege-of-satol-reach.md
+Published Eras/ENTROPY/Events/The Vodr Signal Bloom.md -> eras/entropy/events/the-vodr-signal-bloom.md
+Published Eras/NEARSIGHT.md -> eras/nearsight.md
+Published Eras/NEARSIGHT/Events/First AESIR Mk-2 Fielding.md -> eras/nearsight/events/first-aesir-mk-2-fielding.md
+Published Eras/NEARSIGHT/Events/First Jade Current Compact Deployment.md -> eras/nearsight/events/first-jade-current-compact-deployment.md
+Published Eras/NEARSIGHT/Events/Formation of ASTU.md -> eras/nearsight/events/formation-of-astu.md
+Published Eras/NEARSIGHT/Events/KRG Recovery at Kraal Nine.md -> eras/nearsight/events/krg-recovery-at-kraal-nine.md
+Published Eras/NEARSIGHT/Events/TCSC Bastion Doctrine Adopted.md -> eras/nearsight/events/tcsc-bastion-doctrine-adopted.md
+Published Eras/NEARSIGHT/Events/The Corporate Genetic Bidding Programme.md -> eras/nearsight/events/the-corporate-genetic-bidding-programme.md
+Published Eras/NEARSIGHT/Events/The Garmir Quarantine.md -> eras/nearsight/events/the-garmir-quarantine.md
+Published Eras/NEARSIGHT/Events/The Kraal Nine Signal Return.md -> eras/nearsight/events/the-kraal-nine-signal-return.md
+Published Eras/NEARSIGHT/Events/The Nearsight Blackout.md -> eras/nearsight/events/the-nearsight-blackout.md
+Published Eras/NEARSIGHT/Events/The RD-76 Dart Plunge Trial.md -> eras/nearsight/events/the-rd-76-dart-plunge-trial.md
+Published Eras/SMOG.md -> eras/smog.md
+Published Eras/SMOG/Events/The Black Furnace Accord.md -> eras/smog/events/the-black-furnace-accord.md
+Published Eras/SMOG/Events/The Brass Lung Winter.md -> eras/smog/events/the-brass-lung-winter.md
+Published Eras/SMOG/Events/The Engimanutur Explosion.md -> eras/smog/events/the-engimanutur-explosion.md
+Published Eras/SMOG/Events/The First Resonance Meter Standard.md -> eras/smog/events/the-first-resonance-meter-standard.md
+Published Eras/SMOG/Events/The Grey Armistice.md -> eras/smog/events/the-grey-armistice.md
+Published Eras/SMOG/Events/The Hollowed Labour Panic.md -> eras/smog/events/the-hollowed-labour-panic.md
+Published Eras/SMOG/Events/The Nine-Stack Lockout.md -> eras/smog/events/the-nine-stack-lockout.md
+Published Eras/SMOG/Events/The Nine-Stack Strike.md -> eras/smog/events/the-nine-stack-strike.md
+Published Eras/SMOG/Events/The Skyhook Demonstration.md -> eras/smog/events/the-skyhook-demonstration.md
+Published Eras/SMOG/Events/The Trench Line at Orra Vale.md -> eras/smog/events/the-trench-line-at-orra-vale.md
+Published Start Here.md -> start-here.md
+Expanded timeline content in eras/citadel.mdx
+Expanded timeline content in eras/entropy.mdx
+Expanded timeline content in eras/nearsight.mdx
+Expanded timeline content in eras/smog.mdx
+Extended calendar.mdx with a generated category index.
+Generated category index degel-system/index.md.
+Generated category index eras/index.md.
+Extended eras/citadel.mdx with a generated category index.
+Generated category index eras/citadel/events/index.md.
+Extended eras/entropy.mdx with a generated category index.
+Generated category index eras/entropy/events/index.md.
+Extended eras/nearsight.mdx with a generated category index.
+Generated category index eras/nearsight/events/index.md.
+Extended eras/smog.mdx with a generated category index.
+Generated category index eras/smog/events/index.md.
+Generated 11 category index pages.
+Validated 59 generated public docs.
+Generated 0 map data set(s).
+Completed shared content pipeline in build mode.
+
+> viscerium-codex@0.1.0 build
+> astro build
+
+[2m13:47:12[22m [34m[starlight-tags][39m Setting up Starlight Tags plugin...
+[2m13:47:12[22m [34m[starlight-telescope][39m Initializing Starlight Telescope search...
+[2m13:47:12[22m [34m[starlight-tags][39m Resolved tags config path: /home/runner/work/viscerium-codex/viscerium-codex/Site/tags.yml
+[2m13:47:12[22m [34m[starlight-site-graph-integration][39m Retrieving links from Markdown content (with patterns **/*)
+[2m13:47:12[22m [34m[starlight-site-graph-integration][39m Ignoring following Starlight links in sitemap: !/, **/*/
+[2m13:47:12[22m [34m[starlight-site-graph-integration][39m Finished retrieving links from Markdown content
+[2m13:47:12[22m [34m[starlight-tags][39m Tags plugin routes configured successfully
+[2m13:47:13[22m [34m[content][39m Syncing content
+[2m13:47:14[22m [34m[content][39m Synced content
+[2m13:47:14[22m [34m[types][39m Generated [2m1.34s[22m
+[2m13:47:14[22m [34m[build][39m output: [34m"static"[39m
+[2m13:47:14[22m [34m[build][39m mode: [34m"static"[39m
+[2m13:47:14[22m [34m[build][39m directory: [34m/home/runner/work/viscerium-codex/viscerium-codex/Site/dist/[39m
+[2m13:47:14[22m [34m[build][39m Collecting build info...
+[2m13:47:14[22m [34m[build][39m [32m✓ Completed in 1.56s.[39m
+[2m13:47:14[22m [34m[build][39m Building static entrypoints...
+[2m13:47:15[22m [34m[vite][39m [32m✓ built in 1.91s[39m
+[33m[1m13:47:16[22m [WARN] [vite][39m [33m[plugin rolldown:vite-resolve] Module "util" has been externalized for browser compatibility, imported by "/home/runner/work/viscerium-codex/viscerium-codex/Site/node_modules/micromatch/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[1m13:47:16[22m [WARN] [vite][39m [33m[plugin rolldown:vite-resolve] Module "util" has been externalized for browser compatibility, imported by "/home/runner/work/viscerium-codex/viscerium-codex/Site/node_modules/fill-range/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[33m[1m13:47:17[22m [WARN] [vite][39m [33m[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[2m13:47:17[22m [34m[vite][39m [32m✓ built in 1.12s[39m
+[2m13:47:17[22m [34m[build][39m Rearranging server assets...
+
+[42m[30m generating static routes [39m[49m
+[2m13:47:17[22m   [34m├─[39m [2m/404.html[22mEntry docs → 404 was not found.
+ [2m(+22ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/atom.xml[22m [2m(+6ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/changelog/index.html[22m [2m(+31ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/contact/index.html[22m [2m(+14ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/graph/index.html[22m [2m(+9ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/header-image-fade-preview/index.html[22m [2m(+9ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/robots.txt[22m [2m(+2ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/rss.xml[22m [2m(+8ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/support/index.html[22m [2m(+9ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/timelines/super/index.html[22m [2m(+19ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/timelines/citadel/index.html[22m [2m(+7ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/timelines/smog/index.html[22m [2m(+14ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/timelines/nearsight/index.html[22m [2m(+8ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/timelines/entropy/index.html[22m [2m(+12ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/timelines/index.html[22m [2m(+11ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/pages.json[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/timeline-showcase/index.html[22m [2m(+8ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/timeline-showcase/2/index.html[22m [2m(+6ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/timeline-showcase/3/index.html[22m [2m(+10ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/timeline-showcase/4/index.html[22m [2m(+8ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/citadel/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/entropy/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/nearsight/index.html[22m [2m(+10ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/smog/index.html[22m [2m(+6ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/same-day/index.html[22m [2m(+7ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/era/index.html[22m [2m(+7ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/myrkild/index.html[22m [2m(+11ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/garmir/index.html[22m [2m(+7ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/intercalary/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/krg/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/okse/index.html[22m [2m(+8ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/resonance/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/abberath/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/aesir/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/armistice/index.html[22m [2m(+9ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/astu/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/aviation/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/blackout/index.html[22m [2m(+8ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/dominion/index.html[22m [2m(+19ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/faction/index.html[22m [2m(+6ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/galdyr/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/genetics/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/industry/index.html[22m [2m(+10ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/jade-current/index.html[22m [2m(+6ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/juggernauts/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/legend/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/lorndale/index.html[22m [2m(+9ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/naranor/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/nation/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/pathfinder/index.html[22m [2m(+6ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/public-health/index.html[22m [2m(+9ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/rd-76/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/satol/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/science/index.html[22m [2m(+7ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/tcsc/index.html[22m [2m(+11ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/trade/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/trench-war/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/verigoth/index.html[22m [2m(+7ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/vodr/index.html[22m [2m(+8ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/tags/index.html[22m [2m(+7ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/index.html[22m [2m(+12ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/calendar/index.html[22m [2m(+38ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/calendar/okse/index.html[22m [2m(+32ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/degel-system/index.html[22m [2m(+6ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/degel-system/crucibus/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/degel-system/degel/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/degel-system/errack/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/degel-system/eye-of-visi/index.html[22m [2m(+7ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/degel-system/eye-of-vordr/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/degel-system/okse-dominion/index.html[22m [2m(+9ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/degel-system/the-shards/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/index.html[22m [2m(+8ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/events/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/events/the-ash-winter-pilgrimage/index.html[22m [2m(+4ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/events/the-breaking-of-lorndale/index.html[22m [2m(+6ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/events/the-first-crowning-at-skallfast/index.html[22m [2m(+4ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/events/the-galdyr-compact/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/events/the-hollow-feast-of-veyr/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/events/the-night-of-seven-bells/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/events/the-opening-of-the-bone-road/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/events/the-silence-after-seven-bells/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/citadel/events/the-verigoth-chain-census/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/index.html[22m [2m(+10ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/garmir-gate-ignition/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/the-abberath-disclosure/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/the-first-confirmed-naranor-relay/index.html[22m [2m(+4ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/the-gate-ignition-echo/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/the-juggernaut-compact/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/the-last-calendar-correction/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/the-myrkild-amnesty-schism/index.html[22m [2m(+6ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/the-pathfinder-exodus/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/the-vacuum-siege-of-satol-reach/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/entropy/events/the-vodr-signal-bloom/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/index.html[22m [2m(+9ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/first-aesir-mk-2-fielding/index.html[22m [2m(+4ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/first-jade-current-compact-deployment/index.html[22m [2m(+4ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/formation-of-astu/index.html[22m [2m(+9ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/krg-recovery-at-kraal-nine/index.html[22m [2m(+7ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/tcsc-bastion-doctrine-adopted/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/the-corporate-genetic-bidding-programme/index.html[22m [2m(+4ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/the-garmir-quarantine/index.html[22m [2m(+5ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/the-kraal-nine-signal-return/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/the-nearsight-blackout/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/nearsight/events/the-rd-76-dart-plunge-trial/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/smog/index.html[22m [2m(+10ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/smog/events/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/smog/events/the-black-furnace-accord/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/smog/events/the-brass-lung-winter/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/smog/events/the-engimanutur-explosion/index.html[22m [2m(+3ms)[22m 
+[2m13:47:17[22m   [34m├─[39m [2m/eras/smog/events/the-first-resonance-meter-standard/index.html[22m [2m(+3ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/eras/smog/events/the-grey-armistice/index.html[22m [2m(+3ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/eras/smog/events/the-hollowed-labour-panic/index.html[22m [2m(+3ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/eras/smog/events/the-nine-stack-lockout/index.html[22m [2m(+6ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/eras/smog/events/the-nine-stack-strike/index.html[22m [2m(+3ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/eras/smog/events/the-skyhook-demonstration/index.html[22m [2m(+3ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/eras/smog/events/the-trench-line-at-orra-vale/index.html[22m [2m(+3ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/start-here/index.html[22m [2m(+4ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/releases/index.html[22m [2m(+6ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/releases/version/0-2-0/index.html[22m [2m(+10ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/releases/version/0-2-0...latest/index.html[22m [2m(+7ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/releases/version/0-1-0/index.html[22m [2m(+5ms)[22m 
+[2m13:47:18[22m   [34m├─[39m [2m/releases/version/0-1-0...latest/index.html[22m [2m(+5ms)[22m 
+[2m13:47:18[22m [32m✓ Completed in 934ms.
+[39m
+[2m13:47:18[22m [34m[build][39m [32m✓ Completed in 4.04s.[39m
+[2m13:47:18[22m [34m[starlight:pagefind][39m Building search index with Pagefind...
+[2m13:47:18[22m [34m[starlight:pagefind][39m Found 121 HTML files.
+[2m13:47:18[22m [34m[starlight:pagefind][39m Finished building search index in 174ms.
+[2m13:47:18[22m [34m[starlight-scroll-to-top][39m Starlight Scroll To Top plugin has been installed successfully! Button position: right
+[2m13:47:18[22m [34m[starlight-telescope-integration][39m Starlight Telescope plugin installed successfully!
+[2m13:47:18[22m [34m[starlight-site-graph-integration][39m Retrieving links from generated HTML content
+[2m13:47:18[22m [34m[starlight-site-graph-integration][39m Finished generating sitemap from generated HTML content
+[2m13:47:18[22m [34m[starlight-site-graph-integration][39m `sitemap.json` created at `dist/sitegraph`
+[2m13:47:18[22m [34m[@astrojs/sitemap][39m `sitemap-index.xml` created at `dist`
+[2m13:47:18[22m [34m[build][39m 121 page(s) built in [1m6.15s[22m
+[2m13:47:18[22m [34m[build][39m [1mComplete![22m
+
+> viscerium-codex@0.1.0 postbuild
+> npm run validate:icons
+
+
+> viscerium-codex@0.1.0 validate:icons
+> node scripts/validate-icon-output.mjs
+
+Validated 1689 local icon reference(s).

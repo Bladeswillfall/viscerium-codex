@@ -1,8 +1,7 @@
 ---
 title: "The Myrkild Amnesty Schism"
 description: "A proposal to recognise selected Myrkild intelligences as legal persons divided human governments and hunter orders."
-publish: true
-status: canon
+status: published
 type: event
 era: ENTROPY
 calendarDate:
@@ -40,7 +39,7 @@ tags:
 slug: eras/entropy/events/the-myrkild-amnesty-schism
 eraStyle: e4
 sourcePath: "Eras/ENTROPY/Events/The Myrkild Amnesty Schism.md"
-updated: "2026-07-10T20:48:59Z"
+updated: "2026-07-21T13:06:10+01:00"
 ---
 
 A proposal to recognise selected Myrkild intelligences as legal persons divided human governments and hunter orders.

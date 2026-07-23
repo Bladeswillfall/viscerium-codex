@@ -1,17 +1,16 @@
 # Publishing Rules
 
-Only notes in `Vault/Lore/` can publish. Draft, private, story, template and system notes are ignored.
+Only notes in `Vault/Lore/` can publish. Publication is controlled by `status: published`; there is no second publish boolean. Draft, private, story, template and system notes are ignored.
 
 `Vault/Stories/` is a hard private boundary for narrative projects. StoryLine projects, scenes, research notes and project-local system files stay there and are never Codex sources, regardless of their frontmatter.
 
-A public note must have:
+A public note must live beneath `Vault/Lore/` and have:
 
 ```yaml
 ---
 title: Example Title
 description: "A short, reader-safe description for search and link previews."
-publish: true
-status: canon
+status: published
 type: article
 ---
 ```

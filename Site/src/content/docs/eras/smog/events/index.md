@@ -2,7 +2,7 @@
 title: Events
 description: Index of public VISCERIUM pages in the Events category.
 publish: true
-status: canon
+status: published
 slug: eras/smog/events
 type: category
 pagefind: true

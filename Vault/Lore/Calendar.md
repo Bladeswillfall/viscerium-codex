@@ -1,8 +1,7 @@
 ---
 title: Okse Calendar
 description: "The first implemented VISCERIUM calendar, rendered from structured calendar data and absolute world-time."
-publish: true
-status: canon
+status: published
 type: calendar
 calendarBlocks:
   ID-0001:

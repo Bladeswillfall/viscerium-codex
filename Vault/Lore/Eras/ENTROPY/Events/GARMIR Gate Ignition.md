@@ -1,8 +1,7 @@
 ---
 title: "GARMIR Gate Ignition"
 description: "The GARMIR transit structure opened a stable corridor through folded space for eleven minutes."
-publish: true
-status: canon
+status: published
 type: event
 era: ENTROPY
 calendarDate:

@@ -20,7 +20,7 @@ const routeId = String(entry.slug ?? Astro.locals.starlightRoute?.entry?.id ?? '
 const eligibleTypes = new Set(['article', 'character', 'event', 'era', 'faction', 'image', 'location', 'map', 'timeline']);
 const useDefaults = entry.defaultContributors !== false
   && entry.publish === true
-  && entry.status === 'canon'
+  && entry.status === 'published'
   && routeId !== 'index'
   && eligibleTypes.has(entry.type ?? 'article');
 const requested = [

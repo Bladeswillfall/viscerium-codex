@@ -32,7 +32,7 @@ test('valid ordinary entity passes without requiring optional detail', () => {
 
 test('templates are excluded from creator entity counts and diagnostics', () => {
   const result = diagnoseCreatorVault({
-    records: [record('Templates/Myrkild Unit Profile.md', {
+    records: [record('Templates/Databases/Myrkild Unit Profile.md', {
       title: '{{title}}',
       description: 'Template.',
       type: 'myrkild-unit',
@@ -81,7 +81,7 @@ test('near matches to canonical titles are notices, not errors', () => {
         title: 'Okse Dominion',
         description: 'Canonical faction.',
         publish: true,
-        status: 'canon',
+        status: 'published',
         type: 'faction',
       }),
       record('Drafts/Databases/Flora/Red Reed.md', ordinary({ locations: ['Okse Dominon'] })),

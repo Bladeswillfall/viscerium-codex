@@ -1,8 +1,7 @@
 ---
 title: "The Gate Ignition Echo"
 description: "Minutes after the GARMIR corridor closed, an identical ignition signature appeared beyond the mapped edge of human space."
-publish: true
-status: canon
+status: published
 type: event
 era: ENTROPY
 calendarDate:

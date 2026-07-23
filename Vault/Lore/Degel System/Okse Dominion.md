@@ -1,8 +1,7 @@
 ---
 title: Okse Dominion
 description: "A harsh mountain dominion of the Oksmun, built on endurance, fortification, oil, slave labour, and old Vetruxi blood."
-publish: true
-status: canon
+status: published
 type: faction
 era: CITADEL
 faction: Okse Dominion

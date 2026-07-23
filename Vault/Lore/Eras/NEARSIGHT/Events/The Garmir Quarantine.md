@@ -1,8 +1,7 @@
 ---
 title: "The Garmir Quarantine"
 description: "A mechanised exclusion cordon sealed the Garmir basin after instrument stations detected a moving subterranean signal."
-publish: true
-status: canon
+status: published
 type: event
 era: NEARSIGHT
 calendarDate:

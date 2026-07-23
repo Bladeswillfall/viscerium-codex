@@ -45,6 +45,11 @@ Use **Templater: Insert template** and choose [[Add Storyteller Fields]] to add 
 
 Do not invoke templates under `Templates/_Internals/` or `Templates/_Startup/` directly. They contain shared implementation or startup behaviour rather than creator-facing workflows.
 
+
+Use **Templater: New Lore Entity** for relationship-aware character, faction, location, event and species drafts. Use **Templater: New Myrkild Unit** for guided unit creation. Both use searchable references; creating a missing reference requires explicitly choosing **Create new…** and produces a task-bearing stub under `Drafts/Inbox/`.
+
+Use **Templater: Setup Creator Sidebar** to open Outline, Backlinks and Local Graph in the right sidebar without committing device-local workspace state.
+
 ## Template roles
 
 Use the template that matches the kind of work rather than treating every file in `Templates/` as interchangeable:

@@ -1,8 +1,7 @@
 ---
 title: "The Black Furnace Accord"
 description: "Industrial states divided the coal basins, railway gauges and munitions markets that would define the SMOG era."
-publish: true
-status: canon
+status: published
 type: event
 era: SMOG
 calendarDate:

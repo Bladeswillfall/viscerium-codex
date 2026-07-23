@@ -26,3 +26,7 @@ Dataview queries, Templater commands, plugin-only syntax, and theme-specific sty
 Templater commands should be executed during authoring so the resulting note contains ordinary Markdown and frontmatter. Important public content must remain available as normal Markdown or structured properties that the site explicitly consumes.
 
 `Home.md` is creator-only (`publish: false`) and may therefore use DataviewJS for convenience actions and widgets without establishing a public Codex authoring convention.
+
+## Creator sidebar
+
+No additional sidebar plugin is required. The checked-in **Setup Creator Sidebar** Templater command uses Obsidian's core Outline, Backlinks and Local Graph panes; Obsidian Git remains available as a utility tab. Workspace state stays device-local and ignored by Git.

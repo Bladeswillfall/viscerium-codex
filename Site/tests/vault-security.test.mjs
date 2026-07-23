@@ -8,7 +8,7 @@ function manifest(content, data = {}) {
       file: '/tmp/viscerium-security-fixture.md',
       data: {
         publish: true,
-        status: 'canon',
+        status: 'published',
         title: 'Security fixture',
         description: 'Validation fixture.',
         ...data,

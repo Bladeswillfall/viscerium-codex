@@ -1,7 +1,6 @@
 ---
 title: "Herald Spawn"
 description: "An imported CITADEL mutated Pride Myrkild unit profile."
-publish: false
 status: "draft"
 type: "myrkild-unit"
 unit_id: "MYR-MUT-0011"

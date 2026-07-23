@@ -1,5 +1,4 @@
 ---
-publish: false
 cssclasses:
   - viscerium-home
 ---
@@ -10,7 +9,7 @@ cssclasses:
 >
 > Worldbuilding database, narrative workspace and Codex source.
 >
-> **CANON** → `Lore/` · **WIP** → `Drafts/` · **WRITING** → `Stories/` · **TOOLS** → `System/`
+> **LORE** → `Lore/` · **WIP** → `Drafts/` · **WRITING** → `Stories/` · **TOOLS** → `System/`
 
 > [!home-actions] QUICK ACTIONS
 > ```dataviewjs
@@ -64,7 +63,8 @@ cssclasses:
 > >     const path = page.file.path;
 > >     return path !== "Home.md"
 > >       && !path.startsWith("System/")
-> >       && !path.startsWith("Templates/");
+> >       && !path.startsWith("Templates/")
+      && !path.startsWith("Demo/");
 > >   })
 > >   .sort((page) => page.file.mtime, "desc");
 > >
@@ -156,13 +156,14 @@ cssclasses:
 >     const path = page.file.path;
 >     return path !== "Home.md"
 >       && !path.startsWith("System/")
->       && !path.startsWith("Templates/");
+>       && !path.startsWith("Templates/")
+      && !path.startsWith("Demo/");
 >   })
 >   .sort((page) => page.file.mtime, "desc")
 >   .limit(6);
 >
 > const area = (path) => {
->   if (path.startsWith("Lore/")) return { label: "CANON", key: "canon" };
+>   if (path.startsWith("Lore/")) return { label: "LORE", key: "lore" };
 >   if (path.startsWith("Stories/")) return { label: "WRITING", key: "writing" };
 >   if (path.startsWith("Drafts/")) return { label: "WIP", key: "wip" };
 >   if (path.startsWith("Private/")) return { label: "PRIVATE", key: "private" };
@@ -293,7 +294,10 @@ cssclasses:
 > > **`Drafts/` — working worldbuilding**  
 > > Structured database entries and unfinished material can remain useful here indefinitely.
 > >
-> > **[[System/SOPs/Storyteller View SOP|Storyteller View SOP]]**  
+> > **[[System/Creator Sidebar|Creator Sidebar]]** — *What should live in the right sidebar while I work?*  
+Outline, Backlinks and Local Graph provide active-note context; Git remains a utility tab.
+>
+> **[[System/SOPs/Storyteller View SOP|Storyteller View SOP]]**  
 > > Defines how structured creator data should eventually become a public, system-agnostic Storyteller presentation.
 
 > [!home-process] HOW THIS VAULT WORKS

@@ -1,7 +1,6 @@
 ---
 title: "Mawspawn"
 description: "An imported CITADEL purespawn Gluttony Myrkild unit profile."
-publish: false
 status: "draft"
 type: "myrkild-unit"
 unit_id: "MYR-PUR-0001"

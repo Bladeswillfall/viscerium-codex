@@ -1,7 +1,6 @@
 ---
 title: "Allure Archon"
 description: "An imported CITADEL purespawn Lust Myrkild unit profile."
-publish: false
 status: "draft"
 type: "myrkild-unit"
 unit_id: "MYR-PUR-0009"

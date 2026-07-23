@@ -27,7 +27,7 @@ Only notes with both fields below are published:
 
 ```yaml
 publish: true
-status: canon
+status: published
 ```
 
 Published notes must also include `title` and `description`. Their routes are derived from paths relative to `Vault/Lore/`; `slug` frontmatter is rejected. Optional fields currently supported by the content schema include `type`, `era`, and `faction`.

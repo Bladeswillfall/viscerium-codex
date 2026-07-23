@@ -277,12 +277,15 @@ const eras = await tp.system.multi_suggester(
   "Which eras can it exist in? Select only what is currently established."
 ) ?? [];
 
-const locationsText = await tp.system.prompt(
-  type === "item" ? "Known regions or markets, comma-separated (optional)" : "Known locations or regions, comma-separated (optional)",
-  "",
-  false
-) ?? "";
-const locations = locationsText.split(",").map((value) => value.trim()).filter(Boolean);
+const locations = await tp.user.reference_picker(tp, {
+  types: ["location"],
+  multiple: true,
+  allowCreate: true,
+  label: "location",
+  stubType: "location",
+  stubFolder: "Drafts/Inbox/Locations",
+  prompt: type === "item" ? "Known regions or markets" : "Known locations or regions"
+}) ?? [];
 
 let biomes = [];
 if (type !== "item") {

@@ -24,7 +24,8 @@ const isCreatorFile = (file) => {
   return file.extension === "md"
     && path !== "Home.md"
     && !path.startsWith("System/")
-    && !path.startsWith("Templates/");
+    && !path.startsWith("Templates/")
+    && !path.startsWith("Demo/");
 };
 
 const readLocalMtimeCache = () => {

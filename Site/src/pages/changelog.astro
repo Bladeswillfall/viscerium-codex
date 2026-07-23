@@ -30,8 +30,7 @@ function changeKind(data) {
 }
 
 const entries = (await getCollection('docs', ({ data }) => (
-  data.publish === true
-  && data.status === 'canon'
+  data.status === 'published'
   && data.type !== 'category'
   && data.type !== 'system'
 )))

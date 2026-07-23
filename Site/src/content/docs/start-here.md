@@ -1,13 +1,12 @@
 ---
 title: Start Here
 description: "A guided introduction to VISCERIUM, the Degel System, and its four connected eras."
-publish: true
-status: canon
+status: published
 type: article
 headerImage: /assets/images/viscerium-banner.webp
 slug: start-here
 sourcePath: "Start Here.md"
-updated: "2026-07-12T13:47:48+01:00"
+updated: "2026-07-21T13:06:10+01:00"
 ---
 
 VISCERIUM is one continuous history told across four eras. Kingdoms become republics, ritual becomes science, and humanity's wars eventually escape the planet—but the old forces beneath civilisation never disappear.

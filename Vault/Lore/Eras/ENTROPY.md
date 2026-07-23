@@ -1,8 +1,7 @@
 ---
 title: ENTROPY
 description: "The far-future age of dark cybernetics, vacuum warfare and a civilisation confronting the full scale of the Naranor threat."
-publish: true
-status: canon
+status: published
 type: era
 eraId: entropy
 calendarDate:

@@ -5,8 +5,7 @@ import '../../styles/degel-system.css';
 import '../../styles/degel-system-layout.css';
 
 const publishedEntries = await getCollection('docs', ({ data }) => (
-  data.publish === true
-  && data.status === 'canon'
+  data.status === 'published'
   && data.type !== 'category'
 ));
 

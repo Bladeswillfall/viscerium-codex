@@ -1,8 +1,7 @@
 ---
 title: "The First Confirmed Naranor Relay"
 description: "A deep-range array identified an artificial relay whose geometry matched no human or Myrkild construction."
-publish: true
-status: canon
+status: published
 type: event
 era: ENTROPY
 calendarDate:

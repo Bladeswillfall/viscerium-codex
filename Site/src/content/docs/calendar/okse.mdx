@@ -1,8 +1,7 @@
 ---
 title: Okse Calendar Detail
 description: "The Okse calendar detail route used by date badges and anchored calendar day links."
-publish: true
-status: canon
+status: published
 type: calendar
 calendarBlocks:
   ID-0001:

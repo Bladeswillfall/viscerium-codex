@@ -1,7 +1,6 @@
 ---
 title: "Doppel Seraph"
 description: "An imported CITADEL purespawn Envy Myrkild unit profile."
-publish: false
 status: "draft"
 type: "myrkild-unit"
 unit_id: "MYR-PUR-0003"

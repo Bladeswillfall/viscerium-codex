@@ -460,7 +460,7 @@ export default class VisceriumTimelinesPlugin extends Plugin {
       if (!file.path.startsWith('Lore/')) continue;
       const cache = this.app.metadataCache.getFileCache(file);
       const data = cache?.frontmatter ? { ...cache.frontmatter } : {};
-      if (data.publish !== true || data.status !== 'canon') continue;
+      if (data.status !== 'published') continue;
       data.type ||= inferType(file);
       records.push({
         data,

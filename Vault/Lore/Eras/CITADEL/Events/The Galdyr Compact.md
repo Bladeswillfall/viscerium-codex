@@ -1,8 +1,7 @@
 ---
 title: "The Galdyr Compact"
 description: "A month-long conclave bound rival smith-priests to shared measures for powder, steel and Resonant workmanship."
-publish: true
-status: canon
+status: published
 type: event
 era: CITADEL
 calendarDate:

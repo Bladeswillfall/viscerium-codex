@@ -121,7 +121,7 @@ The site sync process converts the same block to `ChronosEmbed.astro`, so the co
 
 ## Source-of-truth behaviour
 
-- Only Markdown notes beneath `Lore/` with `publish: true` and `status: canon` are compiled into generated public datasets.
+- Only Markdown notes beneath `Lore/` with `publish: true` and `status: published` are compiled into generated public datasets.
 - `Stories/` is never scanned as a canonical/public source.
 - Canonical lore events use `calendarDate` as their sole start date.
 - StoryLine scenes use `storyDate` as their sole story date; the adapter converts it in memory rather than duplicating `calendarDate`.

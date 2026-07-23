@@ -1,8 +1,7 @@
 ---
 title: "The Kraal Nine Signal Return"
 description: "The recovered Kraal Nine core transmitted a reply to a signal no monitoring station had recorded sending."
-publish: true
-status: canon
+status: published
 type: event
 era: NEARSIGHT
 calendarDate:

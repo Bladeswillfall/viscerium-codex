@@ -1,5 +1,4 @@
 ---
-publish: false
 ---
 
 # Creator Tasks

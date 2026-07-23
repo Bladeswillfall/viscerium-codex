@@ -139,7 +139,7 @@ const warnings = [];
 for (const file of files) {
   const raw = await fs.readFile(file, 'utf8');
   const parsed = parseFrontmatter(raw, file);
-  if (parsed.data.publish !== true || parsed.data.status !== 'canon') continue;
+  if (parsed.data.status !== 'published') continue;
   const slug = slugFromFile(file);
   parsed.data.slug = slug;
   parsed.data.type ||= inferNoteType(file, sourceDir);

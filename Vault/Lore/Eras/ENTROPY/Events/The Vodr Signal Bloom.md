@@ -1,8 +1,7 @@
 ---
 title: "The Vodr Signal Bloom"
 description: "A dormant Vodr artefact emitted a system-wide pattern interpreted as message, map and biological instruction."
-publish: true
-status: canon
+status: published
 type: event
 era: ENTROPY
 calendarDate:

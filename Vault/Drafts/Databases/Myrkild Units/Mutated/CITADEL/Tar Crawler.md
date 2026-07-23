@@ -1,7 +1,6 @@
 ---
 title: "Tar Crawler"
 description: "An imported CITADEL mutated Sloth Myrkild unit profile."
-publish: false
 status: "draft"
 type: "myrkild-unit"
 unit_id: "MYR-MUT-0005"

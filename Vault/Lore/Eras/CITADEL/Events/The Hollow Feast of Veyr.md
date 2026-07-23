@@ -1,8 +1,7 @@
 ---
 title: "The Hollow Feast of Veyr"
 description: "A legendary winter banquet at which an entire court is said to have eaten, spoken and departed without casting shadows."
-publish: true
-status: canon
+status: published
 type: event
 era: CITADEL
 calendarDate:

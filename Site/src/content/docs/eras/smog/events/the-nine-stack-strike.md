@@ -1,8 +1,7 @@
 ---
 title: "The Nine-Stack Strike"
 description: "Workers across nine adjoining furnace stacks stopped production at the midday siren."
-publish: true
-status: canon
+status: published
 type: event
 era: SMOG
 calendarDate:
@@ -38,7 +37,7 @@ tags:
 slug: eras/smog/events/the-nine-stack-strike
 eraStyle: e2
 sourcePath: "Eras/SMOG/Events/The Nine-Stack Strike.md"
-updated: "2026-07-10T20:48:59Z"
+updated: "2026-07-21T13:06:10+01:00"
 ---
 
 Workers across nine adjoining furnace stacks stopped production at the midday siren.

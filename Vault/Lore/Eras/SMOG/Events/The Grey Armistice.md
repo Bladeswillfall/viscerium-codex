@@ -1,8 +1,7 @@
 ---
 title: "The Grey Armistice"
 description: "The last continental trench fronts fell silent beneath an ash-coloured sky, ending the wars that consumed the late industrial age."
-publish: true
-status: canon
+status: published
 type: event
 era: SMOG
 calendarDate:

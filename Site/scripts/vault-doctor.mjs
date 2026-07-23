@@ -62,7 +62,7 @@ function canonicalNameIndex(records) {
   for (const record of records) {
     const file = recordPath(record);
     if (!file.startsWith('Lore/')) continue;
-    if (record.data?.status !== 'canon') continue;
+    if (record.data?.status !== 'published') continue;
     const candidates = [record.data?.title, path.basename(file, path.extname(file))].filter(nonEmptyString);
     for (const candidate of candidates) {
       const normalised = normaliseName(candidate);
