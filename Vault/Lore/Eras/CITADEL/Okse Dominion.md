@@ -10,6 +10,15 @@ territory: Halvmane Mountains and the surrounding highlands
 capital: Valenheim
 population:
 climate: Cold highland, tundra, temperate rainforest, coniferous forest, deciduous woodland
+recognisable_presence: "Darkened steel, angular tower shields, coarse wool and pelts, bone charms and runic adornment make Oksmun military and cultural presence difficult to mistake; rank adds gold, fur and cloth."
+encounter_context: "Outsiders are most likely to encounter the Dominion through fortified settlements, mines and forges, military forces, or trade in ore, oil, arms and engineering expertise."
+current_wants: "Preserve Oksmun defensive self-sufficiency while expanding the oil and mineral extraction that fuels the Dominion's industry and military strength."
+current_pressures: "Growing dependence on oil extraction and imported slave labour drives continued exploration and harsher exploitation, while the Dominion's isolationist character keeps self-sufficiency strategically important."
+preferred_methods: "Fortification, militarised industry, coercive labour, tightly controlled use of Muld Resonants and overwhelming organised force are recurring tools of Dominion power."
+resources_and_reach: "The Dominion can draw on a large standing army, Juggernauts, scarce but strategically deployed Resonants, metalworking and oil industries, structural engineers, longboats and valuable exports."
+operational_limits: "Resonants remain few, imports are deliberately scarce outside the slave labour the economy relies upon, and the Dominion's strength is closely tied to its harsh home terrain and industrial base."
+internal_tensions: "Oil wealth and industrial expansion deepen the divide between masters and enslaved labourers, while freed Leysingi occupy an uneasy position between bondage and full belonging."
+story_complication: "Involvement with Dominion trade, industry or authority can entangle outsiders in coerced labour, guarded resources, Resonant registration or the demands of a heavily militarised society."
 image: 640faf5b8cd2814de13871ff58c900b6.webp
 headerImage: 1d6a04547df953b36f4d6f8ce73e91f2.webp
 imageTitle: Okse Heraldry

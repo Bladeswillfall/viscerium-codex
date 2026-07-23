@@ -36,11 +36,13 @@ These fields record world facts. They remain optional and should not be populate
 
 ## Storyteller properties
 
-Storyteller properties are concise creator data intended to support future story-facing presentation. They do not replace Lore prose.
+Storyteller properties are concise creator data intended to support story-facing presentation. They do not replace Lore prose.
 
 Locations may use fields such as `approach_signs`, `first_impression`, `sensory_signature`, `why_people_come`, `ordinary_activity`, `outsider_knowledge`, `local_knowledge`, `local_tension` and `story_complication`.
 
 Factions may use fields such as `recognisable_presence`, `encounter_context`, `public_reputation`, `current_wants`, `current_pressures`, `preferred_methods`, `resources_and_reach`, `operational_limits`, `internal_tensions` and `story_complication`.
+
+During the public build, supported populated fields are projected into a generated nested `storyteller` object used by the Codex Lore / Storyteller switch. **Do not author `storyteller` manually in vault frontmatter.** The flat creator properties remain the source of truth.
 
 See [[Storyteller View SOP]] for the admission test and public interpretation rules.
 

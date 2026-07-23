@@ -7,6 +7,7 @@ import { generateTimelineData, reportTimelineError } from './generate-timeline-d
 import { validateGeneratedContent } from './validate-content.mjs';
 import { generateMapData } from './generate-map-data.mjs';
 import { generateRelationshipData } from './generate-relationship-data.mjs';
+import { generateStorytellerData } from './generate-storyteller-data.mjs';
 
 const modeArgument = process.argv.find((value) => value.startsWith('--mode='));
 const mode = modeArgument?.slice('--mode='.length) || 'build';
@@ -44,6 +45,7 @@ if (!validModes.has(mode)) {
     });
 
     await import('./sync-public-notes.mjs');
+    await generateStorytellerData();
     await import('./transform-timeline-shortcodes.mjs');
     await import('./generate-category-pages.mjs');
 

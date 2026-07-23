@@ -70,6 +70,20 @@ const contributorReferenceSchema = z.union([
     roles: z.array(z.string()).optional(),
   }),
 ]);
+const storytellerValueSchema = z.union([z.string(), z.array(z.string())]);
+const storytellerSchema = z.object({
+  version: z.literal(1),
+  type: z.string(),
+  sections: z.array(z.object({
+    id: z.string(),
+    title: z.string(),
+    items: z.array(z.object({
+      key: z.string(),
+      label: z.string(),
+      value: storytellerValueSchema,
+    })),
+  })),
+});
 
 export const collections = {
   docs: defineCollection({
@@ -135,6 +149,7 @@ export const collections = {
         relationships: looseRecord.optional(),
         sidebar: looseRecord.optional(),
         related: z.array(z.string()).optional(),
+        storyteller: storytellerSchema.optional(),
       }),
     }),
   }),
