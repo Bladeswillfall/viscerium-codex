@@ -5,7 +5,7 @@ status: published
 type: map
 era: CITADEL
 mapId: exploration-demo-world
-image: exploration-demo-world.svg
+image: /assets/maps/exploration-demo-world.svg
 width: 1600
 height: 900
 defaultZoom: 0
