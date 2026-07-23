@@ -32,6 +32,7 @@ const publicSkeletons = [
 const creatorTemplates = [
   'Templates/New Story Entity.md',
   'Templates/Add Storyteller Fields.md',
+  'Templates/Capture Idea.md',
   'Templates/Myrkild Unit Profile.md',
   'Templates/_Internals/Story Entity Core.md',
   'Templates/_Startup/Open VISCERIUM Home.md',
@@ -66,10 +67,13 @@ test('creator-facing and internal Templater workflows remain present after the t
 
   const wrapper = await readText('Templates/New Story Entity.md');
   const injector = await readText('Templates/Add Storyteller Fields.md');
+  const capture = await readText('Templates/Capture Idea.md');
   const core = await readText('Templates/_Internals/Story Entity Core.md');
 
   assert.match(wrapper, /Story Entity Core/);
   assert.match(injector, /processFrontMatter/);
+  assert.match(capture, /Drafts\/Inbox/);
+  assert.match(capture, /Capture the thought/);
   assert.match(core, /Stop when usable/);
 });
 
