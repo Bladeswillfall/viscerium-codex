@@ -34,11 +34,7 @@
   max-width: none;
 }
 
-.relationship-explorer {
-  --relationship-label-bg: var(--relationship-node-bg);
-}
-
-/* Keep headings and controls comfortably inset while the actual tools use the full viewport width. */
+/* Keep headings and controls comfortably inset while the actual tools use the full viewport. */
 .codex-exploration-page .atlas__header,
 .codex-exploration-page .atlas__toolbar,
 .codex-exploration-page .atlas__marker-index,
@@ -48,10 +44,14 @@
   margin-inline: clamp(.85rem, 1.8vw, 2.25rem);
 }
 
+/* Break the interactive surface out of any residual Starlight/content container gutter. */
 .codex-exploration-page .atlas__frame,
 .codex-exploration-page .relationship-explorer__frame {
-  width: 100%;
+  position: relative;
+  left: 50%;
+  width: 100vw;
   max-width: none;
+  margin-left: -50vw;
   border-inline: 0;
   border-radius: 0;
 }
