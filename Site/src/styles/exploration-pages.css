@@ -34,6 +34,16 @@
   max-width: none;
 }
 
+/* Cytoscape still owns edge labels; these tokens only make its native label treatment readable. */
+.codex-exploration-page .relationship-explorer {
+  --relationship-label-bg: var(--relationship-canvas);
+  --relationship-edge-label: var(--sl-color-white);
+}
+
+:root[data-theme='light'] .codex-exploration-page .relationship-explorer {
+  --relationship-edge-label: var(--codex-text-body);
+}
+
 /* Keep headings and controls comfortably inset while the actual tools use the full viewport. */
 .codex-exploration-page .atlas__header,
 .codex-exploration-page .atlas__toolbar,
