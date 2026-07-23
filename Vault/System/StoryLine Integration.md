@@ -13,7 +13,18 @@ Story projects must remain portable Markdown and YAML.
 - StoryLine owns project structure, scene prose, `sequence`, `chronologicalOrder`, POV, characters, locations, status, synopsis and other story-planning fields.
 - StoryLine project-local `System/` JSON may store plugin UI/layout state, but it is not authoritative story lore.
 - VISCERIUM Timelines reads StoryLine scene frontmatter and builds its timeline view in memory.
+- [[System/Continuity Desk|Continuity Desk]] derives overview tables from the same scene frontmatter; it stores no second continuity database.
 - Do not manually duplicate StoryLine chronology into `calendarDate`, native Chronos blocks, or generated timeline files.
+
+## Capture while writing
+
+Use **Templater: Create Capture Idea** or the **Capture Idea** quick action on [[Home]] when a thought interrupts a scene.
+
+The capture workflow asks for one rough thought and files it beneath `Drafts/Inbox/` with `type: creator-capture` and `status: inbox`. It deliberately does not ask you to classify, develop or canonise the idea while writing.
+
+Review captures through [[System/Writer Inbox|Writer Inbox]]. A capture may later become a proper story note, Lore/Draft entity, deliberate task, or nothing at all.
+
+> Capture now. Worldbuild later.
 
 ## Story dates
 
@@ -40,6 +51,44 @@ storyDate: "okse:16 Sólmanuthur, 9250"
 StoryLine can continue to use `chronologicalOrder` for its chronological scene ordering. VISCERIUM Timelines converts `storyDate` to the registered fictional calendar only when rendering the story timeline.
 
 Scenes without a supported `storyDate` remain valid StoryLine scenes. They are simply listed as unplaced in the VISCERIUM story-timeline view until a date is supplied.
+
+## Story Doctor
+
+Run from `Site/`:
+
+```bash
+npm run doctor:stories
+```
+
+Story Doctor validates **structure rather than prose quality**. It checks objective narrative-workspace invariants such as:
+
+- StoryLine scene placement beneath a project's `Scenes/` folder;
+- malformed Story Markdown frontmatter;
+- property types used by chronology/scene metadata;
+- supplied `storyDate` values that cannot be parsed or placed on a registered VISCERIUM calendar;
+- accidental use of `calendarDate` on StoryLine scenes;
+- StoryLine root/active-project configuration;
+- unresolved Story wikilinks;
+- duplicate `sequence` or `chronologicalOrder` values.
+
+Invalid structure/dates are errors. Unresolved links and duplicate ordering values are **notices**, because future links and deliberate ordering ties may be intentional.
+
+Story Doctor never requires a synopsis, POV, location, characters, `storyDate`, word count or other optional planning field simply because it is absent.
+
+## Continuity Desk
+
+Open [[System/Continuity Desk|Continuity Desk]] for a live overview of the active StoryLine project.
+
+It derives:
+
+- scene order and chronology fields;
+- dated versus unplaced scenes;
+- POV usage;
+- locations in use;
+- characters appearing in scenes;
+- current scene statuses.
+
+These are observations, not targets. The desk does not maintain separate continuity records and does not treat uneven POV/location counts as a problem.
 
 ## Open the VISCERIUM story timeline
 
@@ -68,7 +117,7 @@ StoryLine's executable bundle is managed normally by Obsidian Community Plugins.
 }
 ```
 
-The active project may also be stored there as `activeProjectFile`; VISCERIUM Timelines intentionally reads that value rather than asking authors to duplicate project selection elsewhere.
+The active project may also be stored there as `activeProjectFile`; VISCERIUM Timelines, Writing Desk and Continuity Desk intentionally read that value rather than asking authors to duplicate project selection elsewhere.
 
 VISCERIUM Timelines is maintained in this repository and its runnable bundle is tracked beneath:
 
@@ -81,3 +130,7 @@ That plugin is enabled alongside StoryLine and Chronos, so pulling the vault is 
 StoryLine supports Additional Source Folders and can route external `type: character`, `type: location`, `type: world`, scene, and enabled Codex-category notes into its views. However, those external files are editable from StoryLine and may be modified by it.
 
 Do not point StoryLine at all of `Lore/` by default. Shared canon folders should only be added after their frontmatter schema has been checked for StoryLine write-compatibility. Story-specific entities should stay inside the StoryLine project/series Codex until that compatibility decision is made.
+
+## Deferred writing tooling
+
+See [[System/Future Writing Tooling|Future Writing Tooling]] for ideas intentionally postponed until real drafting exposes a need, including Continue Writing behaviour, manuscript export, story-to-canon handoff and optional analytics/planning surfaces.
