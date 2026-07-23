@@ -29,7 +29,35 @@ jobs:
           cache-dependency-path: Site/package-lock.json
 
       - run: npm ci --silent --no-audit --no-fund
-      - run: npm run doctor:vault
+
+      - name: Run Vault Doctor
+        run: |
+          set -o pipefail
+          npm run doctor:vault 2>&1 | tee "$RUNNER_TEMP/vault-doctor.log"
+
+      - name: Upload Vault Doctor diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vault-doctor-log
+          path: ${{ runner.temp }}/vault-doctor.log
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Run Story Doctor
+        run: |
+          set -o pipefail
+          npm run doctor:stories 2>&1 | tee "$RUNNER_TEMP/story-doctor.log"
+
+      - name: Upload Story Doctor diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: story-doctor-log
+          path: ${{ runner.temp }}/story-doctor.log
+          if-no-files-found: warn
+          retention-days: 1
+
       - run: npm run test:unit
       - run: npm run benchmark:timelines
       - run: npm run build

@@ -28,6 +28,7 @@ test('VISCERIUM Home remains creator-only and wired to its presentation/action d
   assert.ok(appearance.enabledCssSnippets.includes('VISCERIUM Homepage responsive'));
 
   assert.ok(templater.enabled_templates_hotkeys.includes('Templates/New Story Entity.md'));
+  assert.ok(templater.enabled_templates_hotkeys.includes('Templates/Capture Idea.md'));
   assert.ok(templater.startup_templates.includes('Templates/_Startup/Open VISCERIUM Home.md'));
 
   assert.match(home.content, /vc-home-action-strip/);
@@ -36,11 +37,14 @@ test('VISCERIUM Home remains creator-only and wired to its presentation/action d
   assert.match(home.content, /WRITING DESK/);
   assert.match(home.content, /CREATOR ACTIVITY/);
   assert.match(home.content, /System\/Creator Tasks/);
+  assert.match(home.content, /System\/Continuity Desk/);
+  assert.match(home.content, /System\/Writer Inbox/);
   assert.match(home.content, /activeProjectFile/);
   assert.match(home.content, /Creator Activity\.json/);
   assert.match(home.content, /vc-home-heatmap/);
   assert.match(home.content, /Create Story Entity/);
   assert.match(home.content, /Create New Story Entity/);
+  assert.match(home.content, /Create Capture Idea/);
   assert.match(home.content, /viscerium-timelines:open-storyline-project-timeline/);
   assert.match(home.content, /viscerium-timelines:diagnose-storyline-integration/);
   assert.doesNotMatch(home.content, /dv\.table\(/);
@@ -73,8 +77,9 @@ test('homepage control deck remains compact and pane-responsive', async () => {
   const responsiveCss = await readText('.obsidian/snippets/VISCERIUM Homepage responsive.css');
 
   assert.match(responsiveCss, /vc-home-action-strip/);
-  assert.match(responsiveCss, /grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(responsiveCss, /grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/);
   assert.match(responsiveCss, /vc-home-action-create/);
+  assert.match(responsiveCss, /vc-home-action-capture/);
   assert.match(responsiveCss, /vc-home-action-stories/);
   assert.match(responsiveCss, /vc-home-recent-grid/);
   assert.match(responsiveCss, /grid-template-columns:\s*repeat\(auto-fit,\s*minmax\(min\(100%,\s*12\.5rem\),\s*1fr\)\)/);

@@ -141,7 +141,7 @@
 
 .viscerium-home .vc-home-action-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.55rem;
   width: 100%;
   min-width: 0;
@@ -161,6 +161,12 @@
   background: color-mix(in srgb, rgb(var(--vc-reuse)) 72%, var(--interactive-accent));
 }
 
+.viscerium-home .vc-home-action-capture {
+  color: color-mix(in srgb, rgb(var(--vc-wip)) 80%, var(--text-normal));
+  border-color: color-mix(in srgb, rgb(var(--vc-wip)) 64%, var(--background-modifier-border));
+  background: color-mix(in srgb, rgb(var(--vc-wip)) 13%, var(--background-primary));
+}
+
 .viscerium-home .vc-home-action-stories {
   color: var(--text-on-accent);
   border-color: color-mix(in srgb, rgb(var(--vc-writing)) 78%, var(--interactive-accent));
@@ -177,6 +183,11 @@
 .viscerium-home .vc-home-action-stories:hover {
   filter: brightness(1.08);
   transform: translateY(-1px);
+}
+
+.viscerium-home .vc-home-action-capture:hover {
+  border-color: rgb(var(--vc-wip));
+  background: color-mix(in srgb, rgb(var(--vc-wip)) 20%, var(--background-primary));
 }
 
 .viscerium-home .vc-home-action-stories-secondary:hover {
@@ -296,10 +307,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .viscerium-home .vc-home-action-create {
-    grid-column: 1 / -1;
-  }
-
   .viscerium-home .callout[data-callout="home-process"] > .callout-content {
     grid-template-columns: 1fr;
   }
@@ -321,10 +328,6 @@
 
   .viscerium-home .vc-home-action-strip {
     grid-template-columns: 1fr;
-  }
-
-  .viscerium-home .vc-home-action-create {
-    grid-column: auto;
   }
 
   .viscerium-home .vc-home-recent-grid {
@@ -350,10 +353,6 @@
   .viscerium-home .vc-home-action-strip,
   .viscerium-home .vc-home-recent-grid {
     grid-template-columns: 1fr;
-  }
-
-  .viscerium-home .vc-home-action-create {
-    grid-column: auto;
   }
 
   .viscerium-home button.vc-home-button {
