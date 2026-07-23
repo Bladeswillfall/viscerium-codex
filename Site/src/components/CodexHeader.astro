@@ -16,6 +16,16 @@ const shouldRenderSearch =
 
 <div class="header codex-header">
   <div class="title-wrapper sl-flex">
+    <button
+      class="codex-sidebar-toggle"
+      type="button"
+      data-codex-sidebar-toggle
+      aria-controls="starlight__sidebar"
+      aria-expanded="false"
+      aria-label="Show sidebar"
+    >
+      <span aria-hidden="true">☰</span>
+    </button>
     <SiteTitle />
   </div>
 
@@ -67,15 +77,75 @@ const shouldRenderSearch =
     const root = document.documentElement;
     const runtime = window[runtimeKey] ?? (window[runtimeKey] = {});
     const desktopQuery = runtime.desktopQuery ?? window.matchMedia('(min-width: 800px)');
+    const mobileTopThreshold = 12;
+    const mobileRevealDistance = 64;
+    const mobileHideDistance = 36;
 
     runtime.desktopQuery = desktopQuery;
+
+    runtime.setMobileHeaderHidden = (hidden) => {
+      root.toggleAttribute('data-codex-mobile-header-hidden', hidden && !desktopQuery.matches);
+    };
+
+    runtime.resetMobileHeader = () => {
+      runtime.mobileScrollY = Math.max(0, window.scrollY);
+      runtime.mobileScrollDirection = 0;
+      runtime.mobileScrollDistance = 0;
+      runtime.setMobileHeaderHidden(false);
+    };
+
+    runtime.onMobileScroll = () => {
+      if (desktopQuery.matches) return;
+
+      const scrollY = Math.max(0, window.scrollY);
+
+      if (scrollY <= mobileTopThreshold) {
+        runtime.mobileScrollY = scrollY;
+        runtime.mobileScrollDirection = 0;
+        runtime.mobileScrollDistance = 0;
+        runtime.setMobileHeaderHidden(false);
+        return;
+      }
+
+      const previousScrollY = runtime.mobileScrollY ?? scrollY;
+      const delta = scrollY - previousScrollY;
+      runtime.mobileScrollY = scrollY;
+
+      if (Math.abs(delta) < 1) return;
+
+      const direction = delta > 0 ? 1 : -1;
+      if (direction !== runtime.mobileScrollDirection) {
+        runtime.mobileScrollDirection = direction;
+        runtime.mobileScrollDistance = 0;
+      }
+
+      runtime.mobileScrollDistance += Math.abs(delta);
+      const hidden = root.hasAttribute('data-codex-mobile-header-hidden');
+
+      if (hidden && direction < 0 && runtime.mobileScrollDistance >= mobileRevealDistance) {
+        runtime.mobileScrollDistance = 0;
+        runtime.setMobileHeaderHidden(false);
+      } else if (!hidden && direction > 0 && runtime.mobileScrollDistance >= mobileHideDistance) {
+        runtime.mobileScrollDistance = 0;
+        runtime.setMobileHeaderHidden(true);
+      }
+    };
+
     runtime.sync = () => {
       root.toggleAttribute('data-codex-wide-header', desktopQuery.matches);
+      runtime.resetMobileHeader();
     };
 
     if (!runtime.bound) {
       desktopQuery.addEventListener('change', runtime.sync);
       document.addEventListener('astro:page-load', runtime.sync);
+      window.addEventListener('scroll', runtime.onMobileScroll, { passive: true });
+      document.addEventListener('focusin', (event) => {
+        if (!desktopQuery.matches && event.target instanceof Element && event.target.closest('header.header')) {
+          runtime.setMobileHeaderHidden(false);
+          runtime.mobileScrollDistance = 0;
+        }
+      });
       runtime.bound = true;
     }
 
