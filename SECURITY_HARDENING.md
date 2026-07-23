@@ -44,7 +44,7 @@ The committed `_headers` file begins with a report-only Content Security Policy.
 
 ## Public content boundary
 
-`publish: false` prevents a note from appearing on the generated site. It does not make a file private when the repository itself is public.
+A note is eligible for the generated public Codex only when it lives under `Vault/Lore/` and uses `status: published`. Draft, review, archived, private, story, template and system notes are not publishable sources. This publication state does not make a file private when the repository itself is public.
 
 Keep embargoed lore, contracts, personal data, credentials, restricted commissioned source files and private planning material in a private source vault. Export only approved public canon into this repository.
 
