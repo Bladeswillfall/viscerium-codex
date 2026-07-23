@@ -11,11 +11,15 @@ Use this as the practical lookup for interacting with the VISCERIUM authoring sy
 | --- | --- |
 | Return to the creator dashboard | Open [[Home]] |
 | See deliberate work I need to return to | [[Home]] → **Next Actions**, or open [[System/Creator Tasks|Creator Tasks]] |
+| Capture a thought without leaving the writing flow | [[Home]] → **Capture Idea**, or **Templater: Create Capture Idea** |
+| Review captured writing/worldbuilding thoughts | Open [[System/Writer Inbox|Writer Inbox]] |
 | Return to the active StoryLine project / recent scenes | [[Home]] → **Writing Desk** |
+| Inspect active-project continuity | Open [[System/Continuity Desk|Continuity Desk]] |
 | Create fauna, flora, fungi or an item | [[Home]] → **Create Story Entity**, or **Templater: Create New Story Entity** |
 | Add optional Storyteller/profile fields later | **Templater: Insert template** → `Add Storyteller Fields` |
 | Browse every structured story entity together | Open [[Story Entities.base]] |
 | Check creator data and image assets for structural mistakes | `cd Site` then `npm run doctor:vault` |
+| Check StoryLine scene structure, dates and links | `cd Site` then `npm run doctor:stories` |
 | Check whether public Lore is safe to publish | `cd Site` then `npm run validate:vault` |
 | Run the normal local test/build suite | `cd Site` then `npm test` |
 | Start the Codex locally | `cd Site` then `npm run dev` |
@@ -28,9 +32,10 @@ Use this as the practical lookup for interacting with the VISCERIUM authoring sy
 
 Home provides:
 
-- colour-matched quick actions for frequent creator commands;
+- quick actions for **Create Story Entity**, **Capture Idea**, Story Timeline and StoryLine troubleshooting;
 - **Next Actions**, sourced from ordinary unchecked Markdown tasks across creator notes;
 - **Writing Desk**, sourced from StoryLine's existing `activeProjectFile` plus recent project scenes;
+- direct links to [[System/Continuity Desk|Continuity Desk]] and [[System/Writer Inbox|Writer Inbox]];
 - **Jump Back In**, showing recently modified creator notes;
 - **Creator Activity**, a 52-week heatmap of creator-file changes recorded between vault sessions;
 - links to the cross-entity and type-specific Bases;
@@ -74,6 +79,16 @@ Change detection is content-hash based rather than timestamp based, so normal Gi
 ## Obsidian commands
 
 Run these through **Ctrl/Cmd + P** unless stated otherwise.
+
+### Capture while writing
+
+| Command / action | What it does | Changes files? |
+| --- | --- | --- |
+| **Templater: Create Capture Idea** | Prompts for one rough thought, creates a timestamped `type: creator-capture` / `status: inbox` note beneath `Drafts/Inbox/`, then gets out of the way. This is what the Home **Capture Idea** button invokes. | **Yes.** Creates one Markdown note. |
+| Open [[System/Writer Inbox|Writer Inbox]] | Shows current inbox captures and reminds you that the inbox is a buffer, not a completion queue. | **No.** Read-only Dataview surface. |
+| Open [[System/Continuity Desk|Continuity Desk]] | Derives scene order, POV/location/character usage and placed/unplaced story dates from the active StoryLine project. | **No.** Read-only Dataview surface. |
+
+The capture rule is: **Capture now. Worldbuild later.** A capture is not canon, not automatically a task, and does not need to become anything.
 
 ### Story entity authoring
 
@@ -153,11 +168,12 @@ cd Site
 | --- | --- | --- |
 | `npm ci` | Installs the exact dependencies recorded in `package-lock.json`. Preferred after pulling dependency changes or when reproducing CI. | Installs `node_modules`; does not change source files. |
 | `npm run doctor:vault` | Runs **Vault Doctor** across creator entities, then checks the repository image policy. Fails on objective structural errors or non-WebP raster assets; prints non-failing notices for suspicious creator data such as a near-miss canonical place name. | **No.** Read-only. |
-| `npm run validate:vault` | Validates **published Lore** requirements and active-content safety. This is different from Vault Doctor: it is publication-facing rather than creator-database-facing. | **No.** Read-only. |
+| `npm run doctor:stories` | Runs **Story Doctor** across `Stories/`. Errors cover objective scene/date/configuration problems. Unresolved wikilinks and duplicate ordering values are notices because they may be intentional. Missing optional story metadata is not an error. | **No.** Read-only. |
+| `npm run validate:vault` | Validates **published Lore** requirements and active-content safety. This is different from the Doctors: it is publication-facing rather than creator/story-workspace-facing. | **No.** Read-only. |
 | `npm run validate:timelines` | Validates canonical timeline/event metadata without generating the final datasets. | **No.** Read-only. |
 | `npm run validate` | Checks generated public docs for required generated frontmatter such as title, description, slug and type. Run after sync/generation when diagnosing generated-content problems. | **No.** Read-only. |
-| `npm run test:unit` | Runs the Node unit-test suite, including Vault Doctor, image-policy and homepage regression tests. | **No** source changes. |
-| `npm test` | Normal local confidence check: runs Vault Doctor, unit tests and the full Astro build. | Produces normal build/generated output as part of the build process. |
+| `npm run test:unit` | Runs the Node unit-test suite, including Vault Doctor, Story Doctor, image-policy, homepage and writing-foundation regressions. | **No** source changes. |
+| `npm test` | Normal local confidence check: runs Vault Doctor, Story Doctor, unit tests and the full Astro build. | Produces normal build/generated output as part of the build process. |
 | `npm run benchmark:timelines` | Runs timeline performance benchmarks used by CI. Useful before/after substantial timeline compiler changes. | **No** source changes intended. |
 | `npm run sync` | Rebuilds/synchronises publishable vault content into the generated site content used by Astro. It validates the WebP-only raster policy before copying assets; it does not re-encode PNG/JPEG into WebP. | **Yes.** Updates generated site content/data. |
 | `npm run generate:maps` | Regenerates map data from source metadata. | **Yes.** Updates generated map data. |
@@ -180,7 +196,7 @@ npm test
 npm run benchmark:timelines
 ```
 
-CI additionally builds the Obsidian timeline plugin and runs browser checks.
+CI additionally runs Story Doctor directly, builds the Obsidian timeline plugin and runs browser checks.
 
 ## Terminal commands — Obsidian timeline plugin
 
@@ -220,11 +236,21 @@ Destructive recovery commands are deliberately omitted from this quick reference
 
 Examples: correct entity folder/type pairing, valid eras, list-shaped relationship fields, unique Myrkild IDs, and WebP-only raster artwork with SVG reserved for genuine vectors.
 
+**Story Doctor** asks:
+
+> Is the private narrative workspace structurally coherent?
+
+Examples: StoryLine scene placement, parseable supplied `storyDate`, no duplicate `calendarDate`, sensible property types, current StoryLine configuration and visibility of unresolved story links. It does **not** judge prose or require optional planning metadata.
+
 **`validate:vault`** asks:
 
 > Is material marked for publication valid and safe to publish?
 
-They solve different problems and both are useful.
+They solve different problems and are intentionally separate.
+
+## Future writing tooling
+
+Potential later systems are recorded in [[System/Future Writing Tooling|Future Writing Tooling]]. They are deliberately deferred until actual drafting proves a need; their presence in the roadmap is not permission to build them pre-emptively.
 
 ## Maintenance rule
 
