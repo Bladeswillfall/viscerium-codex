@@ -85,7 +85,7 @@ test('Okse uses the same public switch with canon-grounded faction sections', as
   await expect(page).toHaveURL(okseDominionUrl);
 });
 
-test('CITADEL presents anchored overlapping chronicle tabs without hairline chrome', async ({ page }) => {
+test('CITADEL presents anchored chronicle tabs on a deliberate era-coloured page edge', async ({ page }) => {
   await page.goto(okseDominionUrl, { waitUntil: 'networkidle' });
 
   const root = page.locator('[data-codex-view-root]');
@@ -100,15 +100,19 @@ test('CITADEL presents anchored overlapping chronicle tabs without hairline chro
     const lore = document.querySelector('[data-codex-view-tab="lore"]');
     const storyteller = document.querySelector('[data-codex-view-tab="storyteller"]');
     if (!(tabs instanceof HTMLElement) || !(lore instanceof HTMLElement) || !(storyteller instanceof HTMLElement)) return null;
+    const tabsRect = tabs.getBoundingClientRect();
     const loreRect = lore.getBoundingClientRect();
     const storytellerRect = storyteller.getBoundingClientRect();
+    const tabStyle = getComputedStyle(tabs);
     return {
-      baselineBorder: getComputedStyle(tabs).borderBottomWidth,
+      baselineBorder: tabStyle.borderBottomWidth,
+      baselineStyle: tabStyle.borderBottomStyle,
       loreClip: getComputedStyle(lore).clipPath,
       storytellerClip: getComputedStyle(storyteller).clipPath,
       loreShadow: getComputedStyle(lore).boxShadow,
       storytellerShadow: getComputedStyle(storyteller).boxShadow,
       overlap: loreRect.right - storytellerRect.left,
+      edgeExtension: tabsRect.right - Math.max(loreRect.right, storytellerRect.right),
       loreTop: loreRect.top,
       storytellerTop: storytellerRect.top,
       loreBottom: loreRect.bottom,
@@ -119,12 +123,14 @@ test('CITADEL presents anchored overlapping chronicle tabs without hairline chro
   });
 
   expect(geometry).not.toBeNull();
-  expect(geometry.baselineBorder).toBe('0px');
+  expect(geometry.baselineBorder).toBe('1px');
+  expect(geometry.baselineStyle).toBe('solid');
   expect(geometry.loreClip).not.toBe('none');
   expect(geometry.storytellerClip).not.toBe('none');
   expect(geometry.loreShadow).toBe('none');
   expect(geometry.storytellerShadow).toBe('none');
   expect(geometry.overlap).toBeGreaterThan(0);
+  expect(geometry.edgeExtension).toBeGreaterThan(32);
   expect(almostEqual(geometry.loreBottom, geometry.storytellerBottom)).toBe(true);
   expect(geometry.loreHeight).toBeGreaterThan(geometry.storytellerHeight);
   expect(geometry.loreTop).toBeLessThan(geometry.storytellerTop);
