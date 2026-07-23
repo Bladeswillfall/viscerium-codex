@@ -84,7 +84,19 @@ test('Story Doctor notices duplicate scene ordering without treating it as creat
   assert.ok(result.notices.some((item) => item.code === 'duplicate-story-order'));
 });
 
-test('Story Doctor rejects scene notes outside the StoryLine Scenes folder', async () => {
+test('Story Doctor accepts StoryLine corkboard scene notes under Notes without counting them as manuscript scenes', async () => {
+  const result = await withVault({
+    'Stories/Test Novel/Test Novel.md': project,
+    'Stories/Test Novel/Scenes/01 Manuscript Scene.md': scene('sequence: 1\n'),
+    'Stories/Test Novel/Notes/00-00 Untitled.md': scene('status: idea\ncorkboardNote: true\n', 'Scratch thought.'),
+  }, (vaultRoot) => diagnoseStories({ vaultRoot }));
+
+  assert.equal(result.ok, true);
+  assert.equal(result.sceneCount, 1);
+  assert.equal(result.errors.some((item) => item.code === 'scene-folder'), false);
+});
+
+test('Story Doctor rejects scene notes outside the StoryLine Scenes folder when they are not corkboard notes', async () => {
   const result = await withVault({
     'Stories/Test Novel/Test Novel.md': project,
     'Stories/Test Novel/Loose Scene.md': scene('sequence: 1\n'),
