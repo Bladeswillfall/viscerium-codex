@@ -33,6 +33,19 @@ If a fact only rewards encyclopaedic completeness, leave it in Lore or omit it.
 6. Do not infer negative canon from absent properties.
 7. Do not fabricate connective prose that changes the meaning of a field.
 
+## Public view behaviour
+
+Published notes keep their ordinary Lore article as the default view.
+
+The build projects populated Storyteller properties into generated public metadata. The nested generated `storyteller` object is a site projection and must not be authored manually in vault notes.
+
+- Show the **Lore / Storyteller** switch only when at least one supported Storyteller field is populated.
+- Default to **Lore** on page load. Do not surprise readers by replacing the canonical article with the concise view.
+- Storyteller mode replaces the article body for that view; it does not create another route or another canonical article.
+- Hide the Lore table of contents while Storyteller mode is active because its headings no longer describe the visible panel.
+- Do not manufacture a Storyteller tab from ordinary Lore prose. A creator must deliberately establish the source fields first.
+- Pages with no Storyteller data must render exactly like ordinary Codex articles.
+
 ## Type-appropriate presentation
 
 The same concept may require different public language.
