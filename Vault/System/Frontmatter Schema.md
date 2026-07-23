@@ -19,6 +19,31 @@ Do not add a second `publish` boolean. Canon/continuity truth is a separate conc
 
 Use arrays where a field can genuinely hold several values. Do not create self-reference fields merely to repeat the note title; `title` already identifies the entity.
 
+## Location properties
+
+`location_kind` is a deliberately broad semantic classification for `type: location` notes. Supported values are `region`, `settlement`, `wilderness`, `route` and `site`.
+
+It does **not** replace Atlas `map.marker`. A fortress-city can be a `settlement` in canon while using a more specific fortification-style marker on a map.
+
+Optional location field families are injected progressively through [[Templates/Lore/Add Location Fields|Add Location Fields]]:
+
+- settlement — `settlement_scale`, `population_band`, `governance_summary`, `economic_role`, `local_services`, `defences`;
+- wilderness — `terrain_summary`, `climate_summary`, `natural_resources`, `wilderness_travel`, `environmental_hazards`;
+- site — `site_origin`, `site_condition`, `current_use`, `access_conditions`, `notable_features`;
+- route — `route_connections`, `normal_traffic`, `route_conditions`, `seasonal_changes`, `route_dangers`.
+
+These fields record world facts. They remain optional and should not be populated merely because a location belongs to one of the broad kinds.
+
+## Storyteller properties
+
+Storyteller properties are concise creator data intended to support future story-facing presentation. They do not replace Lore prose.
+
+Locations may use fields such as `approach_signs`, `first_impression`, `sensory_signature`, `why_people_come`, `ordinary_activity`, `outsider_knowledge`, `local_knowledge`, `local_tension` and `story_complication`.
+
+Factions may use fields such as `recognisable_presence`, `encounter_context`, `public_reputation`, `current_wants`, `current_pressures`, `preferred_methods`, `resources_and_reach`, `operational_limits`, `internal_tensions` and `story_complication`.
+
+See [[Storyteller View SOP]] for the admission test and public interpretation rules.
+
 ## Creator maturity
 
 `development_level: stub` means an intentionally incomplete creator record. It is not a publication state. Generated relationship stubs belong under `Drafts/Inbox/` until developed and deliberately promoted.

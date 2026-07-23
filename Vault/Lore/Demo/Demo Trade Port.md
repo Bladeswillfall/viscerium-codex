@@ -7,6 +7,11 @@ icon: location
 era: CITADEL
 faction: Demo League
 region: Central Testland
+location_kind: settlement
+settlement_scale: trade port
+economic_role: Regional transfer point for bulk cargo and coastal trade.
+local_services: Warehousing, chandlers, freight handling and short-term lodging for crews.
+defences: Harbour watch posts and controlled access to the working quays.
 map:
   id: exploration-demo-world
   x: 61

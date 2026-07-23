@@ -9,8 +9,13 @@ SOPs should govern judgement, review and maintenance. They should not repeat ste
 - [[Creator Command Reference]] — lookup for creator-facing Obsidian commands, Bases, terminal commands, validation and common system interactions.
 - [[Story Entity Workflow SOP]] — use Templater correctly, choose between command-based and folder-first creation, and understand automatic draft filing.
 - [[Entity Authoring SOP]] — decide what information is worth adding and when an entry is done enough.
+- [[Sourcebook Readiness SOP]] — develop locations, factions and everyday-world connective tissue so future commercial products can reuse canon without turning worldbuilding into a completion exercise.
 - [[Schema Change SOP]] — review new properties, templates and Base columns before expanding the authoring system.
 - [[Storyteller View SOP]] — decide what belongs in the public Storyteller view and how it should relate to lore.
+
+## Current audits
+
+- [[System/Audits/Okse Sourcebook Readiness Audit|Okse Sourcebook Readiness Audit]] — first product-scoped stress test of the model; use it as an editorial example, not a completion score.
 
 ## When to add an SOP
 

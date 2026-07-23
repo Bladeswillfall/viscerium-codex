@@ -115,6 +115,47 @@ const configs = {
     { id: "story", label: "Story seed — consequences beyond combat", fields: [
       { key: "story_complication", prompt: "What problem can this construct create beyond simply attacking someone?" }
     ] }
+  ],
+  location: [
+    { id: "experience", label: "Experience — approach and first impression", fields: [
+      { key: "approach_signs", prompt: "What might reveal that characters are approaching this place before they arrive?" },
+      { key: "first_impression", prompt: "What immediate impression should this place make on a newcomer?" },
+      { key: "sensory_signature", prompt: "Which recurring sight, sound, smell or physical sensation makes the place distinctive?" }
+    ] },
+    { id: "use", label: "Use — why people come and what happens here", fields: [
+      { key: "why_people_come", prompt: "Why do ordinary people or travellers deliberately come here?" },
+      { key: "ordinary_activity", prompt: "What ordinary activity makes the location feel inhabited or used?" }
+    ] },
+    { id: "knowledge", label: "Knowledge — outsiders and locals", fields: [
+      { key: "outsider_knowledge", prompt: "What would a reasonably informed outsider commonly know about this place?" },
+      { key: "local_knowledge", prompt: "What useful truth do locals know that outsiders usually do not?" }
+    ] },
+    { id: "story", label: "Story seed — local pressure or complication", fields: [
+      { key: "local_tension", prompt: "What unresolved local pressure can affect people here even without direct violence?" },
+      { key: "story_complication", prompt: "What problem could this location naturally create in a story?" }
+    ] }
+  ],
+  faction: [
+    { id: "presence", label: "Presence — recognition and contact", fields: [
+      { key: "recognisable_presence", prompt: "How would someone recognise this faction's presence before meeting a named member?" },
+      { key: "encounter_context", prompt: "How are ordinary people most likely to encounter this faction?" },
+      { key: "public_reputation", prompt: "What broad reputation does the faction have among people who know of it?" }
+    ] },
+    { id: "agenda", label: "Agenda — wants, pressure and methods", fields: [
+      { key: "current_wants", prompt: "What does this faction currently want enough to act on?" },
+      { key: "current_pressures", prompt: "What pressure, fear or constraint is shaping its current behaviour?" },
+      { key: "preferred_methods", prompt: "What methods does it normally favour when pursuing its aims?" }
+    ] },
+    { id: "reach", label: "Reach — resources and limits", fields: [
+      { key: "resources_and_reach", prompt: "What can this faction realistically bring to bear, and where?" },
+      { key: "operational_limits", prompt: "Where does its influence, knowledge or capability meaningfully break down?" }
+    ] },
+    { id: "friction", label: "Friction — internal tensions", fields: [
+      { key: "internal_tensions", prompt: "Which internal disagreement, constituency or contradiction can change how the faction behaves?" }
+    ] },
+    { id: "story", label: "Story seed — consequences of involvement", fields: [
+      { key: "story_complication", prompt: "What problem could involvement with this faction naturally create?" }
+    ] }
   ]
 };
 
