@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - refactor/vault-authoring-architecture
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -13,7 +16,7 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout branch
+      - name: Checkout migration branch
         uses: actions/checkout@v4
         with:
           ref: refactor/vault-authoring-architecture
