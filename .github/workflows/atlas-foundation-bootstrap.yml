@@ -1,0 +1,50 @@
+name: Atlas foundation bootstrap
+
+on:
+  push:
+    branches:
+      - feature/atlas-relationships-foundation
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-lock:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/atlas-relationships-foundation
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: Site/package-lock.json
+
+      - name: Install dependencies and refresh lockfile
+        working-directory: Site
+        run: npm install --no-audit --no-fund
+
+      - name: Run VISCERIUM validation and build
+        working-directory: Site
+        run: npm test
+
+      - name: Commit refreshed package lock
+        shell: bash
+        run: |
+          if git diff --quiet -- Site/package-lock.json; then
+            echo "package-lock.json is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Site/package-lock.json
+          git commit -m "Refresh frontend dependency lockfile"
+          git push origin HEAD:feature/atlas-relationships-foundation
