@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const storytellerDemoUrl = 'http://127.0.0.1:4321/demo/demo-trade-port/';
+const okseDominionUrl = 'http://127.0.0.1:4321/eras/citadel/okse-dominion/';
 
 test.use({ viewport: { width: 1280, height: 900 } });
 
@@ -55,4 +56,27 @@ test('Lore and Storyteller tabs support keyboard navigation', async ({ page }) =
   await page.keyboard.press('Home');
   await expect(loreTab).toBeFocused();
   await expect(loreTab).toHaveAttribute('aria-selected', 'true');
+});
+
+test('Okse uses the same public switch with canon-grounded faction sections', async ({ page }) => {
+  await page.goto(okseDominionUrl, { waitUntil: 'networkidle' });
+
+  const loreTab = page.getByRole('tab', { name: 'Lore' });
+  const storytellerTab = page.getByRole('tab', { name: 'Storyteller' });
+  const storytellerPanel = page.locator('[data-codex-storyteller-panel]');
+
+  await expect(loreTab).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('.sl-markdown-content')).toContainText('Iron roots, blood fruit.');
+
+  await storytellerTab.click();
+
+  await expect(storytellerPanel).toBeVisible();
+  await expect(storytellerPanel.getByRole('heading', { name: 'Presence' })).toBeVisible();
+  await expect(storytellerPanel.getByRole('heading', { name: 'Agenda' })).toBeVisible();
+  await expect(storytellerPanel.getByRole('heading', { name: 'Reach' })).toBeVisible();
+  await expect(storytellerPanel.getByRole('heading', { name: 'Internal friction' })).toBeVisible();
+  await expect(storytellerPanel.getByRole('heading', { name: 'Consequences of involvement' })).toBeVisible();
+  await expect(storytellerPanel).toContainText('defensive self-sufficiency');
+  await expect(storytellerPanel).toContainText('Leysingi');
+  await expect(page).toHaveURL(okseDominionUrl);
 });
