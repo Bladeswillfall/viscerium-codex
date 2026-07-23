@@ -1,0 +1,260 @@
+---
+const { starlightRoute } = Astro.locals;
+const storyteller = starlightRoute.entry.data.storyteller;
+const sections = storyteller?.sections ?? [];
+const hasStoryteller = sections.length > 0;
+---
+
+{hasStoryteller && (
+  <div class="codex-article-view-switcher" data-codex-view-root data-view="lore">
+    <div class="codex-article-view-tabs" role="tablist" aria-label="Article view">
+      <button
+        id="codex-tab-lore"
+        class="codex-article-view-tab"
+        type="button"
+        role="tab"
+        aria-selected="true"
+        tabindex="0"
+        data-codex-view-tab="lore"
+      >
+        Lore
+      </button>
+      <button
+        id="codex-tab-storyteller"
+        class="codex-article-view-tab"
+        type="button"
+        role="tab"
+        aria-selected="false"
+        tabindex="-1"
+        aria-controls="codex-storyteller-panel"
+        data-codex-view-tab="storyteller"
+      >
+        Storyteller
+      </button>
+    </div>
+
+    <section
+      id="codex-storyteller-panel"
+      class="codex-storyteller-panel"
+      role="tabpanel"
+      aria-labelledby="codex-tab-storyteller"
+      tabindex="0"
+      hidden
+      data-codex-storyteller-panel
+    >
+      <header class="codex-storyteller-intro">
+        <p class="codex-kicker">Storyteller</p>
+        <p>Concise, system-agnostic handles for using this subject in scenes, journeys and stories.</p>
+      </header>
+
+      {sections.map((section) => (
+        <section class="codex-storyteller-section" aria-labelledby={`storyteller-${section.id}`}>
+          <h2 id={`storyteller-${section.id}`}>{section.title}</h2>
+          <dl class="codex-storyteller-facts">
+            {section.items.map((item) => (
+              <div class="codex-storyteller-fact">
+                <dt>{item.label}</dt>
+                <dd>
+                  {Array.isArray(item.value)
+                    ? item.value.map((value) => <span class="codex-storyteller-value">{value}</span>)
+                    : item.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))}
+    </section>
+  </div>
+)}
+
+<script>
+  function initialiseStorytellerSwitcher() {
+    const roots = [...document.querySelectorAll('[data-codex-view-root]')];
+    if (!roots.length) {
+      delete document.documentElement.dataset.codexArticleView;
+      return;
+    }
+
+    for (const root of roots) {
+      if (!(root instanceof HTMLElement) || root.dataset.initialised === 'true') continue;
+      const main = root.closest('main');
+      const lorePanel = main?.querySelector('.sl-markdown-content');
+      const storytellerPanel = root.querySelector('[data-codex-storyteller-panel]');
+      const tabs = [...root.querySelectorAll('[data-codex-view-tab]')];
+      if (!(lorePanel instanceof HTMLElement) || !(storytellerPanel instanceof HTMLElement) || !tabs.length) continue;
+
+      const lorePanelId = lorePanel.id || 'codex-lore-panel';
+      lorePanel.id = lorePanelId;
+      lorePanel.setAttribute('role', 'tabpanel');
+      lorePanel.setAttribute('aria-labelledby', 'codex-tab-lore');
+      const loreTab = root.querySelector('[data-codex-view-tab="lore"]');
+      if (loreTab instanceof HTMLElement) loreTab.setAttribute('aria-controls', lorePanelId);
+
+      const activate = (view, moveFocus = false) => {
+        const storytellerActive = view === 'storyteller';
+        lorePanel.hidden = storytellerActive;
+        storytellerPanel.hidden = !storytellerActive;
+        root.dataset.view = storytellerActive ? 'storyteller' : 'lore';
+        document.documentElement.dataset.codexArticleView = root.dataset.view;
+
+        for (const tab of tabs) {
+          if (!(tab instanceof HTMLButtonElement)) continue;
+          const selected = tab.dataset.codexViewTab === root.dataset.view;
+          tab.setAttribute('aria-selected', String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          if (selected && moveFocus) tab.focus();
+        }
+      };
+
+      for (const tab of tabs) {
+        if (!(tab instanceof HTMLButtonElement)) continue;
+        tab.addEventListener('click', () => activate(tab.dataset.codexViewTab));
+        tab.addEventListener('keydown', (event) => {
+          if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+          event.preventDefault();
+          const currentIndex = tabs.indexOf(tab);
+          let nextIndex = currentIndex;
+          if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+          if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
+          if (event.key === 'Home') nextIndex = 0;
+          if (event.key === 'End') nextIndex = tabs.length - 1;
+          const next = tabs[nextIndex];
+          if (next instanceof HTMLButtonElement) activate(next.dataset.codexViewTab, true);
+        });
+      }
+
+      root.dataset.initialised = 'true';
+      activate('lore');
+    }
+  }
+
+  initialiseStorytellerSwitcher();
+  document.addEventListener('astro:page-load', initialiseStorytellerSwitcher);
+</script>
+
+<style is:global>
+  .codex-article-view-switcher {
+    margin-block: 1rem 1.75rem;
+  }
+
+  .codex-article-view-tabs {
+    display: flex;
+    gap: 0;
+    border-block-end: 1px solid var(--sl-color-hairline);
+  }
+
+  .codex-article-view-tab {
+    appearance: none;
+    margin: 0 0 -1px;
+    border: 0;
+    border-block-end: 2px solid transparent;
+    padding: .6rem .85rem;
+    background: transparent;
+    color: var(--sl-color-gray-3);
+    font: inherit;
+    font-size: var(--sl-text-sm);
+    font-weight: 650;
+    letter-spacing: .02em;
+    cursor: pointer;
+  }
+
+  .codex-article-view-tab:hover,
+  .codex-article-view-tab:focus-visible {
+    color: var(--sl-color-white);
+    background: color-mix(in oklch, var(--codex-accent) 8%, transparent);
+    outline: none;
+  }
+
+  .codex-article-view-tab[aria-selected='true'] {
+    border-block-end-color: var(--sl-color-accent-high);
+    color: var(--sl-color-white);
+  }
+
+  .codex-storyteller-panel {
+    max-width: 52rem;
+    padding-block-start: 1.5rem;
+  }
+
+  .codex-storyteller-intro {
+    margin-block-end: 2rem;
+    padding: 1rem 1.1rem;
+    border-inline-start: 2px solid var(--sl-color-accent-high);
+    background: color-mix(in oklch, var(--codex-accent) 7%, transparent);
+  }
+
+  .codex-storyteller-intro p {
+    margin: 0;
+  }
+
+  .codex-storyteller-intro .codex-kicker {
+    margin-block-end: .25rem;
+    font-size: var(--sl-text-xs);
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+  }
+
+  .codex-storyteller-section + .codex-storyteller-section {
+    margin-block-start: 2rem;
+  }
+
+  .codex-storyteller-section h2 {
+    margin: 0 0 .75rem;
+    color: var(--sl-color-white);
+    font-size: var(--sl-text-h3);
+  }
+
+  .codex-storyteller-facts {
+    margin: 0;
+  }
+
+  .codex-storyteller-fact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .25rem;
+    padding-block: .8rem;
+    border-block-start: 1px solid var(--sl-color-hairline-light);
+  }
+
+  .codex-storyteller-fact:last-child {
+    border-block-end: 1px solid var(--sl-color-hairline-light);
+  }
+
+  .codex-storyteller-fact dt {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-sm);
+    font-weight: 650;
+  }
+
+  .codex-storyteller-fact dd {
+    margin: 0;
+    color: var(--sl-color-gray-1);
+    line-height: 1.65;
+  }
+
+  .codex-storyteller-value {
+    display: block;
+  }
+
+  html[data-codex-article-view='storyteller'] .right-sidebar-container {
+    display: none !important;
+  }
+
+  @media (min-width: 42rem) {
+    .codex-storyteller-fact {
+      grid-template-columns: minmax(10rem, 13rem) minmax(0, 1fr);
+      gap: 1.25rem;
+    }
+  }
+
+  @media (min-width: 72rem) {
+    html[data-codex-article-view='storyteller'] .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    html[data-codex-article-view='storyteller'] .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) > main > .content-panel > .sl-container {
+      max-width: min(100%, 52rem) !important;
+    }
+  }
+</style>
