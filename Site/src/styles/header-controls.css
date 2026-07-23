@@ -101,6 +101,31 @@ html[data-codex-mobile-header][data-codex-mobile-header-hidden] header.header {
   transform: translateY(calc(-100% - 1px));
 }
 
+/*
+  Starlight's mobile menu button is independently fixed near the top edge. When the
+  Codex header is visible, move that floating bubble and the sidebar pane down by
+  the same navigation height so the returning header never covers the control.
+  They use the same easing as the header, making all three surfaces travel together.
+*/
+html[data-codex-mobile-header] .sidebar > starlight-menu-button button {
+  transform: translateY(var(--sl-nav-height, 3.5rem));
+  transition: transform .28s cubic-bezier(.22, .61, .36, 1);
+  will-change: transform;
+}
+
+html[data-codex-mobile-header][data-codex-mobile-header-hidden] .sidebar > starlight-menu-button button {
+  transform: translateY(0);
+}
+
+html[data-codex-mobile-header] .sidebar-pane {
+  inset-block-start: var(--sl-nav-height, 3.5rem);
+  transition: inset-block-start .28s cubic-bezier(.22, .61, .36, 1);
+}
+
+html[data-codex-mobile-header][data-codex-mobile-header-hidden] .sidebar-pane {
+  inset-block-start: 0;
+}
+
 .codex-header-search {
   display: flex;
   min-width: 0;
@@ -240,7 +265,9 @@ html[data-codex-wide-header] .codex-header-search button[data-open-modal] > kbd 
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html[data-codex-mobile-header] header.header {
+  html[data-codex-mobile-header] header.header,
+  html[data-codex-mobile-header] .sidebar > starlight-menu-button button,
+  html[data-codex-mobile-header] .sidebar-pane {
     transition: none;
   }
 }
