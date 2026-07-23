@@ -319,13 +319,13 @@ cssclasses:
 > > **New Story Entity**  
 > > Guided creation for fauna, flora, fungi or an item. It asks for a small core, offers only useful optional detail, and files the result into the correct draft database.
 > >
-> > **Quick action above:** **Create Story Entity**. Command Palette fallback: **Templater: Create New Story Entity**.
+> > **Quick action above:** **Create Story Entity**. Command Palette fallback: **Templater: Create Databases/New Story Entity**.
 > >
 > > **New Lore Entity**  
-> > Guided creation for characters, factions, locations, events and species. Era and relationship fields use searchable choices; explicitly choosing **Create new…** makes a draft stub under `Drafts/Inbox/` and adds a follow-up task. Command Palette: **Templater: Create New Lore Entity**.
+> > Guided creation for characters, factions, locations, events and species. Era and relationship fields use searchable choices; explicitly choosing **Create new…** makes a draft stub under `Drafts/Inbox/` and adds a follow-up task. Command Palette: **Templater: Create Lore/New Lore Entity**.
 > >
 > > **New Myrkild Unit**  
-> > Guided unit creation for era, Myrkild species, origin, size and known locations. Command Palette: **Templater: Create New Myrkild Unit**.
+> > Guided unit creation for era, Myrkild species, origin, size and known locations. Command Palette: **Templater: Create Databases/New Myrkild Unit**.
 > >
 > > **Creator context**  
 > > **Open Creator Context** closes the global Graph, opens Outline, Backlinks and Local Graph in the right sidebar, and leaves Git available as a utility pane.

@@ -36,7 +36,7 @@ Use folders for entity type, not era, nation or biome. Those relationships belon
 
 The fastest routes are equivalent:
 
-1. On [[Home]], click **Create Story Entity**; or run **Templater: Create New Story Entity** from the Command Palette.
+1. On [[Home]], click **Create Story Entity**; or run **Templater: Create Databases/New Story Entity** from the Command Palette.
 2. Select Fauna, Flora, Fungi or Item.
 3. Complete the small common core.
 4. Select only the optional modules that matter to the current story.

@@ -32,7 +32,7 @@ Use this when an idea occurs outside a database folder.
 
 ### Fast route
 
-1. From [[Home]], click **Create Story Entity**; or open the Command Palette and run **Templater: Create New Story Entity**.
+1. From [[Home]], click **Create Story Entity**; or open the Command Palette and run **Templater: Create Databases/New Story Entity**.
 2. Choose Fauna, Flora, Fungi or Item when prompted.
 3. Complete the small common core.
 4. Select only the optional modules that matter now.
@@ -127,7 +127,7 @@ Check the per-device **Trigger Templater on new file creation** toggle first. Th
 
 ### The Home Create button is disabled
 
-Confirm Templater is enabled and restart Obsidian after pulling configuration changes. The button looks for the checked-in **Templater: Create New Story Entity** command and disables itself rather than falling back to an unrelated command if that command is unavailable.
+Confirm Templater is enabled and restart Obsidian after pulling configuration changes. The button looks for the checked-in **Templater: Create Databases/New Story Entity** command and disables itself rather than falling back to an unrelated command if that command is unavailable.
 
 ### The type question appears during folder-first creation
 

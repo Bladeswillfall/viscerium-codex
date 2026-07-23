@@ -6,7 +6,7 @@ The publishing workflow does not require paid plugins. Keep the authoring stack 
 
 1. Enable the built-in **Templates** plugin and keep `Templates` as its template folder.
 2. Enable the built-in **Bases** plugin for creator-only card and database views.
-3. Enable **Templater** for guided entity creation, progressive Storyteller field injection and the checked-in startup homepage hook. Its configuration uses `Templates`, contains narrowly scoped folder-template rules for fauna, flora, fungi and items, registers a direct **Create New Story Entity** command, and registers the VISCERIUM Home startup template.
+3. Enable **Templater** for guided entity creation, progressive Storyteller field injection and the checked-in startup homepage hook. Its configuration uses `Templates`, contains narrowly scoped folder-template rules for fauna, flora, fungi and items, registers direct template-specific create commands for the guided creator templates, and registers the VISCERIUM Home startup template.
 4. On each device where folder-first creation should work, enable Templater's device-local **Trigger Templater on new file creation** switch. Do not add a vault-wide `/` catch-all rule.
 5. On each device where [[Home]] should open automatically, enable Templater's device-local **Enable startup templates** switch.
 6. Enable **Dataview** for the creator-only widgets and action surfaces on [[Home]] and for any deliberately authored creator queries. Canonical lore itself remains ordinary Markdown/YAML and does not depend on Dataview rendering.
