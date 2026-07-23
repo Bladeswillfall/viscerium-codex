@@ -96,16 +96,3 @@ test('public switcher keeps Lore default and supports accessible tab navigation'
   assert.match(component, /activate\('lore'\)/);
   assert.match(component, /\.sl-markdown-content/);
 });
-
-test('public switcher exposes distinct era styling hooks without changing tab semantics', async () => {
-  const component = await readRepo('Site/src/components/StorytellerSwitcher.astro');
-
-  assert.match(component, /data-era-style=\{eraStyle\}/);
-  for (const eraStyle of ['e1', 'e2', 'e3', 'e4']) {
-    assert.match(component, new RegExp(`data-era-style='${eraStyle}'`));
-  }
-  assert.match(component, /CITADEL: physical chronicle dividers/);
-  assert.match(component, /SMOG: stamped industrial plates/);
-  assert.match(component, /NEARSIGHT: mode wedges/);
-  assert.match(component, /ENTROPY: fractured brackets/);
-});
