@@ -200,6 +200,7 @@ export default defineConfig({
         './src/styles/timelines.css',
         './src/styles/maps.css',
         './src/styles/relationships.css',
+        './src/styles/exploration-pages.css',
         './src/styles/calendar.css',
         './src/styles/category-index.css',
         './src/styles/support.css',
