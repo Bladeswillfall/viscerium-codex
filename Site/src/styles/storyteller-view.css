@@ -2,12 +2,13 @@
 
 /*
   CITADEL: the selected chronicle tab is physically taller, not translated.
-  Both leaves share one baseline and the clipped silhouettes carry no decorative
-  hairline or shadow that can resolve as a stray sub-pixel edge.
+  Both leaves share one baseline. The baseline itself is now deliberate: it
+  continues the era-coloured edge beyond the tabs to mark the start of the page.
 */
 .codex-article-view-switcher[data-era-style='e1'] .codex-article-view-tabs {
   align-items: end;
-  border-block-end: 0 !important;
+  inline-size: min(100%, 52rem);
+  border-block-end: 1px solid color-mix(in oklch, var(--view-tab-accent) 68%, transparent) !important;
 }
 
 .codex-article-view-switcher[data-era-style='e1'] .codex-article-view-tab {
@@ -33,20 +34,24 @@
   transform: none !important;
 }
 
-/* Storyteller is another view of the same article, so retain the article sidebar. */
-html[data-codex-article-view='storyteller'] .right-sidebar-container {
+/*
+  Storyteller is another view of the same article. The component's original
+  prototype rules hid the sidebar and collapsed the desktop grid; these more
+  specific rules deliberately retain the normal article shell in both views.
+*/
+html[data-codex-article-view='storyteller'] body .main-frame .right-sidebar-container {
   display: block !important;
 }
 
 @media (min-width: 72rem) {
-  html[data-codex-article-view='storyteller']
+  html[data-codex-article-view='storyteller'] body
     .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container) {
     grid-template-columns: minmax(0, 1fr) minmax(18rem, 21rem) !important;
     column-gap: clamp(1.5rem, 3vw, 3rem);
     align-items: start;
   }
 
-  html[data-codex-article-view='storyteller']
+  html[data-codex-article-view='storyteller'] body
     .main-frame > .codex-two-column-content > .codex-main-pane:has(> .right-sidebar-container)
     > main > .content-panel > .sl-container {
     max-width: 100% !important;
