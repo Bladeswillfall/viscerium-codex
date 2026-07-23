@@ -123,6 +123,17 @@ export function diagnoseCreatorVault(manifest) {
     const file = recordPath(record);
     if (file.startsWith('Templates/')) continue;
     const data = record.data ?? {};
+
+    if (Object.hasOwn(data, 'publish')) {
+      addDiagnostic(
+        diagnostics,
+        'error',
+        'legacy-publish-field',
+        file,
+        'Remove the legacy "publish" boolean. Publication is controlled by status: published and Lore/ placement.',
+      );
+    }
+
     const type = data.type;
     const ordinaryFolderEntry = [...ORDINARY_ENTITY_FOLDERS].find(([, folder]) => file.startsWith(`${folder}/`));
     const inMyrkildFolder = file.startsWith(`${MYRKILD_FOLDER}/`);
@@ -156,9 +167,6 @@ export function diagnoseCreatorVault(manifest) {
     }
     if (isCreatorType && !nonEmptyString(data.description)) {
       addDiagnostic(diagnostics, 'error', 'missing-description', file, 'Creator entity is missing a non-empty "description".');
-    }
-    if (Object.hasOwn(data, 'publish') && typeof data.publish !== 'boolean') {
-      addDiagnostic(diagnostics, 'error', 'publish-type', file, '"publish" must be true or false when present.');
     }
     if (Object.hasOwn(data, 'development_level') && data.development_level != null && !DEVELOPMENT_LEVELS.has(data.development_level)) {
       addDiagnostic(
