@@ -12,7 +12,7 @@
   --relationship-node-bg: color-mix(in oklch, var(--codex-surface-raised) 86%, var(--codex-page-bg));
   --relationship-node-text: var(--sl-color-white);
   --relationship-edge: color-mix(in oklch, var(--codex-border-strong) 78%, var(--codex-border));
-  --relationship-edge-label: var(--sl-color-white);
+  --relationship-edge-label: color-mix(in oklch, var(--codex-fixed-light) 68%, var(--codex-border));
   --relationship-label-bg: var(--relationship-canvas);
   --relationship-inspector: color-mix(in oklch, var(--codex-surface-raised) 96%, transparent);
   margin-top: 1.25rem;
