@@ -29,7 +29,7 @@ const sceneArray = Array.from(
 
 const asArray = (value) => {
   if (value === undefined || value === null || value === "") return [];
-  return Array.isArray(value) ? value : [value];
+  return Array.from(dv.array(value));
 };
 
 const display = (value) => {
