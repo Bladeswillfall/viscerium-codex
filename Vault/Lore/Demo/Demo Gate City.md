@@ -5,7 +5,7 @@ status: published
 type: map
 era: CITADEL
 mapId: exploration-demo-city
-image: exploration-demo-city.svg
+image: /assets/maps/exploration-demo-city.svg
 width: 1200
 height: 900
 defaultZoom: 0
@@ -19,7 +19,7 @@ map:
   marker: settlement
   layer:
     - civilisation/settlements
-    - political/demo-faction-a
+    - political/demo-concord
   minZoom: -1
 tags:
   - demo
