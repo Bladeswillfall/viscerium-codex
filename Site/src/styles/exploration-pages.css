@@ -1,0 +1,53 @@
+/* Atlas and semantic relationship routes are application surfaces, not prose articles. */
+.main-frame:has(> .codex-exploration-page) {
+  box-sizing: border-box;
+  grid-column: 1 / -1 !important;
+  inline-size: 100%;
+  max-inline-size: none;
+  margin-inline: 0;
+  padding-inline: clamp(.85rem, 1.8vw, 2.25rem);
+}
+
+.main-frame > .codex-exploration-page,
+.main-frame > .codex-exploration-page > .codex-main-pane,
+.main-frame > .codex-exploration-page > .codex-main-pane > main,
+.main-frame > .codex-exploration-page > .codex-main-pane > main > .content-panel,
+.main-frame > .codex-exploration-page > .codex-main-pane > main > .content-panel > .sl-container,
+.main-frame > .codex-exploration-page .sl-markdown-content {
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: none !important;
+  margin-inline: 0;
+}
+
+.main-frame > .codex-exploration-page .sl-markdown-content {
+  padding-inline: 0;
+}
+
+.codex-exploration-page .content-panel {
+  padding-block-start: clamp(.7rem, 1.4vw, 1.25rem);
+}
+
+.codex-exploration-page .atlas,
+.codex-exploration-page .relationship-page {
+  width: 100%;
+  max-width: none;
+}
+
+.codex-exploration-page .atlas__canvas {
+  height: clamp(38rem, calc(100dvh - 15rem), 72rem);
+}
+
+.codex-exploration-page .atlas__frame {
+  min-height: min(68rem, calc(100dvh - 14rem));
+}
+
+@media (max-width: 48rem) {
+  .main-frame:has(> .codex-exploration-page) {
+    padding-inline: .65rem;
+  }
+
+  .codex-exploration-page .atlas__canvas {
+    height: clamp(32rem, 66dvh, 46rem);
+  }
+}
