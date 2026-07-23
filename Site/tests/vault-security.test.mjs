@@ -72,3 +72,17 @@ test('published note routes are derived from their file paths', () => {
   assert.equal(result.valid, false);
   assert.match(result.errors.join('\n'), /routes are derived from file paths/);
 });
+
+test('Lore rejects the retired publish boolean', () => {
+  const result = validateQuietly('Ordinary lore text.', { publish: true });
+
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /retired frontmatter "publish"/);
+});
+
+test('Lore rejects the retired canon status', () => {
+  const result = validateQuietly('Ordinary lore text.', { status: 'canon' });
+
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /retired status: canon/);
+});
