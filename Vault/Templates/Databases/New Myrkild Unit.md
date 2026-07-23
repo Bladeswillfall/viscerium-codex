@@ -25,5 +25,5 @@ const body = ["", "> [!tip] Stop when usable", "> Keep the structured profile fo
 tR += `${fm.join("\n")}\n${body.join("\n")}`;
 const folder = `Drafts/Databases/Myrkild Units/${origin}/${era}`;
 await ensureFolder(folder);
-if (tp.file.folder(true) !== folder) await tp.file.move(`${folder}/${tp.file.title}`);
+if (tp.file.folder(true) !== folder) await tp.file.move(`${folder}/${title}`);
 %>
