@@ -86,5 +86,5 @@ const guidance = type === "location"
 const body = [...guidance, ...bodies[type], "", "## Related", "", "- [ ] Review this inbox draft and promote it deliberately when established.", ""];
 tR += `${frontmatter.join("\n")}\n\n${body.join("\n")}`;
 await ensureFolder(config.folder);
-if (tp.file.folder(true) !== config.folder) await tp.file.move(`${config.folder}/${tp.file.title}`);
+if (tp.file.folder(true) !== config.folder) await tp.file.move(`${config.folder}/${title}`);
 %>
