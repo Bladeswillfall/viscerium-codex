@@ -18,12 +18,12 @@
 }
 
 :root[data-theme='light'] .relationship-explorer {
-  --relationship-canvas: color-mix(in oklch, var(--codex-page-bg) 84%, white);
-  --relationship-node-bg: color-mix(in oklch, var(--codex-surface-raised) 92%, white);
+  --relationship-canvas: color-mix(in oklch, var(--codex-page-bg) 84%, var(--codex-fixed-light));
+  --relationship-node-bg: color-mix(in oklch, var(--codex-surface-raised) 92%, var(--codex-fixed-light));
   --relationship-node-text: var(--codex-text-body);
   --relationship-edge: color-mix(in oklch, var(--codex-border) 74%, transparent);
   --relationship-edge-label: var(--codex-text-body);
-  --relationship-inspector: color-mix(in oklch, var(--codex-surface-raised) 92%, white);
+  --relationship-inspector: color-mix(in oklch, var(--codex-surface-raised) 92%, var(--codex-fixed-light));
 }
 
 .relationship-explorer__toolbar {
