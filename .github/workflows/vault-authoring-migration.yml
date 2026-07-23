@@ -23,7 +23,9 @@ jobs:
           fetch-depth: 0
 
       - name: Apply migration
-        run: python3 Tools/migrate-vault-authoring.py
+        run: |
+          python3 Tools/migrate-vault-authoring.py
+          python3 Tools/migrate-vault-authoring-fix.py
 
       - name: Set up Node
         uses: actions/setup-node@v4
