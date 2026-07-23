@@ -22,9 +22,18 @@ const compact = captured
   .trim()
   .slice(0, 52)
   .replace(/\s+/g, " ") || "Captured idea";
+
 const stamp = tp.date.now("YYYY-MM-DD HHmmss");
-const created = tp.date.now("YYYY-MM-DDTHH:mm:ss");
-await tp.file.move(`${inboxFolder}/${stamp} - ${compact}`);
+const baseTarget = `${inboxFolder}/${stamp} - ${compact}`;
+let target = baseTarget;
+let suffix = 2;
+while (tp.app.vault.getAbstractFileByPath(`${target}.md`)) {
+  target = `${baseTarget} ${suffix}`;
+  suffix += 1;
+}
+
+await tp.file.move(target);
+const created = new Date().toISOString();
 
 tR += `---\ntype: creator-capture\nstatus: inbox\ncreated: ${JSON.stringify(created)}\n---\n\n${captured.trim()}\n`;
 %>
