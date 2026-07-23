@@ -132,7 +132,9 @@ const shouldRenderSearch =
     };
 
     runtime.sync = () => {
-      root.toggleAttribute('data-codex-wide-header', desktopQuery.matches);
+      const isDesktop = desktopQuery.matches;
+      root.toggleAttribute('data-codex-wide-header', isDesktop);
+      root.toggleAttribute('data-codex-mobile-header', !isDesktop);
       runtime.resetMobileHeader();
     };
 
