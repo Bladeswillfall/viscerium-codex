@@ -42,7 +42,20 @@ jobs:
 
       - name: Run test suite
         working-directory: Site
-        run: npm test
+        run: |
+          set +e
+          npm test > ../migration-test.log 2>&1
+          code=$?
+          tail -n 220 ../migration-test.log
+          exit $code
+
+      - name: Upload test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-test-log
+          path: migration-test.log
+          if-no-files-found: ignore
 
       - name: Commit migration
         run: |
