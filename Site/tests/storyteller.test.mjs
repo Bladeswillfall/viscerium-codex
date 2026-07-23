@@ -48,6 +48,23 @@ test('non-canon trade port provides a complete public location canary', async ()
   );
 });
 
+test('Okse provides a canon-grounded faction Storyteller projection', async () => {
+  const source = matter(await readRepo('Vault/Lore/Eras/CITADEL/Okse Dominion.md'));
+  const projection = buildStorytellerProjection(source.data);
+
+  assert.ok(projection);
+  assert.equal(projection.type, 'faction');
+  assert.deepEqual(projection.sections.map((section) => section.id), ['presence', 'agenda', 'reach', 'friction', 'story']);
+  assert.match(
+    projection.sections.find((section) => section.id === 'agenda').items.find((item) => item.key === 'current_wants').value,
+    /oil|mineral|self-sufficiency/i,
+  );
+  assert.match(
+    projection.sections.find((section) => section.id === 'friction').items.find((item) => item.key === 'internal_tensions').value,
+    /Leysingi|enslaved|masters/i,
+  );
+});
+
 test('generated public docs receive one compact Storyteller object', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'viscerium-storyteller-'));
   const file = path.join(root, 'test.md');
