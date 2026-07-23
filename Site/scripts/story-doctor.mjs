@@ -271,17 +271,22 @@ export async function diagnoseStories({ vaultRoot = defaultVaultRoot } = {}) {
   for (const record of storyRecords) {
     const { data, relativePath: file } = record;
     const inScenesFolder = file.includes('/Scenes/');
+    const inNotesFolder = file.includes('/Notes/');
     const declaresScene = data.type === 'scene';
+    const isCorkboardSceneNote = declaresScene && inNotesFolder && data.corkboardNote === true;
 
     validateWikiLinks(record, linkIndex, diagnostics);
 
-    if (!inScenesFolder && !declaresScene) {
-      if (data.type === 'storyline') {
-        const projectBase = inferStoryLineProjectBase(file);
-        if (projectBase) projectBases.add(projectBase);
-      }
-      continue;
+    if (data.type === 'storyline' || isCorkboardSceneNote) {
+      const projectBase = inferStoryLineProjectBase(file);
+      if (projectBase) projectBases.add(projectBase);
     }
+
+    // StoryLine creates corkboard scratch notes under Notes/ with type: scene and
+    // corkboardNote: true. They are narrative planning notes, not timeline scenes.
+    if (isCorkboardSceneNote) continue;
+
+    if (!inScenesFolder && !declaresScene) continue;
 
     sceneCount += 1;
     const projectBase = inferStoryLineProjectBase(file);
@@ -292,7 +297,7 @@ export async function diagnoseStories({ vaultRoot = defaultVaultRoot } = {}) {
     }
 
     if (declaresScene && !inScenesFolder) {
-      addDiagnostic(diagnostics, 'error', 'scene-folder', file, 'A note with type "scene" must live beneath its StoryLine project Scenes/ folder.');
+      addDiagnostic(diagnostics, 'error', 'scene-folder', file, 'A StoryLine scene must live beneath its project Scenes/ folder unless StoryLine marks it as a corkboardNote under Notes/.');
     }
     if (inScenesFolder && !declaresScene) {
       addDiagnostic(diagnostics, 'notice', 'scene-type', file, 'File sits beneath Scenes/ but does not declare type: scene.');
