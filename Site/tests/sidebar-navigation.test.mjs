@@ -89,6 +89,27 @@ test('mobile header uses thresholded fixed reveal and hide states', () => {
   assert.doesNotMatch(headerControls, /html\[data-codex-mobile-header\] \.page\s*\{/);
 });
 
+test('mobile sidebar controls follow the auto-hiding header without being covered', () => {
+  const headerControls = read('../src/styles/header-controls.css');
+
+  assert.match(
+    headerControls,
+    /html\[data-codex-mobile-header\] \.sidebar > starlight-menu-button button\s*\{[\s\S]*?translateY\(var\(--sl-nav-height, 3\.5rem\)\)/,
+  );
+  assert.match(
+    headerControls,
+    /html\[data-codex-mobile-header\]\[data-codex-mobile-header-hidden\] \.sidebar > starlight-menu-button button\s*\{[\s\S]*?translateY\(0\)/,
+  );
+  assert.match(
+    headerControls,
+    /html\[data-codex-mobile-header\] \.sidebar-pane\s*\{[\s\S]*?inset-block-start:\s*var\(--sl-nav-height, 3\.5rem\)/,
+  );
+  assert.match(
+    headerControls,
+    /html\[data-codex-mobile-header\]\[data-codex-mobile-header-hidden\] \.sidebar-pane\s*\{[\s\S]*?inset-block-start:\s*0/,
+  );
+});
+
 test('homepage has no first-load reveal and still supports the sidebar rail', () => {
   const homepage = read('../src/pages/index.astro');
 
