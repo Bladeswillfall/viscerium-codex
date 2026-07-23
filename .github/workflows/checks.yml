@@ -30,6 +30,7 @@ jobs:
 
       - run: npm ci --silent --no-audit --no-fund
       - run: npm run doctor:vault
+      - run: npm run doctor:stories
       - run: npm run test:unit
       - run: npm run benchmark:timelines
       - run: npm run build
