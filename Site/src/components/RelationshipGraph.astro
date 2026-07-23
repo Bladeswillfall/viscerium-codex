@@ -94,12 +94,13 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
       return;
     }
 
-    const rootStyles = getComputedStyle(document.documentElement);
+    const rootStyles = getComputedStyle(root);
     const accent = cssValue(rootStyles, '--codex-accent', '#b59058');
-    const surface = cssValue(rootStyles, '--codex-surface-raised', '#1d1d1d');
-    const text = cssValue(rootStyles, '--sl-color-white', '#f5f5f5');
-    const muted = cssValue(rootStyles, '--sl-color-gray-3', '#a4a4a4');
-    const border = cssValue(rootStyles, '--codex-border', '#474747');
+    const surface = cssValue(rootStyles, '--relationship-node-bg', '#1d1d1d');
+    const text = cssValue(rootStyles, '--relationship-node-text', '#f5f5f5');
+    const muted = cssValue(rootStyles, '--relationship-edge-label', '#a4a4a4');
+    const border = cssValue(rootStyles, '--relationship-edge', '#62605a');
+    const canvasBackground = cssValue(rootStyles, '--relationship-canvas', '#111');
 
     const elements = [
       ...(graph.nodes || []).map((node) => ({
@@ -131,20 +132,39 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
         {
           selector: 'node',
           style: {
+            shape: 'round-rectangle',
             'background-color': surface,
-            'border-color': accent,
-            'border-width': 2,
+            'border-color': border,
+            'border-width': 1.5,
             color: text,
             label: 'data(label)',
             'font-family': 'IBM Plex Sans, system-ui, sans-serif',
-            'font-size': 11,
-            'font-weight': 600,
-            'text-valign': 'bottom',
-            'text-margin-y': 8,
+            'font-size': 10,
+            'font-weight': 650,
+            'text-valign': 'center',
+            'text-halign': 'center',
             'text-wrap': 'wrap',
-            'text-max-width': 130,
-            width: 24,
-            height: 24,
+            'text-max-width': 145,
+            width: 'label',
+            height: 30,
+            padding: 10,
+            'overlay-opacity': 0,
+          },
+        },
+        {
+          selector: 'node[type = "character"]',
+          style: {
+            shape: 'ellipse',
+            width: 58,
+            height: 58,
+            padding: 4,
+            'text-max-width': 72,
+          },
+        },
+        {
+          selector: 'node[type = "location"]',
+          style: {
+            'border-style': 'dashed',
           },
         },
         {
@@ -152,23 +172,26 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
           style: {
             'background-color': accent,
             'border-color': text,
-            'border-width': 3,
+            'border-width': 2.5,
+            color: canvasBackground,
           },
         },
         {
           selector: 'edge',
           style: {
-            width: 1.5,
+            width: 1.6,
             'line-color': border,
             'curve-style': 'bezier',
-            opacity: 0.88,
+            opacity: 0.82,
             label: 'data(label)',
             color: muted,
             'font-family': 'IBM Plex Sans, system-ui, sans-serif',
             'font-size': 8,
-            'text-background-color': surface,
-            'text-background-opacity': 0.9,
-            'text-background-padding': 2,
+            'font-weight': 550,
+            'text-background-color': canvasBackground,
+            'text-background-opacity': 0.92,
+            'text-background-padding': 3,
+            'text-background-shape': 'roundrectangle',
             'text-rotation': 'autorotate',
           },
         },
@@ -177,6 +200,7 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
           style: {
             'target-arrow-shape': 'triangle',
             'target-arrow-color': border,
+            'arrow-scale': 0.85,
           },
         },
         {
@@ -186,15 +210,19 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
             'line-color': accent,
             'target-arrow-color': accent,
             color: text,
+            opacity: 1,
           },
         },
       ],
       layout: {
         name: 'cose',
         animate: false,
-        padding: 40,
-        nodeRepulsion: 7000,
-        idealEdgeLength: 95,
+        padding: 56,
+        nodeRepulsion: 12500,
+        idealEdgeLength: 150,
+        edgeElasticity: 90,
+        gravity: 0.35,
+        componentSpacing: 110,
       },
     });
 
@@ -249,10 +277,10 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
     const runLayout = () => {
       const name = layoutSelect?.value === 'dagre' ? 'dagre' : 'cose';
       const options = name === 'dagre'
-        ? { name: 'dagre', rankDir: 'LR', rankSep: 70, nodeSep: 35, padding: 40, animate: false }
-        : { name: 'cose', animate: false, padding: 40, nodeRepulsion: 7000, idealEdgeLength: 95 };
+        ? { name: 'dagre', rankDir: 'LR', rankSep: 105, nodeSep: 60, edgeSep: 26, padding: 56, animate: false }
+        : { name: 'cose', animate: false, padding: 56, nodeRepulsion: 12500, idealEdgeLength: 150, edgeElasticity: 90, gravity: 0.35, componentSpacing: 110 };
       cy.elements(':visible').layout(options).run();
-      cy.fit(cy.elements(':visible'), 44);
+      cy.fit(cy.elements(':visible'), 64);
     };
 
     const applyRelationFilter = () => {
@@ -308,7 +336,7 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
       node.select();
       cy.animate({
         center: { eles: node },
-        zoom: Math.max(cy.zoom(), 1.35),
+        zoom: Math.max(cy.zoom(), 1.15),
         duration: 280,
       });
       renderNodeDetails(node);
