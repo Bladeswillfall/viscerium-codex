@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test';
 
+const okseDominionUrl = 'http://127.0.0.1:4321/eras/citadel/okse-dominion/';
+
 test.use({ viewport: { width: 1280, height: 900 } });
 
 test('structural chrome is borderless while article callouts retain their borders', async ({ page }) => {
-  await page.goto('http://127.0.0.1:4321/degel-system/okse-dominion/', { waitUntil: 'networkidle' });
+  await page.goto(okseDominionUrl, { waitUntil: 'networkidle' });
 
   const result = await page.evaluate(() => {
     const borderWidths = (selector) => {
@@ -35,7 +37,7 @@ test('structural chrome is borderless while article callouts retain their border
 });
 
 test('Okse editorial columns sit side by side on desktop and stack on small screens', async ({ page }) => {
-  await page.goto('http://127.0.0.1:4321/degel-system/okse-dominion/', { waitUntil: 'networkidle' });
+  await page.goto(okseDominionUrl, { waitUntil: 'networkidle' });
 
   const firstColumns = page.locator('.sl-markdown-content .cx-cols').first();
   await expect(firstColumns).toBeVisible();
@@ -68,7 +70,7 @@ test('Okse editorial columns sit side by side on desktop and stack on small scre
 });
 
 test('Okse uses one full-page raised deck with the global footer rail revealed only at the end', async ({ page }) => {
-  await page.goto('http://127.0.0.1:4321/degel-system/okse-dominion/', { waitUntil: 'networkidle' });
+  await page.goto(okseDominionUrl, { waitUntil: 'networkidle' });
 
   const pageShell = page.locator('.page');
   const footerRail = page.locator('.ion-codex-footer');
