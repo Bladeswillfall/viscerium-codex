@@ -131,7 +131,7 @@ test('canonical timeline pages explicitly omit the right sidebar and release con
   assert.match(transform, /if \(usedTimeline\) parsed\.data\.timelinePage = true/);
   assert.match(twoColumn, /const timelinePage = starlightRoute\.entry\.data\.timelinePage === true/);
   assert.match(twoColumn, /timelinePage && "codex-timeline-page"/);
-  assert.match(twoColumn, /!timelinePage && starlightRoute\.toc/);
+  assert.match(twoColumn, /!timelinePage && !explorationPage && starlightRoute\.toc/);
   assert.match(twoColumn, /data-timeline-page=\{timelinePage \|\| undefined\}/);
   assert.match(performanceStyles, /\.codex-two-column-content\.codex-timeline-page/);
   assert.match(performanceStyles, /--sl-content-width: 100%/);
