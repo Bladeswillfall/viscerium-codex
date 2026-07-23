@@ -7,6 +7,13 @@ icon: location
 era: CITADEL
 faction: Demo Concord
 region: West Testland
+location_kind: site
+site_origin: Built as a frontier fortification controlling the western approach.
+site_condition: Maintained and operational.
+current_use: Garrison post and checkpoint.
+access_conditions: Civilian entry is controlled by the Demo Concord garrison.
+notable_features: Elevated watch position and a defensible gate controlling the approach.
+defences: Permanent garrison, walls and controlled entry points.
 map:
   id: exploration-demo-world
   x: 18
