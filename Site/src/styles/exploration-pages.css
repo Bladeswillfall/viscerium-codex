@@ -5,7 +5,7 @@
   inline-size: 100%;
   max-inline-size: none;
   margin-inline: 0;
-  padding-inline: clamp(.85rem, 1.8vw, 2.25rem);
+  padding-inline: 0;
 }
 
 .main-frame > .codex-exploration-page,
@@ -34,6 +34,28 @@
   max-width: none;
 }
 
+.relationship-explorer {
+  --relationship-label-bg: var(--relationship-node-bg);
+}
+
+/* Keep headings and controls comfortably inset while the actual tools use the full viewport width. */
+.codex-exploration-page .atlas__header,
+.codex-exploration-page .atlas__toolbar,
+.codex-exploration-page .atlas__marker-index,
+.codex-exploration-page .atlas__empty-note,
+.codex-exploration-page .relationship-page > :not(.relationship-explorer),
+.codex-exploration-page .relationship-explorer__toolbar {
+  margin-inline: clamp(.85rem, 1.8vw, 2.25rem);
+}
+
+.codex-exploration-page .atlas__frame,
+.codex-exploration-page .relationship-explorer__frame {
+  width: 100%;
+  max-width: none;
+  border-inline: 0;
+  border-radius: 0;
+}
+
 .codex-exploration-page .atlas__canvas {
   height: clamp(38rem, calc(100dvh - 15rem), 72rem);
 }
@@ -43,8 +65,13 @@
 }
 
 @media (max-width: 48rem) {
-  .main-frame:has(> .codex-exploration-page) {
-    padding-inline: .65rem;
+  .codex-exploration-page .atlas__header,
+  .codex-exploration-page .atlas__toolbar,
+  .codex-exploration-page .atlas__marker-index,
+  .codex-exploration-page .atlas__empty-note,
+  .codex-exploration-page .relationship-page > :not(.relationship-explorer),
+  .codex-exploration-page .relationship-explorer__toolbar {
+    margin-inline: .65rem;
   }
 
   .codex-exploration-page .atlas__canvas {
