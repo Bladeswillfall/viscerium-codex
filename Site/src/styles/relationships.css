@@ -13,6 +13,7 @@
   --relationship-node-text: var(--sl-color-white);
   --relationship-edge: color-mix(in oklch, var(--codex-border-strong) 78%, var(--codex-border));
   --relationship-edge-label: var(--sl-color-gray-2);
+  --relationship-label-bg: var(--relationship-canvas);
   --relationship-inspector: color-mix(in oklch, var(--codex-surface-raised) 96%, transparent);
   margin-top: 1.25rem;
 }
@@ -23,6 +24,7 @@
   --relationship-node-text: var(--codex-text-body);
   --relationship-edge: color-mix(in oklch, var(--codex-border) 74%, transparent);
   --relationship-edge-label: var(--codex-text-body);
+  --relationship-label-bg: var(--relationship-canvas);
   --relationship-inspector: color-mix(in oklch, var(--codex-surface-raised) 92%, var(--codex-fixed-light));
 }
 
