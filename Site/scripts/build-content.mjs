@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import process from 'node:process';
 import { loadGeneratedDocs, loadVaultContent } from './content-manifest.mjs';
-import { validateVaultAssets } from './validate-vault-assets.mjs';
+import { validateRepositoryImages } from './validate-vault-assets.mjs';
 import { validateVaultNotes } from './validate-vault-notes.mjs';
 import { generateTimelineData, reportTimelineError } from './generate-timeline-data.mjs';
 import { validateGeneratedContent } from './validate-content.mjs';
@@ -35,7 +35,7 @@ if (!validModes.has(mode)) {
 
     const vault = await loadVaultContent({ refresh: true });
     if (!validateVaultNotes(vault)) throw new Error('Vault source validation failed.');
-    if (!(await validateVaultAssets())) throw new Error('Vault asset validation failed.');
+    if (!(await validateRepositoryImages())) throw new Error('Repository image policy failed.');
 
     await generateTimelineData({
       manifest: vault,

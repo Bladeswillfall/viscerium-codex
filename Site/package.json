@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node scripts/build-content.mjs --mode=dev && astro dev",
     "dev:sync": "npm run dev",
-    "doctor:vault": "node scripts/vault-doctor.mjs",
+    "doctor:vault": "node scripts/vault-doctor.mjs && node scripts/validate-vault-assets.mjs",
     "validate:vault": "node scripts/validate-vault-notes.mjs",
     "validate:timelines": "node scripts/generate-timeline-data.mjs --validate-only",
     "validate:icons": "node scripts/validate-icon-output.mjs",

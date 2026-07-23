@@ -1,15 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { execFile } from 'node:child_process';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { promisify } from 'node:util';
 import { validateVaultAssets } from '../scripts/validate-vault-assets.mjs';
+
+const execFileAsync = promisify(execFile);
+const forbiddenRasterExtension = /\.(?:avif|bmp|gif|heic|heif|jpe?g|png|tiff?)$/i;
 
 async function validateFixture(source, filename = 'fixture.svg') {
   const rootDir = await mkdtemp(path.join(os.tmpdir(), 'viscerium-svg-security-'));
   const originalError = console.error;
+  const originalLog = console.log;
   const errors = [];
   console.error = (...values) => errors.push(values.join(' '));
+  console.log = () => {};
 
   try {
     await writeFile(path.join(rootDir, filename), source);
@@ -17,6 +24,7 @@ async function validateFixture(source, filename = 'fixture.svg') {
     return { valid, errors };
   } finally {
     console.error = originalError;
+    console.log = originalLog;
     await rm(rootDir, { recursive: true, force: true });
   }
 }
@@ -65,4 +73,39 @@ test('asset validation accepts a matching WebP signature', async () => {
 
   assert.equal(result.valid, true);
   assert.deepEqual(result.errors, []);
+});
+
+test('asset validation rejects a valid PNG because raster artwork must be WebP', async () => {
+  const result = await validateFixture(
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    'fixture.png',
+  );
+
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /Raster assets must be WebP/);
+});
+
+test('asset validation rejects JPEG even when its extension matches its signature', async () => {
+  const result = await validateFixture(
+    Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43]),
+    'fixture.jpeg',
+  );
+
+  assert.equal(result.valid, false);
+  assert.match(result.errors.join('\n'), /Raster assets must be WebP/);
+});
+
+test('repository does not track non-WebP raster files', async () => {
+  const repoRoot = path.resolve(process.cwd(), '..');
+  const { stdout } = await execFileAsync('git', ['ls-files'], { cwd: repoRoot });
+  const forbidden = stdout
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .filter((file) => forbiddenRasterExtension.test(file));
+
+  assert.deepEqual(
+    forbidden,
+    [],
+    `Tracked non-WebP raster files are forbidden; convert them to .webp or use .svg for genuine vectors:\n${forbidden.join('\n')}`,
+  );
 });

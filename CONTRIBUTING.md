@@ -15,6 +15,8 @@ Thanks for helping improve this codex.
 - Use wikilinks like `[[Example City]]` so backlinks and the graph view stay useful.
 - Use Codex layout tags such as `[cols]`, `[card]`, `[note]`, `[warning]`, and `[lore]` instead of blank Markdown tables for layout.
 - Use Obsidian embeds like `![[example-banner.svg]]` for vault assets copied during sync.
+- Raster artwork committed to VISCERIUM must be `.webp`. Genuine vector assets may remain `.svg`; keep PNG/JPEG and other archival raster originals outside the repository.
+- The checked-in Obsidian Image Converter preset targets WebP 75, but validation is authoritative: Doctor, sync/dev/build and CI reject non-WebP raster assets.
 - Do not publish raw `dataviewjs`.
 - Native fenced `chronos` blocks are supported for note-local editorial timelines and are transformed into Starlight Chronos embeds during sync.
 - Creator-facing commands and terminal workflows are documented in `Vault/System/SOPs/Creator Command Reference.md`.
@@ -43,7 +45,7 @@ npm test
 npm run benchmark:timelines
 ```
 
-`npm test` now runs Vault Doctor, unit tests and the production site build. Vault Doctor checks creator-database structure; it does not require optional worldbuilding fields to be filled.
+`npm test` runs Vault Doctor, unit tests and the production site build. Vault Doctor checks creator-database structure and the repository image-format policy; it does not require optional worldbuilding fields to be filled.
 
 Useful focused checks:
 
