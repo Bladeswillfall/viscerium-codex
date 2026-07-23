@@ -13,8 +13,7 @@ cssclasses:
 
 > [!home-actions] QUICK ACTIONS
 > ```dataviewjs
-> const findCommand = (name) => Object.entries(app.commands.commands)
->   .find(([id, command]) => id.startsWith("templater-obsidian:") && command.name === name)?.[0];
+> const templaterCreateCommand = (templatePath) => `templater-obsidian:create-${templatePath}`;
 >
 > const openCreatorContext = async () => {
 >   for (const leaf of app.workspace.getLeavesOfType("graph")) leaf.detach();
@@ -42,19 +41,19 @@ cssclasses:
 > const actions = [
 >   {
 >     label: "+ Create Story Entity",
->     id: findCommand("Create New Story Entity"),
+>     id: templaterCreateCommand("Templates/Databases/New Story Entity.md"),
 >     tone: "create",
 >     title: "Create fauna, flora, fungi or an item through the guided Story Entity workflow.",
 >   },
 >   {
 >     label: "+ Create Lore Entity",
->     id: findCommand("Create New Lore Entity"),
+>     id: templaterCreateCommand("Templates/Lore/New Lore Entity.md"),
 >     tone: "create",
 >     title: "Create a character, faction, location, event or species with guided relationship fields.",
 >   },
 >   {
 >     label: "+ Create Myrkild Unit",
->     id: findCommand("Create New Myrkild Unit"),
+>     id: templaterCreateCommand("Templates/Databases/New Myrkild Unit.md"),
 >     tone: "create",
 >     title: "Create a structured Myrkild unit with guided era, species, origin and location fields.",
 >   },
