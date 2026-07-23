@@ -32,6 +32,17 @@ try {
   tp.system.suggester = originalSuggester;
 }
 
+function renderedDocumentTitle(source) {
+  const line = source.split(/\r?\n/).find((entry) => entry.startsWith("title:"));
+  if (!line) return tp.file.title;
+  const raw = line.slice("title:".length).trim();
+  try {
+    return String(JSON.parse(raw)).trim() || tp.file.title;
+  } catch {
+    return raw.replace(/^['"]|['"]$/g, "").trim() || tp.file.title;
+  }
+}
+
 const targetFolder = selectedType ? TYPE_FOLDERS[selectedType] : null;
 if (targetFolder && tp.file.folder(true) !== targetFolder) {
   // Templater checks new blank files after a short delay. Keep a command-created
@@ -42,7 +53,8 @@ if (targetFolder && tp.file.folder(true) !== targetFolder) {
   if (remainingDelay > 0) {
     await new Promise((resolve) => setTimeout(resolve, remainingDelay));
   }
-  await tp.file.move(`${targetFolder}/${tp.file.title}`);
+  const documentTitle = renderedDocumentTitle(rendered);
+  await tp.file.move(`${targetFolder}/${documentTitle}`);
 }
 
 tR += rendered;
