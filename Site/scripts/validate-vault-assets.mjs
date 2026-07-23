@@ -9,7 +9,7 @@ const siteRoot = process.cwd();
 const defaultAssetRoot = path.resolve(siteRoot, siteConfig.vaultAssetDir);
 const defaultRepositoryImageRoots = [
   defaultAssetRoot,
-  path.resolve(siteRoot, 'src/assets'),
+  path.resolve(siteRoot, 'src'),
   path.resolve(siteRoot, 'public'),
 ];
 const imageExtensions = new Set([
