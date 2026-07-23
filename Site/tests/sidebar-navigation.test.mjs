@@ -89,6 +89,23 @@ test('mobile header uses thresholded fixed reveal and hide states', () => {
   assert.doesNotMatch(headerControls, /html\[data-codex-mobile-header\] \.page\s*\{/);
 });
 
+test('mobile table of contents follows the auto-hiding header without changing its functionality', () => {
+  const headerControls = read('../src/styles/header-controls.css');
+
+  assert.match(
+    headerControls,
+    /html\[data-codex-mobile-header\] mobile-starlight-toc > nav\s*\{[\s\S]*?top:\s*calc\(var\(--sl-nav-height, 3\.5rem\) - 1px\) !important/,
+  );
+  assert.match(
+    headerControls,
+    /html\[data-codex-mobile-header\]\[data-codex-mobile-header-hidden\] mobile-starlight-toc > nav\s*\{[\s\S]*?top:\s*0 !important/,
+  );
+  assert.match(
+    headerControls,
+    /mobile-starlight-toc > nav\s*\{[\s\S]*?transition:\s*top \.28s cubic-bezier\(\.22, \.61, \.36, 1\)/,
+  );
+});
+
 test('mobile sidebar controls follow the auto-hiding header without being covered', () => {
   const headerControls = read('../src/styles/header-controls.css');
 
