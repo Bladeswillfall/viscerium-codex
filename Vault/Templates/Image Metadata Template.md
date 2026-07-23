@@ -22,7 +22,7 @@ tags: []
 related: []
 ---
 
-%% Image metadata notes are provenance records. Set asset to the filename stored in Vault/Assets/Images/. Use image when another Codex surface needs the same asset as its display image. Before publishing, provide meaningful alt text and enough rights/provenance information to know whether the artwork may be used. %%
+%% Image metadata notes are provenance records. Store raster artwork in Vault/Assets/Images/ as .webp; genuine vector artwork may remain .svg. Keep PNG/JPEG or other archival originals outside the repository. Use `asset` for the stored filename and `image` when another Codex surface needs the same asset as its display image. Before publishing, provide meaningful alt text and enough rights/provenance information to know whether the artwork may be used. %%
 
 ## Description
 
