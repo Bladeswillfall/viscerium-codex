@@ -102,6 +102,22 @@ html[data-codex-mobile-header][data-codex-mobile-header-hidden] header.header {
 }
 
 /*
+  Keep Starlight's mobile On-this-page control fixed and functionally unchanged,
+  but let it occupy the space directly beneath whichever header state is active.
+  When the header hides, the TOC rises to the viewport edge; when the header returns,
+  both surfaces move together using the same timing curve.
+*/
+html[data-codex-mobile-header] mobile-starlight-toc > nav {
+  top: calc(var(--sl-nav-height, 3.5rem) - 1px) !important;
+  transition: top .28s cubic-bezier(.22, .61, .36, 1);
+  will-change: top;
+}
+
+html[data-codex-mobile-header][data-codex-mobile-header-hidden] mobile-starlight-toc > nav {
+  top: 0 !important;
+}
+
+/*
   Starlight's mobile menu button is independently fixed near the top edge. When the
   Codex header is visible, move that floating bubble and the sidebar pane down by
   the same navigation height so the returning header never covers the control.
@@ -266,6 +282,7 @@ html[data-codex-wide-header] .codex-header-search button[data-open-modal] > kbd 
 
 @media (prefers-reduced-motion: reduce) {
   html[data-codex-mobile-header] header.header,
+  html[data-codex-mobile-header] mobile-starlight-toc > nav,
   html[data-codex-mobile-header] .sidebar > starlight-menu-button button,
   html[data-codex-mobile-header] .sidebar-pane {
     transition: none;
