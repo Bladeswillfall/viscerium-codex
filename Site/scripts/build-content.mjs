@@ -6,6 +6,7 @@ import { validateVaultNotes } from './validate-vault-notes.mjs';
 import { generateTimelineData, reportTimelineError } from './generate-timeline-data.mjs';
 import { validateGeneratedContent } from './validate-content.mjs';
 import { generateMapData } from './generate-map-data.mjs';
+import { generateRelationshipData } from './generate-relationship-data.mjs';
 
 const modeArgument = process.argv.find((value) => value.startsWith('--mode='));
 const mode = modeArgument?.slice('--mode='.length) || 'build';
@@ -51,8 +52,9 @@ if (!validModes.has(mode)) {
       throw new Error('Generated content validation failed.');
     }
 
-    if (mode === 'build') {
+    if (mode !== 'sync') {
       await generateMapData({ manifest: docs });
+      await generateRelationshipData({ manifest: docs });
     }
 
     console.log(`Completed shared content pipeline in ${mode} mode.`);

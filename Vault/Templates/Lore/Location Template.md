@@ -18,12 +18,15 @@ map:
   y:
   marker: location
   layer:
-    - locations
+    - civilisation/locations
+  minZoom:
+  maxZoom:
 tags: []
+relationships: {}
 related: []
 ---
 
-%% Before publishing: write a reader-safe description, establish the relevant era, and only keep map metadata when this place belongs on a configured map. %%
+%% Before publishing: write a reader-safe description, establish the relevant era, and only keep map metadata when this place belongs on a configured map. Layer names may use `/` to create nested Atlas controls. Use minZoom/maxZoom only when the marker should appear at a particular map scale. %%
 
 ## Summary
 
@@ -48,6 +51,10 @@ Include the events whose consequences are still visible or politically/socially 
 ## Story Use
 
 What kinds of problems, choices, discoveries, or conflicts does this place naturally create?
+
+## Relationships
+
+Use structured frontmatter when a relationship itself matters to navigation or continuity, for example `located-in`, `contains`, `connected-to`, `claimed-by`, or `rivals`. Keep ordinary contextual references in `related`.
 
 ## Related
 
