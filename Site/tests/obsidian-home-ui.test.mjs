@@ -16,6 +16,11 @@ async function readJson(relativePath) {
   return JSON.parse(await readText(relativePath));
 }
 
+function quoteDepth(line) {
+  const prefix = line.match(/^(?:>\s*)+/)?.[0] ?? '';
+  return [...prefix].filter((character) => character === '>').length;
+}
+
 test('Iconic owns explorer folder icons without a competing CSS layer', async () => {
   const communityPlugins = await readJson('.obsidian/community-plugins.json');
   const appearance = await readJson('.obsidian/appearance.json');
@@ -34,16 +39,13 @@ test('Home keeps DataviewJS lines at the code fence quote depth', async () => {
   let blocks = 0;
 
   for (let index = 0; index < lines.length; index += 1) {
-    const opening = lines[index].match(/^((?:>\s*)+)```dataviewjs\s*$/);
-    if (!opening) continue;
+    if (!/^(?:>\s*)+```dataviewjs\s*$/.test(lines[index])) continue;
     blocks += 1;
-    const prefix = opening[1];
+    const depth = quoteDepth(lines[index]);
     let cursor = index + 1;
     for (; cursor < lines.length; cursor += 1) {
-      if (lines[cursor] === `${prefix}\`\`\``) break;
-      assert.ok(lines[cursor].startsWith(prefix), `DataviewJS line ${cursor + 1} escaped its callout depth`);
-      const remainder = lines[cursor].slice(prefix.length);
-      assert.ok(!remainder.startsWith('>'), `DataviewJS line ${cursor + 1} contains an accidental extra blockquote marker`);
+      if (quoteDepth(lines[cursor]) === depth && lines[cursor].trimEnd().endsWith('```')) break;
+      assert.equal(quoteDepth(lines[cursor]), depth, `DataviewJS line ${cursor + 1} changed callout quote depth`);
     }
     assert.ok(cursor < lines.length, `DataviewJS block starting at line ${index + 1} is not closed`);
     index = cursor;
