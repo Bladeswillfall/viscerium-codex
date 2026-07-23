@@ -105,6 +105,7 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
     const accent = resolvedCssColor(root, '--codex-accent', '#b59058');
     const surface = resolvedCssColor(root, '--relationship-node-bg', '#1d1d1d');
     const text = resolvedCssColor(root, '--relationship-node-text', '#f5f5f5');
+    const muted = resolvedCssColor(root, '--relationship-edge-label', '#a4a4a4');
     const border = resolvedCssColor(root, '--relationship-edge', '#62605a');
     const canvasBackground = resolvedCssColor(root, '--relationship-canvas', '#111111');
 
@@ -141,19 +142,19 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
             shape: 'round-rectangle',
             'background-color': surface,
             'border-color': border,
-            'border-width': 1.5,
+            'border-width': 1.25,
             color: text,
             label: 'data(label)',
             'font-family': 'IBM Plex Sans, system-ui, sans-serif',
-            'font-size': 10,
-            'font-weight': 650,
+            'font-size': 9.5,
+            'font-weight': 500,
             'text-valign': 'center',
             'text-halign': 'center',
             'text-wrap': 'wrap',
-            'text-max-width': 145,
+            'text-max-width': 140,
             width: 'label',
             height: 30,
-            padding: 10,
+            padding: 9,
             'overlay-opacity': 0,
           },
         },
@@ -161,10 +162,10 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
           selector: 'node[type = "character"]',
           style: {
             shape: 'ellipse',
-            width: 58,
-            height: 58,
+            width: 56,
+            height: 56,
             padding: 4,
-            'text-max-width': 72,
+            'text-max-width': 70,
           },
         },
         {
@@ -178,28 +179,28 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
           style: {
             'background-color': accent,
             'border-color': text,
-            'border-width': 2.5,
+            'border-width': 2,
             color: canvasBackground,
           },
         },
         {
           selector: 'edge',
           style: {
-            width: 1.6,
+            width: 1.35,
             'line-color': border,
             'curve-style': 'bezier',
-            opacity: 0.88,
+            opacity: 0.72,
             label: 'data(label)',
-            color: text,
+            color: muted,
             'font-family': 'IBM Plex Sans, system-ui, sans-serif',
-            'font-size': 16,
-            'font-weight': 500,
-            'min-zoomed-font-size': 9,
+            'font-size': 11,
+            'font-weight': 400,
+            'min-zoomed-font-size': 7,
             'text-outline-color': canvasBackground,
-            'text-outline-width': 0.75,
-            'text-outline-opacity': 1,
+            'text-outline-width': 0.35,
+            'text-outline-opacity': 0.9,
             'text-rotation': 'none',
-            'text-margin-y': -10,
+            'text-margin-y': -7,
           },
         },
         {
@@ -207,13 +208,13 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
           style: {
             'target-arrow-shape': 'triangle',
             'target-arrow-color': border,
-            'arrow-scale': 0.85,
+            'arrow-scale': 0.72,
           },
         },
         {
           selector: 'edge:selected',
           style: {
-            width: 3,
+            width: 2.25,
             'line-color': accent,
             'target-arrow-color': accent,
             color: text,
@@ -225,12 +226,12 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
       layout: {
         name: 'cose',
         animate: false,
-        padding: 56,
-        nodeRepulsion: 12500,
-        idealEdgeLength: 150,
-        edgeElasticity: 90,
-        gravity: 0.35,
-        componentSpacing: 110,
+        padding: 64,
+        nodeRepulsion: 14000,
+        idealEdgeLength: 180,
+        edgeElasticity: 85,
+        gravity: 0.28,
+        componentSpacing: 125,
       },
     });
 
@@ -285,10 +286,10 @@ const hasGraph = (graph?.nodes?.length ?? 0) > 0 && (graph?.edges?.length ?? 0) 
     const runLayout = () => {
       const name = layoutSelect?.value === 'dagre' ? 'dagre' : 'cose';
       const options = name === 'dagre'
-        ? { name: 'dagre', rankDir: 'LR', rankSep: 105, nodeSep: 60, edgeSep: 26, padding: 56, animate: false }
-        : { name: 'cose', animate: false, padding: 56, nodeRepulsion: 12500, idealEdgeLength: 150, edgeElasticity: 90, gravity: 0.35, componentSpacing: 110 };
+        ? { name: 'dagre', rankDir: 'LR', rankSep: 120, nodeSep: 72, edgeSep: 32, padding: 64, animate: false }
+        : { name: 'cose', animate: false, padding: 64, nodeRepulsion: 14000, idealEdgeLength: 180, edgeElasticity: 85, gravity: 0.28, componentSpacing: 125 };
       cy.elements(':visible').layout(options).run();
-      cy.fit(cy.elements(':visible'), 64);
+      cy.fit(cy.elements(':visible'), 72);
     };
 
     const applyRelationFilter = () => {
