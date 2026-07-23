@@ -61,12 +61,26 @@ jobs:
 
       - name: Commit migration
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No migration changes to commit."
-            exit 0
-          fi
-          git commit -m "refactor: organize vault authoring architecture"
-          git push origin HEAD:refactor/vault-authoring-architecture
+          set +e
+          {
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            if git diff --cached --quiet; then
+              echo "No migration changes to commit."
+              exit 0
+            fi
+            git commit -m "refactor: organize vault authoring architecture"
+            git push origin HEAD:refactor/vault-authoring-architecture
+          } > migration-git.log 2>&1
+          code=$?
+          cat migration-git.log
+          exit $code
+
+      - name: Upload git diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-git-log
+          path: migration-git.log
+          if-no-files-found: ignore
