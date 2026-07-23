@@ -23,11 +23,10 @@ function pageForRecord(record, id) {
   return `/${id}/`;
 }
 
-export async function generateMapData({ manifest } = {}) {
-  const docs = manifest ?? await loadGeneratedDocs();
+export function compileMapData(records) {
   const maps = {};
 
-  for (const record of docs.records) {
+  for (const record of records) {
     const id = record.relativePath.replace(/\.(md|mdx)$/i, '');
     const { data } = record;
     if (data.type === 'map' && data.mapId) {
@@ -47,7 +46,7 @@ export async function generateMapData({ manifest } = {}) {
     }
   }
 
-  for (const record of docs.records) {
+  for (const record of records) {
     const id = record.relativePath.replace(/\.(md|mdx)$/i, '');
     const { data } = record;
     if (!data.map?.id) continue;
@@ -82,6 +81,13 @@ export async function generateMapData({ manifest } = {}) {
   for (const map of Object.values(maps)) {
     map.markers.sort((a, b) => String(a.title ?? '').localeCompare(String(b.title ?? '')));
   }
+
+  return maps;
+}
+
+export async function generateMapData({ manifest } = {}) {
+  const docs = manifest ?? await loadGeneratedDocs();
+  const maps = compileMapData(docs.records);
 
   await fs.mkdir(path.dirname(outFile), { recursive: true });
   await fs.writeFile(outFile, `${JSON.stringify(maps, null, 2)}\n`, 'utf8');
