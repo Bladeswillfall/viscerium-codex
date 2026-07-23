@@ -42,8 +42,21 @@ The same concept may require different public language.
 - Fungi may show **Fruiting and spread**, **Exposure risks** and **Practical value**.
 - Items may show **Use**, **Limitations**, **Availability** and **Common users**.
 - Myrkild units may show **Signs**, **Tactics**, **Counterplay** and **Consequences beyond combat**.
+- Locations may show **Approach**, **First impression**, **Why people come**, **Local knowledge** and **Local tensions**.
+- Factions may show **Recognisable presence**, **Current agenda**, **Preferred methods**, **Reach and limits** and **Internal tensions**.
 
 Do not force every type through identical headings merely because the underlying site component is shared.
+
+## World facts versus Storyteller facts
+
+Storyteller fields should not become a shadow copy of Lore or location structure.
+
+- A location's `economic_role`, `defences` or `route_conditions` describe the world itself.
+- `why_people_come`, `first_impression` or `story_complication` explain how that established world fact becomes useful at the table, on the page or in a scene.
+- A faction's formal government, membership and history remain Lore.
+- `current_wants`, `preferred_methods`, `operational_limits` and `internal_tensions` are concise present-tense handles for using that faction in a story.
+
+Where one field can be derived safely from existing canon, public Storyteller presentation may combine or summarise rather than demand duplicate authoring.
 
 ## Numbers and rules systems
 
