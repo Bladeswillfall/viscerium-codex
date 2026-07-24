@@ -69,16 +69,20 @@ Folders answer **what kind of creator object is this?** Properties answer **wher
 
 Do not subdivide ordinary story-entity folders by era, nation or biome. A single species or item may span several eras and locations, so those relationships belong in properties such as `eras`, `locations` and `biomes` rather than the filesystem.
 
-## Develop an entry later
+## Develop or revise an entry later
 
-Do not recreate an entry because new detail becomes relevant.
+Do not recreate an entry because new detail becomes relevant or an existing Storyteller answer needs revision.
 
 1. Open the existing note.
 2. Run **Templater: Insert template**.
 3. Choose [[Add Storyteller Fields]].
-4. Select only the field families now required by the story or worldbuilding task.
+4. Select the Storyteller modules you want to review. Each option shows how many fields in that module are already populated.
+5. Existing free-text answers are pre-filled. Edit them and submit to replace the current value.
+6. Submit blank to remove a free-text property; cancel the prompt to preserve it unchanged. Controlled fields provide explicit **Keep current** and **Clear value** choices.
 
-Existing values are preserved. Unselected fields remain absent rather than becoming negative canon.
+The template name is retained for compatibility with existing Templater references, but it is now an add/edit workflow rather than a one-way injector.
+
+Unselected modules and cancelled fields remain untouched. Removed fields return to the valid **absent** state rather than becoming blank or negative canon.
 
 This is intentionally **not** a homepage button: it changes the active entity note, so the action belongs in the context of that note rather than on a global dashboard.
 
