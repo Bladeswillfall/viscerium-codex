@@ -33,6 +33,23 @@ If a fact only rewards encyclopaedic completeness, leave it in Lore or omit it.
 6. Do not infer negative canon from absent properties.
 7. Do not fabricate connective prose that changes the meaning of a field.
 
+## Author and edit Storyteller data
+
+Storyteller content is deliberately authored in the canonical note rather than generated from ordinary Lore prose.
+
+1. Open the note you want to develop.
+2. Run **Templater: Insert template** → `Add Storyteller Fields`.
+3. Select one or more Storyteller modules. The picker shows how many supported fields in each module are currently populated.
+4. Existing free-text answers are pre-filled. Edit and submit to replace them.
+5. Submit a blank free-text value to remove that property. Cancel that prompt to leave the existing value unchanged.
+6. Controlled-choice fields explicitly offer **Keep current** and **Clear value** when a value already exists.
+
+The template name is retained for compatibility with existing Templater references, but the workflow supports both initial population and later editing.
+
+Clearing a field deletes that property rather than writing an empty value. If the final supported Storyteller property is removed, the next site build produces no Storyteller projection and the public Lore / Storyteller switch disappears for that note.
+
+Direct editing in Obsidian Properties/frontmatter remains valid. The guided workflow exists so creators do not need to remember internal property names.
+
 ## Public view behaviour
 
 Published notes keep their ordinary Lore article as the default view.
@@ -42,6 +59,7 @@ The build projects populated Storyteller properties into generated public metada
 - Show the **Lore / Storyteller** switch only when at least one supported Storyteller field is populated.
 - Default to **Lore** on page load. Do not surprise readers by replacing the canonical article with the concise view.
 - Storyteller mode replaces the article body for that view; it does not create another route or another canonical article.
+- Keep the normal article sidebar visible in Storyteller mode; this is another view of the same subject rather than a different page shell.
 - Hide the Lore table of contents while Storyteller mode is active because its headings no longer describe the visible panel.
 - Do not manufacture a Storyteller tab from ordinary Lore prose. A creator must deliberately establish the source fields first.
 - Pages with no Storyteller data must render exactly like ordinary Codex articles.
