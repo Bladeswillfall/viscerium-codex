@@ -45,7 +45,7 @@ The older/general route remains valid: **Templater: Create new note from templat
 
 Creating a normal new Markdown note directly inside one of the four ordinary database folders uses the same [[New Story Entity]] workflow automatically when the per-device creation trigger is enabled. The folder supplies the entity type, so that question is skipped.
 
-Use **Templater: Insert template** and choose [[Add Storyteller Fields]] to add currently absent optional fields to an existing fauna, flora, fungi, item or Myrkild unit note.
+Use **Templater: Insert template** and choose [[Add Storyteller Fields]] to add **or edit** optional Storyteller fields on a supported note. Every module remains selectable after initial population, existing free-text answers are pre-filled, blank submission clears a value, and cancelling a prompt preserves it. The filename is retained for compatibility even though the workflow now supports editing as well as adding.
 
 Do not invoke templates under `Templates/_Internals/`, `Templates/_Scripts/` or `Templates/_Startup/` directly. They contain shared implementation, user-script helpers or startup behaviour rather than creator-facing workflows.
 
