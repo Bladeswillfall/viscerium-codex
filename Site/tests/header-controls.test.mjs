@@ -25,7 +25,9 @@ test('the Codex header renders Starlight search and theme controls', () => {
   assert.match(header, /data-codex-header-controls/);
 
   assert.match(header, /window\.matchMedia\('\(min-width: 800px\)'\)/);
-  assert.match(header, /root\.toggleAttribute\('data-codex-wide-header', desktopQuery\.matches\)/);
+  assert.match(header, /const isDesktop = desktopQuery\.matches/);
+  assert.match(header, /root\.toggleAttribute\('data-codex-wide-header', isDesktop\)/);
+  assert.match(header, /root\.toggleAttribute\('data-codex-mobile-header', !isDesktop\)/);
   assert.match(header, /desktopQuery\.addEventListener\('change', runtime\.sync\)/);
   assert.match(header, /document\.addEventListener\('astro:page-load', runtime\.sync\)/);
 
