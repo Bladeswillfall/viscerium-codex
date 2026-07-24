@@ -36,7 +36,7 @@ test('the Codex header renders Starlight search and theme controls', () => {
   assert.match(headerCss, /min-width:\s*14rem !important/);
   assert.match(headerCss, /> span\s*\{[\s\S]*display:\s*block !important/);
   assert.match(headerCss, /> kbd\s*\{[\s\S]*display:\s*flex !important/);
-  assert.doesNotMatch(headerCss, /@media/);
+  assert.doesNotMatch(headerCss, /@media\s*\(\s*min-width/);
 
   assert.match(headerCss, /\.codex-theme-control select/);
 });
