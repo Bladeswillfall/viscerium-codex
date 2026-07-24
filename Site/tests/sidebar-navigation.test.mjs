@@ -53,7 +53,8 @@ test('desktop sidebar toggle lives in the sticky header while the sidebar runtim
   assert.match(header, /aria-controls="starlight__sidebar"/);
   assert.match(header, /aria-expanded="false"/);
   assert.match(header, /aria-label="Show sidebar"/);
-  assert.doesNotMatch(footer, /data-codex-sidebar-toggle/);
+  assert.doesNotMatch(footer, /<button[\s\S]*?data-codex-sidebar-toggle/);
+  assert.match(footer, /document\.querySelector\('\[data-codex-sidebar-toggle\]'\)/);
   assert.match(headerControls, /\.codex-header \.codex-sidebar-toggle\s*\{[\s\S]*?position:\s*static/);
   assert.match(headerControls, /\.codex-header \.title-wrapper\s*\{[\s\S]*?gap:\s*\.4rem/);
   assert.match(headerControls, /html\[data-codex-wide-header\] header\.header\s*\{[\s\S]*?position:\s*sticky !important/);
