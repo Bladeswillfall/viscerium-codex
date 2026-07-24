@@ -17,7 +17,7 @@ Use this as the practical lookup for interacting with the VISCERIUM authoring sy
 | Create a Myrkild unit | [[Home]] → **Create Myrkild Unit**, or **Templater: Create Databases/New Myrkild Unit** |
 | Open active-note creator context | [[Home]] → **Open Creator Context** |
 | Add settlement/wilderness/site/route detail to a location | **Templater: Insert template** → `Add Location Fields` |
-| Add optional Storyteller/profile fields later | **Templater: Insert template** → `Add Storyteller Fields` |
+| Add, review or edit Storyteller/profile fields | **Templater: Insert template** → `Add Storyteller Fields` |
 | Review sourcebook-grade connective tissue | Open [[Sourcebook Readiness SOP]] |
 | Browse every structured story entity together | Open [[Story Entities.base]] |
 | Check creator data and image assets for structural mistakes | `cd Site` then `npm run doctor:vault` |
@@ -91,7 +91,7 @@ Run these through **Ctrl/Cmd + P** unless stated otherwise.
 | **Templater: Create new note from template** → `New Story Entity` | General fallback route to the same workflow when you deliberately want the Templater template picker. | **Yes.** Creates and files a Markdown note. |
 | Create a normal blank note directly inside `Drafts/Databases/Fauna`, `Flora`, `Fungi` or `Items` | Folder-first version of the same workflow. Templater infers the type from the folder and skips the redundant type question. Requires the per-device **Trigger Templater on new file creation** switch. | **Yes.** The new note is populated by Templater. |
 | **Templater: Insert template** → `Add Location Fields` | Adds only selected, currently absent settlement, wilderness, site or route properties to an existing `type: location` note. Existing values are preserved and no module is compulsory. | **Yes.** Updates frontmatter only for values actually supplied. |
-| **Templater: Insert template** → `Add Storyteller Fields` | Adds only selected, currently absent Storyteller properties to supported story entities, Myrkild units, locations and factions. Existing values are preserved. | **Yes.** Updates frontmatter only for values actually supplied. |
+| **Templater: Insert template** → `Add Storyteller Fields` | Adds or edits selected Storyteller properties on supported story entities, Myrkild units, locations and factions. Modules remain selectable after population; free-text answers are pre-filled, blank submission clears a value, cancel preserves it, and controlled fields expose explicit keep/clear choices. | **Yes.** Updates or removes only the frontmatter properties deliberately changed. |
 | **Templates: Insert template** | Uses Obsidian's built-in Templates plugin for static/non-interactive templates. Use Templater instead for the workflows above. | **Yes.** Inserts the chosen static template. |
 
 Do **not** run files inside `Templates/_Internals/`, `Templates/_Scripts/` or `Templates/_Startup/` directly. They contain shared implementation or startup behaviour used by creator-facing workflows.
