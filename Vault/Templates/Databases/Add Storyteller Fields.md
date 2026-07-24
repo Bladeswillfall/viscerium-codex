@@ -159,8 +159,12 @@ const configs = {
   ]
 };
 
+const KEEP = "__viscerium_keep__";
+const CLEAR = "__viscerium_clear__";
 const type = tp.frontmatter.type;
 const modules = configs[type];
+const hasValue = (value) => value !== undefined && value !== null && value !== "";
+const displayValue = (value) => Array.isArray(value) ? value.join(", ") : String(value ?? "");
 
 if (!modules) {
   new tp.obsidian.Notice(`No Storyteller field set is defined for type: ${type ?? "undefined"}`);
@@ -168,61 +172,110 @@ if (!modules) {
   return;
 }
 
-const available = modules.filter((module) =>
-  module.fields.some((field) => {
-    const value = tp.frontmatter[field.key];
-    return value === undefined || value === null || value === "";
-  })
-);
-
-if (!available.length) {
-  new tp.obsidian.Notice("All supported optional fields are already present on this note.");
-  tR = "";
-  return;
-}
+const moduleLabels = modules.map((module) => {
+  const populated = module.fields.filter((field) => hasValue(tp.frontmatter[field.key])).length;
+  return `${module.label} — ${populated}/${module.fields.length} populated`;
+});
 
 const selected = await tp.system.multi_suggester(
-  available.map((module) => module.label),
-  available.map((module) => module.id),
+  moduleLabels,
+  modules.map((module) => module.id),
   false,
-  "Add only the fields the current story now requires"
+  "Review Storyteller — choose sections to add or edit"
 ) ?? [];
 
 if (!selected.length) {
-  new tp.obsidian.Notice("No fields added.");
+  new tp.obsidian.Notice("No Storyteller sections selected.");
   tR = "";
   return;
 }
 
-const additions = {};
-for (const module of available) {
+const changes = {};
+for (const module of modules) {
   if (!selected.includes(module.id)) continue;
+
   for (const field of module.fields) {
     const existing = tp.frontmatter[field.key];
-    if (existing !== undefined && existing !== null && existing !== "") continue;
+    const populated = hasValue(existing);
 
-    let value = "";
     if (field.options) {
-      value = await tp.system.suggester(field.options, field.values, false, field.label ?? field.key) ?? "";
-    } else {
-      value = (await tp.system.prompt(field.prompt, "", false) ?? "").trim();
+      const choices = [];
+      const values = [];
+
+      if (populated) {
+        choices.push(`Keep current — ${displayValue(existing)}`);
+        values.push(KEEP);
+        choices.push("Clear value");
+        values.push(CLEAR);
+      } else {
+        choices.push("Leave undefined");
+        values.push(KEEP);
+      }
+
+      for (let index = 0; index < field.options.length; index += 1) {
+        const optionValue = field.values[index];
+        if (optionValue === "") continue;
+        choices.push(field.options[index]);
+        values.push(optionValue);
+      }
+
+      const choice = await tp.system.suggester(
+        choices,
+        values,
+        false,
+        `${field.label ?? field.key}${populated ? " — currently set" : ""}`
+      );
+
+      if (choice === null || choice === KEEP) continue;
+      if (choice === CLEAR) {
+        if (populated) changes[field.key] = { action: "clear" };
+        continue;
+      }
+      if (!populated || choice !== existing) changes[field.key] = { action: "set", value: choice };
+      continue;
     }
-    if (value !== "") additions[field.key] = value;
+
+    const response = await tp.system.prompt(
+      `${field.prompt}\n\nSubmit blank to clear this field. Cancel to leave it unchanged.`,
+      populated ? displayValue(existing) : "",
+      false
+    );
+
+    if (response === null) continue;
+    const value = response.trim();
+    if (value === "") {
+      if (populated) changes[field.key] = { action: "clear" };
+      continue;
+    }
+    if (!populated || value !== displayValue(existing)) changes[field.key] = { action: "set", value };
   }
 }
 
-const keys = Object.keys(additions);
-if (!keys.length) {
-  new tp.obsidian.Notice("No values were entered.");
+const entries = Object.entries(changes);
+if (!entries.length) {
+  new tp.obsidian.Notice("No Storyteller changes made.");
   tR = "";
   return;
 }
 
+let updated = 0;
+let cleared = 0;
 await tp.app.fileManager.processFrontMatter(tp.config.target_file, (frontmatter) => {
-  for (const [key, value] of Object.entries(additions)) frontmatter[key] = value;
-  if (!frontmatter.development_level) frontmatter.development_level = "stub";
+  for (const [key, change] of entries) {
+    if (change.action === "clear") {
+      delete frontmatter[key];
+      cleared += 1;
+    } else {
+      frontmatter[key] = change.value;
+      updated += 1;
+    }
+  }
+  if (updated > 0 && !frontmatter.development_level) frontmatter.development_level = "stub";
 });
 
-new tp.obsidian.Notice(`Added ${keys.length} field${keys.length === 1 ? "" : "s"}.`);
+const parts = [];
+if (updated) parts.push(`${updated} added/updated`);
+if (cleared) parts.push(`${cleared} cleared`);
+new tp.obsidian.Notice(`Storyteller saved: ${parts.join(", ")}.`);
 tR = "";
 %>
