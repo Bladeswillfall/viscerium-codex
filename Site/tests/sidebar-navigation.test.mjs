@@ -112,24 +112,43 @@ test('mobile sidebar controls follow the auto-hiding header without being covere
 
   assert.match(
     headerControls,
-    /html\[data-codex-mobile-header\] \.sidebar-pane::before\s*\{[\s\S]*?top:\s*var\(--sl-nav-height, 3\.5rem\)/,
+    /html\[data-codex-mobile-header\] \.sidebar > starlight-menu-button button\s*\{[\s\S]*?translateY\(var\(--sl-nav-height, 3\.5rem\)\)/,
   );
   assert.match(
     headerControls,
-    /html\[data-codex-mobile-header\]\[data-codex-mobile-header-hidden\] \.sidebar-pane::before\s*\{[\s\S]*?top:\s*0/,
+    /html\[data-codex-mobile-header\]\[data-codex-mobile-header-hidden\] \.sidebar > starlight-menu-button button\s*\{[\s\S]*?translateY\(0\)/,
+  );
+  assert.match(
+    headerControls,
+    /html\[data-codex-mobile-header\] \.sidebar-pane\s*\{[\s\S]*?inset-block-start:\s*var\(--sl-nav-height, 3\.5rem\)/,
+  );
+  assert.match(
+    headerControls,
+    /html\[data-codex-mobile-header\]\[data-codex-mobile-header-hidden\] \.sidebar-pane\s*\{[\s\S]*?inset-block-start:\s*0/,
   );
 });
 
-test('retired sidebar compatibility artifacts stay absent', () => {
-  const retired = [
-    '../src/components/CodexSidebar.astro',
-    '../src/components/CodexSidebarToggle.astro',
-    '../src/components/SidebarMenuControls.astro',
-    '../src/styles/sidebar.css',
-    '../src/styles/sidebar-nav.css',
-    '../src/styles/sidebar-controls.css',
-    '../src/styles/sidebar-icons.css',
-  ];
+test('homepage has no first-load reveal and still supports the sidebar rail', () => {
+  const homepage = read('../src/pages/index.astro');
 
-  for (const path of retired) assert.equal(existsSync(new URL(path, import.meta.url)), false, `${path} should stay retired`);
+  assert.match(homepage, /hasSidebar=\{true\}/);
+  assert.match(homepage, /html\[data-codex-desktop-sidebar\]:not\(\.codex-sidebar-collapsed\) \.main-frame:has\(\.home-gateway\)/);
+  assert.match(homepage, /padding-inline-start: var\(--codex-sidebar-overlay-width\) !important/);
+  assert.doesNotMatch(homepage, /HomeReveal|homepage-reveal|client:load/);
+  assert.equal(existsSync(new URL('../src/components/home/HomeReveal.tsx', import.meta.url)), false);
+  assert.equal(existsSync(new URL('../src/styles/homepage-reveal.css', import.meta.url)), false);
+});
+
+test('mobile page table of contents is owned by the responsive runtime', () => {
+  const footer = read('../src/components/StarlightFooter.astro');
+  const navigation = read('../src/styles/navigation.css');
+
+  assert.match(navigation, /@media \(min-width: 800px\)/);
+  assert.match(navigation, /--sl-mobile-toc-height: 0rem/);
+  assert.match(footer, /document\.getElementById\('starlight__on-this-page--mobile'\)/);
+  assert.match(footer, /summary\?\.closest\('nav'\)/);
+  assert.match(footer, /navigation\.style\.setProperty\('display', 'none', 'important'\)/);
+  assert.match(footer, /navigation\.style\.removeProperty\('display'\)/);
+  assert.match(footer, /new MutationObserver\(\(\) => runtime\.syncMobileToc\(\)\)/);
+  assert.match(footer, /runtime\.mobileTocObserver\.observe\(document\.body, \{ childList: true, subtree: true \}\)/);
 });
